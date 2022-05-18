@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator", "WindowTranslator\WindowTranslator.csproj", "{29ACE192-BE00-40AC-82D4-CD527047A7C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Lib", "WindowTranslator.Lib\WindowTranslator.Lib.csproj", "{0A787EE1-D29D-455C-92B0-035427EA37D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{29ACE192-BE00-40AC-82D4-CD527047A7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29ACE192-BE00-40AC-82D4-CD527047A7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29ACE192-BE00-40AC-82D4-CD527047A7C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
