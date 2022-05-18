@@ -1,5 +1,5 @@
 ﻿namespace WindowTranslator.Lib;
-public class Class1
+public class Translator
 {
-
+    public Taskstring 
 }
