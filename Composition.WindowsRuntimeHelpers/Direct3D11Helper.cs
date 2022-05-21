@@ -65,12 +65,12 @@ namespace Composition.WindowsRuntimeHelpers
             )]
         static extern UInt32 CreateDirect3D11SurfaceFromDXGISurface(IntPtr dxgiSurface, out IntPtr graphicsSurface);
 
-        public static IDirect3DDevice CreateDevice()
+        public static IDirect3DDevice? CreateDevice()
         {
             return CreateDevice(false);
         }
 
-        public static IDirect3DDevice CreateDevice(bool useWARP)
+        public static IDirect3DDevice? CreateDevice(bool useWARP)
         {
             var d3dDevice = new SharpDX.Direct3D11.Device(
                 useWARP ? SharpDX.Direct3D.DriverType.Software : SharpDX.Direct3D.DriverType.Hardware,
@@ -79,9 +79,9 @@ namespace Composition.WindowsRuntimeHelpers
             return device;
         }
 
-        public static IDirect3DDevice CreateDirect3DDeviceFromSharpDXDevice(SharpDX.Direct3D11.Device d3dDevice)
+        public static IDirect3DDevice? CreateDirect3DDeviceFromSharpDXDevice(SharpDX.Direct3D11.Device d3dDevice)
         {
-            IDirect3DDevice device = null;
+            IDirect3DDevice? device = null;
 
             // Acquire the DXGI interface for the Direct3D device.
             using (var dxgiDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device3>())
@@ -99,9 +99,9 @@ namespace Composition.WindowsRuntimeHelpers
             return device;
         }
 
-        public static IDirect3DSurface CreateDirect3DSurfaceFromSharpDXTexture(SharpDX.Direct3D11.Texture2D texture)
+        public static IDirect3DSurface? CreateDirect3DSurfaceFromSharpDXTexture(SharpDX.Direct3D11.Texture2D texture)
         {
-            IDirect3DSurface surface = null;
+            IDirect3DSurface? surface = null;
 
             // Acquire the DXGI interface for the Direct3D surface.
             using (var dxgiSurface = texture.QueryInterface<SharpDX.DXGI.Surface>())

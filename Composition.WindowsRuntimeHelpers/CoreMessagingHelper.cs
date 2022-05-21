@@ -60,7 +60,7 @@ namespace Composition.WindowsRuntimeHelpers
             )]
         static extern UInt32 CreateDispatcherQueueController(DispatcherQueueOptions options, out IntPtr dispatcherQueueController);
 
-        public static DispatcherQueueController CreateDispatcherQueueControllerForCurrentThread()
+        public static DispatcherQueueController? CreateDispatcherQueueControllerForCurrentThread()
         {
             var options = new DispatcherQueueOptions
             {
@@ -69,7 +69,7 @@ namespace Composition.WindowsRuntimeHelpers
                 apartmentType = DISPATCHERQUEUE_THREAD_APARTMENTTYPE.DQTAT_COM_NONE
             };
 
-            DispatcherQueueController controller = null;
+            DispatcherQueueController? controller = null;
             uint hr = CreateDispatcherQueueController(options, out IntPtr controllerPointer);
             if (hr == 0)
             {

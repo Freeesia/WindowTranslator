@@ -64,7 +64,7 @@ namespace Composition.WindowsRuntimeHelpers
             interop.Initialize(hwnd);
         }
 
-        public static GraphicsCaptureItem CreateItemForWindow(IntPtr hwnd)
+        public static GraphicsCaptureItem? CreateItemForWindow(IntPtr hwnd)
         {
             var factory = WindowsRuntimeMarshal.GetActivationFactory(typeof(GraphicsCaptureItem));
             var interop = (IGraphicsCaptureItemInterop)factory;
@@ -76,7 +76,7 @@ namespace Composition.WindowsRuntimeHelpers
             return item;
         }
 
-        public static GraphicsCaptureItem CreateItemForMonitor(IntPtr hmon)
+        public static GraphicsCaptureItem? CreateItemForMonitor(IntPtr hmon)
         {
             var factory = WindowsRuntimeMarshal.GetActivationFactory(typeof(GraphicsCaptureItem));
             var interop = (IGraphicsCaptureItemInterop)factory;
