@@ -5,10 +5,6 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator", "WindowTranslator\WindowTranslator.csproj", "{29ACE192-BE00-40AC-82D4-CD527047A7C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Lib", "WindowTranslator.Lib\WindowTranslator.Lib.csproj", "{0A787EE1-D29D-455C-92B0-035427EA37D0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{774157F2-72B8-41D4-BDAF-AE8E13803174}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90C4837E-3350-4820-8B62-F81E18B8D609}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -26,14 +22,6 @@ Global
 		{29ACE192-BE00-40AC-82D4-CD527047A7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29ACE192-BE00-40AC-82D4-CD527047A7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29ACE192-BE00-40AC-82D4-CD527047A7C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A787EE1-D29D-455C-92B0-035427EA37D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{774157F2-72B8-41D4-BDAF-AE8E13803174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{774157F2-72B8-41D4-BDAF-AE8E13803174}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{774157F2-72B8-41D4-BDAF-AE8E13803174}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{774157F2-72B8-41D4-BDAF-AE8E13803174}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F1A4F2BD-B093-44B4-9133-DA9F197CD052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1A4F2BD-B093-44B4-9133-DA9F197CD052}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1A4F2BD-B093-44B4-9133-DA9F197CD052}.Release|Any CPU.ActiveCfg = Release|Any CPU
