@@ -1,28 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
+﻿using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace WindowTranslator
+namespace WindowTranslator;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        this.DataContext = new MainViewModel();
+    }
+}
+
+
+public class BorderAdorner : Adorner
+{
+    public BorderAdorner(UIElement ui) : base(ui) { }
+
+    protected override void OnRender(DrawingContext drawingContext)
+    {
+        var rect = new Rect(this.AdornedElement.DesiredSize);
+
+        drawingContext.DrawRectangle(
+            null,
+            new Pen(Brushes.Red, 5),
+            rect
+        );
+
     }
 }
