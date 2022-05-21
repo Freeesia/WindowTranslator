@@ -25,6 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Windows.Graphics.DirectX.Direct3D11;
+using WinRT;
 
 namespace Composition.WindowsRuntimeHelpers
 {
@@ -91,7 +92,7 @@ namespace Composition.WindowsRuntimeHelpers
 
                 if (hr == 0)
                 {
-                    device = Marshal.GetObjectForIUnknown(pUnknown) as IDirect3DDevice;
+                    device = MarshalInterface<IDirect3DDevice>.FromAbi(pUnknown);
                     Marshal.Release(pUnknown);
                 }
             }
@@ -111,7 +112,7 @@ namespace Composition.WindowsRuntimeHelpers
 
                 if (hr == 0)
                 {
-                    surface = Marshal.GetObjectForIUnknown(pUnknown) as IDirect3DSurface;
+                    surface = MarshalInterface<IDirect3DSurface>.FromAbi(pUnknown);
                     Marshal.Release(pUnknown);
                 }
             }

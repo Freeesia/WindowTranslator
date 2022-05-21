@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Media;
 
 namespace WindowTranslator;
 
@@ -13,27 +11,16 @@ public partial class MainWindow : Window
     public MainWindow(IntPtr windowHandle)
     {
         InitializeComponent();
-        this.DataContext = new MainViewModel()
-        {
-            WindowHandle = windowHandle,
-        };
+        this.DataContext = new MainViewModel(windowHandle);
     }
-}
 
-
-public class BorderAdorner : Adorner
-{
-    public BorderAdorner(UIElement ui) : base(ui) { }
-
-    protected override void OnRender(DrawingContext drawingContext)
+    protected override void OnClosing(CancelEventArgs e)
     {
-        var rect = new Rect(this.AdornedElement.DesiredSize);
-
-        drawingContext.DrawRectangle(
-            null,
-            new Pen(Brushes.Red, 5),
-            rect
-        );
-
+        base.OnClosing(e);
+        if (!e.Cancel)
+        {
+            var vm = this.DataContext as MainViewModel;
+            vm?.Dispose();
+        }
     }
 }

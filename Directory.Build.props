@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <Deterministic>true</Deterministic>

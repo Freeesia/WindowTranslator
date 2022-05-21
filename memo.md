@@ -12,3 +12,4 @@ https://nakatsudotnet.blog.fc2.com/blog-entry-28.html
 https://gist.github.com/itsho/8b0e761d9114e27c8570fbf95465bbfc
 
 https://github.com/michaelsutton/hwnd-adorner
+https://github.com/microsoft/Windows.UI.Composition-Win32-Samples
