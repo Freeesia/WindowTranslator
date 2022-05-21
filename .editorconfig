@@ -173,3 +173,7 @@ dotnet_naming_style.パスカル_ケース.required_prefix =
 dotnet_naming_style.パスカル_ケース.required_suffix = 
 dotnet_naming_style.パスカル_ケース.word_separator = 
 dotnet_naming_style.パスカル_ケース.capitalization = pascal_case
+
+
+[*.{csproj,props}]
+indent_size = 2
