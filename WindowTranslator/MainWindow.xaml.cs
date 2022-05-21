@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -9,10 +10,13 @@ namespace WindowTranslator;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(IntPtr windowHandle)
     {
         InitializeComponent();
-        this.DataContext = new MainViewModel();
+        this.DataContext = new MainViewModel()
+        {
+            WindowHandle = windowHandle,
+        };
     }
 }
 

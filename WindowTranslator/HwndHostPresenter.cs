@@ -27,12 +27,7 @@ public class HwndHostPresenter : FrameworkElement
 
     public HwndHostPresenter()
     {
-        this.Unloaded += HwndHostPresenter_Unloaded;
-    }
-
-    private void HwndHostPresenter_Unloaded(object sender, RoutedEventArgs e)
-    {
-        this.child?.Dispose();
+        this.Unloaded += (_, _) => this.child?.Dispose();
     }
 
     private void AttachWindow()

@@ -1,27 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using PropertyChanged.SourceGenerator;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace WindowTranslator;
 
+[ObservableObject]
 public partial class MainViewModel
 {
-    [Notify]
+    [ObservableProperty]
     private IntPtr windowHandle;
-
-    public MainViewModel()
-    {
-        StartProcess();
-    }
-
-    private async void StartProcess()
-    {
-        var childProc = Process.Start("notepad.exe");
-        while (this.WindowHandle == IntPtr.Zero)
-        {
-            this.WindowHandle = childProc.MainWindowHandle;
-            await Task.Delay(500);
-        }
-    }
 }

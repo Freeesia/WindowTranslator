@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowTranslator"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignData Type=local:MainViewModel}"
+        d:DataContext="{d:DesignInstance local:MainViewModel}"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <local:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />
