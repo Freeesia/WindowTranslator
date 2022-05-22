@@ -7,6 +7,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Composition.WindowsRuntimeHelpers;
+using DeepL;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
@@ -33,10 +34,11 @@ public sealed class WindowCapture : Control, IDisposable
     private readonly Direct3D11CaptureFramePool framePool;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
     private readonly SemaphoreSlim analyzing = new(1, 1);
+    private readonly Translator translator = new(string.Empty);
+    private readonly Dictionary<string, string> dic = new();
     private bool isDisposed = false;
     private GraphicsCaptureSession? session;
     private Timer? timer;
-    private SizeInt32 targetSize = new(1000, 1000);
 
     public IntPtr TargetWindow
     {
@@ -196,6 +198,16 @@ public sealed class WindowCapture : Control, IDisposable
             // 少なすぎる文字も認識ミス扱い
             .Where(w => w.Text.Length > 2)
             .ToArray();
+        var transTargets = texts.Select(w => w.Text).Where(t => !this.dic.ContainsKey(t)).Distinct().ToArray();
+        if (transTargets.Any())
+        {
+            var translated = await this.translator.TranslateTextAsync(transTargets, "en", "ja");
+            foreach (var (src, dst) in transTargets.Zip(translated.Select(t => t.Text)))
+            {
+                this.dic.Add(src, dst);
+            }
+        }
+        texts = texts.Select(t => t with { Text = this.dic[t.Text] }).ToArray();
         _ = this.Dispatcher.BeginInvoke(() => SetCurrentValue(OcrTextsProperty, texts));
         Debug.WriteLine($"MAX: {100.0 * texts.Select(t => t.Height).DefaultIfEmpty().Max() / sbmp.PixelHeight}%, Time: {sw.Elapsed}");
     }
