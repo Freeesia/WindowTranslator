@@ -13,14 +13,4 @@ public partial class MainWindow : Window
         InitializeComponent();
         this.DataContext = new MainViewModel(windowHandle);
     }
-
-    protected override void OnClosing(CancelEventArgs e)
-    {
-        base.OnClosing(e);
-        if (!e.Cancel)
-        {
-            var vm = this.DataContext as MainViewModel;
-            vm?.Dispose();
-        }
-    }
 }

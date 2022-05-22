@@ -5,7 +5,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using static PInvoke.User32;
 
-namespace WindowTranslator;
+namespace WindowTranslator.Controls;
 
 public class HwndHostPresenter : FrameworkElement
 {
@@ -23,21 +23,21 @@ public class HwndHostPresenter : FrameworkElement
 
     public HwndHostPresenter()
     {
-        this.Unloaded += (_, _) => this.child?.Dispose();
+        Unloaded += (_, _) => child?.Dispose();
     }
 
     private void OnWindowHandleChanged()
     {
-        RemoveVisualChild(this.child);
-        this.child?.Dispose();
-        if (this.WindowHandle == IntPtr.Zero)
+        RemoveVisualChild(child);
+        child?.Dispose();
+        if (WindowHandle == IntPtr.Zero)
         {
-            this.child = null;
+            child = null;
         }
         else
         {
-            this.child = new InternalHwndHost(this.WindowHandle);
-            AddVisualChild(this.child);
+            child = new InternalHwndHost(WindowHandle);
+            AddVisualChild(child);
         }
         InvalidateMeasure();
     }
@@ -46,33 +46,33 @@ public class HwndHostPresenter : FrameworkElement
     {
         get
         {
-            if (this.child is null)
+            if (child is null)
             {
                 yield break;
             }
-            yield return this.child;
+            yield return child;
         }
     }
 
-    protected override int VisualChildrenCount => this.child is null ? 0 : 1;
+    protected override int VisualChildrenCount => child is null ? 0 : 1;
 
-    protected override Visual GetVisualChild(int index) => this.child ?? throw new InvalidOperationException();
+    protected override Visual GetVisualChild(int index) => child ?? throw new InvalidOperationException();
 
     protected override Size MeasureOverride(Size constraint)
     {
-        if (this.child is not null)
+        if (child is not null)
         {
-            this.child.Measure(constraint);
-            return this.child.DesiredSize;
+            child.Measure(constraint);
+            return child.DesiredSize;
         }
         return Size.Empty;
     }
 
     protected override Size ArrangeOverride(Size arrangeSize)
     {
-        if (this.child is not null)
+        if (child is not null)
         {
-            this.child.Arrange(new(arrangeSize));
+            child.Arrange(new(arrangeSize));
         }
         return arrangeSize;
     }
@@ -95,16 +95,16 @@ public class HwndHostPresenter : FrameworkElement
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             var childRef = new HandleRef(this, childHWnd);
-            this.originalStyle = (IntPtr)GetWindowLong(this.childHWnd, WindowLongIndexFlags.GWL_STYLE);
-            SetWindowLongPtr(childHWnd, WindowLongIndexFlags.GWL_STYLE, this.hostingStyle);
+            originalStyle = (IntPtr)GetWindowLong(childHWnd, WindowLongIndexFlags.GWL_STYLE);
+            SetWindowLongPtr(childHWnd, WindowLongIndexFlags.GWL_STYLE, hostingStyle);
             SetParent(childHWnd, hwndParent.Handle);
             return childRef;
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            SetParent(this.childHWnd, IntPtr.Zero);
-            SetWindowLongPtr(this.childHWnd, WindowLongIndexFlags.GWL_STYLE, this.originalStyle);
+            SetParent(childHWnd, IntPtr.Zero);
+            SetWindowLongPtr(childHWnd, WindowLongIndexFlags.GWL_STYLE, originalStyle);
         }
     }
 }

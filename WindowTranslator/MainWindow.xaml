@@ -4,12 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowTranslator"
+        xmlns:ctl="clr-namespace:WindowTranslator.Controls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainViewModel}"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <!--<local:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
-        <local:WindowCaptureCompositionhost TargetWindow="{Binding WindowHandle}"/>
+        <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
+        <!--<ctl:WindowCaptureCompositionhost TargetWindow="{Binding WindowHandle}"/>-->
+        <ctl:WindowCapture TargetWindow="{Binding WindowHandle}"/>
         <TextBlock Text="{Binding OcrText}"/>
     </Grid>
 </Window>
