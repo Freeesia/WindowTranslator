@@ -151,6 +151,12 @@ public sealed class WindowCapture : Control, IDisposable
         {
             var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
             encoder.SetSoftwareBitmap(sbmp);
+            if (sbmp.PixelWidth > 1270)
+            {
+                encoder.BitmapTransform.ScaledHeight = (uint)newHeight;
+                encoder.BitmapTransform.ScaledWidth = (uint)newWidth;
+                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;                
+
             await encoder.FlushAsync();
             using var bmp = new Bitmap(stream.AsStream());
             this.Dispatcher.Invoke((Bitmap img) => this.CaptureSource = Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height)), bmp);
