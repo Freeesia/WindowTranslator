@@ -176,6 +176,8 @@ public sealed class WindowCapture : Control, IDisposable
                 l.Words.Select(w => w.BoundingRect.Y).Min(),
                 l.Words.Select(w => w.BoundingRect.Width).Max(),
                 l.Words.Select(w => w.BoundingRect.Height).Max()))
+            // 大きすぎる文字は映像の認識ミスとみなす
+            .Where(w => w.Height < sbmp.PixelHeight * 0.1)
             .ToArray();
         _ = this.Dispatcher.BeginInvoke(() => SetCurrentValue(OcrTextsProperty, texts));
         Debug.WriteLine($"MAX: {100.0 * texts.Select(t => t.Height).DefaultIfEmpty().Max() / sbmp.PixelHeight}%, Time: {sw.Elapsed}");
