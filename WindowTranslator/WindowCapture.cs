@@ -12,7 +12,7 @@ using Windows.UI.Composition;
 
 namespace WindowTranslator;
 
-public class WindowCapture : FrameworkElement
+public class WindowCaptureCompositionhost : FrameworkElement
 {
     private readonly IDirect3DDevice device;
     private readonly SharpDX.Direct3D11.Device d3dDevice;
@@ -33,9 +33,9 @@ public class WindowCapture : FrameworkElement
 
     /// <summary>Identifies the <see cref="TargetWindow"/> dependency property.</summary>
     public static readonly DependencyProperty TargetWindowProperty =
-        DependencyProperty.Register(nameof(TargetWindow), typeof(IntPtr), typeof(WindowCapture), new PropertyMetadata(IntPtr.Zero, (d, e) => ((WindowCapture)d).OnTargetWindowChanged()));
+        DependencyProperty.Register(nameof(TargetWindow), typeof(IntPtr), typeof(WindowCaptureCompositionhost), new PropertyMetadata(IntPtr.Zero, (d, e) => ((WindowCaptureCompositionhost)d).OnTargetWindowChanged()));
 
-    public WindowCapture()
+    public WindowCaptureCompositionhost()
     {
         this.device = Direct3D11Helper.CreateDevice()!;
         this.d3dDevice = Direct3D11Helper.CreateSharpDXDevice(device);
