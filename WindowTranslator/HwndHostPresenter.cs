@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -18,19 +17,16 @@ public class HwndHostPresenter : FrameworkElement
         set => SetValue(WindowHandleProperty, value);
     }
 
-    /// <summary>Identifies the<see cref= "WindowHandle" /> dependency property.</summary>
+    /// <summary>Identifies the <see cref="WindowHandle"/> dependency property.</summary>
     public static readonly DependencyProperty WindowHandleProperty =
-        DependencyProperty.Register(nameof(WindowHandle), typeof(IntPtr), typeof(HwndHostPresenter), new PropertyMetadata(IntPtr.Zero, WindowHandleChanged));
-
-    private static void WindowHandleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        => ((HwndHostPresenter)d).AttachWindow();
+        DependencyProperty.Register(nameof(WindowHandle), typeof(IntPtr), typeof(HwndHostPresenter), new PropertyMetadata(IntPtr.Zero, (d, e) => ((HwndHostPresenter)d).OnWindowHandleChanged()));
 
     public HwndHostPresenter()
     {
         this.Unloaded += (_, _) => this.child?.Dispose();
     }
 
-    private void AttachWindow()
+    private void OnWindowHandleChanged()
     {
         RemoveVisualChild(this.child);
         this.child?.Dispose();

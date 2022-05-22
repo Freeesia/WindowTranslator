@@ -25,6 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Windows.System;
+using WinRT;
 
 namespace Composition.WindowsRuntimeHelpers
 {
@@ -73,7 +74,7 @@ namespace Composition.WindowsRuntimeHelpers
             uint hr = CreateDispatcherQueueController(options, out IntPtr controllerPointer);
             if (hr == 0)
             {
-                controller = Marshal.GetObjectForIUnknown(controllerPointer) as DispatcherQueueController;
+                controller = MarshalInterface<DispatcherQueueController>.FromAbi(controllerPointer);
                 Marshal.Release(controllerPointer);
             }
 

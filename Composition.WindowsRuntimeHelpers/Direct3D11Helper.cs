@@ -122,7 +122,7 @@ namespace Composition.WindowsRuntimeHelpers
 
         public static SharpDX.Direct3D11.Device CreateSharpDXDevice(IDirect3DDevice device)
         {
-            var access = (IDirect3DDxgiInterfaceAccess)device;
+            var access = device.As<IDirect3DDxgiInterfaceAccess>();
             var d3dPointer = access.GetInterface(ID3D11Device);
             var d3dDevice = new SharpDX.Direct3D11.Device(d3dPointer);
             return d3dDevice;
@@ -130,7 +130,7 @@ namespace Composition.WindowsRuntimeHelpers
 
         public static SharpDX.Direct3D11.Texture2D CreateSharpDXTexture2D(IDirect3DSurface surface)
         {
-            var access = (IDirect3DDxgiInterfaceAccess)surface;
+            var access = surface.As<IDirect3DDxgiInterfaceAccess>();
             var d3dPointer = access.GetInterface(ID3D11Texture2D);
             var d3dSurface = new SharpDX.Direct3D11.Texture2D(d3dPointer);
             return d3dSurface;

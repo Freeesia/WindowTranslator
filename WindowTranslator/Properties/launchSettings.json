@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WindowTranslator": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

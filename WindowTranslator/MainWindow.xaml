@@ -9,6 +9,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <!--<local:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
+        <local:WindowCapture TargetWindow="{Binding WindowHandle}"/>
         <TextBlock Text="{Binding OcrText}"/>
     </Grid>
 </Window>

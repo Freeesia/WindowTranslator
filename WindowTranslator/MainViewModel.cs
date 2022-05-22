@@ -28,25 +28,24 @@ public sealed partial class MainViewModel : IDisposable
     public MainViewModel(IntPtr windowHandle)
     {
         this.WindowHandle = windowHandle;
-        var item = CaptureHelper.CreateItemForWindow(this.WindowHandle)!;
-        this.device = Direct3D11Helper.CreateDevice()!;
-        this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 2, item.Size);
-        this.session = framePool.CreateCaptureSession(item);
-        this.session.IsCursorCaptureEnabled = false;
-        this.session.IsBorderRequired = false;
-        this.lastSize = item.Size;
-        this.session.StartCapture();
+        //var item = CaptureHelper.CreateItemForWindow(this.WindowHandle)!;
+        //this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 2, item.Size);
+        //this.session = framePool.CreateCaptureSession(item);
+        //this.session.IsCursorCaptureEnabled = false;
+        //this.session.IsBorderRequired = false;
+        //this.lastSize = item.Size;
+        //this.session.StartCapture();
 
-        this.timer.Elapsed += (_, _) => AnalyzeWindow();
-        this.timer.Start();
+        //this.timer.Elapsed += (_, _) => AnalyzeWindow();
+        //this.timer.Start();
     }
 
     public void Dispose()
     {
-        this.session.Dispose();
-        this.framePool.Dispose();
-        this.device.Dispose();
-        this.timer.Dispose();
+        //this.session.Dispose();
+        //this.framePool.Dispose();
+        //this.device.Dispose();
+        //this.timer.Dispose();
     }
 
     private async void AnalyzeWindow()
