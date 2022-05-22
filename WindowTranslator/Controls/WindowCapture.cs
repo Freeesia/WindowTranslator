@@ -21,8 +21,8 @@ namespace WindowTranslator.Controls;
 public sealed class WindowCapture : Control, IDisposable
 {
     private static readonly DependencyPropertyKey CaptureSourcePropertyKey = DependencyProperty.RegisterReadOnly(nameof(CaptureSource), typeof(ImageSource), typeof(WindowCapture), new PropertyMetadata(null));
-    private static readonly DependencyPropertyKey CaptureWidthPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CaptureWidth), typeof(int), typeof(WindowCapture), new PropertyMetadata(1000));
-    private static readonly DependencyPropertyKey CaptureHeightPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CaptureHeight), typeof(int), typeof(WindowCapture), new PropertyMetadata(1000));
+    private static readonly DependencyPropertyKey CaptureWidthPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CaptureWidth), typeof(double), typeof(WindowCapture), new PropertyMetadata(1000.0));
+    private static readonly DependencyPropertyKey CaptureHeightPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CaptureHeight), typeof(double), typeof(WindowCapture), new PropertyMetadata(1000.0));
 
     static WindowCapture()
     {
@@ -32,9 +32,11 @@ public sealed class WindowCapture : Control, IDisposable
     private readonly IDirect3DDevice device;
     private readonly Direct3D11CaptureFramePool framePool;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
+    private readonly SemaphoreSlim analyzing = new(1, 1);
     private bool isDisposed = false;
     private GraphicsCaptureSession? session;
     private Timer? timer;
+    private SizeInt32 targetSize = new(1000, 1000);
 
     public IntPtr TargetWindow
     {
@@ -56,18 +58,18 @@ public sealed class WindowCapture : Control, IDisposable
     public static readonly DependencyProperty OcrTextsProperty =
         DependencyProperty.Register(nameof(OcrTexts), typeof(IEnumerable<WordResult>), typeof(WindowCapture), new PropertyMetadata(Enumerable.Empty<WordResult>()));
 
-    public int CaptureWidth
+    public double CaptureWidth
     {
-        get => (int)GetValue(CaptureWidthProperty);
+        get => (double)GetValue(CaptureWidthProperty);
         set => SetValue(CaptureWidthPropertyKey, value);
     }
 
     /// <summary>Identifies the <see cref="CaptureWidth"/> dependency property.</summary>
     public static readonly DependencyProperty CaptureWidthProperty = CaptureWidthPropertyKey.DependencyProperty;
 
-    public int CaptureHeight
+    public double CaptureHeight
     {
-        get => (int)GetValue(CaptureHeightProperty);
+        get => (double)GetValue(CaptureHeightProperty);
         set => SetValue(CaptureHeightPropertyKey, value);
     }
 
@@ -86,7 +88,7 @@ public sealed class WindowCapture : Control, IDisposable
     public WindowCapture()
     {
         device = Direct3D11Helper.CreateDevice()!;
-        framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, new(this.CaptureWidth, this.CaptureHeight));
+        framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, new((int)this.CaptureWidth, (int)this.CaptureHeight));
 
         this.Unloaded += (_, _) => Dispose();
         Application.Current.Dispatcher.ShutdownStarted += (_, _) => Dispose();
@@ -140,22 +142,29 @@ public sealed class WindowCapture : Control, IDisposable
     private async void AnalyzeWindow()
     {
         var sw = Stopwatch.StartNew();
-
+        if (!this.analyzing.Wait(0))
+        {
+            return;
+        }
+        using var rel = new DisposeAction(() => this.analyzing.Release());
         using var frame = framePool.TryGetNextFrame();
         if (frame is null)
         {
             return;
         }
         using var sbmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(frame.Surface);
+        var width = Math.Clamp(sbmp.PixelWidth, 0, 1270);
+        var height = (int)(sbmp.PixelHeight * (1270.0 / sbmp.PixelWidth));
         using (var stream = new InMemoryRandomAccessStream())
         {
             var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
             encoder.SetSoftwareBitmap(sbmp);
-            if (sbmp.PixelWidth > 1270)
+            if (sbmp.PixelWidth > width)
             {
-                encoder.BitmapTransform.ScaledHeight = (uint)newHeight;
-                encoder.BitmapTransform.ScaledWidth = (uint)newWidth;
-                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;                
+                encoder.BitmapTransform.ScaledWidth = (uint)width;
+                encoder.BitmapTransform.ScaledHeight = (uint)height;
+                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.NearestNeighbor;
+            }
 
             await encoder.FlushAsync();
             using var bmp = new Bitmap(stream.AsStream());
@@ -184,6 +193,8 @@ public sealed class WindowCapture : Control, IDisposable
                 l.Words.Select(w => w.BoundingRect.Height).Max()))
             // 大きすぎる文字は映像の認識ミスとみなす
             .Where(w => w.Height < sbmp.PixelHeight * 0.1)
+            // 少なすぎる文字も認識ミス扱い
+            .Where(w => w.Text.Length > 2)
             .ToArray();
         _ = this.Dispatcher.BeginInvoke(() => SetCurrentValue(OcrTextsProperty, texts));
         Debug.WriteLine($"MAX: {100.0 * texts.Select(t => t.Height).DefaultIfEmpty().Max() / sbmp.PixelHeight}%, Time: {sw.Elapsed}");

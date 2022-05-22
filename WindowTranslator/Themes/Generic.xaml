@@ -9,8 +9,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:WindowCapture}">
                     <Viewbox>
-                        <Grid Width="{TemplateBinding CaptureWidth}" Height="{TemplateBinding CaptureHeight}">
-                            <Image Source="{TemplateBinding CaptureSource}"/>
+                        <Grid >
+                            <Image Source="{TemplateBinding CaptureSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="{TemplateBinding CaptureWidth}" Height="{TemplateBinding CaptureHeight}"/>
                             <ItemsControl ItemsSource="{TemplateBinding OcrTexts}"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
