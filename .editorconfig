@@ -126,54 +126,8 @@ csharp_style_allow_embedded_statements_on_same_line_experimental = true:silent
 csharp_style_allow_blank_lines_between_consecutive_braces_experimental = true:silent
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true:silent
 
-[*.vb]
-#### 命名スタイル ####
-
-# 名前付けルール
-
-dotnet_naming_rule.interface_should_be_i_で始まる.severity = suggestion
-dotnet_naming_rule.interface_should_be_i_で始まる.symbols = interface
-dotnet_naming_rule.interface_should_be_i_で始まる.style = i_で始まる
-
-dotnet_naming_rule.型_should_be_パスカル_ケース.severity = suggestion
-dotnet_naming_rule.型_should_be_パスカル_ケース.symbols = 型
-dotnet_naming_rule.型_should_be_パスカル_ケース.style = パスカル_ケース
-
-dotnet_naming_rule.フィールド以外のメンバー_should_be_パスカル_ケース.severity = suggestion
-dotnet_naming_rule.フィールド以外のメンバー_should_be_パスカル_ケース.symbols = フィールド以外のメンバー
-dotnet_naming_rule.フィールド以外のメンバー_should_be_パスカル_ケース.style = パスカル_ケース
-
-# 記号の仕様
-
-dotnet_naming_symbols.interface.applicable_kinds = interface
-dotnet_naming_symbols.interface.applicable_accessibilities = public, friend, private, protected, protected_friend, private_protected
-dotnet_naming_symbols.interface.required_modifiers = 
-
-dotnet_naming_symbols.型.applicable_kinds = class, struct, interface, enum
-dotnet_naming_symbols.型.applicable_accessibilities = public, friend, private, protected, protected_friend, private_protected
-dotnet_naming_symbols.型.required_modifiers = 
-
-dotnet_naming_symbols.フィールド以外のメンバー.applicable_kinds = property, event, method
-dotnet_naming_symbols.フィールド以外のメンバー.applicable_accessibilities = public, friend, private, protected, protected_friend, private_protected
-dotnet_naming_symbols.フィールド以外のメンバー.required_modifiers = 
-
-# 命名スタイル
-
-dotnet_naming_style.i_で始まる.required_prefix = I
-dotnet_naming_style.i_で始まる.required_suffix = 
-dotnet_naming_style.i_で始まる.word_separator = 
-dotnet_naming_style.i_で始まる.capitalization = pascal_case
-
-dotnet_naming_style.パスカル_ケース.required_prefix = 
-dotnet_naming_style.パスカル_ケース.required_suffix = 
-dotnet_naming_style.パスカル_ケース.word_separator = 
-dotnet_naming_style.パスカル_ケース.capitalization = pascal_case
-
-dotnet_naming_style.パスカル_ケース.required_prefix = 
-dotnet_naming_style.パスカル_ケース.required_suffix = 
-dotnet_naming_style.パスカル_ケース.word_separator = 
-dotnet_naming_style.パスカル_ケース.capitalization = pascal_case
-
+# VSTHRD001: Avoid legacy thread switching APIs
+dotnet_diagnostic.VSTHRD001.severity = none
 
 [*.{csproj,props}]
 indent_size = 2

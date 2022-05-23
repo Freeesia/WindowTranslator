@@ -20,12 +20,12 @@ public partial class StartupViewModel
 
     public StartupViewModel(IPresentationService presentationService)
     {
-        RefreshProcess();
+        _ = RefreshProcessAsync();
         this.presentationService = presentationService;
     }
 
     [ICommand]
-    public async void RefreshProcess()
+    public async Task RefreshProcessAsync()
     {
         var processes = await Task.Run(() => Process.GetProcesses());
         this.ProcessInfos = processes.Where(p => p.MainWindowHandle != IntPtr.Zero)
@@ -34,7 +34,7 @@ public partial class StartupViewModel
     }
 
     [ICommand(CanExecute = nameof(CanRun))]
-    public async void Run()
+    public async Task RunAsync()
     {
         var app = Application.Current;
         var window = app.MainWindow;

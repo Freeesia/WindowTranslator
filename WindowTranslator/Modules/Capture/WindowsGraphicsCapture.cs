@@ -46,7 +46,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
         this.session.IsBorderRequired = false;
         this.session.StartCapture();
 
-        this.timer = new(_ => AnalyzeWindow(), null, 0, 1000);
+        this.timer = new(_ => _ = AnalyzeWindowAsync(), null, 0, 1000);
     }
 
     public void StopCapture()
@@ -54,10 +54,10 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
         throw new NotImplementedException();
     }
 
-    private async void AnalyzeWindow()
+    private async Task AnalyzeWindowAsync()
     {
         var sw = Stopwatch.StartNew();
-        if (!this.analyzing.Wait(0))
+        if (!await this.analyzing.WaitAsync(0))
         {
             return;
         }
