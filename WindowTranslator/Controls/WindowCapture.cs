@@ -7,14 +7,14 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Composition.WindowsRuntimeHelpers;
-using DeepL;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Graphics.Imaging;
-using Windows.Media.Ocr;
 using Windows.Storage.Streams;
+using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Modules.Translate;
 using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
 
 namespace WindowTranslator.Controls;
@@ -32,9 +32,9 @@ public sealed class WindowCapture : Control, IDisposable
 
     private readonly IDirect3DDevice device;
     private readonly Direct3D11CaptureFramePool framePool;
-    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
+    private readonly WindowsMediaOcr ocr = new();
+    private readonly DeepLTranslator translator = new();
     private readonly SemaphoreSlim analyzing = new(1, 1);
-    private readonly Translator translator = new(string.Empty);
     private readonly Dictionary<string, string> dic = new();
     private bool isDisposed = false;
     private GraphicsCaptureSession? session;
@@ -50,15 +50,15 @@ public sealed class WindowCapture : Control, IDisposable
     public static readonly DependencyProperty TargetWindowProperty =
         DependencyProperty.Register(nameof(TargetWindow), typeof(IntPtr), typeof(WindowCapture), new PropertyMetadata(IntPtr.Zero, (d, e) => ((WindowCapture)d).OnTargetWindowChanged()));
 
-    public IEnumerable<WordResult> OcrTexts
+    public IEnumerable<TextResult> OcrTexts
     {
-        get => (IEnumerable<WordResult>)GetValue(OcrTextsProperty);
+        get => (IEnumerable<TextResult>)GetValue(OcrTextsProperty);
         set => SetValue(OcrTextsProperty, value);
     }
 
     /// <summary>Identifies the <see cref="OcrTexts"/> dependency property.</summary>
     public static readonly DependencyProperty OcrTextsProperty =
-        DependencyProperty.Register(nameof(OcrTexts), typeof(IEnumerable<WordResult>), typeof(WindowCapture), new PropertyMetadata(Enumerable.Empty<WordResult>()));
+        DependencyProperty.Register(nameof(OcrTexts), typeof(IEnumerable<TextResult>), typeof(WindowCapture), new PropertyMetadata(Enumerable.Empty<TextResult>()));
 
     public double CaptureWidth
     {
@@ -183,26 +183,12 @@ public sealed class WindowCapture : Control, IDisposable
             }
         }, frame.ContentSize);
 
-
-        var result = await ocr.RecognizeAsync(sbmp);
-        var texts = result
-            .Lines
-            .Select(l => new WordResult(
-                l.Text,
-                l.Words.Select(w => w.BoundingRect.X).Min(),
-                l.Words.Select(w => w.BoundingRect.Y).Min(),
-                l.Words.Select(w => w.BoundingRect.Width).Max(),
-                l.Words.Select(w => w.BoundingRect.Height).Max()))
-            // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < sbmp.PixelHeight * 0.1)
-            // 少なすぎる文字も認識ミス扱い
-            .Where(w => w.Text.Length > 2)
-            .ToArray();
+        var texts = await this.ocr.RecognizeAsync(sbmp);
         var transTargets = texts.Select(w => w.Text).Where(t => !this.dic.ContainsKey(t)).Distinct().ToArray();
         if (transTargets.Any())
         {
-            var translated = await this.translator.TranslateTextAsync(transTargets, "en", "ja");
-            foreach (var (src, dst) in transTargets.Zip(translated.Select(t => t.Text)))
+            var translated = await this.translator.TranslateAsync(transTargets);
+            foreach (var (src, dst) in transTargets.Zip(translated))
             {
                 this.dic.Add(src, dst);
             }
@@ -212,5 +198,3 @@ public sealed class WindowCapture : Control, IDisposable
         Debug.WriteLine($"MAX: {100.0 * texts.Select(t => t.Height).DefaultIfEmpty().Max() / sbmp.PixelHeight}%, Time: {sw.Elapsed}");
     }
 }
-
-public record WordResult(string Text, double X, double Y, double Width, double Height);
