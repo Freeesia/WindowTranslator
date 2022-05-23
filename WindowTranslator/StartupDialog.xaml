@@ -8,9 +8,6 @@
         SizeToContent="WidthAndHeight"
         mc:Ignorable="d"
         Title="StartupDialog" >
-    <Window.DataContext>
-        <local:StartupViewModel/>
-    </Window.DataContext>
     <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

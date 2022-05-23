@@ -8,10 +8,36 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainViewModel}"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
-        <!--<ctl:WindowCaptureCompositionhost TargetWindow="{Binding WindowHandle}"/>-->
-        <ctl:WindowCapture TargetWindow="{Binding WindowHandle}"/>
-        <TextBlock Text="{Binding OcrText}"/>
-    </Grid>
+    <!--<Grid>
+        -->
+    <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
+    <!--<ctl:WindowCaptureCompositionhost TargetWindow="{Binding WindowHandle}"/>-->
+    <!--<ctl:WindowCapture TargetWindow="{Binding WindowHandle}"/>-->
+    <!--
+    </Grid>-->
+    <Viewbox>
+        <Grid >
+            <Image Source="{Binding CaptureSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="{Binding CaptureWidth}" Height="{Binding CaptureHeight}"/>
+            <ItemsControl ItemsSource="{Binding OcrTexts}"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Text}" FontSize="{Binding Height}" Background="WhiteSmoke" Foreground="Red" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+        </Grid>
+    </Viewbox>
 </Window>

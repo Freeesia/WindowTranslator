@@ -1,10 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace WindowTranslator;
@@ -12,6 +8,8 @@ namespace WindowTranslator;
 [ObservableObject]
 public partial class StartupViewModel
 {
+    private readonly IPresentationService presentationService;
+
     [ObservableProperty]
     private IReadOnlyList<ProcessInfo> processInfos = Array.Empty<ProcessInfo>();
 
@@ -20,9 +18,10 @@ public partial class StartupViewModel
 
     private IntPtr selectedWindowHandle;
 
-    public StartupViewModel()
+    public StartupViewModel(IPresentationService presentationService)
     {
         RefreshProcess();
+        this.presentationService = presentationService;
     }
 
     [ICommand]
@@ -35,14 +34,14 @@ public partial class StartupViewModel
     }
 
     [ICommand(CanExecute = nameof(CanRun))]
-    public void Run()
+    public async void Run()
     {
         var app = Application.Current;
         var window = app.MainWindow;
         try
         {
-            app.MainWindow = new MainWindow(this.SelectedWindowHandle);
-            app.MainWindow.Show();
+            await this.presentationService.OpenMainWindowAsync(this.SelectedWindowHandle);
+            app.MainWindow = app.Windows.OfType<Window>().Single(w => w.IsActive);
             window.Close();
         }
         catch

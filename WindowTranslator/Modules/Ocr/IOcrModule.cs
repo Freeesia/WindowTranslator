@@ -8,5 +8,5 @@ using Windows.Graphics.Imaging;
 namespace WindowTranslator.Modules.Ocr;
 public interface IOcrModule
 {
-    ValueTask<TextResult[]> RecognizeAsync(SoftwareBitmap bitmap);
+    ValueTask<TextRect[]> RecognizeAsync(SoftwareBitmap bitmap);
 }

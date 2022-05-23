@@ -8,9 +8,8 @@ namespace WindowTranslator;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow(IntPtr windowHandle)
+    public MainWindow()
     {
         InitializeComponent();
-        this.DataContext = new MainViewModel(windowHandle);
     }
 }

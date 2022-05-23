@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="DeepL.net" Version="1.2.0" />
+    <PackageReference Include="Kamishibai.Hosting" Version="1.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
   </ItemGroup>
 
   <ItemGroup>

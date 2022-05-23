@@ -14,7 +14,6 @@ using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using WindowTranslator.Modules.Ocr;
-using WindowTranslator.Modules.Translate;
 using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
 
 namespace WindowTranslator.Controls;
@@ -33,7 +32,6 @@ public sealed class WindowCapture : Control, IDisposable
     private readonly IDirect3DDevice device;
     private readonly Direct3D11CaptureFramePool framePool;
     private readonly WindowsMediaOcr ocr = new();
-    private readonly DeepLTranslator translator = new();
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly Dictionary<string, string> dic = new();
     private bool isDisposed = false;
@@ -50,15 +48,15 @@ public sealed class WindowCapture : Control, IDisposable
     public static readonly DependencyProperty TargetWindowProperty =
         DependencyProperty.Register(nameof(TargetWindow), typeof(IntPtr), typeof(WindowCapture), new PropertyMetadata(IntPtr.Zero, (d, e) => ((WindowCapture)d).OnTargetWindowChanged()));
 
-    public IEnumerable<TextResult> OcrTexts
+    public IEnumerable<TextRect> OcrTexts
     {
-        get => (IEnumerable<TextResult>)GetValue(OcrTextsProperty);
+        get => (IEnumerable<TextRect>)GetValue(OcrTextsProperty);
         set => SetValue(OcrTextsProperty, value);
     }
 
     /// <summary>Identifies the <see cref="OcrTexts"/> dependency property.</summary>
     public static readonly DependencyProperty OcrTextsProperty =
-        DependencyProperty.Register(nameof(OcrTexts), typeof(IEnumerable<TextResult>), typeof(WindowCapture), new PropertyMetadata(Enumerable.Empty<TextResult>()));
+        DependencyProperty.Register(nameof(OcrTexts), typeof(IEnumerable<TextRect>), typeof(WindowCapture), new PropertyMetadata(Enumerable.Empty<TextRect>()));
 
     public double CaptureWidth
     {
@@ -187,11 +185,11 @@ public sealed class WindowCapture : Control, IDisposable
         var transTargets = texts.Select(w => w.Text).Where(t => !this.dic.ContainsKey(t)).Distinct().ToArray();
         if (transTargets.Any())
         {
-            var translated = await this.translator.TranslateAsync(transTargets);
-            foreach (var (src, dst) in transTargets.Zip(translated))
-            {
-                this.dic.Add(src, dst);
-            }
+            //var translated = await this.translator.TranslateAsync(transTargets);
+            //foreach (var (src, dst) in transTargets.Zip(translated))
+            //{
+            //    this.dic.Add(src, dst);
+            //}
         }
         texts = texts.Select(t => t with { Text = this.dic[t.Text] }).ToArray();
         _ = this.Dispatcher.BeginInvoke(() => SetCurrentValue(OcrTextsProperty, texts));

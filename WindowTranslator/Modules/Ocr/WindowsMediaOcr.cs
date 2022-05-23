@@ -5,12 +5,12 @@ namespace WindowTranslator.Modules.Ocr;
 public class WindowsMediaOcr : IOcrModule
 {
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
-    public async ValueTask<TextResult[]> RecognizeAsync(SoftwareBitmap bitmap)
+    public async ValueTask<TextRect[]> RecognizeAsync(SoftwareBitmap bitmap)
     {
         var result = await ocr.RecognizeAsync(bitmap);
         return result
             .Lines
-            .Select(l => new TextResult(
+            .Select(l => new TextRect(
                 l.Text,
                 l.Words.Select(w => w.BoundingRect.X).Min(),
                 l.Words.Select(w => w.BoundingRect.Y).Min(),
