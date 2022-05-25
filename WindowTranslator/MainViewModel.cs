@@ -40,7 +40,7 @@ public sealed partial class MainViewModel
     [ObservableProperty]
     private BitmapSource? captureSource;
 
-    public MainViewModel(IntPtr windowHandle, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, ICacheModule cache)
+    public MainViewModel(IntPtr windowHandle, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject]ICacheModule cache)
     {
         this.dispatcher = Dispatcher.CurrentDispatcher;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
