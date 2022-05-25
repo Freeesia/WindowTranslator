@@ -1,7 +1,9 @@
-﻿using Composition.WindowsRuntimeHelpers;
+﻿using System;
+using Composition.WindowsRuntimeHelpers;
 using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using WindowTranslator;
+using WindowTranslator.Modules.Cache;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.Translate;
@@ -16,6 +18,7 @@ builder.Services.AddTransient<ICaptureModule, WindowsGraphicsCapture>();
 builder.Services.AddTransient<IOcrModule, WindowsMediaOcr>();
 builder.Services.Configure<DeepLOptions>(builder.Configuration.GetSection(nameof(DeepLOptions)));
 builder.Services.AddTransient<ITranslateModule, DeepLTranslator>();
+builder.Services.AddTransient<ICacheModule, InMemoryCache>();
 
 var app = builder.Build();
 

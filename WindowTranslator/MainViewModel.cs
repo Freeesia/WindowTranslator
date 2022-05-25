@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.VisualStudio.Threading;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows;
@@ -9,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using WindowTranslator.Modules.Cache;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.Translate;
@@ -24,7 +26,7 @@ public sealed partial class MainViewModel
     private readonly ICaptureModule capture;
     private readonly IOcrModule ocr;
     private readonly ITranslateModule translator;
-    private readonly Dictionary<string, string> dic = new();
+    private readonly ICacheModule cache;
 
     [ObservableProperty]
     private IEnumerable<TextRect> ocrTexts = Enumerable.Empty<TextRect>();
@@ -38,13 +40,14 @@ public sealed partial class MainViewModel
     [ObservableProperty]
     private BitmapSource? captureSource;
 
-    public MainViewModel(IntPtr windowHandle, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator)
+    public MainViewModel(IntPtr windowHandle, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, ICacheModule cache)
     {
         this.dispatcher = Dispatcher.CurrentDispatcher;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
+        this.cache = cache ?? throw new ArgumentNullException();
 
         this.capture.StartCapture(windowHandle);
     }
@@ -58,16 +61,13 @@ public sealed partial class MainViewModel
     private async Task CreateTextOverlayAsync(SoftwareBitmap sbmp)
     {
         var texts = await this.ocr.RecognizeAsync(sbmp);
-        var transTargets = texts.Select(w => w.Text).Where(t => !this.dic.ContainsKey(t)).Distinct().ToArray();
+        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
         if (transTargets.Any())
         {
             var translated = await this.translator.TranslateAsync(transTargets);
-            foreach (var (src, dst) in transTargets.Zip(translated))
-            {
-                this.dic.Add(src, dst);
-            }
+            this.cache.AddRange(transTargets.Zip(translated));
         }
-        this.OcrTexts = texts.Select(t => t with { Text = this.dic[t.Text] }).ToArray();
+        this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
     }
 
     private async Task CreateImageAsync(SoftwareBitmap sbmp)
