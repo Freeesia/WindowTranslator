@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.VisualStudio.Threading;
-using System;
 using System.Drawing;
 using System.IO;
 using System.Windows;
@@ -40,7 +39,7 @@ public sealed partial class MainViewModel
     [ObservableProperty]
     private BitmapSource? captureSource;
 
-    public MainViewModel(IntPtr windowHandle, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject]ICacheModule cache)
+    public MainViewModel(IntPtr windowHandle, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache)
     {
         this.dispatcher = Dispatcher.CurrentDispatcher;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
@@ -61,6 +60,11 @@ public sealed partial class MainViewModel
     private async Task CreateTextOverlayAsync(SoftwareBitmap sbmp)
     {
         var texts = await this.ocr.RecognizeAsync(sbmp);
+        OverlayTranslateAsync(texts).Forget();
+    }
+
+    private async Task OverlayTranslateAsync(TextRect[] texts)
+    {
         var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
         if (transTargets.Any())
         {
