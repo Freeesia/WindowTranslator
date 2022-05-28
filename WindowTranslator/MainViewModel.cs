@@ -63,15 +63,16 @@ public sealed partial class MainViewModel
         OverlayTranslateAsync(texts).Forget();
     }
 
-    private async Task OverlayTranslateAsync(TextRect[] texts)
+    private async Task OverlayTranslateAsync(IEnumerable<TextRect> texts)
     {
-        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
-        if (transTargets.Any())
-        {
-            var translated = await this.translator.TranslateAsync(transTargets);
-            this.cache.AddRange(transTargets.Zip(translated));
-        }
-        this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
+        //var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
+        //if (transTargets.Any())
+        //{
+        //    var translated = await this.translator.TranslateAsync(transTargets);
+        //    this.cache.AddRange(transTargets.Zip(translated));
+        //}
+        //this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
+        this.OcrTexts = texts.ToArray();
     }
 
     private async Task CreateImageAsync(SoftwareBitmap sbmp)
