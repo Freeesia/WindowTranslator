@@ -1,33 +1,29 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
+using WinRT;
 
 namespace WindowTranslator.Modules.Ocr;
 public class WindowsMediaOcr : IOcrModule
 {
-    private double IndentThrethold = .01;
-    private double LeadingThrethold = .1;
-    private double FontSizeThrethold = .15;
+    private double IndentThrethold = .005;
+    private double LeadingThrethold = .95;
+    private double FontSizeThrethold = .25;
 
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         var rawResults = await ocr.RecognizeAsync(bitmap);
+        using var resultsRef = ((IWinRTObject)rawResults).NativeObject;
         var lineResults = rawResults
             .Lines
-            .Select(l => new TextRect(
-                l.Text,
-                l.Words.Select(w => w.BoundingRect.X).Min(),
-                l.Words.Select(w => w.BoundingRect.Y).Min(),
-                l.Words.Select(w => w.BoundingRect.Right).Max() - l.Words.Select(w => w.BoundingRect.Left).Min(),
-                CalcFontSize(l.Text, l.Words.Select(w => w.BoundingRect.Bottom).Max() - l.Words.Select(w => w.BoundingRect.Top).Min())))
+            .Select(CalcRect)
             // 大きすぎる文字は映像の認識ミスとみなす
             .Where(w => w.Height < bitmap.PixelHeight * 0.1)
             // 少なすぎる文字も認識ミス扱い
             .Where(w => w.Text.Length > 2)
-            .OrderBy(w => w.X)
-                .ThenBy(w => w.Y)
+            .OrderBy(w => w.Y)
+                .ThenBy(w => w.X)
             .ToArray();
 
         if (lineResults.Length == 0)
@@ -36,49 +32,70 @@ public class WindowsMediaOcr : IOcrModule
         }
 
         var xt = IndentThrethold * bitmap.PixelWidth;
-        var yt = LeadingThrethold * bitmap.PixelHeight;
 
         var results = new List<TextRect>(lineResults.Length);
-
-        var prev = lineResults.First();
-        foreach (var lineResult in lineResults.Skip(1))
+        var queue = new RemovableQueue<TextRect>(lineResults);
+        while (queue.TryDequeue(out var target))
         {
-            if (Math.Abs(prev.X - lineResult.X) < xt && Math.Abs((prev.Y + prev.Height) - lineResult.Y) < yt && Math.Abs(1.0 - (prev.FontSize / lineResult.FontSize)) < FontSizeThrethold)
+            var temp = target;
+            foreach (var lineResult in queue.ToArray())
             {
-                prev = new(
-                    prev.Y < lineResult.Y ? $"{prev.Text} {lineResult.Text}" : $"{lineResult.Text} {prev.Text}",
-                    Math.Min(prev.X, lineResult.X),
-                    Math.Min(prev.Y, lineResult.Y),
-                    Math.Max(prev.X + prev.Width, lineResult.X + lineResult.Width) - Math.Min(prev.X, lineResult.X),
-                    Math.Max(prev.Y + prev.Height, lineResult.Y + lineResult.Height) - Math.Min(prev.Y, lineResult.Y),
-                    prev.FontSize + ((lineResult.FontSize - prev.FontSize) / (prev.Line + 1)),
-                    prev.Line + 1);
+                var xDiff = Math.Abs(temp.X - lineResult.X);
+                var yDiff = Math.Abs((temp.Y + temp.Height) - lineResult.Y);
+                var fDiff = Math.Abs(1.0 - (temp.FontSize / lineResult.FontSize));
+                var lThre = (1.0 + (fDiff / 2)) * Math.Min(temp.FontSize, lineResult.FontSize) * LeadingThrethold;
+                if (xDiff < xt && yDiff < lThre && fDiff < FontSizeThrethold)
+                {
+                    temp = new(
+                        temp.Y < lineResult.Y ? $"{temp.Text} {lineResult.Text}" : $"{lineResult.Text} {temp.Text}",
+                        Math.Min(temp.X, lineResult.X),
+                        Math.Min(temp.Y, lineResult.Y),
+                        Math.Max(temp.X + temp.Width, lineResult.X + lineResult.Width) - Math.Min(temp.X, lineResult.X),
+                        Math.Max(temp.Y + temp.Height, lineResult.Y + lineResult.Height) - Math.Min(temp.Y, lineResult.Y),
+                        temp.FontSize + ((lineResult.FontSize - temp.FontSize) / (temp.Line + 1)),
+                        temp.Line + 1);
+                    queue.Remove(lineResult);
+                }
             }
-            else
-            {
-                results.Add(prev);
-                prev = lineResult;
-            }
-        }
-        if (results.Count == 0 || results[^1] != prev)
-        {
-            results.Add(prev);
+            results.Add(temp);
         }
 
         return results;
     }
 
-    private static double CalcFontSize(string text, double height)
+    private static TextRect CalcRect(OcrLine line)
     {
+        var text = line.Text;
+        var x = line.Words.Select(w => w.BoundingRect.X).Min();
+        var y = line.Words.Select(w => w.BoundingRect.Y).Min();
+        var width = line.Words.Select(w => w.BoundingRect.Right).Max() - line.Words.Select(w => w.BoundingRect.Left).Min();
+        var height = line.Words.Select(w => w.BoundingRect.Bottom).Max() - line.Words.Select(w => w.BoundingRect.Top).Min();
+
         // abcdefghijklmnopqrstuvwxyz
         // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-        var hasAcent = Regex.IsMatch(text, "[A-Zbdfhijklt]");
+        var hasAcent = Regex.IsMatch(text, "[A-Zbdfhijkl]");
+        var hasHarfAcent = text.Contains('t');
         var hasDecent = Regex.IsMatch(text, "[gjpqy]");
-        return (hasAcent, hasDecent) switch
+
+        // 文字種類による位置補正
+        y -= (hasAcent, hasHarfAcent) switch
         {
-            (true, true) => height,
-            (false, false) => height * 1.4,
-            _ => height * 1.2,
+            (true, _) => 0,
+            (false, true) => height * 0.1,
+            (false, false) => height * 0.2,
         };
+
+        // 文字種類による高さ補正
+        height = (hasAcent, hasHarfAcent, hasDecent) switch
+        {
+            (true, _, true) => height,
+            (true, _, false) => height * 1.2,
+            (false, true, false) => height * (1 + 0.1 + 0.2),
+            (false, false, false) => height * (1 + 0.2 + 0.2),
+            (false, true, true) => height * (1 + 0.1 + 0.0),
+            (false, false, true) => height * (1 + 0.2 + 0.0),
+        };
+
+        return new(text, x, y, width, height);
     }
 }
