@@ -38,11 +38,17 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border MinWidth="{Binding Width}" Background="#8FF5F5F5">
+                        <Border
+                            MinWidth="{Binding Width}"
+                            MinHeight="{Binding Height}"
+                            Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                            BorderBrush="#40000000"
+                            BorderThickness="2"
+                            CornerRadius="10">
                             <TextBlock
                                 Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
                                 FontSize="{Binding FontSize}"
-                                Foreground="Red"
+                                Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                 Text="{Binding Text}"
                                 TextWrapping="Wrap" />
                         </Border>
@@ -52,31 +58,6 @@
                     <Style>
                         <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
                         <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
-            <ItemsControl
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                ItemsSource="{Binding OcrTexts}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border
-                            Width="{Binding Width}"
-                            Height="{Binding Height}"
-                            BorderBrush="Red"
-                            BorderThickness="1" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                        <Setter Property="Canvas.Left" Value="{Binding X}" />
                     </Style>
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>

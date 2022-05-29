@@ -12,6 +12,7 @@ using Windows.Storage.Streams;
 using WindowTranslator.Modules.Cache;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Translate;
 using WindowTranslator.Stores;
 using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
@@ -28,7 +29,7 @@ public sealed partial class MainViewModel
     private readonly IOcrModule ocr;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
-
+    private readonly IColorModule color;
     [ObservableProperty]
     private IEnumerable<TextRect> ocrTexts = Enumerable.Empty<TextRect>();
 
@@ -41,7 +42,7 @@ public sealed partial class MainViewModel
     [ObservableProperty]
     private BitmapSource? captureSource;
 
-    public MainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache)
+    public MainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
     {
         this.dispatcher = Dispatcher.CurrentDispatcher;
         this.processInfoStore = processInfoStore;
@@ -49,8 +50,8 @@ public sealed partial class MainViewModel
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
-        this.cache = cache ?? throw new ArgumentNullException();
-
+        this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.capture.StartCapture(this.processInfoStore.MainWindowHangle);
     }
 
@@ -63,10 +64,14 @@ public sealed partial class MainViewModel
     private async Task CreateTextOverlayAsync(SoftwareBitmap sbmp)
     {
         var texts = await this.ocr.RecognizeAsync(sbmp);
-        OverlayTranslateAsync(texts).Forget();
+        await Task.WhenAll(TranslateAsync(texts), Task.Run(async () =>
+        {
+            texts = await this.color.ConvertColor(sbmp, texts);
+        }));
+        this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
     }
 
-    private async Task OverlayTranslateAsync(IEnumerable<TextRect> texts)
+    private async Task TranslateAsync(IEnumerable<TextRect> texts)
     {
         var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
         if (transTargets.Any())
@@ -74,7 +79,6 @@ public sealed partial class MainViewModel
             var translated = await this.translator.TranslateAsync(transTargets);
             this.cache.AddRange(transTargets.Zip(translated));
         }
-        this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
     }
 
     private async Task CreateImageAsync(SoftwareBitmap sbmp)

@@ -6,6 +6,7 @@ using WindowTranslator;
 using WindowTranslator.Modules.Cache;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Translate;
 using WindowTranslator.Stores;
 
@@ -29,6 +30,7 @@ builder.Services.AddTransient<IOcrModule, WindowsMediaOcr>();
 builder.Services.Configure<DeepLOptions>(builder.Configuration.GetSection(nameof(DeepLOptions)));
 builder.Services.AddTransient<ITranslateModule, DeepLTranslator>();
 builder.Services.AddTransient<ICacheModule, LocalCache>();
+builder.Services.AddTransient<IColorModule, ColorThiefModule>();
 
 using var app = builder.Build();
 
