@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace WindowTranslator.Data;
@@ -11,7 +12,10 @@ public sealed class TextOverlayWidthConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var rect = (TextRect)value;
+        if (value is not TextRect rect)
+        {
+            return DependencyProperty.UnsetValue;
+        }
         // 複数行の時は改行して収まるようにする
         if (rect.Line > 1)
         {

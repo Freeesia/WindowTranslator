@@ -38,14 +38,14 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock
-                            Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
-                            Background="WhiteSmoke"
-                            FontSize="{Binding FontSize}"
-                            Foreground="Red"
-                            Opacity="0.5"
-                            Text="{Binding Text}"
-                            TextWrapping="Wrap" />
+                        <Border MinWidth="{Binding Width}" Background="#8FF5F5F5">
+                            <TextBlock
+                                Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
+                                FontSize="{Binding FontSize}"
+                                Foreground="Red"
+                                Text="{Binding Text}"
+                                TextWrapping="Wrap" />
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemContainerStyle>
