@@ -94,7 +94,9 @@ public sealed partial class MainViewModel
             using var bmp = new Bitmap(stream.AsStream());
             await this.dispatcher.InvokeAsync(() =>
             {
+                // メモリリークしてる
                 this.CaptureSource = Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+                this.CaptureSource?.Freeze();
             });
         }
 
