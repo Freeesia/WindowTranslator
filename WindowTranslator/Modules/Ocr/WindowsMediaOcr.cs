@@ -14,7 +14,6 @@ public class WindowsMediaOcr : IOcrModule
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         var rawResults = await ocr.RecognizeAsync(bitmap);
-        using var resultsRef = ((IWinRTObject)rawResults).NativeObject;
         var lineResults = rawResults
             .Lines
             .Select(CalcRect)

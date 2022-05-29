@@ -1,15 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Composition.WindowsRuntimeHelpers;
+﻿using Composition.WindowsRuntimeHelpers;
 using Microsoft.VisualStudio.Threading;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 
 namespace WindowTranslator.Modules.Capture;
 
@@ -33,6 +29,8 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public void Dispose()
     {
+        this.timer?.Dispose();
+        this.session?.Dispose();
         this.framePool?.Dispose();
         this.device?.Dispose();
     }
