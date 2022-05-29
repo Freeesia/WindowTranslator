@@ -47,7 +47,7 @@ public partial class StartupViewModel
         catch
         {
             app.MainWindow = window;
-            MessageBox.Show(window, "ウィンドウの埋め込みに失敗しました。", "WindowTranslator", MessageBoxButton.OK, MessageBoxImage.Error);
+            this.presentationService.ShowMessage("ウィンドウの埋め込みに失敗しました。", icon: Kamishibai.MessageBoxImage.Error);
         }
     }
 
