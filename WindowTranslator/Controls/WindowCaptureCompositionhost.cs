@@ -1,7 +1,9 @@
 ﻿using Composition.WindowsRuntimeHelpers;
+using PInvoke;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Windows.Graphics;
@@ -161,4 +163,59 @@ public class WindowCaptureCompositionhost : FrameworkElement
         }
     }
 
+    private class CompositionHost : HwndHost
+    {
+        IntPtr hwndHost;
+        int hostHeight, hostWidth;
+        CompositionTarget compositionTarget;
+
+        public Compositor Compositor { get; private set; }
+
+        public Visual Child
+        {
+            set
+            {
+                if (Compositor == null)
+                {
+                    InitComposition(hwndHost);
+                }
+                compositionTarget.Root = value;
+            }
+        }
+
+        public CompositionHost(double height, double width)
+        {
+            hostHeight = (int)height;
+            hostWidth = (int)width;
+        }
+
+        protected override HandleRef BuildWindowCore(HandleRef hwndParent)
+        {
+            hwndHost = User32.CreateWindowEx(0, "static", "",
+                User32.WindowStyles.WS_CHILD | User32.WindowStyles.WS_VISIBLE,
+                0, 0,
+                hostWidth, hostHeight,
+                hwndParent.Handle,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                IntPtr.Zero);
+
+            // Build Composition Tree of content
+            InitComposition(hwndHost);
+
+            return new HandleRef(this, hwndHost);
+        }
+
+        protected override void DestroyWindowCore(HandleRef hwnd)
+        {
+            compositionTarget.Root?.Dispose();
+            User32.DestroyWindow(hwnd.Handle);
+        }
+
+        private void InitComposition(IntPtr hwndHost)
+        {
+            Compositor = new Compositor();
+            compositionTarget = Compositor.CreateDesktopWindowTarget(hwndHost, true);
+        }
+    }
 }
