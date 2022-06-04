@@ -21,7 +21,8 @@ public class WindowCaptureCompositionHost : Border
     private readonly SharpDX.Direct3D11.Device d3dDevice;
     private readonly SwapChain1 swapChain;
     private CompositionHost? compositionHost;
-    private SizeInt32 lastSize;
+    // 後でちゃんとした値入れる
+    private SizeInt32 lastSize = new(1000, 1000);
 
     public ICaptureModule? CaptureModule
     {
@@ -31,7 +32,11 @@ public class WindowCaptureCompositionHost : Border
 
     /// <summary>Identifies the <see cref="CaptureModule"/> dependency property.</summary>
     public static readonly DependencyProperty CaptureModuleProperty =
-        DependencyProperty.Register(nameof(CaptureModule), typeof(ICaptureModule), typeof(WindowCaptureCompositionHost), new PropertyMetadata(null, (d, e) => ((WindowCaptureCompositionHost)d).OnCaptureModuleChanged((ICaptureModule?)e.OldValue, (ICaptureModule?)e.NewValue)));
+        DependencyProperty.Register(
+            nameof(CaptureModule),
+            typeof(ICaptureModule),
+            typeof(WindowCaptureCompositionHost),
+            new PropertyMetadata(null, (d, e) => ((WindowCaptureCompositionHost)d).OnCaptureModuleChanged((ICaptureModule?)e.OldValue, (ICaptureModule?)e.NewValue)));
 
     public WindowCaptureCompositionHost()
     {
@@ -40,9 +45,8 @@ public class WindowCaptureCompositionHost : Border
 
         var description = new SwapChainDescription1()
         {
-            // 後でちゃんとした値入れる
-            Width = 1000,
-            Height = 1000,
+            Width = lastSize.Width,
+            Height = lastSize.Height,
             Format = Format.B8G8R8A8_UNorm,
             Stereo = false,
             SampleDescription = new() { Count = 1, Quality = 0 },
@@ -61,12 +65,10 @@ public class WindowCaptureCompositionHost : Border
     private void WindowCaptureCompositionhost_Loaded(object sender, RoutedEventArgs e)
     {
         //RemoveVisualChild(compositionHost);
-        compositionHost = new(this.ActualHeight, this.ActualWidth);
+        compositionHost = new(lastSize.Height, lastSize.Width);
         //AddVisualChild(compositionHost);
         this.Child = compositionHost;
 
-        lastSize = new((int)this.ActualWidth, (int)this.ActualHeight);
-        swapChain.ResizeBuffers(2, (int)this.ActualWidth, (int)this.ActualHeight, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
         var compositor = compositionHost.Compositor ?? throw new InvalidOperationException();
 
         var brush = compositor.CreateSurfaceBrush();
@@ -110,6 +112,7 @@ public class WindowCaptureCompositionHost : Border
         {
             lastSize = frame.ContentSize;
             swapChain.ResizeBuffers(2, lastSize.Width, lastSize.Height, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
+            InvalidateMeasure();
         }
 
         using var backBuffer = swapChain.GetBackBuffer<Texture2D>(0);
@@ -119,6 +122,8 @@ public class WindowCaptureCompositionHost : Border
         swapChain.Present(0, PresentFlags.None);
         return Task.CompletedTask;
     }
+
+    protected override Size MeasureOverride(Size constraint) => new(this.lastSize.Width, this.lastSize.Height);
 
     public class CompositionHost : HwndHost
     {
