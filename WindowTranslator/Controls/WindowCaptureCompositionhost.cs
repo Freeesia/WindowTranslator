@@ -15,7 +15,7 @@ using WindowTranslator.Modules.Capture;
 
 namespace WindowTranslator.Controls;
 
-public class WindowCaptureCompositionHost : Border
+public class WindowCaptureCompositionHost : Decorator
 {
     private readonly IDirect3DDevice device;
     private readonly SharpDX.Direct3D11.Device d3dDevice;
@@ -64,9 +64,7 @@ public class WindowCaptureCompositionHost : Border
 
     private void WindowCaptureCompositionhost_Loaded(object sender, RoutedEventArgs e)
     {
-        //RemoveVisualChild(compositionHost);
         compositionHost = new(lastSize.Height, lastSize.Width);
-        //AddVisualChild(compositionHost);
         this.Child = compositionHost;
 
         var compositor = compositionHost.Compositor ?? throw new InvalidOperationException();
