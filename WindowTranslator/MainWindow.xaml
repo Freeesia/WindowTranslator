@@ -12,21 +12,16 @@
     Height="450"
     d:DataContext="{d:DesignInstance local:MainViewModel}"
     mc:Ignorable="d">
-    <!--<Grid>
-    -->
-    <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
-    <!--<ctl:WindowCaptureCompositionhost TargetWindow="{Binding WindowHandle}"/>-->
-    <!--<ctl:WindowCapture TargetWindow="{Binding WindowHandle}"/>-->
-    <!--
-    </Grid>-->
     <Viewbox>
-        <Grid>
-            <Image
-                Width="{Binding CaptureWidth}"
-                Height="{Binding CaptureHeight}"
+        <Grid Width="{Binding CaptureWidth}" Height="{Binding CaptureHeight}">
+            <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
+            <ctl:WindowCaptureCompositionHost CaptureModule="{Binding Capture}" />
+            <!--<ctl:WindowCapture TargetWindow="{Binding WindowHandle}"/>-->
+
+            <!--<Image
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Source="{Binding CaptureSource}" />
+                Source="{Binding CaptureSource}" />-->
             <ItemsControl
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"

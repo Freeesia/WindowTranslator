@@ -69,7 +69,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
         if (this.Captured is { } handler)
         {
-            await handler.InvokeAsync(this, new(sbmp));
+            await handler.InvokeAsync(this, new(frame, sbmp));
         }
 
         if (lastSize.Width != frame.ContentSize.Width || lastSize.Height != frame.ContentSize.Height)

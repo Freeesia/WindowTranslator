@@ -25,7 +25,6 @@ public sealed partial class MainViewModel
 {
     private readonly Dispatcher dispatcher;
     private readonly IProcessInfoStore processInfoStore;
-    private readonly ICaptureModule capture;
     private readonly IOcrModule ocr;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
@@ -42,22 +41,24 @@ public sealed partial class MainViewModel
     [ObservableProperty]
     private BitmapSource? captureSource;
 
+    public ICaptureModule Capture { get; }
+
     public MainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
     {
         this.dispatcher = Dispatcher.CurrentDispatcher;
         this.processInfoStore = processInfoStore;
-        this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
-        this.capture.Captured += Capture_CapturedAsync;
+        this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
+        this.Capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
-        this.capture.StartCapture(this.processInfoStore.MainWindowHangle);
+        this.Capture.StartCapture(this.processInfoStore.MainWindowHangle);
     }
 
     private Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
-        var sbmp = args.Capture;
+        var sbmp = args.Bitmap;
         return Task.WhenAll(CreateTextOverlayAsync(sbmp), CreateImageAsync(sbmp));
     }
 
@@ -66,7 +67,7 @@ public sealed partial class MainViewModel
         var texts = await this.ocr.RecognizeAsync(sbmp);
         await Task.WhenAll(TranslateAsync(texts), Task.Run(async () =>
         {
-            texts = await this.color.ConvertColor(sbmp, texts);
+            texts = await this.color.ConvertColorAsync(sbmp, texts);
         }));
         this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
     }

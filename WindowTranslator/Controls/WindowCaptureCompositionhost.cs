@@ -2,42 +2,38 @@
 using PInvoke;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using Windows.Graphics;
-using Windows.Graphics.Capture;
-using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
 using Windows.UI.Composition;
+using WindowTranslator.Modules.Capture;
 
 namespace WindowTranslator.Controls;
 
-public class WindowCaptureCompositionhost : FrameworkElement
+public class WindowCaptureCompositionHost : Border
 {
     private readonly IDirect3DDevice device;
     private readonly SharpDX.Direct3D11.Device d3dDevice;
     private readonly SwapChain1 swapChain;
-    private readonly Compositor compositor;
-    private readonly ContainerVisual root;
-    private readonly CompositionSurfaceBrush brush;
-    private readonly SpriteVisual content;
-    private Direct3D11CaptureFramePool? framePool;
-    private GraphicsCaptureSession? session;
+    private CompositionHost? compositionHost;
     private SizeInt32 lastSize;
 
-    public IntPtr TargetWindow
+    public ICaptureModule? CaptureModule
     {
-        get => (IntPtr)GetValue(TargetWindowProperty);
-        set => SetValue(TargetWindowProperty, value);
+        get => (ICaptureModule?)GetValue(CaptureModuleProperty);
+        set => SetValue(CaptureModuleProperty, value);
     }
 
-    /// <summary>Identifies the <see cref="TargetWindow"/> dependency property.</summary>
-    public static readonly DependencyProperty TargetWindowProperty =
-        DependencyProperty.Register(nameof(TargetWindow), typeof(IntPtr), typeof(WindowCaptureCompositionhost), new PropertyMetadata(IntPtr.Zero, (d, e) => ((WindowCaptureCompositionhost)d).OnTargetWindowChanged()));
+    /// <summary>Identifies the <see cref="CaptureModule"/> dependency property.</summary>
+    public static readonly DependencyProperty CaptureModuleProperty =
+        DependencyProperty.Register(nameof(CaptureModule), typeof(ICaptureModule), typeof(WindowCaptureCompositionHost), new PropertyMetadata(null, (d, e) => ((WindowCaptureCompositionHost)d).OnCaptureModuleChanged((ICaptureModule?)e.OldValue, (ICaptureModule?)e.NewValue)));
 
-    public WindowCaptureCompositionhost()
+    public WindowCaptureCompositionHost()
     {
         device = Direct3D11Helper.CreateDevice()!;
         d3dDevice = Direct3D11Helper.CreateSharpDXDevice(device);
@@ -58,124 +54,85 @@ public class WindowCaptureCompositionhost : FrameworkElement
             Flags = SwapChainFlags.None
         };
         swapChain = new SwapChain1(new(), d3dDevice, ref description);
+        this.Loaded += WindowCaptureCompositionhost_Loaded;
+        this.Unloaded += WindowCaptureCompositionhost_Unloaded;
+    }
 
+    private void WindowCaptureCompositionhost_Loaded(object sender, RoutedEventArgs e)
+    {
+        //RemoveVisualChild(compositionHost);
+        compositionHost = new(this.ActualHeight, this.ActualWidth);
+        //AddVisualChild(compositionHost);
+        this.Child = compositionHost;
 
-        compositor = new Compositor();
-        root = compositor.CreateContainerVisual();
-        root.RelativeSizeAdjustment = Vector2.One;
+        lastSize = new((int)this.ActualWidth, (int)this.ActualHeight);
+        swapChain.ResizeBuffers(2, (int)this.ActualWidth, (int)this.ActualHeight, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
+        var compositor = compositionHost.Compositor ?? throw new InvalidOperationException();
 
-        brush = compositor.CreateSurfaceBrush();
+        var brush = compositor.CreateSurfaceBrush();
         brush.HorizontalAlignmentRatio = 0.5f;
         brush.VerticalAlignmentRatio = 0.5f;
         brush.Stretch = CompositionStretch.Uniform;
+        brush.Surface = compositionHost.Compositor?.CreateCompositionSurfaceForSwapChain(swapChain);
 
-        content = compositor.CreateSpriteVisual();
+        var content = compositor.CreateSpriteVisual();
         content.AnchorPoint = new Vector2(0.5f);
         content.RelativeOffsetAdjustment = new Vector3(0.5f, 0.5f, 0);
         content.RelativeSizeAdjustment = Vector2.One;
         content.Brush = brush;
-        root.Children.InsertAtTop(content);
 
+        compositionHost.Child = content;
 
-        Loaded += WindowCapture_Loaded;
+        InvalidateMeasure();
     }
 
-    private void WindowCapture_Loaded(object sender, RoutedEventArgs e)
+    private void WindowCaptureCompositionhost_Unloaded(object sender, RoutedEventArgs e)
     {
-        Loaded -= WindowCapture_Loaded;
-        Unloaded += WindowCapture_Unloaded;
-
-        var interopWindow = new WindowInteropHelper(Window.GetWindow(this));
-        var target = compositor.CreateDesktopWindowTarget(interopWindow.Handle, true);
-
-        target.Root = root;
-    }
-
-    private void WindowCapture_Unloaded(object sender, RoutedEventArgs e)
-    {
-        Unload();
-    }
-
-    private void OnTargetWindowChanged()
-    {
-        if (TargetWindow == IntPtr.Zero)
-        {
-            Unload();
-        }
-        else
-        {
-            CreateCaptureVisual();
-        }
-    }
-
-    private void Unload()
-    {
-        brush.Surface = null;
-        session?.Dispose();
-        framePool?.Dispose();
         swapChain?.Dispose();
     }
 
-    private void CreateCaptureVisual()
+    private void OnCaptureModuleChanged(ICaptureModule? oldValue, ICaptureModule? newValue)
     {
-        var item = CaptureHelper.CreateItemForWindow(TargetWindow)!;
-
-
-        framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 2, item.Size);
-        session = framePool.CreateCaptureSession(item);
-        session.IsCursorCaptureEnabled = false;
-        session.IsBorderRequired = false;
-        lastSize = item.Size;
-        swapChain.ResizeBuffers(2, lastSize.Width, lastSize.Height, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
-
-        framePool.FrameArrived += OnFrameArrived;
-
-
-        session.StartCapture();
-
-        var s = compositor.CreateCompositionSurfaceForSwapChain(swapChain);
-        brush.Surface = s;
-    }
-
-    private void OnFrameArrived(Direct3D11CaptureFramePool sender, object args)
-    {
-        var newSize = false;
-
-        using (var frame = sender.TryGetNextFrame())
+        if (oldValue is not null)
         {
-            if (frame.ContentSize.Width != lastSize.Width || frame.ContentSize.Height != lastSize.Height)
-            {
-                newSize = true;
-                lastSize = frame.ContentSize;
-                swapChain.ResizeBuffers(2, lastSize.Width, lastSize.Height, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
-            }
-
-            using var backBuffer = swapChain.GetBackBuffer<Texture2D>(0);
-            using var bitmap = Direct3D11Helper.CreateSharpDXTexture2D(frame.Surface);
-            d3dDevice.ImmediateContext.CopyResource(bitmap, backBuffer);
-        } // Retire the frame.
-
-        swapChain.Present(0, PresentFlags.None);
-
-        if (newSize)
+            oldValue.Captured -= CaptureModule_CapturedAsync;
+        }
+        if (newValue is not null)
         {
-            sender.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 2, lastSize);
+            newValue.Captured += CaptureModule_CapturedAsync;
         }
     }
 
-    private class CompositionHost : HwndHost
+    private Task CaptureModule_CapturedAsync(object? sender, CapturedEventArgs args)
+    {
+        var frame = args.Frame;
+        if (frame.ContentSize.Width != lastSize.Width || frame.ContentSize.Height != lastSize.Height)
+        {
+            lastSize = frame.ContentSize;
+            swapChain.ResizeBuffers(2, lastSize.Width, lastSize.Height, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
+        }
+
+        using var backBuffer = swapChain.GetBackBuffer<Texture2D>(0);
+        using var bitmap = Direct3D11Helper.CreateSharpDXTexture2D(frame.Surface);
+        d3dDevice.ImmediateContext.CopyResource(bitmap, backBuffer);
+
+        swapChain.Present(0, PresentFlags.None);
+        return Task.CompletedTask;
+    }
+
+    public class CompositionHost : HwndHost
     {
         IntPtr hwndHost;
         int hostHeight, hostWidth;
-        CompositionTarget compositionTarget;
+        CompositionTarget? compositionTarget;
 
-        public Compositor Compositor { get; private set; }
+        public Compositor? Compositor { get; private set; }
 
         public Visual Child
         {
             set
             {
-                if (Compositor == null)
+                if (compositionTarget is null)
                 {
                     InitComposition(hwndHost);
                 }
@@ -208,10 +165,12 @@ public class WindowCaptureCompositionhost : FrameworkElement
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            compositionTarget.Root?.Dispose();
+            compositionTarget?.Root?.Dispose();
+            compositionTarget?.Dispose();
             User32.DestroyWindow(hwnd.Handle);
         }
 
+        [MemberNotNull(nameof(compositionTarget), nameof(Compositor))]
         private void InitComposition(IntPtr hwndHost)
         {
             Compositor = new Compositor();
