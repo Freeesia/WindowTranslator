@@ -16,42 +16,46 @@
     <adorner:HwndAdornerManager>
         <Viewbox>
             <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
-            <ctl:WindowCaptureCompositionHost CaptureModule="{Binding Capture}">
+            <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">
                 <ctl:WindowCaptureCompositionHost.Adornment>
-                    <ItemsControl
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        ItemsSource="{Binding OcrTexts}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border
-                                    MinWidth="{Binding Width}"
-                                    MinHeight="{Binding Height}"
-                                    Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                    BorderBrush="#40000000"
-                                    BorderThickness="2"
-                                    CornerRadius="10">
-                                    <TextBlock
-                                        Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
-                                        FontSize="{Binding FontSize}"
-                                        Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                        Text="{Binding Text}"
-                                        TextWrapping="Wrap" />
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style>
-                                <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
-                                <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                    </ItemsControl>
+                    <Viewbox>
+                        <ItemsControl
+                            Width="{Binding ElementName=host, Path=ActualWidth}"
+                            Height="{Binding ElementName=host, Path=ActualHeight}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            ItemsSource="{Binding OcrTexts}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        MinWidth="{Binding Width}"
+                                        MinHeight="{Binding Height}"
+                                        Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                                        BorderBrush="#40000000"
+                                        BorderThickness="2"
+                                        CornerRadius="10">
+                                        <TextBlock
+                                            Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
+                                            FontSize="{Binding FontSize}"
+                                            Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                                            Text="{Binding Text}"
+                                            TextWrapping="Wrap" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
+                                    <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                        </ItemsControl>
+                    </Viewbox>
                 </ctl:WindowCaptureCompositionHost.Adornment>
             </ctl:WindowCaptureCompositionHost>
         </Viewbox>
