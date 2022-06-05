@@ -62,4 +62,15 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - uses: microsoft/setup-msbuild@v1.0.2
-    - run: msbuild $env:Solution_Name /restore /t:Rebuild /p:Configuration=Release
+    - uses: gittools/actions/gitversion/setup@v0.9.13
+      with:
+        versionSpec: "5.x"
+    - id: gitversion
+      uses: gittools/actions/gitversion/execute@v0.9.13
+    - run: |
+        msbuild $env:Solution_Name /restore /t:Rebuild /p:Configuration=Release \
+          /p:Version=${{ steps.gitversion.outputs.fullSemVer }} \
+          /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} \
+          /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} \
+          /p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+
