@@ -47,7 +47,7 @@ public sealed partial class MainViewModel : IDisposable
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.Capture.StartCapture(this.processInfoStore.MainWindowHangle);
-        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 1000, Timeout.Infinite);
+        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 1000);
     }
 
     public void Dispose()
@@ -57,8 +57,9 @@ public sealed partial class MainViewModel : IDisposable
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
-        this.sbmp?.Dispose();
-        this.sbmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
+        var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
+        var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
+        sbmp?.Dispose();
     }
 
     private async Task CreateTextOverlayAsync()
@@ -68,8 +69,8 @@ public sealed partial class MainViewModel : IDisposable
             return;
         }
         using var rel = new DisposeAction(() => this.analyzing.Release());
-        var sbmp = Interlocked.Exchange(ref this.sbmp, null);
-        if (sbmp == null)
+        using var sbmp = Interlocked.Exchange(ref this.sbmp, null);
+        if (sbmp is null)
         {
             return;
         }
