@@ -21,52 +21,63 @@ namespace WindowTranslator;
 
 [OpenWindow]
 [ObservableObject]
-public sealed partial class MainViewModel
+public sealed partial class MainViewModel : IDisposable
 {
-    private readonly Dispatcher dispatcher;
+    private readonly Timer timer;
     private readonly IProcessInfoStore processInfoStore;
-    private readonly ICaptureModule capture;
     private readonly IOcrModule ocr;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
     private readonly IColorModule color;
+    private readonly SemaphoreSlim analyzing = new(1, 1);
     [ObservableProperty]
     private IEnumerable<TextRect> ocrTexts = Enumerable.Empty<TextRect>();
 
-    [ObservableProperty]
-    private double captureWidth = 1000;
+    private SoftwareBitmap? sbmp;
 
-    [ObservableProperty]
-    private double captureHeight = 1000;
-
-    [ObservableProperty]
-    private BitmapSource? captureSource;
+    public ICaptureModule Capture { get; }
 
     public MainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
     {
-        this.dispatcher = Dispatcher.CurrentDispatcher;
         this.processInfoStore = processInfoStore;
-        this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
-        this.capture.Captured += Capture_CapturedAsync;
+        this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
+        this.Capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
-        this.capture.StartCapture(this.processInfoStore.MainWindowHangle);
+        this.Capture.StartCapture(this.processInfoStore.MainWindowHangle);
+        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
 
-    private Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
+    public void Dispose()
     {
-        var sbmp = args.Capture;
-        return Task.WhenAll(CreateTextOverlayAsync(sbmp), CreateImageAsync(sbmp));
+        this.timer?.Dispose();
     }
 
-    private async Task CreateTextOverlayAsync(SoftwareBitmap sbmp)
+    private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
+        var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
+        var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
+        sbmp?.Dispose();
+    }
+
+    private async Task CreateTextOverlayAsync()
+    {
+        if (!await this.analyzing.WaitAsync(0))
+        {
+            return;
+        }
+        using var rel = new DisposeAction(() => this.analyzing.Release());
+        using var sbmp = Interlocked.Exchange(ref this.sbmp, null);
+        if (sbmp is null)
+        {
+            return;
+        }
         var texts = await this.ocr.RecognizeAsync(sbmp);
         await Task.WhenAll(TranslateAsync(texts), Task.Run(async () =>
         {
-            texts = await this.color.ConvertColor(sbmp, texts);
+            texts = await this.color.ConvertColorAsync(sbmp, texts);
         }));
         this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
     }
@@ -78,38 +89,6 @@ public sealed partial class MainViewModel
         {
             var translated = await this.translator.TranslateAsync(transTargets);
             this.cache.AddRange(transTargets.Zip(translated));
-        }
-    }
-
-    private async Task CreateImageAsync(SoftwareBitmap sbmp)
-    {
-        var width = Math.Clamp(sbmp.PixelWidth, 0, 1270);
-        var height = (int)(sbmp.PixelHeight * (1270.0 / sbmp.PixelWidth));
-        using (var stream = new InMemoryRandomAccessStream())
-        {
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-            encoder.SetSoftwareBitmap(sbmp);
-            if (sbmp.PixelWidth > width)
-            {
-                encoder.BitmapTransform.ScaledWidth = (uint)width;
-                encoder.BitmapTransform.ScaledHeight = (uint)height;
-                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.NearestNeighbor;
-            }
-
-            await encoder.FlushAsync();
-            using var bmp = new Bitmap(stream.AsStream());
-            await this.dispatcher.InvokeAsync(() =>
-            {
-                // メモリリークしてる
-                this.CaptureSource = Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
-                this.CaptureSource?.Freeze();
-            });
-        }
-
-        if (sbmp.PixelWidth != this.CaptureWidth || sbmp.PixelHeight != this.CaptureHeight)
-        {
-            this.CaptureWidth = sbmp.PixelWidth;
-            this.CaptureHeight = sbmp.PixelHeight;
         }
     }
 }

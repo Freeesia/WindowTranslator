@@ -2,6 +2,7 @@
     x:Class="WindowTranslator.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adorner="clr-namespace:HwndExtensions.Adorner;assembly=HwndExtensions"
     xmlns:ctl="clr-namespace:WindowTranslator.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:data="clr-namespace:WindowTranslator.Data"
@@ -12,55 +13,51 @@
     Height="450"
     d:DataContext="{d:DesignInstance local:MainViewModel}"
     mc:Ignorable="d">
-    <!--<Grid>
-    -->
-    <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
-    <!--<ctl:WindowCaptureCompositionhost TargetWindow="{Binding WindowHandle}"/>-->
-    <!--<ctl:WindowCapture TargetWindow="{Binding WindowHandle}"/>-->
-    <!--
-    </Grid>-->
-    <Viewbox>
-        <Grid>
-            <Image
-                Width="{Binding CaptureWidth}"
-                Height="{Binding CaptureHeight}"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Source="{Binding CaptureSource}" />
-            <ItemsControl
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                ItemsSource="{Binding OcrTexts}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border
-                            MinWidth="{Binding Width}"
-                            MinHeight="{Binding Height}"
-                            Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                            BorderBrush="#40000000"
-                            BorderThickness="2"
-                            CornerRadius="10">
-                            <TextBlock
-                                Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
-                                FontSize="{Binding FontSize}"
-                                Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                Text="{Binding Text}"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
-                        <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
-        </Grid>
-    </Viewbox>
+    <adorner:HwndAdornerManager>
+        <Viewbox>
+            <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
+            <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">
+                <ctl:WindowCaptureCompositionHost.Adornment>
+                    <Viewbox>
+                        <ItemsControl
+                            Width="{Binding ElementName=host, Path=ActualWidth}"
+                            Height="{Binding ElementName=host, Path=ActualHeight}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            ItemsSource="{Binding OcrTexts}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        MinWidth="{Binding Width}"
+                                        MinHeight="{Binding Height}"
+                                        Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                                        BorderBrush="#40000000"
+                                        BorderThickness="2"
+                                        CornerRadius="10">
+                                        <TextBlock
+                                            Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
+                                            FontSize="{Binding FontSize}"
+                                            Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                                            Text="{Binding Text}"
+                                            TextWrapping="Wrap" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
+                                    <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                        </ItemsControl>
+                    </Viewbox>
+                </ctl:WindowCaptureCompositionHost.Adornment>
+            </ctl:WindowCaptureCompositionHost>
+        </Viewbox>
+    </adorner:HwndAdornerManager>
 </Window>

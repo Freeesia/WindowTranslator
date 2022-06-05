@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.Threading;
-using Windows.Graphics.Imaging;
+using Windows.Graphics.Capture;
 
 namespace WindowTranslator.Modules.Capture;
 public interface ICaptureModule
@@ -9,4 +9,4 @@ public interface ICaptureModule
     void StopCapture();
 }
 
-public record CapturedEventArgs(SoftwareBitmap Capture);
+public record CapturedEventArgs(Direct3D11CaptureFrame Frame);

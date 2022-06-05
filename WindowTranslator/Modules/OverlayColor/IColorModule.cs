@@ -1,9 +1,7 @@
-﻿
-using System.Windows.Media;
-using Windows.Graphics.Imaging;
+﻿using Windows.Graphics.Imaging;
 
 namespace WindowTranslator.Modules.OverlayColor;
 public interface IColorModule
 {
-    ValueTask<IEnumerable<TextRect>> ConvertColor(SoftwareBitmap bitmap, IEnumerable<TextRect> texts);
+    ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts);
 }

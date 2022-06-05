@@ -28,7 +28,8 @@ builder.Services.AddPresentation<MainWindow, MainViewModel>();
 builder.Services.AddTransient<ICaptureModule, WindowsGraphicsCapture>();
 builder.Services.AddTransient<IOcrModule, WindowsMediaOcr>();
 builder.Services.Configure<DeepLOptions>(builder.Configuration.GetSection(nameof(DeepLOptions)));
-builder.Services.AddTransient<ITranslateModule, DeepLTranslator>();
+//builder.Services.AddTransient<ITranslateModule, DeepLTranslator>();
+builder.Services.AddTransient<ITranslateModule, TranslateEmptyModule>();
 builder.Services.AddTransient<ICacheModule, LocalCache>();
 builder.Services.AddTransient<IColorModule, ColorThiefModule>();
 

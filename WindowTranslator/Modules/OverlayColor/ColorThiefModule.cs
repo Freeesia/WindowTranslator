@@ -11,7 +11,7 @@ public class ColorThiefModule : IColorModule
 {
     private readonly ColorThief colorThief = new();
 
-    public async ValueTask<IEnumerable<TextRect>> ConvertColor(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
+    public async ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
     {
         using var ms = new InMemoryRandomAccessStream();
         var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, ms);
