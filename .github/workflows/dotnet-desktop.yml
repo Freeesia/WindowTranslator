@@ -68,9 +68,9 @@ jobs:
     - id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.13
     - run: |
-        msbuild $env:Solution_Name /restore /t:Rebuild /p:Configuration=Release \
-          /p:Version=${{ steps.gitversion.outputs.fullSemVer }} \
-          /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} \
-          /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} \
+        msbuild $env:Solution_Name /restore /t:Rebuild /p:Configuration=Release ^
+          /p:Version=${{ steps.gitversion.outputs.fullSemVer }} ^
+          /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} ^
+          /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} ^
           /p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
 
