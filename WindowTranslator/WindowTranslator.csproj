@@ -28,5 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Composition.WindowsRuntimeHelpers\Composition.WindowsRuntimeHelpers.csproj" />
+    <ProjectReference Include="..\HwndExtensions\HwndExtensions.csproj" />
   </ItemGroup>
 </Project>

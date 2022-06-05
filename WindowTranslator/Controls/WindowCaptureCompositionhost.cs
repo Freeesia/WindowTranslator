@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Interop;
 using Windows.Graphics;
 using Windows.Graphics.DirectX.Direct3D11;
@@ -15,7 +14,7 @@ using WindowTranslator.Modules.Capture;
 
 namespace WindowTranslator.Controls;
 
-public class WindowCaptureCompositionHost : Decorator
+public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresenter
 {
     private readonly IDirect3DDevice device;
     private readonly SharpDX.Direct3D11.Device d3dDevice;
@@ -65,7 +64,7 @@ public class WindowCaptureCompositionHost : Decorator
     private void WindowCaptureCompositionhost_Loaded(object sender, RoutedEventArgs e)
     {
         compositionHost = new(lastSize.Height, lastSize.Width);
-        this.Child = compositionHost;
+        this.HwndHost = compositionHost;
 
         var compositor = compositionHost.Compositor ?? throw new InvalidOperationException();
 
@@ -159,6 +158,9 @@ public class WindowCaptureCompositionHost : Decorator
                 IntPtr.Zero,
                 IntPtr.Zero,
                 IntPtr.Zero);
+
+            // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
+            User32.SetWindowPos(hwndHost, (IntPtr)1, 0, 0, 0, 0, User32.SetWindowPosFlags.SWP_NOMOVE | User32.SetWindowPosFlags.SWP_NOSIZE);
 
             // Build Composition Tree of content
             InitComposition(hwndHost);
