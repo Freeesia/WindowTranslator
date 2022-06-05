@@ -1,7 +1,6 @@
-﻿namespace HwndExtensions.Host
+﻿namespace HwndExtensions.Host;
+
+public interface IHwndHostManager
 {
-    public interface IHwndHostManager
-    {
-        HwndHostGroup HwndHostGroup { get; }
-    }
+    HwndHostGroup HwndHostGroup { get; }
 }

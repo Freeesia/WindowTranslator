@@ -1,32 +1,30 @@
-﻿using System;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
-namespace HwndExtensions.Adorner
+namespace HwndExtensions.Adorner;
+
+public sealed class HwndAdornerManager : Decorator, IHwndAdornerManager, IDisposable
 {
-    public class HwndAdornerManager : Decorator, IHwndAdornerManager, IDisposable
+    private readonly HwndAdornerGroup m_hwndAdornerGroup;
+    private bool m_disposed;
+
+    HwndAdornerGroup IHwndAdornerManager.AdornerGroup
     {
-        private readonly HwndAdornerGroup m_hwndAdornerGroup;
-        private bool m_disposed;
-
-        HwndAdornerGroup IHwndAdornerManager.AdornerGroup
+        get
         {
-            get
-            {
-                if(m_disposed)
-                    throw new ObjectDisposedException("this");
-                return  m_hwndAdornerGroup;
-            }
+            if(m_disposed)
+                throw new ObjectDisposedException("this");
+            return  m_hwndAdornerGroup;
         }
+    }
 
-        public HwndAdornerManager()
-        {
-            m_hwndAdornerGroup = new HwndAdornerGroup(this);
-        }
+    public HwndAdornerManager()
+    {
+        m_hwndAdornerGroup = new HwndAdornerGroup(this);
+    }
 
-        public void Dispose()
-        {
-            m_disposed = true;
-            m_hwndAdornerGroup.Dispose();
-        }
+    public void Dispose()
+    {
+        m_disposed = true;
+        m_hwndAdornerGroup.Dispose();
     }
 }
