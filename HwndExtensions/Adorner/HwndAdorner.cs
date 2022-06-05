@@ -157,7 +157,7 @@ public sealed class HwndAdorner : IDisposable
     {
         DisconnectFromGroup();
 
-        var manager = WPFTreeExtensions.TryFindVisualAncestor<IHwndAdornerManager>(m_elementAttachedTo);
+        var manager = m_elementAttachedTo.TryFindVisualAncestor<IHwndAdornerManager>();
         m_hwndAdornerGroup = manager?.AdornerGroup ?? new HwndAdornerGroup(m_elementAttachedTo);
         m_hwndAdornerGroup.AddAdorner(this);
     }

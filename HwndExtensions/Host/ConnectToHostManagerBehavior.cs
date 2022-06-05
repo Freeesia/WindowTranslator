@@ -18,29 +18,19 @@ public class ConnectToHostManagerBehavior<T> : Behavior<T> where T : FrameworkEl
 
     private void ConnectToManager(IHwndHostManager? manager)
     {
-        if (manager != null)
-        {
-            m_hostManager = manager;
-            m_hostManager.HwndHostGroup.AddHost(AssociatedObject);
-        }
-        else
-        {
-            m_hostManager = null;
-        }
+        m_hostManager = manager;
+        m_hostManager?.HwndHostGroup.AddHost(AssociatedObject);
     }
 
     private void DisconnectFromManager()
     {
-        if (m_hostManager != null)
-        {
-            m_hostManager.HwndHostGroup.RemoveHost(AssociatedObject);
-            m_hostManager = null;
-        }
+        m_hostManager?.HwndHostGroup.RemoveHost(AssociatedObject);
+        m_hostManager = null;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
     {
-        var manager = WPFTreeExtensions.TryFindVisualAncestor<IHwndHostManager>(AssociatedObject);
+        var manager = AssociatedObject.TryFindVisualAncestor<IHwndHostManager>();
         if (m_hostManager != manager)
         {
             DisconnectFromManager();
