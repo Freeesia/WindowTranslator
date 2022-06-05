@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <Deterministic>true</Deterministic>
+    <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 </Project>

@@ -1,0 +1,6 @@
+assembly-versioning-scheme: MajorMinorPatchTag
+mode: Mainline
+branches: {}
+ignore:
+  sha: []
+merge-message-formats: {}
