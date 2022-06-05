@@ -3,14 +3,6 @@ using System.Windows.Media;
 
 namespace HwndExtensions.Utils;
 
-internal struct RECT
-{
-    public int left;
-    public int top;
-    public int right;
-    public int bottom;
-}
-
 internal static class RectUtil
 {
     internal static Rect ElementToRoot(Rect rectElement, Visual element, PresentationSource presentationSource)
@@ -53,31 +45,4 @@ internal static class RectUtil
 
         return Matrix.Identity;
     }
-
-    internal static RECT FromRect(Rect rect)
-    {
-        RECT rc = new RECT();
-
-        rc.top = DoubleToInt(rect.Y);
-        rc.left = DoubleToInt(rect.X);
-        rc.bottom = DoubleToInt(rect.Bottom);
-        rc.right = DoubleToInt(rect.Right);
-
-        return rc;
-    }
-
-    internal static Rect ToRect(RECT rc)
-    {
-        Rect rect = new Rect();
-
-        rect.X = rc.left;
-        rect.Y = rc.top;
-        rect.Width = rc.right - rc.left;
-        rect.Height = rc.bottom - rc.top;
-
-        return rect;
-    }
-
-    private static int DoubleToInt(double val)
-        => (0 < val) ? (int)(val + 0.5) : (int)(val - 0.5);
 }
