@@ -47,7 +47,7 @@ public sealed partial class MainViewModel : IDisposable
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.Capture.StartCapture(this.processInfoStore.MainWindowHangle);
-        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 1000);
+        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
 
     public void Dispose()
