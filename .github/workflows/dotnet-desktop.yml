@@ -72,5 +72,9 @@ jobs:
           /p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
           /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
           /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-          /p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-
+          /p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
+          /p:OutputPath=bin
+    - uses: actions/upload-artifact@v1
+      with:
+        name: WindowTranslator
+        path: bin\
