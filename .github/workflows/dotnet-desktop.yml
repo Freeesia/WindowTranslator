@@ -77,4 +77,4 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: WindowTranslator
-        path: bin\
+        path: WindowTranslator\bin\
