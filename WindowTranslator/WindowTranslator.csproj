@@ -31,4 +31,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Composition.WindowsRuntimeHelpers\Composition.WindowsRuntimeHelpers.csproj" />
   </ItemGroup>
+
+  <!--アナライザの重複エラーの回避策-->
+  <Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <FilteredAnalyzer Include="@(Analyzer->Distinct())" />
+      <Analyzer Remove="@(Analyzer)" />
+      <Analyzer Include="@(FilteredAnalyzer)" />
+    </ItemGroup>
+  </Target>
 </Project>
