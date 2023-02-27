@@ -129,6 +129,7 @@ csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimenta
 
 # VSTHRD001: Avoid legacy thread switching APIs
 dotnet_diagnostic.VSTHRD001.severity = none
+dotnet_diagnostic.MVVMTK0033.severity = silent
 
 [*.{csproj,props}]
 indent_size = 2

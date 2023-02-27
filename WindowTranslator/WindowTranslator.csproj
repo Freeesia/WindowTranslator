@@ -10,20 +10,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="WpfAnalyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Kamishibai.Hosting" Version="1.1.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
+    <PackageReference Include="Kamishibai.Hosting" Version="1.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.5.22" />
     <PackageReference Include="HwndExtensions.NetCore" Version="1.0.3" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
   </ItemGroup>

@@ -15,7 +15,7 @@ public partial class StartupViewModel
     private IReadOnlyList<ProcessInfo> processInfos = Array.Empty<ProcessInfo>();
 
     [ObservableProperty]
-    [AlsoNotifyCanExecuteFor(nameof(RunCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RunCommand))]
 
     private ProcessInfo? selectedProcess;
 
@@ -26,7 +26,7 @@ public partial class StartupViewModel
         this.processInfoStore = processInfoStore;
     }
 
-    [ICommand]
+    [RelayCommand]
     public async Task RefreshProcessAsync()
     {
         var processes = await Task.Run(() => Process.GetProcesses());
@@ -35,14 +35,14 @@ public partial class StartupViewModel
             .ToArray();
     }
 
-    [ICommand(CanExecute = nameof(CanRun))]
+    [RelayCommand(CanExecute = nameof(CanRun))]
     public async Task RunAsync()
     {
-        if (this.selectedProcess is null)
+        if (this.SelectedProcess is not { } p)
         {
             return;
         }
-        this.processInfoStore.SetTargetProcess(this.selectedProcess.WindowHandle, this.selectedProcess.Path);
+        this.processInfoStore.SetTargetProcess(p.WindowHandle, p.Path);
         var app = Application.Current;
         var window = app.MainWindow;
         try
