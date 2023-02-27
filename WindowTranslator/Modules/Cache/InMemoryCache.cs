@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace WindowTranslator.Modules.Cache;
 
 public class InMemoryCache : ICacheModule

@@ -1,21 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.VisualStudio.Threading;
-using System.Drawing;
-using System.IO;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
-using WindowTranslator.Modules.Cache;
+using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
-using WindowTranslator.Modules.Translate;
 using WindowTranslator.Stores;
-using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
 
 namespace WindowTranslator;
 

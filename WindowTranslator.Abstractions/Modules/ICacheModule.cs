@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace WindowTranslator.Modules.Cache;
+namespace WindowTranslator.Modules;
 
 public interface ICacheModule
 {
