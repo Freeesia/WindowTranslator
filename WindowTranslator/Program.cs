@@ -17,7 +17,6 @@ CoreMessagingHelper.CreateDispatcherQueueControllerForCurrentThread();
 
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
-builder.Host.UseServiceProviderFactory(_ => new MyServiceProviderFactory(new DefaultServiceProviderFactory()));
 builder.Host.ConfigureAppConfiguration((_, b) =>
 {
     b.AddUserSecrets<Program>();
@@ -50,43 +49,4 @@ public class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult(srcTexts);
-}
-
-
-public class MyServiceProviderFactory : IServiceProviderFactory<MyServiceProvider>
-{
-    private readonly IServiceProviderFactory<IServiceCollection> fallbackProviderFactory;
-
-    public MyServiceProviderFactory(IServiceProviderFactory<IServiceCollection> fallbackProviderFactory)
-        => this.fallbackProviderFactory = fallbackProviderFactory;
-
-    public MyServiceProvider CreateBuilder(IServiceCollection services)
-        => new(this.fallbackProviderFactory.CreateServiceProvider(services));
-
-    public IServiceProvider CreateServiceProvider(MyServiceProvider containerBuilder)
-        => containerBuilder;
-}
-
-public class MyServiceProvider : IServiceProvider
-{
-    private readonly IServiceProvider fallbackProvider;
-
-    public MyServiceProvider(IServiceProvider fallbackProvider) => this.fallbackProvider = fallbackProvider;
-
-    public object? GetService(Type serviceType)
-    {
-        if (typeof(IPluginOptions).IsAssignableFrom(serviceType))
-        {
-            var config = this.fallbackProvider.GetRequiredService<IConfiguration>();
-            var options = Activator.CreateInstance(serviceType);
-            config.GetSection(serviceType.Name).Bind(options);
-            return options;
-        }
-        return fallbackProvider.GetService(serviceType);
-    }
-}
-
-public class hoge : IPluginOptions
-{
-
 }
