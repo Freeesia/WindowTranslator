@@ -7,8 +7,8 @@ public class DeepLTranslator : ITranslateModule
 {
     private readonly Translator translator;
 
-    public DeepLTranslator(DeepLOptions options)
-        => translator = new(options.AuthKey, options.Options);
+    public DeepLTranslator(IPluginOptions<DeepLOptions> options)
+        => translator = new(options.Param.AuthKey, options.Param.Options);
 
     public async ValueTask<string[]> TranslateAsync(string[] srcTexts)
     {
@@ -17,7 +17,7 @@ public class DeepLTranslator : ITranslateModule
     }
 }
 
-public class DeepLOptions : IPluginOptions
+public class DeepLOptions
 {
     public string AuthKey { get; set; } = string.Empty;
     public TranslatorOptions? Options { get; set; }

@@ -24,8 +24,8 @@ builder.Host.ConfigureAppConfiguration((_, b) =>
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
-    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = (_, _) => typeof(TranslateEmptyModule))
-    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = (_, _) => typeof(InMemoryCache));
+    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule, TranslateEmptyModule>)
+    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, InMemoryCache>);
 
 if (Directory.Exists(@".\plugins"))
 {
@@ -40,13 +40,35 @@ builder.Services.AddTransient<ICaptureModule, WindowsGraphicsCapture>();
 builder.Services.AddTransient<IOcrModule, WindowsMediaOcr>();
 builder.Services.AddTransient<IColorModule, ColorThiefModule>();
 
+builder.Services.AddTransient(typeof(IPluginOptions<>), typeof(PluginOptions<>));
+
 using var app = builder.Build();
 
 await app.StartAsync();
 
+static Type GetPlugin<TInterface, TPlugin>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
+    where TPlugin : TInterface
+{
+    var config = serviceProvider.GetRequiredService<IConfiguration>();
+    var dic = config.GetSection("SelectedPlugins").GetChildren().ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+    if (dic.TryGetValue(typeof(TInterface).Name, out var name))
+    {
+        return implementingTypes.FirstOrDefault(t => t.Name == name) ?? typeof(TPlugin);
+    }
+    return typeof(TPlugin);
+}
 
 public class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult(srcTexts);
+}
+
+
+public class PluginOptions<T> : IPluginOptions<T>
+{
+    public T Param { get; }
+
+    public PluginOptions(IConfiguration configuration)
+        => this.Param = configuration.GetRequiredSection(typeof(T).Name).Get<T>();
 }

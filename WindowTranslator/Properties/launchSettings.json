@@ -3,7 +3,7 @@
     "WindowTranslator": {
       "commandName": "Project",
       "environmentVariables": {
-        "DEEPLOPTIONS__AUTHKEY": ""
+        "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator"
       }
     }
   }

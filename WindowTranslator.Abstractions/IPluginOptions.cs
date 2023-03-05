@@ -1,4 +1,5 @@
 ﻿namespace WindowTranslator;
-public interface IPluginOptions
+public interface IPluginOptions<T>
 {
+    public T Param { get; }
 }
