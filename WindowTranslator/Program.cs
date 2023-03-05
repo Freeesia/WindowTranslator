@@ -64,11 +64,13 @@ public class TranslateEmptyModule : ITranslateModule
         => ValueTask.FromResult(srcTexts);
 }
 
-
 public class PluginOptions<T> : IPluginOptions<T>
 {
-    public T Param { get; }
+    private readonly IConfigurationSection config;
+    private T param;
+
+    public T Param => this.param ??= this.config.Get<T>();
 
     public PluginOptions(IConfiguration configuration)
-        => this.Param = configuration.GetRequiredSection(typeof(T).Name).Get<T>();
+        => this.config = configuration.GetRequiredSection(typeof(T).Name);
 }

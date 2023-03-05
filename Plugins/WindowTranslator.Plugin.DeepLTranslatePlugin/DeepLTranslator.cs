@@ -1,5 +1,4 @@
 ﻿using DeepL;
-using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
