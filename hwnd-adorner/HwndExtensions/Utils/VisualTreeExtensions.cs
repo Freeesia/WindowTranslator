@@ -1,110 +1,98 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
-namespace HwndExtensions.Utils
+namespace HwndExtensions.Utils;
+
+public static class VisualTreeExtensions
 {
-    public static class VisualTreeExtensions
+    /// <summary>
+    /// Finds a parent of a given item on the visual tree that is of type T. 
+    /// And the optional predicate returns true for the element
+    /// </summary>
+    /// <returns>The matching UIElement, or null if it could not be found.</returns>
+    public static T? TryFindVisualAncestor<T>(this DependencyObject? depObj, Predicate<T>? predicate = null) where T : class
     {
-        /// <summary>
-        /// Finds a parent of a given item on the visual tree that is of type T. 
-        /// And the optional predicate returns true for the element
-        /// </summary>
-        /// <returns>The matching UIElement, or null if it could not be found.</returns>
-        public static T TryFindVisualAncestor<T>(DependencyObject depObj, Predicate<T> predicate = null) where T : class
+        var current = depObj;
+        while (current != null)
         {
-            DependencyObject current = depObj;
-            while (current != null)
+            if (current is T match && (predicate == null || predicate(match)))
             {
-                T match = current as T;
-                if (match != null && (predicate == null || predicate(match)))
-                {
-                    return match;
-                }
-                current = VisualTreeHelper.GetParent(current);
+                return match;
+            }
+            current = VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to find the top parent - The top-most parent of this type in the visual tree.
+    /// </summary>
+    /// <typeparam name="T">The type of the parent</typeparam>
+    /// <param name="depObj">The hit test result.</param>
+    /// <returns>The matching UIElement, or null if it could not be found.</returns>
+    public static T? TryFindTopVisualAncestor<T>(this DependencyObject depObj) where T : class
+    {
+        T? current = null;
+        T? aboveCurrent = depObj.TryFindVisualAncestor<T>();
+
+        while (aboveCurrent != null)
+        {
+            current = aboveCurrent;
+            aboveCurrent = TryFindVisualAncestor<T>(current as DependencyObject);
+        }
+
+        return current;
+    }
+
+    /// <summary>
+    /// Find all visual descendents of type T
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="searchWithinAFoundT">search within T's descendents for more T's</param>
+    public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject root, bool searchWithinAFoundT = true) where T : DependencyObject
+    {
+        if (root == null)
+        {
+            yield break;
+        }
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(root, i);
+            if (child is T t)
+            {
+                yield return t;
+
+                // this means that an element is not expected to contain elements of his type
+                if (!searchWithinAFoundT) { continue; }
             }
 
+            foreach (var item in child.FindVisualChildren<T>(searchWithinAFoundT))
+            {
+                yield return item;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Performs a DFS search for finding the first visual child of type T
+    /// </summary>
+    /// <typeparam name="T">The type to search for</typeparam>
+    /// <param name="root">The root to search under</param>
+    /// <returns>The found child</returns>
+    public static T? FindFirstChild<T>(this DependencyObject root) where T : class
+    {
+        if (root == null)
+        {
             return null;
         }
-
-        /// <summary>
-        /// Tries to find the top parent - The top-most parent of this type in the visual tree.
-        /// </summary>
-        /// <typeparam name="T">The type of the parent</typeparam>
-        /// <param name="depObj">The hit test result.</param>
-        /// <returns>The matching UIElement, or null if it could not be found.</returns>
-        public static T TryFindTopVisualAncestor<T>(DependencyObject depObj) where T : class
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
         {
-            T current = null;
-            T aboveCurrent = TryFindVisualAncestor<T>(depObj);
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is T childT) return childT;
 
-            while (aboveCurrent != null)
-            {
-                current = aboveCurrent;
-                aboveCurrent = TryFindVisualAncestor<T>(current as DependencyObject);
-            }
-
-            return current;
+            if (child.FindFirstChild<T>() is { } descendant) return descendant;
         }
-
-        /// <summary>
-        /// Find all visual descendents of type T
-        /// </summary>
-        /// <param name="root"></param>
-        /// <param name="searchWithinAFoundT">search within T's descendents for more T's</param>
-        public static List<T> FindVisualChildren<T>(DependencyObject root, bool searchWithinAFoundT = true) where T : DependencyObject
-        {
-            List<T> list = new List<T>();
-            if (root != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(root, i);
-                    if (child is T)
-                    {
-                        list.Add((T)child);
-
-                        // this means that an element is not expected to contain elements of his type
-                        if (!searchWithinAFoundT) { continue; }
-                    }
-
-                    List<T> childItems = FindVisualChildren<T>(child, searchWithinAFoundT);
-                    if (childItems != null && childItems.Count > 0)
-                    {
-                        foreach (var item in childItems)
-                        {
-                            list.Add(item);
-                        }
-                    }
-                }
-            }
-            return list;
-        }
-
-        /// <summary>
-        /// Performs a DFS search for finding the first visual child of type T
-        /// </summary>
-        /// <typeparam name="T">The type to search for</typeparam>
-        /// <param name="root">The root to search under</param>
-        /// <returns>The found child</returns>
-        public static T FindFirstChild<T>(DependencyObject root) where T : class
-        {
-            if (root != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(root, i);
-                    T childT = child as T;
-                    if (childT != null) return childT;
-
-                    T descendantT = FindFirstChild<T>(child);
-                    if (descendantT != null) return descendantT;
-                }
-            }
-            return null;
-        }
+        return null;
     }
 }

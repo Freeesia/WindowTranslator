@@ -16,11 +16,9 @@ public class BrowserPresenter : HwndHostPresenter
     }
 
     private void RegisterToAppShutdown()
-    {
-        Application.Current.Dispatcher.ShutdownStarted += OnShutdownStarted;
-    }
+        => Application.Current.Dispatcher.ShutdownStarted += OnShutdownStarted;
 
-    private void OnShutdownStarted(object sender, EventArgs e)
+    private void OnShutdownStarted(object? sender, EventArgs e)
     {
         Dispose();
     }

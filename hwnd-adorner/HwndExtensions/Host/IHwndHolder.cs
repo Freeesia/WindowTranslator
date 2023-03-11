@@ -1,14 +1,13 @@
-﻿using System.Windows;
+﻿﻿using System.Windows;
 
-namespace HwndExtensions.Host
+namespace HwndExtensions.Host;
+
+public interface IHwndHolder
 {
-    public interface IHwndHolder
-    {
-        void CollapseHwnd(bool freezeBounds = false);
-        void FreezeHwndBounds();
-        void ExpandHwnd();
+    void CollapseHwnd(bool freezeBounds = false);
+    void FreezeHwndBounds();
+    void ExpandHwnd();
 
-        Rect LatestHwndBounds { get; }
-        Rect FreezedHwndBounds { get; }
-    }
+    Rect LatestHwndBounds { get; }
+    Rect FreezedHwndBounds { get; }
 }
