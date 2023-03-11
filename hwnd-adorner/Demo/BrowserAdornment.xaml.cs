@@ -12,16 +12,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Demo
+namespace Demo;
+
+/// <summary>
+/// Interaction logic for BrowserAdornment.xaml
+/// </summary>
+public partial class BrowserAdornment : UserControl
 {
-    /// <summary>
-    /// Interaction logic for BrowserAdornment.xaml
-    /// </summary>
-    public partial class BrowserAdornment : UserControl
+    public BrowserAdornment()
     {
-        public BrowserAdornment()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
