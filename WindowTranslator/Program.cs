@@ -67,7 +67,7 @@ public class TranslateEmptyModule : ITranslateModule
 public class PluginOptions<T> : IPluginOptions<T>
 {
     private readonly IConfigurationSection config;
-    private T param;
+    private T? param;
 
     public T Param => this.param ??= this.config.Get<T>();
 
