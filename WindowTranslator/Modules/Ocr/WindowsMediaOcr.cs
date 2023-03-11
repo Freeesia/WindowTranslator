@@ -1,14 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
-using WinRT;
 
 namespace WindowTranslator.Modules.Ocr;
 public class WindowsMediaOcr : IOcrModule
 {
-    private double IndentThrethold = .005;
-    private double LeadingThrethold = .95;
-    private double FontSizeThrethold = .25;
+    private const double IndentThrethold = .005;
+    private const double LeadingThrethold = .95;
+    private const double FontSizeThrethold = .25;
 
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
@@ -25,7 +24,7 @@ public class WindowsMediaOcr : IOcrModule
                 .ThenBy(w => w.X)
             .ToArray();
 
-        if (lineResults.Length == 0)
+        if (lineResults.IsEmpty())
         {
             return lineResults;
         }
