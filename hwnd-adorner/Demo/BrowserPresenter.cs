@@ -13,7 +13,7 @@ namespace Demo
         public BrowserPresenter()
         {
             var browser = new WebBrowser();
-            browser.Source = new Uri("http://blogs.microsoft.co.il/michaels/2014/11/28/wpf-hwnd-adorner/");
+            browser.Source = new Uri("https://www.google.com/");
 
             HwndHost = browser;
             RegisterToAppShutdown();

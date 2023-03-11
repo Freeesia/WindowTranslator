@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator", "WindowTranslator\WindowTranslator.csproj", "{29ACE192-BE00-40AC-82D4-CD527047A7C0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90C4837E-3350-4820-8B62-F81E18B8D609}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solution Items", "{90C4837E-3350-4820-8B62-F81E18B8D609}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
@@ -22,6 +22,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{2123
 	ProjectSection(SolutionItems) = preProject
 		Plugins\copy_plugins.bat = Plugins\copy_plugins.bat
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hwnd-adorner", "hwnd-adorner", "{E9254220-A2A9-4A23-814E-15029025A868}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HwndExtensions", "hwnd-adorner\HwndExtensions\HwndExtensions.csproj", "{529FE5B9-FAC5-4222-8170-C8C0B911A588}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "hwnd-adorner\Demo\Demo.csproj", "{85137B31-43B5-4DF6-B374-A14BAA1A874D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,12 +51,22 @@ Global
 		{75C63D99-006D-47AB-A6E1-25005D2E337C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75C63D99-006D-47AB-A6E1-25005D2E337C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75C63D99-006D-47AB-A6E1-25005D2E337C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{529FE5B9-FAC5-4222-8170-C8C0B911A588}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529FE5B9-FAC5-4222-8170-C8C0B911A588}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529FE5B9-FAC5-4222-8170-C8C0B911A588}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{529FE5B9-FAC5-4222-8170-C8C0B911A588}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{75C63D99-006D-47AB-A6E1-25005D2E337C} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
+		{529FE5B9-FAC5-4222-8170-C8C0B911A588} = {E9254220-A2A9-4A23-814E-15029025A868}
+		{85137B31-43B5-4DF6-B374-A14BAA1A874D} = {E9254220-A2A9-4A23-814E-15029025A868}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}

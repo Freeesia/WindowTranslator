@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using Microsoft.Xaml.Behaviors;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interactivity;
 using System.Windows.Interop;
 
 namespace HwndExtensions.Host

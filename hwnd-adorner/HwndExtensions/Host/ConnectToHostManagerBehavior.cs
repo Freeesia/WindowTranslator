@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using System.Windows.Interactivity;
 using HwndExtensions.Utils;
+using Microsoft.Xaml.Behaviors;
 
 namespace HwndExtensions.Host
 {
