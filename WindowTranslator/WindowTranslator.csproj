@@ -24,12 +24,12 @@
     </PackageReference>
     <PackageReference Include="Kamishibai.Hosting" Version="1.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.5.22" />
-    <PackageReference Include="HwndExtensions.NetCore" Version="1.0.3" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Composition.WindowsRuntimeHelpers\Composition.WindowsRuntimeHelpers.csproj" />
+    <ProjectReference Include="..\hwnd-adorner\HwndExtensions\HwndExtensions.csproj" />
     <ProjectReference Include="..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
   </ItemGroup>
 </Project>
