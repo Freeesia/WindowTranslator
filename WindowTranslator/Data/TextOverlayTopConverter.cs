@@ -16,7 +16,7 @@ public sealed class TextOverlayTopConverter : IValueConverter
         {
             return DependencyProperty.UnsetValue;
         }
-        return rect.Y - (rect.FontSize * 0.25);
+        return rect.Y;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

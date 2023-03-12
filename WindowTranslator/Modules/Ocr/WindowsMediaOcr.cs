@@ -44,12 +44,16 @@ public class WindowsMediaOcr : IOcrModule
                 var lThre = (1.0 + (fDiff / 2)) * Math.Min(temp.FontSize, lineResult.FontSize) * LeadingThrethold;
                 if (xDiff < xt && yDiff < lThre && fDiff < FontSizeThrethold)
                 {
+                    var top = Math.Min(temp.Y, lineResult.Y);
+                    var bottom = Math.Max(temp.Y + temp.Height, lineResult.Y + lineResult.Height);
+                    var left = Math.Min(temp.X, lineResult.X);
+                    var right = Math.Max(temp.X + temp.Width, lineResult.X + lineResult.Width);
                     temp = new(
                         temp.Y < lineResult.Y ? $"{temp.Text} {lineResult.Text}" : $"{lineResult.Text} {temp.Text}",
-                        Math.Min(temp.X, lineResult.X),
-                        Math.Min(temp.Y, lineResult.Y),
-                        Math.Max(temp.X + temp.Width, lineResult.X + lineResult.Width) - Math.Min(temp.X, lineResult.X),
-                        Math.Max(temp.Y + temp.Height, lineResult.Y + lineResult.Height) - Math.Min(temp.Y, lineResult.Y),
+                        left,
+                        top,
+                        right - left,
+                        bottom - top,
                         temp.FontSize + ((lineResult.FontSize - temp.FontSize) / (temp.Line + 1)),
                         temp.Line + 1);
                     queue.Remove(lineResult);
@@ -86,19 +90,23 @@ public class WindowsMediaOcr : IOcrModule
         // 文字種類による高さ補正
         height = (hasAcent, hasHarfAcent, hasDecent) switch
         {
-            (true, _, true) => height * 1.2,
+            (true, _, true) => height,
             (true, _, false) => height * 1.2,
-            (false, true, false) => height * (1 + .1 + .2),
-            (false, false, false) => height * (1 + .2 + .2),
             (false, true, true) => height * (1 + .1 + .0),
             (false, false, true) => height * (1 + .2 + .0),
+            (false, true, false) => height * (1 + .1 + .2),
+            (false, false, false) => height * (1 + .2 + .2),
         };
 
-        // 若干太らせて完全に文字を覆う
-        const double wFat = .2;
-        width += height * wFat;
-        x -= height * wFat * .5;
+        var fontSize = height;
 
-        return new(text, x, y, width, height);
+        // 若干太らせて完全に文字を覆う
+        const double fat = .2;
+        width += fontSize * fat;
+        x -= fontSize * fat * .5;
+        height += fontSize * fat;
+        y -= fontSize * fat * .5;
+
+        return new(text, x, y, width, height, fontSize, 1);
     }
 }

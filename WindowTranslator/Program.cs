@@ -24,7 +24,7 @@ builder.Host.ConfigureAppConfiguration((_, b) =>
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
-    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule, TranslateEmptyModule>)
+    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule, NoTranslateModule>)
     .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, InMemoryCache>)
     .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule, WindowsMediaOcr>)
     .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule, WindowsGraphicsCapture>)
@@ -58,6 +58,12 @@ static Type GetPlugin<TInterface, TPlugin>(IServiceProvider serviceProvider, IEn
 }
 
 public class TranslateEmptyModule : ITranslateModule
+{
+    public ValueTask<string[]> TranslateAsync(string[] srcTexts)
+        => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
+}
+
+public class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult(srcTexts);
