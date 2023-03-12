@@ -79,8 +79,8 @@ public class WindowsMediaOcr : IOcrModule
         y -= (hasAcent, hasHarfAcent) switch
         {
             (true, _) => 0,
-            (false, true) => height * 0.1,
-            (false, false) => height * 0.2,
+            (false, true) => height * .1,
+            (false, false) => height * .2,
         };
 
         // 文字種類による高さ補正
@@ -88,10 +88,10 @@ public class WindowsMediaOcr : IOcrModule
         {
             (true, _, true) => height,
             (true, _, false) => height * 1.2,
-            (false, true, false) => height * (1 + 0.1 + 0.2),
-            (false, false, false) => height * (1 + 0.2 + 0.2),
-            (false, true, true) => height * (1 + 0.1 + 0.0),
-            (false, false, true) => height * (1 + 0.2 + 0.0),
+            (false, true, false) => height * (1 + .1 + .2),
+            (false, false, false) => height * (1 + .2 + .2),
+            (false, true, true) => height * (1 + .1 + .0),
+            (false, false, true) => height * (1 + .2 + .0),
         };
 
         return new(text, x, y, width, height);
