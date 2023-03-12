@@ -35,6 +35,12 @@ if (Directory.Exists(@".\plugins"))
     builder.Services.AddPluginCatalog(new FolderPluginCatalog(@".\plugins"));
 }
 
+var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
+if (Directory.Exists(userPluginsDir))
+{
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir));
+}
+
 
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
