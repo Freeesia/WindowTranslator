@@ -25,7 +25,10 @@ builder.Host.ConfigureAppConfiguration((_, b) =>
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
     .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule, TranslateEmptyModule>)
-    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, InMemoryCache>);
+    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, InMemoryCache>)
+    .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule, WindowsMediaOcr>)
+    .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule, WindowsGraphicsCapture>)
+    .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule, ColorThiefModule>);
 
 if (Directory.Exists(@".\plugins"))
 {
@@ -36,10 +39,6 @@ if (Directory.Exists(@".\plugins"))
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<MainWindow, MainViewModel>();
-builder.Services.AddTransient<ICaptureModule, WindowsGraphicsCapture>();
-builder.Services.AddTransient<IOcrModule, WindowsMediaOcr>();
-builder.Services.AddTransient<IColorModule, ColorThiefModule>();
-
 builder.Services.AddTransient(typeof(IPluginOptions<>), typeof(PluginOptions<>));
 
 using var app = builder.Build();

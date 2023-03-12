@@ -5,6 +5,12 @@
       "environmentVariables": {
         "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator"
       }
+    },
+    "RectDebug": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SELECTEDPLUGINS__ICOLORMODULE": "TransparentColorModule"
+      }
     }
   }
 }
