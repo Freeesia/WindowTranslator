@@ -9,7 +9,8 @@
     "RectDebug": {
       "commandName": "Project",
       "environmentVariables": {
-        "SELECTEDPLUGINS__ICOLORMODULE": "TransparentColorModule"
+        "SELECTEDPLUGINS__ICOLORMODULE": "TransparentColorModule",
+        "SELECTEDPLUGINS__ICACHEMODULE": "InMemoryCache"
       }
     }
   }

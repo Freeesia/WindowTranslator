@@ -25,7 +25,7 @@ builder.Host.ConfigureAppConfiguration((_, b) =>
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
     .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule, NoTranslateModule>)
-    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, InMemoryCache>)
+    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, LocalCache>)
     .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule, WindowsMediaOcr>)
     .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule, WindowsGraphicsCapture>)
     .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule, ColorThiefModule>);
