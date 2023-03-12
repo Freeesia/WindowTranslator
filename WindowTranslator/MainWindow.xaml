@@ -37,13 +37,18 @@
                                         Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                         BorderBrush="#40000000"
                                         BorderThickness="2"
-                                        CornerRadius="10">
+                                        CornerRadius="10"
+                                        ClipToBounds="True">
                                         <TextBlock
                                             Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
                                             FontSize="{Binding FontSize}"
                                             Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                             Text="{Binding Text}"
-                                            TextWrapping="Wrap" />
+                                            TextWrapping="Wrap" >
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform Y="{Binding FontSize, Converter={x:Static data:TextOverlayTransformYConverter.Default}, ConverterParameter=-0.2}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
