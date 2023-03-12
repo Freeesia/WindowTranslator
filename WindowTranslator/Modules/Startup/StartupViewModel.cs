@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using WindowTranslator.Stores;
 
-namespace WindowTranslator;
+namespace WindowTranslator.Modules.Startup;
 
 [ObservableObject]
 public partial class StartupViewModel

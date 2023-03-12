@@ -1,7 +1,6 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 
-namespace WindowTranslator;
+namespace WindowTranslator.Modules.Main;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

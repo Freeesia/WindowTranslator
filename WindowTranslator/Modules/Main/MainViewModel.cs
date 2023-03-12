@@ -8,7 +8,7 @@ using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Stores;
 
-namespace WindowTranslator;
+namespace WindowTranslator.Modules.Main;
 
 [OpenWindow]
 [ObservableObject]

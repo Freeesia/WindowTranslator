@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WindowTranslator;
+namespace WindowTranslator.Modules.Startup;
 /// <summary>
 /// StartupDialog.xaml の相互作用ロジック
 /// </summary>

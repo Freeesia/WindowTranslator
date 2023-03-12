@@ -9,8 +9,10 @@ using WindowTranslator;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Cache;
 using WindowTranslator.Modules.Capture;
+using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
+using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
 
 CoreMessagingHelper.CreateDispatcherQueueControllerForCurrentThread();
