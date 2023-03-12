@@ -43,6 +43,7 @@ if (Directory.Exists(userPluginsDir))
     builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir));
 }
 
+builder.Configuration.AddJsonFile(PathUtility.UserConfig, true, true);
 
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
