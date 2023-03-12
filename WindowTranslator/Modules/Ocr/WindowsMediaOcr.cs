@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 
@@ -9,7 +10,13 @@ public class WindowsMediaOcr : IOcrModule
     private const double LeadingThrethold = .95;
     private const double FontSizeThrethold = .25;
 
-    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new("en-US"));
+    private readonly OcrEngine ocr;
+
+    public WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options)
+    {
+        this.ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source));
+    }
+
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         var rawResults = await ocr.RecognizeAsync(bitmap);

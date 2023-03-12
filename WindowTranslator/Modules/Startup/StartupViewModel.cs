@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Windows;
 using WindowTranslator.Stores;
@@ -11,6 +12,7 @@ public partial class StartupViewModel
 {
     private readonly IPresentationService presentationService;
     private readonly IProcessInfoStore processInfoStore;
+    private readonly IServiceProvider serviceProvider;
     [ObservableProperty]
     private IReadOnlyList<ProcessInfo> processInfos = Array.Empty<ProcessInfo>();
 
@@ -19,11 +21,12 @@ public partial class StartupViewModel
 
     private ProcessInfo? selectedProcess;
 
-    public StartupViewModel(IPresentationService presentationService, IProcessInfoStore processInfoStore)
+    public StartupViewModel(IPresentationService presentationService, IProcessInfoStore processInfoStore, IServiceProvider serviceProvider)
     {
         _ = RefreshProcessAsync();
         this.presentationService = presentationService;
         this.processInfoStore = processInfoStore;
+        this.serviceProvider = serviceProvider;
     }
 
     [RelayCommand]
@@ -59,6 +62,14 @@ public partial class StartupViewModel
     }
 
     public bool CanRun() => this.SelectedProcess is not null;
+
+    [RelayCommand]
+    public async Task OpenSettingsDialogAsync(object owner)
+    {
+        using var scope = this.serviceProvider.CreateScope();
+        var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
+        await ps.OpenSettingsDialogAsync(owner, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+    }
 }
 
 public record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Path);

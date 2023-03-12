@@ -2,6 +2,7 @@
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyTools.Wpf;
 using System.IO;
 using System.Reflection;
 using Weikio.PluginFramework.Catalogs;
@@ -12,6 +13,7 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
+using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
 
@@ -43,12 +45,14 @@ if (Directory.Exists(userPluginsDir))
     builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir));
 }
 
-builder.Configuration.AddJsonFile(PathUtility.UserConfig, true, true);
+builder.Configuration.AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<MainWindow, MainViewModel>();
+builder.Services.AddPresentation<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(typeof(IPluginOptions<>), typeof(PluginOptions<>));
+builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
 
 using var app = builder.Build();
 

@@ -5,12 +5,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Startup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:kamishibai="clr-namespace:Kamishibai;assembly=Kamishibai.View"
     Title="StartupDialog"
     SizeToContent="WidthAndHeight"
     WindowStyle="ToolWindow"
+    d:DataContext="{d:DesignInstance local:StartupViewModel}"
     mc:Ignorable="d">
     <Grid Margin="4">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -40,5 +43,13 @@
             Margin="4"
             Command="{Binding RunCommand}"
             Content="Attach" />
+        <Button
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="4"
+            Command="{Binding OpenSettingsDialogCommand}"
+            CommandParameter="{kamishibai:Window}"
+            Content="設定" />
     </Grid>
 </Window>

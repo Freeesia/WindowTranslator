@@ -17,6 +17,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
+    <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="WpfAnalyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
