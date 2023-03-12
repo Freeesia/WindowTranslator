@@ -15,7 +15,6 @@ namespace WindowTranslator;
 public sealed partial class MainViewModel : IDisposable
 {
     private readonly Timer timer;
-    private readonly IProcessInfoStore processInfoStore;
     private readonly IOcrModule ocr;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
@@ -28,23 +27,23 @@ public sealed partial class MainViewModel : IDisposable
 
     public ICaptureModule Capture { get; }
 
+    public IProcessInfoStore TargetProcess { get; }
+
     public MainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
     {
-        this.processInfoStore = processInfoStore;
+        this.TargetProcess = processInfoStore;
         this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.Capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
-        this.Capture.StartCapture(this.processInfoStore.MainWindowHangle);
+        this.Capture.StartCapture(this.TargetProcess.MainWindowHangle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
 
     public void Dispose()
-    {
-        this.timer?.Dispose();
-    }
+        => this.timer?.Dispose();
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {

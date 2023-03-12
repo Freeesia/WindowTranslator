@@ -22,12 +22,4 @@ public class BrowserPresenter : HwndHostPresenter
     {
         Dispose();
     }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            HwndHost?.Dispose();
-        }
-    }
 }

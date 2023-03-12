@@ -66,7 +66,6 @@ namespace Composition.WindowsRuntimeHelpers
         public static GraphicsCaptureItem? CreateItemForWindow(IntPtr hwnd)
         {
             var interop = GraphicsCaptureItem.As<IGraphicsCaptureItemInterop>();
-            var temp = typeof(GraphicsCaptureItem);
             var itemPointer = interop.CreateForWindow(hwnd, GraphicsCaptureItemGuid);
             var item = MarshalInterface<GraphicsCaptureItem>.FromAbi(itemPointer);
             Marshal.Release(itemPointer);
@@ -77,7 +76,6 @@ namespace Composition.WindowsRuntimeHelpers
         public static GraphicsCaptureItem? CreateItemForMonitor(IntPtr hmon)
         {
             var interop = GraphicsCaptureItem.As<IGraphicsCaptureItemInterop>();
-            var temp = typeof(GraphicsCaptureItem);
             var itemPointer = interop.CreateForMonitor(hmon, GraphicsCaptureItemGuid);
             var item = MarshalInterface<GraphicsCaptureItem>.FromAbi(itemPointer);
             Marshal.Release(itemPointer);
