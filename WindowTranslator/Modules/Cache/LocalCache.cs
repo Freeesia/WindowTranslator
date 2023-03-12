@@ -18,7 +18,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
     public LocalCache(IProcessInfoStore processInfoStore)
     {
         this.processInfoStore = processInfoStore;
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WindowTranslator");
+        var dir = Path.Combine(PathUtility.UserDir, "cache");
         Directory.CreateDirectory(dir);
         this.path = Path.Combine(dir, Path.ChangeExtension(Path.GetFileName(this.processInfoStore.FileName), ".json"));
         if (File.Exists(path))
@@ -34,7 +34,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
 
     public void Dispose()
     {
-        using var fs = File.Open(this.path, FileMode.Create, FileAccess.Write);
+        using var fs = File.OpenWrite(this.path);
         JsonSerializer.Serialize(fs, this.cache, serializerOptions);
     }
 
