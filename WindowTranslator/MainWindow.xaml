@@ -15,7 +15,6 @@
     mc:Ignorable="d">
     <adorner:HwndAdornerManager>
         <Viewbox>
-            <!--<ctl:HwndHostPresenter WindowHandle="{Binding WindowHandle}" />-->
             <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">
                 <ctl:WindowCaptureCompositionHost.Adornment>
                     <Viewbox>
