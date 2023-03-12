@@ -86,13 +86,18 @@ public class WindowsMediaOcr : IOcrModule
         // 文字種類による高さ補正
         height = (hasAcent, hasHarfAcent, hasDecent) switch
         {
-            (true, _, true) => height,
+            (true, _, true) => height * 1.2,
             (true, _, false) => height * 1.2,
             (false, true, false) => height * (1 + .1 + .2),
             (false, false, false) => height * (1 + .2 + .2),
             (false, true, true) => height * (1 + .1 + .0),
             (false, false, true) => height * (1 + .2 + .0),
         };
+
+        // 若干太らせて完全に文字を覆う
+        const double wFat = .2;
+        width += height * wFat;
+        x -= height * wFat * .5;
 
         return new(text, x, y, width, height);
     }
