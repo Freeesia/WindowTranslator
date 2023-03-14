@@ -1,9 +1,13 @@
-﻿using Kamishibai;
-using Microsoft.Extensions.Configuration;
+﻿using CommunityToolkit.Mvvm.Input;
+using Cysharp.Diagnostics;
+using Kamishibai;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Management.Automation;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -14,7 +18,7 @@ using CategoryAttribute = System.ComponentModel.CategoryAttribute;
 namespace WindowTranslator.Modules.Settings;
 
 [OpenDialog]
-internal class SettingsViewModel : IEditableObject
+internal partial class SettingsViewModel : IEditableObject
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
@@ -23,14 +27,17 @@ internal class SettingsViewModel : IEditableObject
     };
 
     [Browsable(false)]
-    public IEnumerable<string> TranslateModules { get; }
-    [Browsable(false)]
-    public IEnumerable<string> CacheModules { get; }
+    public IReadOnlyList<CultureInfo> SupportedLanguages { get; } = new List<CultureInfo>()
+    {
+        CultureInfo.GetCultureInfo("ja-JP"),
+        CultureInfo.GetCultureInfo("en-US"),
+        CultureInfo.GetCultureInfo("zh-CN"),
+    };
 
-    [Category("全体設定|言語設定")]
-    public string Source { get; set; }
-    [Category("全体設定|言語設定")]
-    public string Target { get; set; }
+    [Browsable(false)]
+    public IReadOnlyList<string> TranslateModules { get; }
+    [Browsable(false)]
+    public IReadOnlyList<string> CacheModules { get; }
 
     [Category("全体設定|プラグイン設定")]
     [ItemsSourceProperty(nameof(TranslateModules))]
@@ -38,6 +45,18 @@ internal class SettingsViewModel : IEditableObject
     [Category("全体設定|プラグイン設定")]
     [ItemsSourceProperty(nameof(CacheModules))]
     public string CacheModule { get; set; }
+
+    [Category("全体設定|言語設定")]
+    [ItemsSourceProperty(nameof(SupportedLanguages))]
+    [SelectedValuePath(nameof(CultureInfo.Name))]
+    [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
+    public string Source { get; set; }
+
+    [Category("全体設定|言語設定")]
+    [ItemsSourceProperty(nameof(SupportedLanguages))]
+    [SelectedValuePath(nameof(CultureInfo.Name))]
+    [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
+    public string Target { get; set; }
 
     public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<LanguageOptions> langOptions)
     {
@@ -65,4 +84,38 @@ internal class SettingsViewModel : IEditableObject
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
         JsonSerializer.Serialize(fs, settings, serializerOptions);
     }
+
+    [RelayCommand]
+    private async Task InstallLanguageAsync()
+    {
+        InstallLanguage(this.Source);
+        InstallLanguage(this.Target);
+    }
+
+    private void InstallLanguage(string target)
+    {
+        using var ps = PowerShell.Create();
+        ps.AddCommand("Set-ExecutionPolicy")
+            .AddArgument("Bypass")
+            .AddParameter("Scope", "Process")
+            .AddParameter("Force")
+            .Invoke();
+
+        ps.AddCommand("Install-Language")
+            .AddParameter("Language", target)
+            .AddParameter("ExcludeFeatures")
+            .Invoke();
+
+        var results = ps.AddCommand("Get-Process").Invoke();
+        Debug.WriteLine(results);
+    }
+    //private async Task InstallLanguageAsync(string language)
+    //{
+    //    var info = new ProcessStartInfo("cmd", $"/c powershell install-language {language}")
+    //    {
+    //        UseShellExecute = true,
+    //        Verb = "RunAs",
+    //    };
+    //    await ProcessX.StartAsync(info).WaitAsync();
+    //}
 }

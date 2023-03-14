@@ -50,7 +50,14 @@ builder.Configuration.AddJsonFile(PathUtility.UserSettings, true, true);
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<MainWindow, MainViewModel>();
-builder.Services.AddPresentation<PropertyDialog, SettingsViewModel>();
+ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
+builder.Services.AddTransient(_ =>
+{
+    var dialog = new PropertyDialog();
+    dialog.PropertyControl.SetCurrentValue(PropertyGrid.ControlFactoryProperty, new CustomControlFactory());
+    return dialog;
+});
+builder.Services.AddTransient<SettingsViewModel>();
 builder.Services.AddTransient(typeof(IPluginOptions<>), typeof(PluginOptions<>));
 builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
 

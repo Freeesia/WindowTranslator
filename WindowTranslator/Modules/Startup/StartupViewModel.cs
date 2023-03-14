@@ -54,10 +54,13 @@ public partial class StartupViewModel
             app.MainWindow = app.Windows.OfType<Window>().Single(w => w.IsActive);
             window.Close();
         }
-        catch
+        catch (Exception ex)
         {
             app.MainWindow = window;
-            this.presentationService.ShowMessage("ウィンドウの埋め込みに失敗しました。", icon: Kamishibai.MessageBoxImage.Error);
+            this.presentationService.ShowMessage($"""
+                ウィンドウの埋め込みに失敗しました。
+                Message: {ex.Message}
+                """, icon: Kamishibai.MessageBoxImage.Error);
         }
     }
 
