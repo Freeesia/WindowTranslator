@@ -15,7 +15,7 @@ public class WindowsMediaOcr : IOcrModule
     public WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options)
     {
         this.ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
-            ?? throw new InvalidOperationException($"{options.Value.Source}のOCR機能が使えなかった");
+            ?? throw new InvalidOperationException($"{options.Value.Source}のOCR機能が使えません。対象の言語パックをインストールしてください");
     }
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)

@@ -33,8 +33,8 @@ public partial class StartupViewModel
     public async Task RefreshProcessAsync()
     {
         var processes = await Task.Run(() => Process.GetProcesses());
-        this.ProcessInfos = processes.Where(p => p.MainWindowHandle != IntPtr.Zero && p.MainModule is { FileName: not null })
-            .Select(p => new ProcessInfo(p.MainWindowTitle, p.Id, p.MainWindowHandle, p.MainModule!.FileName!))
+        this.ProcessInfos = processes.Where(p => p.MainWindowHandle != IntPtr.Zero && !string.IsNullOrEmpty(p.ProcessName))
+            .Select(p => new ProcessInfo(p.MainWindowTitle, p.Id, p.MainWindowHandle, p.ProcessName))
             .ToArray();
     }
 
@@ -45,7 +45,7 @@ public partial class StartupViewModel
         {
             return;
         }
-        this.processInfoStore.SetTargetProcess(p.WindowHandle, p.Path);
+        this.processInfoStore.SetTargetProcess(p.WindowHandle, p.Name);
         var app = Application.Current;
         var window = app.MainWindow;
         try
@@ -54,10 +54,13 @@ public partial class StartupViewModel
             app.MainWindow = app.Windows.OfType<Window>().Single(w => w.IsActive);
             window.Close();
         }
-        catch
+        catch (Exception ex)
         {
             app.MainWindow = window;
-            this.presentationService.ShowMessage("ウィンドウの埋め込みに失敗しました。", icon: Kamishibai.MessageBoxImage.Error);
+            this.presentationService.ShowMessage($"""
+                ウィンドウの埋め込みに失敗しました。
+                エラー：{ex.Message}
+                """, icon: Kamishibai.MessageBoxImage.Error);
         }
     }
 
@@ -72,4 +75,4 @@ public partial class StartupViewModel
     }
 }
 
-public record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Path);
+public record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);
