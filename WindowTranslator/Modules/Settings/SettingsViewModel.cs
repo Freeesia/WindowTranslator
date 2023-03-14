@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -23,13 +24,39 @@ internal class SettingsViewModel : IEditableObject
     };
 
     [Browsable(false)]
+    public IEnumerable<CultureInfo> Languages { get; } = new[]
+    {
+        CultureInfo.GetCultureInfo("ja-JP"),
+        CultureInfo.GetCultureInfo("en-US"),
+        CultureInfo.GetCultureInfo("pt-BR"),
+        CultureInfo.GetCultureInfo("fr-CA"),
+        CultureInfo.GetCultureInfo("fr-FR"),
+        CultureInfo.GetCultureInfo("it-IT"),
+        CultureInfo.GetCultureInfo("de-DE"),
+        CultureInfo.GetCultureInfo("es-ES"),
+        CultureInfo.GetCultureInfo("pt-PT"),
+        CultureInfo.GetCultureInfo("nl-NL"),
+        CultureInfo.GetCultureInfo("ru-RU"),
+        CultureInfo.GetCultureInfo("ko-KR"),
+        CultureInfo.GetCultureInfo("zh-CN"),
+        CultureInfo.GetCultureInfo("zh-TW"),
+    };
+
+    [Browsable(false)]
     public IEnumerable<string> TranslateModules { get; }
     [Browsable(false)]
     public IEnumerable<string> CacheModules { get; }
 
     [Category("全体設定|言語設定")]
+    [ItemsSourceProperty(nameof(Languages))]
+    [SelectedValuePath(nameof(CultureInfo.Name))]
+    [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Source { get; set; }
+
     [Category("全体設定|言語設定")]
+    [ItemsSourceProperty(nameof(Languages))]
+    [SelectedValuePath(nameof(CultureInfo.Name))]
+    [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Target { get; set; }
 
     [Category("全体設定|プラグイン設定")]
