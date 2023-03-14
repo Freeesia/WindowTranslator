@@ -40,45 +40,54 @@ name: .NET Core Desktop
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-
   build:
+    strategy:
+      matrix:
+        self: [true, false]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    # For a list of available runner types, refer to
+    # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
 
     env:
       Solution_Name: WindowTranslator.sln
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - uses: gittools/actions/gitversion/setup@v0.10.2
-      with:
-        versionSpec: "5.x"
-    - id: gitversion
-      uses: gittools/actions/gitversion/execute@v0.10.2
-    - run: |
-        dotnet publish WindowTranslator -c Release -o publish `
-          -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-          -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-          -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-          -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-    - run: |
-        dotnet publish Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin -c Release -o publish\plugins `
-          -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-          -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-          -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-          -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-    - uses: actions/upload-artifact@v3
-      with:
-        name: WindowTranslator
-        path: publish\
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: "5.x"
+      - id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+      - run: |
+          dotnet publish WindowTranslator -c Release -o publish --sc ${{ matrix.self }}`
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - run: |
+          dotnet publish Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin -c Release -o publish\plugins `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: WindowTranslator${{ matrix.self && '-full' }}
+          path: publish\
