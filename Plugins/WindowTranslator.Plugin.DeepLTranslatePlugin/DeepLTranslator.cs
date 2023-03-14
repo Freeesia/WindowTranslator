@@ -12,9 +12,9 @@ public class DeepLTranslator : ITranslateModule
     private readonly string sourceLang;
     private readonly string targetLang;
 
-    public DeepLTranslator(IPluginOptions<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions)
+    public DeepLTranslator(IOptionsSnapshot<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions)
     {
-        this.translator = new(deeplOptions.Param.AuthKey, deeplOptions.Param.Options);
+        this.translator = new(deeplOptions.Value.AuthKey, deeplOptions.Value.Options);
         this.sourceLang = langOptions.Value.Source[..2];
         this.targetLang = langOptions.Value.Target switch
         {
@@ -30,7 +30,7 @@ public class DeepLTranslator : ITranslateModule
     }
 }
 
-public class DeepLOptions
+public class DeepLOptions : IPluginParam
 {
     public string AuthKey { get; set; } = string.Empty;
     public TranslatorOptions? Options { get; set; }

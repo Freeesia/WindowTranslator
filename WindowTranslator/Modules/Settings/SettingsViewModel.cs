@@ -13,7 +13,6 @@ using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 using CategoryAttribute = System.ComponentModel.CategoryAttribute;
-using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Modules.Settings;
 

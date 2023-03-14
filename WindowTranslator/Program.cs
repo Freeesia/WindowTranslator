@@ -48,8 +48,8 @@ builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<MainWindow, MainViewModel>();
 builder.Services.AddPresentation<PropertyDialog, SettingsViewModel>();
-builder.Services.AddTransient(typeof(IPluginOptions<>), typeof(PluginOptions<>));
-builder.Services.Configure<UserSettings>(builder.Configuration);
+builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
+builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 
 using var app = builder.Build();
 
@@ -79,16 +79,17 @@ public class TranslateEmptyModule : ITranslateModule
 public class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
-        => ValueTask.FromResult(srcTexts);
+    => ValueTask.FromResult(srcTexts);
 }
 
-public class PluginOptions<T> : IPluginOptions<T>
+public class ConfigurePluginParam<TOptions> : IConfigureOptions<TOptions>
+    where TOptions : class, IPluginParam
 {
-    private readonly IConfigurationSection config;
-    private T? param;
+    private readonly IConfiguration config;
 
-    public T Param => this.param ??= this.config.Get<T>();
+    public ConfigurePluginParam(IConfiguration config)
+        => this.config = config.GetSection(nameof(UserSettings.PluginParams));
 
-    public PluginOptions(IConfiguration configuration)
-        => this.config = configuration.GetRequiredSection(typeof(T).Name);
+    public void Configure(TOptions options)
+        => this.config.GetSection(typeof(TOptions).Name).Bind(options);
 }
