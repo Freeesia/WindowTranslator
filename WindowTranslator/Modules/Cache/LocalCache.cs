@@ -20,7 +20,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
         this.processInfoStore = processInfoStore;
         var dir = Path.Combine(PathUtility.UserDir, "cache");
         Directory.CreateDirectory(dir);
-        this.path = Path.Combine(dir, Path.ChangeExtension(Path.GetFileName(this.processInfoStore.FileName), ".json"));
+        this.path = Path.Combine(dir, Path.ChangeExtension(this.processInfoStore.Name, ".json"));
         if (File.Exists(path))
         {
             using var fs = File.OpenRead(path);
