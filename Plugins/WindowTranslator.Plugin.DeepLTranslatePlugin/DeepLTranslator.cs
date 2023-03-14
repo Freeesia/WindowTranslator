@@ -6,17 +6,23 @@ namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 public class DeepLTranslator : ITranslateModule
 {
     private readonly Translator translator;
-    private readonly LanguageOptions langOptions;
+    private readonly string sourceLang;
+    private readonly string targetLang;
 
     public DeepLTranslator(IPluginOptions<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions)
     {
         this.translator = new(deeplOptions.Param.AuthKey, deeplOptions.Param.Options);
-        this.langOptions = langOptions.Value;
+        this.sourceLang = langOptions.Value.Source[..2];
+        this.targetLang = langOptions.Value.Target switch
+        {
+            "en-US" or "en-GB" or "pt-BR" or "pt-PT" => langOptions.Value.Target,
+            var t => t[..2],
+        };
     }
 
     public async ValueTask<string[]> TranslateAsync(string[] srcTexts)
     {
-        var translated = await translator.TranslateTextAsync(srcTexts, this.langOptions.Source, this.langOptions.Target);
+        var translated = await translator.TranslateTextAsync(srcTexts, this.sourceLang, this.targetLang);
         return translated.Select(t => t.Text).ToArray();
     }
 }
