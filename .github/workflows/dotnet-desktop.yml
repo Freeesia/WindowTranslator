@@ -68,13 +68,18 @@ jobs:
     - id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.13
     - run: |
-        msbuild $env:Solution_Name /restore /t:Rebuild /p:Configuration=Release `
-          /p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-          /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-          /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-          /p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
-          /p:OutputPath=bin
+        dotnet publish WindowTranslator -c Release -o publish `
+          -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+          -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+          -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+          -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+    - run: |
+        dotnet publish Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin -c Release -o publish\plugins `
+          -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+          -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+          -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+          -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
     - uses: actions/upload-artifact@v1
       with:
         name: WindowTranslator
-        path: WindowTranslator\bin\
+        path: publish\
