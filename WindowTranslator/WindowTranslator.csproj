@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.20348.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <UserSecretsId>B1BA69EF-650A-4C9D-82BE-D38041A8E5B1</UserSecretsId>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <ItemGroup>

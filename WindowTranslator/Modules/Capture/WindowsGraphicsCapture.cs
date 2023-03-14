@@ -1,5 +1,6 @@
 ﻿using Composition.WindowsRuntimeHelpers;
 using Microsoft.VisualStudio.Threading;
+using Windows.Foundation.Metadata;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
@@ -39,7 +40,10 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
         this.framePool.FrameArrived += FramePool_FrameArrived;
         this.session = this.framePool.CreateCaptureSession(item);
         this.session.IsCursorCaptureEnabled = false;
-        this.session.IsBorderRequired = false;
+        if (ApiInformation.IsWriteablePropertyPresent(typeof(GraphicsCaptureSession).FullName, nameof(GraphicsCaptureSession.IsBorderRequired)))
+        {
+            this.session.IsBorderRequired = false;
+        }
         this.session.StartCapture();
     }
 
