@@ -1,5 +1,4 @@
-﻿using Composition.WindowsRuntimeHelpers;
-using Kamishibai;
+﻿using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,9 +16,6 @@ using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
-
-CoreMessagingHelper.CreateDispatcherQueueControllerForCurrentThread();
-
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Host.ConfigureAppConfiguration((_, b) =>

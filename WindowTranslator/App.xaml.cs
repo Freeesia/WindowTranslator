@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Composition.WindowsRuntimeHelpers;
+using System.Windows;
+using Windows.System;
 
 namespace WindowTranslator;
 
@@ -7,8 +9,11 @@ namespace WindowTranslator;
 /// </summary>
 public partial class App : Application
 {
+    private readonly DispatcherQueueController? controller;
+
     public App()
     {
+        this.controller = CoreMessagingHelper.CreateDispatcherQueueControllerForCurrentThread();
         InitializeComponent();
     }
 }
