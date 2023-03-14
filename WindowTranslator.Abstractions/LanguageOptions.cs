@@ -1,7 +1,9 @@
-﻿namespace WindowTranslator;
+﻿using System.Globalization;
+
+namespace WindowTranslator;
 
 public class LanguageOptions
 {
-    public string Source { get; set; } = "en";
-    public string Target { get; set; } = "ja";
+    public string Source { get; set; } = "en-US";
+    public string Target { get; set; } = CultureInfo.CurrentUICulture.Name;
 }
