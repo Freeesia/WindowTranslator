@@ -1,5 +1,8 @@
+using System.ComponentModel;
+
 namespace WindowTranslator.Modules.Cache;
 
+[DisplayName("ƒƒ‚ƒŠ“àƒLƒƒƒbƒVƒ…")]
 public class InMemoryCache : ICacheModule
 {
     private readonly Dictionary<string,string> cache = new();

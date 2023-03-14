@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.Options;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 
 namespace WindowTranslator.Modules.Ocr;
+
+[DefaultModule]
+[DisplayName("Windows標準文字認識")]
 public class WindowsMediaOcr : IOcrModule
 {
     private const double IndentThrethold = .005;

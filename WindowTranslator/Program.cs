@@ -3,12 +3,12 @@ using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PropertyTools.Wpf;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using Weikio.PluginFramework.Catalogs;
 using WindowTranslator;
 using WindowTranslator.Modules;
-using WindowTranslator.Modules.Cache;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Ocr;
@@ -28,11 +28,11 @@ builder.Host.ConfigureAppConfiguration((_, b) =>
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
-    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule, NoTranslateModule>)
-    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule, LocalCache>)
-    .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule, WindowsMediaOcr>)
-    .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule, WindowsGraphicsCapture>)
-    .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule, ColorThiefModule>);
+    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule>)
+    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule>)
+    .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule>)
+    .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule>)
+    .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule>);
 
 if (Directory.Exists(@".\plugins"))
 {
@@ -58,24 +58,27 @@ using var app = builder.Build();
 
 await app.StartAsync();
 
-static Type GetPlugin<TInterface, TPlugin>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
-    where TPlugin : TInterface
+static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
 {
     var config = serviceProvider.GetRequiredService<IConfiguration>();
     var dic = config.GetSection("SelectedPlugins").GetChildren().ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+    Type GetDefaultPlugin() => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute))).First();
     if (dic.TryGetValue(typeof(TInterface).Name, out var name))
     {
-        return implementingTypes.FirstOrDefault(t => t.Name == name) ?? typeof(TPlugin);
+        return implementingTypes.FirstOrDefault(t => t.Name == name) ?? GetDefaultPlugin();
     }
-    return typeof(TPlugin);
+    return GetDefaultPlugin();
 }
 
+[DisplayName("空文字化")]
 public class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
 }
 
+[DefaultModule]
+[DisplayName("翻訳しない")]
 public class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)

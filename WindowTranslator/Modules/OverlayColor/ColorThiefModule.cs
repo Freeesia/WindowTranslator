@@ -1,4 +1,5 @@
 ﻿using ColorThiefDotNet;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Windows.Graphics.Imaging;
@@ -7,6 +8,8 @@ using Color = System.Drawing.Color;
 
 namespace WindowTranslator.Modules.OverlayColor;
 
+[DefaultModule]
+[DisplayName("近似カラー")]
 public class ColorThiefModule : IColorModule
 {
     private readonly ColorThief colorThief = new();

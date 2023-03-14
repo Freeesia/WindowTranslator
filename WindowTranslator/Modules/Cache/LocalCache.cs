@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
+
+[DisplayName("ローカルファイルキャッシュ")]
+[DefaultModule]
 public sealed class LocalCache : ICacheModule, IDisposable
 {
     private static readonly JsonSerializerOptions serializerOptions = new()

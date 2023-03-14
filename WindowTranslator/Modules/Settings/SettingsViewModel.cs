@@ -1,16 +1,18 @@
 ﻿using Kamishibai;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 using CategoryAttribute = System.ComponentModel.CategoryAttribute;
+using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Modules.Settings;
 
@@ -43,9 +45,9 @@ internal class SettingsViewModel : IEditableObject
     };
 
     [Browsable(false)]
-    public IEnumerable<string> TranslateModules { get; }
+    public IEnumerable<ModuleItem> TranslateModules { get; }
     [Browsable(false)]
-    public IEnumerable<string> CacheModules { get; }
+    public IEnumerable<ModuleItem> CacheModules { get; }
 
     [Category("全体設定|言語設定")]
     [ItemsSourceProperty(nameof(Languages))]
@@ -61,19 +63,29 @@ internal class SettingsViewModel : IEditableObject
 
     [Category("全体設定|プラグイン設定")]
     [ItemsSourceProperty(nameof(TranslateModules))]
+    [SelectedValuePath(nameof(ModuleItem.Name))]
+    [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string TranslateModule { get; set; }
+
     [Category("全体設定|プラグイン設定")]
     [ItemsSourceProperty(nameof(CacheModules))]
+    [SelectedValuePath(nameof(ModuleItem.Name))]
+    [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
 
     public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<LanguageOptions> langOptions)
     {
         var items = provider.GetPlugins();
-        this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(p => p.Name).ToList();
-        this.CacheModules = items.Where(p => typeof(ICacheModule).IsAssignableFrom(p.Type)).Select(p => p.Name).ToList();
+        this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
+        this.CacheModules = items.Where(p => typeof(ICacheModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
+        this.TranslateModule = this.TranslateModules.OrderByDescending(i => i.IsDefault).First().Name;
+        this.CacheModule = this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
         this.Source = langOptions.Value.Source;
         this.Target = langOptions.Value.Target;
     }
+
+    private static ModuleItem Convert(Plugin plugin)
+        => new(plugin.Name, plugin.Type.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
     public void BeginEdit()
     {
@@ -93,3 +105,5 @@ internal class SettingsViewModel : IEditableObject
         JsonSerializer.Serialize(fs, settings, serializerOptions);
     }
 }
+
+public record ModuleItem(string Name, string DisplayName, bool IsDefault);

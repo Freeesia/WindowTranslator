@@ -1,8 +1,11 @@
 ﻿using DeepL;
 using Microsoft.Extensions.Options;
+using System.ComponentModel;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
+
+[DisplayName("DeepL翻訳")]
 public class DeepLTranslator : ITranslateModule
 {
     private readonly Translator translator;

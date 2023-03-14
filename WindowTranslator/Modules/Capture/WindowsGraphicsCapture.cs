@@ -1,5 +1,6 @@
 ﻿using Composition.WindowsRuntimeHelpers;
 using Microsoft.VisualStudio.Threading;
+using System.ComponentModel;
 using Windows.Foundation.Metadata;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
@@ -8,6 +9,8 @@ using Windows.Graphics.DirectX.Direct3D11;
 
 namespace WindowTranslator.Modules.Capture;
 
+[DefaultModule]
+[DisplayName("Windows標準キャプチャー")]
 public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 {
     private readonly Direct3D11CaptureFramePool framePool;
