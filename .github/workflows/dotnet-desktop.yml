@@ -89,5 +89,5 @@ jobs:
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - uses: actions/upload-artifact@v3
         with:
-          name: WindowTranslator${{ matrix.self && '-full' }}
+          name: WindowTranslator${{ matrix.self && '-full' || '' }}
           path: publish\
