@@ -12,6 +12,11 @@
         "SELECTEDPLUGINS__ICOLORMODULE": "TransparentColorModule",
         "SELECTEDPLUGINS__ICACHEMODULE": "InMemoryCache"
       }
+    },
+    "Empty": {
+      "commandName": "Project",
+      "environmentVariables": {
+      }
     }
   }
 }
