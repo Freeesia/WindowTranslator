@@ -2,6 +2,7 @@
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using PropertyTools.Wpf;
 using System.ComponentModel;
 using System.IO;
@@ -52,7 +53,7 @@ builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<MainWindow, MainViewModel>();
 builder.Services.AddPresentation<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(typeof(IPluginOptions<>), typeof(PluginOptions<>));
-builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
+builder.Services.Configure<UserSettings>(builder.Configuration);
 
 using var app = builder.Build();
 
@@ -60,8 +61,8 @@ await app.StartAsync();
 
 static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
 {
-    var config = serviceProvider.GetRequiredService<IConfiguration>();
-    var dic = config.GetSection("SelectedPlugins").GetChildren().ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+    var settings = serviceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+    var dic = settings.Value.SelectedPlugins;
     Type GetDefaultPlugin() => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute))).First();
     if (dic.TryGetValue(typeof(TInterface).Name, out var name))
     {

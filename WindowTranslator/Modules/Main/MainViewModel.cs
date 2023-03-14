@@ -2,7 +2,6 @@
 using Kamishibai;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
-using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;

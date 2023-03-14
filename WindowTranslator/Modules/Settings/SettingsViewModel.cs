@@ -1,4 +1,5 @@
 ﻿using Kamishibai;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel;
@@ -73,19 +74,20 @@ internal class SettingsViewModel : IEditableObject
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
 
-    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<LanguageOptions> langOptions)
+    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings)
     {
         var items = provider.GetPlugins();
         this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
         this.CacheModules = items.Where(p => typeof(ICacheModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
-        this.TranslateModule = this.TranslateModules.OrderByDescending(i => i.IsDefault).First().Name;
-        this.CacheModule = this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
-        this.Source = langOptions.Value.Source;
-        this.Target = langOptions.Value.Target;
+        var dic = userSettings.Value.SelectedPlugins;
+        this.TranslateModule = dic.TryGetValue(nameof(ITranslateModule), out var t) ? t : this.TranslateModules.OrderByDescending(i => i.IsDefault).First().Name;
+        this.CacheModule = dic.TryGetValue(nameof(ICacheModule), out var c) ? c : this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
+        this.Source = userSettings.Value.Language.Source;
+        this.Target = userSettings.Value.Language.Target;
     }
 
     private static ModuleItem Convert(Plugin plugin)
-        => new(plugin.Name, plugin.Type.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
+        => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
     public void BeginEdit()
     {
@@ -99,7 +101,12 @@ internal class SettingsViewModel : IEditableObject
     {
         var settings = new UserSettings()
         {
-            Language = { Source = this.Source, Target = this.Target }
+            Language = { Source = this.Source, Target = this.Target },
+            SelectedPlugins =
+            {
+                [nameof(ITranslateModule)] = this.TranslateModule,
+                [nameof(ICacheModule)] = this.CacheModule,
+            }
         };
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
         JsonSerializer.Serialize(fs, settings, serializerOptions);
