@@ -6,7 +6,6 @@
     <UseWPF>true</UseWPF>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <UserSecretsId>B1BA69EF-650A-4C9D-82BE-D38041A8E5B1</UserSecretsId>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

@@ -18,18 +18,14 @@ using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
-builder.Host.ConfigureAppConfiguration((_, b) =>
-{
-    b.AddUserSecrets<Program>();
-});
-
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
     .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule>)
     .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule>)
     .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule>)
     .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule>)
-    .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule>);
+    .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule>)
+    .AddPluginType<IPluginParam>();
 
 if (Directory.Exists(@".\plugins"))
 {
@@ -48,6 +44,14 @@ builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<MainWindow, MainViewModel>();
 builder.Services.AddPresentation<PropertyDialog, SettingsViewModel>();
+ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
+builder.Services.AddTransient(_ =>
+{
+    var dlg = new PropertyDialog();
+    dlg.PropertyControl.SetCurrentValue(PropertyGrid.OperatorProperty, new SettingsPropertyGridOperator());
+    return dlg;
+});
+builder.Services.AddTransient<SettingsViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 

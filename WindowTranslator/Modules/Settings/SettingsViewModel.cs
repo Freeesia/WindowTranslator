@@ -1,5 +1,4 @@
 ﻿using Kamishibai;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel;
@@ -21,6 +20,10 @@ internal class SettingsViewModel : IEditableObject
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
+        Converters =
+        {
+            new PluginParamConverter(),
+        },
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
         WriteIndented = true,
     };
@@ -73,7 +76,10 @@ internal class SettingsViewModel : IEditableObject
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
 
-    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings)
+    [Category("プラグイン設定|")]
+    public IPluginParam[] Params { get; }
+
+    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings, [Inject] IEnumerable<IPluginParam> @params, [Inject] IServiceProvider sp)
     {
         var items = provider.GetPlugins();
         this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
@@ -83,6 +89,17 @@ internal class SettingsViewModel : IEditableObject
         this.CacheModule = dic.TryGetValue(nameof(ICacheModule), out var c) ? c : this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
         this.Source = userSettings.Value.Language.Source;
         this.Target = userSettings.Value.Language.Target;
+        this.Params = @params.Select(p =>
+        {
+            var configureType = typeof(IConfigureOptions<>).MakeGenericType(p.GetType());
+            var configures = (IEnumerable<object>)sp.GetService(typeof(IEnumerable<>).MakeGenericType(configureType))!;
+            var configureMethod = configureType.GetMethod(nameof(IConfigureOptions<object>.Configure))!;
+            foreach (var configure in configures)
+            {
+                configureMethod.Invoke(configure, new[] { p });
+            }
+            return p;
+        }).ToArray();
     }
 
     private static ModuleItem Convert(Plugin plugin)
@@ -105,7 +122,8 @@ internal class SettingsViewModel : IEditableObject
             {
                 [nameof(ITranslateModule)] = this.TranslateModule,
                 [nameof(ICacheModule)] = this.CacheModule,
-            }
+            },
+            PluginParams = this.Params.ToDictionary(p => p.GetType().Name, p => p),
         };
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
         JsonSerializer.Serialize(fs, settings, serializerOptions);
