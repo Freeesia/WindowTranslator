@@ -3,7 +3,8 @@
     "WindowTranslator": {
       "commandName": "Project",
       "environmentVariables": {
-        "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator"
+        "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator",
+        "LOGGING__LOGLEVEL__DEFAULT": "Debug"
       }
     },
     "RectDebug": {
