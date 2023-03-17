@@ -125,6 +125,7 @@ internal class SettingsViewModel : IEditableObject
             },
             PluginParams = this.Params.ToDictionary(p => p.GetType().Name, p => p),
         };
+        Directory.CreateDirectory(PathUtility.UserDir);
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
         JsonSerializer.Serialize(fs, settings, serializerOptions);
     }
