@@ -1,5 +1,4 @@
-﻿
-using PropertyTools.DataAnnotations;
+﻿using System.ComponentModel;
 
 namespace WindowTranslator;
 public class UserSettings
@@ -15,6 +14,8 @@ public class UserSettings
 
 public enum ViewMode
 {
+    [Description("キャプチャーウィンドウ")]
     Capture,
+    [Description("オーバレイ")]
     Overlay,
 }

@@ -12,6 +12,7 @@ using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 using CategoryAttribute = System.ComponentModel.CategoryAttribute;
+using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Modules.Settings;
 
@@ -56,27 +57,32 @@ internal class SettingsViewModel : IEditableObject
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
+    [DisplayName("翻訳元(認識)言語")]
     public string Source { get; set; }
 
     [Category("全体設定|言語設定")]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
+    [DisplayName("翻訳先(表示)言語")]
     public string Target { get; set; }
 
     [Category("全体設定|プラグイン設定")]
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
+    [DisplayName("翻訳モジュール選択")]
     public string TranslateModule { get; set; }
 
     [Category("全体設定|プラグイン設定")]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
+    [DisplayName("キャッシュモジュール選択")]
     public string CacheModule { get; set; }
 
     [Category("全体設定|表示設定")]
+    [DisplayName("翻訳結果表示モード")]
     public ViewMode ViewMode { get; set; }
 
     public IPluginParam[] Params { get; }

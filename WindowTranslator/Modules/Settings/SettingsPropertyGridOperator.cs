@@ -58,7 +58,7 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
 
     private class ParentablePropertyItem : PropertyItem
     {
-        private Stack<string> parents = new Stack<string>();
+        private readonly Stack<string> parents = new();
         public ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
             : base(propertyDescriptor, propertyDescriptors)
         {
