@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
+using System.Diagnostics;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
@@ -17,6 +19,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
     private readonly IColorModule color;
+    private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly ICaptureModule capture;
     [ObservableProperty]
@@ -29,7 +32,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private SoftwareBitmap? sbmp;
 
-    public MainViewModelBase(IProcessInfoStore processInfoStore, ICaptureModule capture, IOcrModule ocr, ITranslateModule translator, ICacheModule cache, IColorModule color)
+    public MainViewModelBase(IProcessInfoStore processInfoStore, ICaptureModule capture, IOcrModule ocr, ITranslateModule translator, ICacheModule cache, IColorModule color, ILogger logger)
     {
         var targetProcess = processInfoStore;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
@@ -38,6 +41,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
+        this.logger = logger;
         this.capture.StartCapture(targetProcess.MainWindowHangle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
@@ -56,6 +60,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task CreateTextOverlayAsync()
     {
+        var sw = Stopwatch.StartNew();
         if (!await this.analyzing.WaitAsync(0))
         {
             return;
@@ -67,11 +72,10 @@ public abstract partial class MainViewModelBase : IDisposable
             return;
         }
         var texts = await this.ocr.RecognizeAsync(sbmp);
-        await Task.WhenAll(TranslateAsync(texts), Task.Run(async () =>
-        {
-            texts = await this.color.ConvertColorAsync(sbmp, texts);
-        }));
-        this.OcrTexts = texts.Select(t => t with { Text = this.cache.Get(t.Text) }).ToArray();
+        TranslateAsync(texts).Forget();
+        texts = await this.color.ConvertColorAsync(sbmp, texts);
+        this.OcrTexts = texts.Select(t => t with { IsTranslated = this.cache.Contains(t.Text), Text = this.cache.Get(t.Text) }).ToArray();
+        this.logger.LogDebug(sw.Elapsed.ToString());
     }
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
@@ -90,8 +94,8 @@ public sealed class CaptureMainViewModel : MainViewModelBase
 {
     public ICaptureModule Capture { get; }
 
-    public CaptureMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
-        : base(processInfoStore, capture, ocr, translator, cache, color)
+    public CaptureMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color, [Inject] ILogger<CaptureMainViewModel> logger)
+        : base(processInfoStore, capture, ocr, translator, cache, color, logger)
     {
         this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
     }
@@ -100,8 +104,8 @@ public sealed class CaptureMainViewModel : MainViewModelBase
 [OpenWindow]
 public sealed class OverlayMainViewModel : MainViewModelBase
 {
-    public OverlayMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
-        : base(processInfoStore, capture, ocr, translator, cache, color)
+    public OverlayMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color, [Inject] ILogger<OverlayMainViewModel> logger)
+        : base(processInfoStore, capture, ocr, translator, cache, color, logger)
     {
     }
 }

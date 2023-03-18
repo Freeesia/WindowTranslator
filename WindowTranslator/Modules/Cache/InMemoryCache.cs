@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.ComponentModel;
 
 namespace WindowTranslator.Modules.Cache;
@@ -5,7 +6,7 @@ namespace WindowTranslator.Modules.Cache;
 [DisplayName("ƒƒ‚ƒŠ“àƒLƒƒƒbƒVƒ…")]
 public class InMemoryCache : ICacheModule
 {
-    private readonly Dictionary<string,string> cache = new();
+    private readonly ConcurrentDictionary<string, string> cache = new();
 
     public bool Contains(string src)
         => this.cache.ContainsKey(src);
@@ -13,9 +14,9 @@ public class InMemoryCache : ICacheModule
     {
         foreach (var (src, dst) in pairs)
         {
-            this.cache.Add(src, dst);
+            this.cache.AddOrUpdate(src, dst, (_, _) => dst);
         }
     }
     public string Get(string src)
-        => this.cache[src];
+        => this.cache.TryGetValue(src, out var dst) ? dst : string.Empty;
 }

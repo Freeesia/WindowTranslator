@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -16,7 +17,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
     };
     private readonly IProcessInfoStore processInfoStore;
-    private readonly Dictionary<string, string> cache;
+    private readonly ConcurrentDictionary<string, string> cache;
     private readonly string path;
 
     public LocalCache(IProcessInfoStore processInfoStore)
@@ -28,7 +29,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
         if (File.Exists(path))
         {
             using var fs = File.OpenRead(path);
-            cache = JsonSerializer.Deserialize<Dictionary<string, string>>(fs, serializerOptions) ?? new();
+            cache = new(JsonSerializer.Deserialize<Dictionary<string, string>>(fs, serializerOptions) ?? new());
         }
         else
         {
@@ -46,7 +47,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
     {
         foreach (var (src, dst) in pairs)
         {
-            this.cache.Add(src, dst);
+            this.cache.AddOrUpdate(src, dst, (_, _) => dst);
         }
     }
 
@@ -54,5 +55,5 @@ public sealed class LocalCache : ICacheModule, IDisposable
         => this.cache.ContainsKey(src);
 
     public string Get(string src)
-        => this.cache[src];
+        => this.cache.TryGetValue(src, out var dst) ? dst : string.Empty;
 }

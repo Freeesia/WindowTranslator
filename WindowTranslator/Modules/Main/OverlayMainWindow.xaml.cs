@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PInvoke;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -23,7 +24,7 @@ public partial class OverlayMainWindow : Window
         InitializeComponent();
         this.processInfo = processInfo;
         this.logger = logger;
-        this.timer.Interval = TimeSpan.FromMilliseconds(100); // 100ms ごとに更新
+        this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
     }
 
@@ -38,6 +39,7 @@ public partial class OverlayMainWindow : Window
 
     private void UpdateWindowPositionAndSize()
     {
+        var sw = Stopwatch.StartNew();
         var windowInfo = WINDOWINFO.Create();
         if (!GetWindowInfo(this.processInfo.MainWindowHangle, ref windowInfo))
         {
@@ -58,11 +60,11 @@ public partial class OverlayMainWindow : Window
         var top = clientRect.top / dpiScaleY;
         var width = (clientRect.right - clientRect.left + borderWidth * 2) / dpiScaleX;
         var height = (clientRect.bottom - clientRect.top + borderHeight) / dpiScaleY;
-        this.logger.LogDebug($"(x:{left}, y:{top}, w:{width}, h:{height})");
 
         this.SetCurrentValue(LeftProperty, left);
         this.SetCurrentValue(TopProperty, top);
         this.SetCurrentValue(WidthProperty, width);
         this.SetCurrentValue(HeightProperty, height);
+        this.logger.LogDebug($"(x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}) {sw.Elapsed}");
     }
 }

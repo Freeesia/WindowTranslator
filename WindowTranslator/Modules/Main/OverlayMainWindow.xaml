@@ -2,8 +2,8 @@
     x:Class="WindowTranslator.Modules.Main.OverlayMainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="host"
@@ -16,47 +16,8 @@
     Loaded="Window_Loaded"
     WindowStyle="None"
     mc:Ignorable="d">
-    <Viewbox>
-        <ItemsControl
-            Width="{Binding Width}"
-            Height="{Binding Height}"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            ItemsSource="{Binding OcrTexts}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border
-                        MinWidth="{Binding Width}"
-                        MinHeight="{Binding Height}"
-                        Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                        BorderBrush="#40000000"
-                        BorderThickness="2"
-                        ClipToBounds="True"
-                        CornerRadius="10">
-                        <TextBlock
-                            Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
-                            FontSize="{Binding FontSize}"
-                            Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                            Text="{Binding Text}"
-                            TextWrapping="Wrap">
-                            <TextBlock.RenderTransform>
-                                <TranslateTransform Y="{Binding FontSize, Converter={x:Static data:TextOverlayTransformYConverter.Default}, ConverterParameter=-0.2}" />
-                            </TextBlock.RenderTransform>
-                        </TextBlock>
-                    </Border>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
-                    <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-        </ItemsControl>
-    </Viewbox>
+    <control:OverlayTextsControl
+        RectHeight="{Binding Height}"
+        RectWidth="{Binding Width}"
+        Texts="{Binding OcrTexts}" />
 </Window>
