@@ -59,8 +59,8 @@ namespace Composition.WindowsRuntimeHelpers
 
         public static void SetWindow(this GraphicsCapturePicker picker, IntPtr hwnd)
         {
-            var interop = (IInitializeWithWindow)(object)picker;
-            interop.Initialize(hwnd);
+            var window = picker.As<IInitializeWithWindow>();
+            window.Initialize(hwnd);
         }
 
         public static GraphicsCaptureItem? CreateItemForWindow(IntPtr hwnd)

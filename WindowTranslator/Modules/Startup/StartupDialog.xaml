@@ -5,51 +5,30 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Startup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:kamishibai="clr-namespace:Kamishibai;assembly=Kamishibai.View"
-    Title="StartupDialog"
+    Title="WindowTranslator"
+    MinWidth="120"
+    d:DataContext="{d:DesignInstance local:StartupViewModel}"
     SizeToContent="WidthAndHeight"
     WindowStyle="ToolWindow"
-    d:DataContext="{d:DesignInstance local:StartupViewModel}"
     mc:Ignorable="d">
-    <Grid Margin="4">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <ComboBox
-            Grid.Row="0"
-            Grid.Column="0"
-            MinWidth="240"
-            Margin="4"
-            DisplayMemberPath="Title"
-            ItemsSource="{Binding ProcessInfos}"
-            SelectedItem="{Binding SelectedProcess}" />
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="120" />
+        </Style>
+    </Window.Resources>
+    <StackPanel Orientation="Horizontal">
         <Button
-            Grid.Row="0"
-            Grid.Column="1"
-            MinWidth="40"
-            Margin="4"
-            Command="{Binding RefreshProcessCommand}"
-            Content="R" />
-        <Button
-            Grid.Row="1"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="4"
             Command="{Binding RunCommand}"
-            Content="Attach" />
+            Content="&#xf2b7;"
+            FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
+            FontSize="48"
+            FontWeight="Bold" />
         <Button
-            Grid.Row="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="4"
             Command="{Binding OpenSettingsDialogCommand}"
-            CommandParameter="{kamishibai:Window}"
-            Content="設定" />
-    </Grid>
+            Content="&#xe713;"
+            FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
+            FontSize="48"
+            FontWeight="Bold" />
+    </StackPanel>
 </Window>
