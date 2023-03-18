@@ -9,9 +9,8 @@ using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Main;
 
-[OpenWindow]
 [ObservableObject]
-public sealed partial class MainViewModel : IDisposable
+public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Timer timer;
     private readonly IOcrModule ocr;
@@ -19,25 +18,27 @@ public sealed partial class MainViewModel : IDisposable
     private readonly ICacheModule cache;
     private readonly IColorModule color;
     private readonly SemaphoreSlim analyzing = new(1, 1);
+    private readonly ICaptureModule capture;
     [ObservableProperty]
     private IEnumerable<TextRect> ocrTexts = Enumerable.Empty<TextRect>();
 
+    [ObservableProperty]
+    private double width = double.NaN;
+    [ObservableProperty]
+    private double height = double.NaN;
+
     private SoftwareBitmap? sbmp;
 
-    public ICaptureModule Capture { get; }
-
-    public IProcessInfoStore TargetProcess { get; }
-
-    public MainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
+    public MainViewModelBase(IProcessInfoStore processInfoStore, ICaptureModule capture, IOcrModule ocr, ITranslateModule translator, ICacheModule cache, IColorModule color)
     {
-        this.TargetProcess = processInfoStore;
-        this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
-        this.Capture.Captured += Capture_CapturedAsync;
+        var targetProcess = processInfoStore;
+        this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
+        this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
-        this.Capture.StartCapture(this.TargetProcess.MainWindowHangle);
+        this.capture.StartCapture(targetProcess.MainWindowHangle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
 
@@ -48,6 +49,8 @@ public sealed partial class MainViewModel : IDisposable
     {
         var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
         var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
+        this.Width = newBmp.PixelWidth;
+        this.Height = newBmp.PixelHeight;
         sbmp?.Dispose();
     }
 
@@ -79,5 +82,26 @@ public sealed partial class MainViewModel : IDisposable
             var translated = await this.translator.TranslateAsync(transTargets);
             this.cache.AddRange(transTargets.Zip(translated));
         }
+    }
+}
+
+[OpenWindow]
+public sealed class CaptureMainViewModel : MainViewModelBase
+{
+    public ICaptureModule Capture { get; }
+
+    public CaptureMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
+        : base(processInfoStore, capture, ocr, translator, cache, color)
+    {
+        this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
+    }
+}
+
+[OpenWindow]
+public sealed class OverlayMainViewModel : MainViewModelBase
+{
+    public OverlayMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color)
+        : base(processInfoStore, capture, ocr, translator, cache, color)
+    {
     }
 }

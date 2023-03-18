@@ -76,7 +76,9 @@ internal class SettingsViewModel : IEditableObject
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
 
-    [Category("プラグイン設定|")]
+    [Category("全体設定|表示設定")]
+    public ViewMode ViewMode { get; set; }
+
     public IPluginParam[] Params { get; }
 
     public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings, [Inject] IEnumerable<IPluginParam> @params, [Inject] IServiceProvider sp)
@@ -89,6 +91,7 @@ internal class SettingsViewModel : IEditableObject
         this.CacheModule = dic.TryGetValue(nameof(ICacheModule), out var c) ? c : this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
         this.Source = userSettings.Value.Language.Source;
         this.Target = userSettings.Value.Language.Target;
+        this.ViewMode = userSettings.Value.ViewMode;
         this.Params = @params.Select(p =>
         {
             var configureType = typeof(IConfigureOptions<>).MakeGenericType(p.GetType());
@@ -118,6 +121,7 @@ internal class SettingsViewModel : IEditableObject
         var settings = new UserSettings()
         {
             Language = { Source = this.Source, Target = this.Target },
+            ViewMode = this.ViewMode,
             SelectedPlugins =
             {
                 [nameof(ITranslateModule)] = this.TranslateModule,

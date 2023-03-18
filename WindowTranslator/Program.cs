@@ -42,8 +42,8 @@ builder.Configuration.AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
-builder.Services.AddPresentation<MainWindow, MainViewModel>();
-builder.Services.AddPresentation<PropertyDialog, SettingsViewModel>();
+builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
+builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
 ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(_ =>
 {

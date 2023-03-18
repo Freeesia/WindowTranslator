@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Windows;
 using WindowTranslator.Stores;
@@ -13,6 +14,7 @@ public partial class StartupViewModel
     private readonly IPresentationService presentationService;
     private readonly IProcessInfoStore processInfoStore;
     private readonly IServiceProvider serviceProvider;
+    private readonly IOptionsMonitor<UserSettings> options;
     [ObservableProperty]
     private IReadOnlyList<ProcessInfo> processInfos = Array.Empty<ProcessInfo>();
 
@@ -21,12 +23,13 @@ public partial class StartupViewModel
 
     private ProcessInfo? selectedProcess;
 
-    public StartupViewModel(IPresentationService presentationService, IProcessInfoStore processInfoStore, IServiceProvider serviceProvider)
+    public StartupViewModel(IPresentationService presentationService, IProcessInfoStore processInfoStore, IServiceProvider serviceProvider, IOptionsMonitor<UserSettings> options)
     {
         _ = RefreshProcessAsync();
         this.presentationService = presentationService;
         this.processInfoStore = processInfoStore;
         this.serviceProvider = serviceProvider;
+        this.options = options;
     }
 
     [RelayCommand]
@@ -50,7 +53,17 @@ public partial class StartupViewModel
         var window = app.MainWindow;
         try
         {
-            await this.presentationService.OpenMainWindowAsync();
+            switch (this.options.CurrentValue.ViewMode)
+            {
+                case ViewMode.Capture:
+                    await this.presentationService.OpenCaptureMainWindowAsync();
+                    break;
+                case ViewMode.Overlay:
+                    await this.presentationService.OpenOverlayMainWindowAsync();
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
             app.MainWindow = app.Windows.OfType<Window>().Single(w => w.IsActive);
             window.Close();
         }
