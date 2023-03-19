@@ -12,7 +12,7 @@ public partial class StartupDialog : Window
     public StartupDialog(IConfiguration configuration)
     {
         InitializeComponent();
-        this.mode = configuration.GetValue("LaunchMode", LaunchMode.Direct);
+        this.mode = configuration.GetValue(nameof(LaunchMode), LaunchMode.Direct);
     }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

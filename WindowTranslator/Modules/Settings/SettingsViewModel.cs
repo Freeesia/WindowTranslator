@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.Unicode;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
+using WindowTranslator.Modules.Startup;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 using CategoryAttribute = System.ComponentModel.CategoryAttribute;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
@@ -126,7 +127,7 @@ internal partial class SettingsViewModel : IEditableObject
         string? name = exe.GetName().Name;
         if (key != null && Environment.ProcessPath is { } path)
         {
-            key.SetValue(name, path);
+            key.SetValue(name, $"\"{path}\" --{nameof(LaunchMode)} {LaunchMode.Startup}");
             this.presentationService.ShowMessage($"{name}を自動起動に登録しました。", icon: MessageBoxImage.Information);
         }
         else
