@@ -13,6 +13,7 @@
     Width="800"
     Height="450"
     d:DataContext="{d:DesignInstance local:CaptureMainViewModel}"
+    Loaded="Window_Loaded"
     mc:Ignorable="d">
     <adorner:HwndAdornerManager>
         <Viewbox>

@@ -16,7 +16,6 @@ using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
-using Wpf.Extensions.Hosting;
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Services.AddPluginFramework()

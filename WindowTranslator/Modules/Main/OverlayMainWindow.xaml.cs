@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Threading;
 using PInvoke;
 using System.Diagnostics;
 using System.Windows;
@@ -15,14 +16,16 @@ namespace WindowTranslator.Modules.Main;
 public partial class OverlayMainWindow : Window
 {
     private readonly IProcessInfoStore processInfo;
+    private readonly IPresentationService presentationService;
     private readonly DispatcherTimer timer = new();
     private readonly ILogger<OverlayMainWindow> logger;
     private IntPtr windowHandle;
 
-    public OverlayMainWindow(IProcessInfoStore processInfo, ILogger<OverlayMainWindow> logger)
+    public OverlayMainWindow(IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
     {
         InitializeComponent();
         this.processInfo = processInfo;
+        this.presentationService = presentationService;
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
@@ -44,6 +47,7 @@ public partial class OverlayMainWindow : Window
         if (!GetWindowInfo(this.processInfo.MainWindowHangle, ref windowInfo))
         {
             this.timer.Stop();
+            this.presentationService.CloseWindowAsync(this).Forget();
             return;
         }
         var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHangle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
