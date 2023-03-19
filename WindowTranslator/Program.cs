@@ -51,6 +51,7 @@ builder.Services.AddTransient(_ =>
 {
     var dlg = new PropertyDialog();
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.OperatorProperty, new SettingsPropertyGridOperator());
+    dlg.PropertyControl.SetCurrentValue(PropertyGrid.ControlFactoryProperty, new SettingsPropertyGridFactory());
     return dlg;
 });
 builder.Services.AddTransient<SettingsViewModel>();

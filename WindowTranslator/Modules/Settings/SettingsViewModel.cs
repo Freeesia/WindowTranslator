@@ -1,5 +1,7 @@
-﻿using Kamishibai;
+﻿using CommunityToolkit.Mvvm.Input;
+using Kamishibai;
 using Microsoft.Extensions.Options;
+using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel;
 using System.Globalization;
@@ -17,7 +19,7 @@ using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 namespace WindowTranslator.Modules.Settings;
 
 [OpenDialog]
-internal class SettingsViewModel : IEditableObject
+internal partial class SettingsViewModel : IEditableObject
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
@@ -28,6 +30,7 @@ internal class SettingsViewModel : IEditableObject
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
         WriteIndented = true,
     };
+    private readonly IPresentationService presentationService;
 
     [Browsable(false)]
     public IEnumerable<CultureInfo> Languages { get; } = new[]
@@ -87,7 +90,7 @@ internal class SettingsViewModel : IEditableObject
 
     public IPluginParam[] Params { get; }
 
-    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings, [Inject] IEnumerable<IPluginParam> @params, [Inject] IServiceProvider sp)
+    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings, [Inject] IEnumerable<IPluginParam> @params, [Inject] IServiceProvider sp, [Inject] IPresentationService presentationService)
     {
         var items = provider.GetPlugins();
         this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
@@ -109,10 +112,41 @@ internal class SettingsViewModel : IEditableObject
             }
             return p;
         }).ToArray();
+        this.presentationService = presentationService;
     }
 
     private static ModuleItem Convert(Plugin plugin)
         => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
+
+    [RelayCommand]
+    public void RegisterToStartup()
+    {
+        var exe = Assembly.GetExecutingAssembly();
+        using var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        string? name = exe.GetName().Name;
+        if (key != null && Environment.ProcessPath is { } path)
+        {
+            key.SetValue(name, path);
+            this.presentationService.ShowMessage($"{name}を自動起動に登録しました。", icon: MessageBoxImage.Information);
+        }
+        else
+        {
+            this.presentationService.ShowMessage($"{name}を自動起動に登録できませんでした。", icon: MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
+    public void UnregisterFromStartup()
+    {
+        var exe = Assembly.GetExecutingAssembly();
+        var name = exe.GetName().Name;
+        using var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        if (name is not null && key?.GetValue(name) is not null)
+        {
+            key.DeleteValue(name);
+            this.presentationService.ShowMessage($"{name}を自動起動を解除しました。", icon: MessageBoxImage.Information);
+        }
+    }
 
     public void BeginEdit()
     {
