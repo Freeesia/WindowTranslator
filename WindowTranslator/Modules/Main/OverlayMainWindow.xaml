@@ -14,6 +14,8 @@
     AllowsTransparency="True"
     Background="Transparent"
     Loaded="Window_Loaded"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
     WindowStyle="None"
     mc:Ignorable="d">
     <control:OverlayTextsControl
