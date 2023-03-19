@@ -16,6 +16,7 @@ using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
+using Wpf.Extensions.Hosting;
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Services.AddPluginFramework()
@@ -38,7 +39,9 @@ if (Directory.Exists(userPluginsDir))
     builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir));
 }
 
-builder.Configuration.AddJsonFile(PathUtility.UserSettings, true, true);
+builder.Configuration
+    .AddCommandLine(args)
+    .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();

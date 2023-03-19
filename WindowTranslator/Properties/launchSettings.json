@@ -7,6 +7,13 @@
         "LOGGING__LOGLEVEL__DEFAULT": "Debug"
       }
     },
+    "StartupMode": {
+      "commandName": "Project",
+      "commandLineArgs": "--LaunchMode Startup",
+      "environmentVariables": {
+        "LOGGING__LOGLEVEL__DEFAULT": "Debug"
+      }
+    },
     "RectDebug": {
       "commandName": "Project",
       "environmentVariables": {

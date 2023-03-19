@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WindowTranslator.Modules.Startup;
 /// <summary>
@@ -18,8 +7,31 @@ namespace WindowTranslator.Modules.Startup;
 /// </summary>
 public partial class StartupDialog : Window
 {
-    public StartupDialog()
+    private readonly LaunchMode mode;
+
+    public StartupDialog(IConfiguration configuration)
     {
         InitializeComponent();
+        this.mode = configuration.GetValue("LaunchMode", LaunchMode.Direct);
     }
+
+    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        e.Cancel = true;
+        Hide();
+    }
+
+    private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (this.mode == LaunchMode.Startup)
+        {
+            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        }
+    }
+}
+
+public enum LaunchMode
+{
+    Direct,
+    Startup,
 }

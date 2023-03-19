@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using PInvoke;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Graphics.Capture;
 using WindowTranslator.Stores;
@@ -20,12 +21,20 @@ public partial class StartupViewModel
     private readonly IServiceProvider serviceProvider;
     private readonly IOptionsMonitor<UserSettings> options;
 
+    public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
+
     public StartupViewModel(IPresentationService presentationService, IProcessInfoStore processInfoStore, IServiceProvider serviceProvider, IOptionsMonitor<UserSettings> options)
     {
         this.presentationService = presentationService;
         this.processInfoStore = processInfoStore;
         this.serviceProvider = serviceProvider;
         this.options = options;
+        this.TaskBarIconMenus = new[]
+        {
+            new MenuItemViewModel("アタッチ", this.RunCommand),
+            new MenuItemViewModel("設定", this.OpenSettingsDialogCommand),
+            new MenuItemViewModel("終了", this.ExitCommand),
+        };
     }
 
     [RelayCommand]
@@ -33,15 +42,25 @@ public partial class StartupViewModel
     {
         var app = Application.Current;
         var window = app.MainWindow;
+        var beforeVisible = window.IsVisible;
+        if (!beforeVisible)
+        {
+            window.Show();
+        }
         var picker = new GraphicsCapturePicker();
-        picker.SetWindow(new WindowInteropHelper(window).Handle);
+        var handle = new WindowInteropHelper(window).Handle;
+        picker.SetWindow(handle);
         ProcessInfo? p = null;
         while (p is null)
         {
             var item = await picker.PickSingleItemAsync();
             if (item is null)
             {
-                continue;
+                if (!beforeVisible)
+                {
+                    window.Close();
+                }
+                return;
             }
             p = FindProcessByWindowTitle(item.DisplayName);
             if (p is null)
@@ -50,6 +69,13 @@ public partial class StartupViewModel
                 選択したウィンドウ「{item.DisplayName}」はプロセスを特定できないため、キャプチャー出来ません。
                 モニターはサポート対象外です。
                 """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
+            }
+            else if (p.WindowHandle == handle)
+            {
+                this.presentationService.ShowMessage($"""
+                WindowTranslator以外のウィンドウを選択してください
+                """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
+                p = null;
             }
         }
         this.processInfoStore.SetTargetProcess(p.WindowHandle, p.Name);
@@ -66,16 +92,18 @@ public partial class StartupViewModel
                 default:
                     throw new NotSupportedException();
             }
-            app.MainWindow = app.Windows.OfType<Window>().Single(w => w.IsActive);
             window.Close();
         }
         catch (Exception ex)
         {
-            app.MainWindow = window;
             this.presentationService.ShowMessage($"""
                 ウィンドウの埋め込みに失敗しました。
                 エラー：{ex.Message}
                 """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
+        }
+        if (!beforeVisible)
+        {
+            window.Close();
         }
     }
 
@@ -88,6 +116,10 @@ public partial class StartupViewModel
         var window = app.MainWindow;
         await ps.OpenSettingsDialogAsync(window, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
     }
+
+    [RelayCommand]
+    public void Exit()
+        => Application.Current.Shutdown();
 
     private static ProcessInfo? FindProcessByWindowTitle(string windowTitle)
     {
@@ -118,3 +150,4 @@ public partial class StartupViewModel
     private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);
 }
 
+public record MenuItemViewModel(string Header, ICommand Command);
