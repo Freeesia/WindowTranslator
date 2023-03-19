@@ -34,6 +34,8 @@ public partial class OverlayMainWindow : Window
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
+        // ShowInTaskbarをfalseにすると↓の方法で一番上に表示する必要がある
+        // https://social.msdn.microsoft.com/Forums/en-US/cdbe457f-d653-4a18-9295-bb9b609bc4e3/desktop-apps-on-top-of-metro-extended
         IntPtr hWndHiddenOwner = User32.GetWindow(this.windowHandle, GetWindowCommands.GW_OWNER);
         SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
         var extendedStyle = (SetWindowLongFlags)GetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE);
