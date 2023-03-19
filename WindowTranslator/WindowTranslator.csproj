@@ -7,6 +7,7 @@
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <ApplicationIcon>Resources\wt.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -14,6 +15,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Resources\wt.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />

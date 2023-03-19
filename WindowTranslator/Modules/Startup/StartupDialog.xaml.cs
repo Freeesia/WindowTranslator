@@ -21,7 +21,7 @@ public partial class StartupDialog : Window
         Hide();
     }
 
-    private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+    private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         if (this.mode == LaunchMode.Startup)
         {
