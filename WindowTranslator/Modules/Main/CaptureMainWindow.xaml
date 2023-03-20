@@ -6,14 +6,13 @@
     xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:ctl="clr-namespace:WindowTranslator.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="WindowTranslator"
     Width="800"
     Height="450"
     d:DataContext="{d:DesignInstance local:CaptureMainViewModel}"
-    Icon="/Resources/wt.ico"
+    Icon="/wt.ico"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <adorner:HwndAdornerManager>
