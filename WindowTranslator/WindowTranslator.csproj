@@ -7,7 +7,7 @@
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
-    <ApplicationIcon>Resources\wt.ico</ApplicationIcon>
+    <ApplicationIcon>$(MSBuildThisFileDirectory)..\images\wt.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -16,7 +16,7 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="Resources\wt.ico" />
+    <Resource Include="$(ApplicationIcon)" />
   </ItemGroup>
 
   <ItemGroup>

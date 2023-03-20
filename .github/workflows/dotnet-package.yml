@@ -1,0 +1,36 @@
+name: .NET Core Package
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: "5.x"
+      - id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+      - run: |
+          dotnet pack WindowTranslator.Abstractions -c Release -o pack \
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} \
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} \
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} \
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+          dotnet nuget push pack/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json

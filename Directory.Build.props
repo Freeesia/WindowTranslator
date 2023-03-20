@@ -7,6 +7,15 @@
     <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Freesia</Authors>
+    <Description>WindowTranslator is a tool to translate the text on the screen.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Freeesia/WindowTranslator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Freeesia/WindowTranslator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>WindowTranslator;OCR;Translation</PackageTags>    
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
