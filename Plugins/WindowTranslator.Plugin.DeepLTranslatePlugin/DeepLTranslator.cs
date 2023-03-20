@@ -1,7 +1,10 @@
 ﻿using DeepL;
 using Microsoft.Extensions.Options;
+using PropertyTools.DataAnnotations;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 using WindowTranslator.Modules;
+using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 
@@ -34,4 +37,9 @@ public class DeepLOptions : IPluginParam
 {
     public string AuthKey { get; set; } = string.Empty;
     public TranslatorOptions? Options { get; set; }
+
+    [JsonIgnore]
+    [DisplayName("帰属表記")]
+    [Comment]
+    public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
 }
