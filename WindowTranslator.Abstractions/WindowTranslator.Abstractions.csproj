@@ -5,6 +5,7 @@
     <RootNamespace>WindowTranslator</RootNamespace>
     <IsPackable>true</IsPackable>
     <PackageIcon>wt.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <DevelopmentDependency>true</DevelopmentDependency>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
