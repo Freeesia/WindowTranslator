@@ -11,7 +11,7 @@
     MinWidth="120"
     d:DataContext="{d:DesignInstance local:StartupViewModel}"
     Closing="Window_Closing"
-    Icon="/Resources/wt.ico"
+    Icon="/wt.ico"
     Loaded="Window_Loaded"
     SizeToContent="WidthAndHeight"
     WindowStyle="ToolWindow"
@@ -27,7 +27,7 @@
         </Style>
     </Window.Resources>
     <StackPanel Orientation="Horizontal" Visibility="{Binding RunCommand.IsRunning, Converter={StaticResource r2vConv}}">
-        <tb:TaskbarIcon IconSource="/Resources/wt.ico" LeftClickCommand="{Binding RunCommand}">
+        <tb:TaskbarIcon IconSource="/wt.ico" LeftClickCommand="{Binding RunCommand}">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu ItemsSource="{Binding TaskBarIconMenus}">
                     <ContextMenu.ItemContainerStyle>
