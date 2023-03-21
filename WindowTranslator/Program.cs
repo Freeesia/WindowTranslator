@@ -57,6 +57,7 @@ builder.Services.AddTransient(_ =>
 });
 builder.Services.AddTransient<SettingsViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
+builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 
 using var app = builder.Build();
