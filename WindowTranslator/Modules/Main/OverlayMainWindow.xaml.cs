@@ -63,14 +63,12 @@ public partial class OverlayMainWindow : Window
         var dpiScaleY = dpiY / 96.0;
 
         var clientRect = windowInfo.rcClient;
+        var windowRect = windowInfo.rcWindow;
 
-        var borderWidth = SystemParameters.ThickVerticalBorderWidth;
-        var borderHeight = SystemParameters.ThickVerticalBorderWidth;
-
-        var left = (clientRect.left - borderWidth) / dpiScaleX;
-        var top = clientRect.top / dpiScaleY;
-        var width = (clientRect.right - clientRect.left + borderWidth * 2) / dpiScaleX;
-        var height = (clientRect.bottom - clientRect.top + borderHeight) / dpiScaleY;
+        var left = clientRect.left / dpiScaleX;
+        var top = windowRect.top / dpiScaleY;
+        var width = (clientRect.right - clientRect.left) / dpiScaleX;
+        var height = (clientRect.bottom - windowRect.top) / dpiScaleY;
 
         this.SetCurrentValue(LeftProperty, left);
         this.SetCurrentValue(TopProperty, top);
