@@ -29,6 +29,10 @@ public partial class OverlayMainWindow : Window
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
+#if DEBUG
+        this.Background = System.Windows.Media.Brushes.Red;
+        this.Opacity = 0.2;
+#endif
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
