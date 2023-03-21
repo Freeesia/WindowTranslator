@@ -39,7 +39,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
 
     public WindowCaptureCompositionHost()
     {
-        device = Direct3D11Helper.CreateDevice()!;
+        device = Direct3D11Helper.GetOrCreateDevice()!;
         d3dDevice = Direct3D11Helper.CreateSharpDXDevice(device);
 
         var description = new SwapChainDescription1()

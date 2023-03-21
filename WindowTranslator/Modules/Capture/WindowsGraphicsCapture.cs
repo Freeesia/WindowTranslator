@@ -25,7 +25,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logger)
     {
-        this.device = Direct3D11Helper.CreateDevice()!;
+        this.device = Direct3D11Helper.GetOrCreateDevice()!;
         this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
         this.logger = logger;
     }
@@ -35,7 +35,6 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
     {
         this.session?.Dispose();
         this.framePool?.Dispose();
-        this.device?.Dispose();
     }
 
     public void StartCapture(IntPtr targetWindow)

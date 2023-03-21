@@ -31,6 +31,7 @@ namespace Composition.WindowsRuntimeHelpers
 {
     public static class Direct3D11Helper
     {
+        private static IDirect3DDevice? device = null;
         static Guid IInspectable = new Guid("AF86E2E0-B12D-4c6a-9C5A-D7AA65101E90");
         static Guid ID3D11Resource = new Guid("dc8e63f3-d12b-4952-b47b-5e45026a862d");
         static Guid IDXGIAdapter3 = new Guid("645967A4-1392-4310-A798-8053CE3E93FD");
@@ -65,6 +66,9 @@ namespace Composition.WindowsRuntimeHelpers
             CallingConvention = CallingConvention.StdCall
             )]
         static extern UInt32 CreateDirect3D11SurfaceFromDXGISurface(IntPtr dxgiSurface, out IntPtr graphicsSurface);
+
+        public static IDirect3DDevice? GetOrCreateDevice()
+            => device ??= CreateDevice();
 
         public static IDirect3DDevice? CreateDevice()
         {
