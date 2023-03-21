@@ -39,7 +39,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
 
     public void Dispose()
     {
-        using var fs = File.OpenWrite(this.path);
+        using var fs = File.Open(this.path, FileMode.Create, FileAccess.Write, FileShare.None);
         JsonSerializer.Serialize(fs, this.cache, serializerOptions);
     }
 
