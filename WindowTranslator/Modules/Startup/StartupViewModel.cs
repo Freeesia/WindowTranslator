@@ -2,14 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using Composition.WindowsRuntimeHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using PInvoke;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Graphics.Capture;
-using WindowTranslator.Stores;
+using WindowTranslator.Modules.Main;
 
 namespace WindowTranslator.Modules.Startup;
 
@@ -17,18 +16,16 @@ namespace WindowTranslator.Modules.Startup;
 public partial class StartupViewModel
 {
     private readonly IPresentationService presentationService;
-    private readonly IProcessInfoStore processInfoStore;
     private readonly IServiceProvider serviceProvider;
-    private readonly IOptionsMonitor<UserSettings> options;
+    private readonly IMainWindowModule mainWindowModule;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
-    public StartupViewModel(IPresentationService presentationService, IProcessInfoStore processInfoStore, IServiceProvider serviceProvider, IOptionsMonitor<UserSettings> options)
+    public StartupViewModel(IPresentationService presentationService, IServiceProvider serviceProvider, IMainWindowModule mainWindowModule)
     {
         this.presentationService = presentationService;
-        this.processInfoStore = processInfoStore;
         this.serviceProvider = serviceProvider;
-        this.options = options;
+        this.mainWindowModule = mainWindowModule;
         this.TaskBarIconMenus = new[]
         {
             new MenuItemViewModel("アタッチ", this.RunCommand),
@@ -78,20 +75,9 @@ public partial class StartupViewModel
                 p = null;
             }
         }
-        this.processInfoStore.SetTargetProcess(p.WindowHandle, p.Name);
         try
         {
-            switch (this.options.CurrentValue.ViewMode)
-            {
-                case ViewMode.Capture:
-                    await this.presentationService.OpenCaptureMainWindowAsync();
-                    break;
-                case ViewMode.Overlay:
-                    await this.presentationService.OpenOverlayMainWindowAsync();
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
+            await this.mainWindowModule.OpenTargetAsync(p.WindowHandle, p.Name);
             window.Close();
         }
         catch (Exception ex)

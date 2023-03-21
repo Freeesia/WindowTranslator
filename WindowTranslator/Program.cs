@@ -42,7 +42,8 @@ builder.Configuration
     .AddCommandLine(args)
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
-builder.Services.AddSingleton<IProcessInfoStore, ProcessInfoStore>();
+builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
+builder.Services.AddScoped<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
