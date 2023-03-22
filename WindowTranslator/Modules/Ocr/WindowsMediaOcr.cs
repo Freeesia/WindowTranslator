@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Options;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 
@@ -13,11 +13,12 @@ public class WindowsMediaOcr : IOcrModule
     private const double IndentThrethold = .005;
     private const double LeadingThrethold = .95;
     private const double FontSizeThrethold = .25;
-
+    private readonly string source;
     private readonly OcrEngine ocr;
 
     public WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options)
     {
+        this.source = options.Value.Source;
         this.ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
             ?? throw new InvalidOperationException($"{options.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     }
@@ -61,7 +62,7 @@ public class WindowsMediaOcr : IOcrModule
                     var left = Math.Min(temp.X, lineResult.X);
                     var right = Math.Max(temp.X + temp.Width, lineResult.X + lineResult.Width);
                     temp = new(
-                        temp.Y < lineResult.Y ? $"{temp.Text} {lineResult.Text}" : $"{lineResult.Text} {temp.Text}",
+                        temp.Y < lineResult.Y ? CreateConcatText(temp.Text, lineResult.Text) : CreateConcatText(lineResult.Text, temp.Text),
                         left,
                         top,
                         right - left,
@@ -77,9 +78,21 @@ public class WindowsMediaOcr : IOcrModule
         return results;
     }
 
-    private static TextRect CalcRect(OcrLine line)
+    private string CreateConcatText(string str1, string str2)
+        => this.source[..2] switch
+        {
+            "ja" => $"{str1}{str2}",
+            _ => $"{str1} {str2}",
+        };
+
+
+    private TextRect CalcRect(OcrLine line)
     {
-        var text = line.Text;
+        var text = this.source[..2] switch
+        {
+            "ja" => string.Join(null, line.Words.Select(w => w.Text)),
+            _ => line.Text,
+        };
         var x = line.Words.Select(w => w.BoundingRect.X).Min();
         var y = line.Words.Select(w => w.BoundingRect.Y).Min();
         var width = line.Words.Select(w => w.BoundingRect.Right).Max() - line.Words.Select(w => w.BoundingRect.Left).Min();
@@ -87,6 +100,7 @@ public class WindowsMediaOcr : IOcrModule
 
         // abcdefghijklmnopqrstuvwxyz
         // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        var isxHeight = Regex.IsMatch(text, "[acemnosuvwxz]");
         var hasAcent = Regex.IsMatch(text, "[A-Zbdfhijkl]");
         var hasHarfAcent = text.Contains('t');
         var hasDecent = Regex.IsMatch(text, "[gjpqy]");
@@ -100,14 +114,15 @@ public class WindowsMediaOcr : IOcrModule
         };
 
         // 文字種類による高さ補正
-        height = (hasAcent, hasHarfAcent, hasDecent) switch
+        height = (isxHeight, hasAcent, hasHarfAcent, hasDecent) switch
         {
-            (true, _, true) => height,
-            (true, _, false) => height * 1.2,
-            (false, true, true) => height * (1 + .1 + .0),
-            (false, false, true) => height * (1 + .2 + .0),
-            (false, true, false) => height * (1 + .1 + .2),
-            (false, false, false) => height * (1 + .2 + .2),
+            (true, true, _, true) => height,
+            (true, true, _, false) => height * 1.2,
+            (true, false, true, true) => height * (1 + .1 + .0),
+            (true, false, false, true) => height * (1 + .2 + .0),
+            (true, false, true, false) => height * (1 + .1 + .2),
+            (true, false, false, false) => height * (1 + .2 + .2),
+            (false, _, _, _) => height,
         };
 
         var fontSize = height;
