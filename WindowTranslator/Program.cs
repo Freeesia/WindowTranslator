@@ -43,6 +43,7 @@ builder.Configuration
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
+builder.Services.AddHostedService<ProcessMonitor>();
 builder.Services.AddScoped<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();

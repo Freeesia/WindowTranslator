@@ -85,9 +85,17 @@ internal partial class SettingsViewModel : IEditableObject
     [DisplayName("キャッシュモジュール選択")]
     public string CacheModule { get; set; }
 
-    [Category("全体設定|表示設定")]
+    [Category("全体設定|その他")]
     [DisplayName("翻訳結果表示モード")]
     public ViewMode ViewMode { get; set; }
+
+    [Category("全体設定|その他")]
+    [DisplayName("自動翻訳対象")]
+    public IList<ProcessName> AutoTargets { get; set; } = new List<ProcessName>();
+
+    [Category("全体設定|その他")]
+    [DisplayName("一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する")]
+    public bool IsEnableAutoTarget { get; set; }
 
     public IPluginParam[] Params { get; }
 
@@ -102,6 +110,8 @@ internal partial class SettingsViewModel : IEditableObject
         this.Source = userSettings.Value.Language.Source;
         this.Target = userSettings.Value.Language.Target;
         this.ViewMode = userSettings.Value.ViewMode;
+        this.AutoTargets = userSettings.Value.AutoTargets.Select(t => new ProcessName() { Name = t }).ToList();
+        this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
         this.Params = @params.Select(p =>
         {
             var configureType = typeof(IConfigureOptions<>).MakeGenericType(p.GetType());
@@ -163,6 +173,8 @@ internal partial class SettingsViewModel : IEditableObject
         {
             Language = { Source = this.Source, Target = this.Target },
             ViewMode = this.ViewMode,
+            AutoTargets = this.AutoTargets.Select(t => t.Name).OfType<string>().ToList(),
+            IsEnableAutoTarget = this.IsEnableAutoTarget,
             SelectedPlugins =
             {
                 [nameof(ITranslateModule)] = this.TranslateModule,
@@ -177,3 +189,7 @@ internal partial class SettingsViewModel : IEditableObject
 }
 
 public record ModuleItem(string Name, string DisplayName, bool IsDefault);
+public record ProcessName
+{
+    public string? Name { get; set; }
+}
