@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- 窓の描画 -->
+  <rect x="10" y="10" width="40" height="40" stroke="lightblue" fill="white" stroke-width="2"/>
+  <rect x="30" y="10" width="2" height="40" fill="lightblue"/>
+  <rect x="10" y="30" width="40" height="2" fill="lightblue"/>
+
+  <!-- テキストの描画 -->
+  <text x="15" y="20" font-size="12" font-family="sans-serif" fill="black">W</text>
+  <text x="35" y="45" font-size="12" font-family="sans-serif" fill="black">翻</text>
+
+  <!-- 矢印の描画 -->
+  <path d="M30,30 A20,20 0 0 1 50,10" stroke="black" stroke-width="2" fill="none"/>
+  <path d="M50,10 L46,14 L50,10 L54,14" fill="black"/>
+  <path d="M30,30 A20,20 0 0 0 10,50" stroke="black" stroke-width="2" fill="none"/>
+  <path d="M10,50 L14,46 L10,50 L14,54" fill="black"/>
+</svg>
