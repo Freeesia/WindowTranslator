@@ -107,25 +107,18 @@ public partial class StartupViewModel
     public void Exit()
         => Application.Current.Shutdown();
 
-    private static ProcessInfo? FindProcessByWindowTitle(string windowTitle)
+    private static ProcessInfo? FindProcessByWindowTitle(string targetTitle)
     {
         var hWnd = User32.FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, null);
 
         while (hWnd != IntPtr.Zero)
         {
-            int length = User32.GetWindowTextLength(hWnd);
-            if (length > 0)
+            var windowTitle = User32.GetWindowText(hWnd);
+            if (windowTitle == targetTitle)
             {
-#pragma warning disable CA2014 // ループ外に出ないので大丈夫なはず。
-                Span<char> text = stackalloc char[length + 1];
-#pragma warning restore CA2014
-                User32.GetWindowText(hWnd, text);
-                if (text[..^1].SequenceEqual(windowTitle))
-                {
-                    User32.GetWindowThreadProcessId(hWnd, out var processId);
-                    var p = Process.GetProcessById(processId);
-                    return new ProcessInfo(text.ToString(), processId, hWnd, p.ProcessName);
-                }
+                User32.GetWindowThreadProcessId(hWnd, out var processId);
+                var p = Process.GetProcessById(processId);
+                return new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
             }
 
             hWnd = User32.FindWindowEx(IntPtr.Zero, hWnd, null, null);
