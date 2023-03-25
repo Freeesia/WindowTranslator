@@ -1,6 +1,7 @@
 ﻿using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PropertyTools.Wpf;
 using System.ComponentModel;
@@ -61,9 +62,7 @@ builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOn
 builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 
-using var app = builder.Build();
-
-await app.StartAsync();
+await builder.Build().RunAsync();
 
 static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
 {
