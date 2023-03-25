@@ -15,7 +15,10 @@ public class MainWindowModule : IMainWindowModule
         this.provider = provider;
     }
 
-    public async Task OpenTargetAsync(IntPtr mainWindowHandle, string name)
+    public Task OpenTargetAsync(IntPtr mainWindowHandle, string name)
+        => this.app.Dispatcher.BeginInvoke(() => OpenTargetWindowCoreAsync(mainWindowHandle, name)).Task;
+
+    private async Task OpenTargetWindowCoreAsync(IntPtr mainWindowHandle, string name)
     {
         var scope = provider.CreateScope();
         var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
