@@ -133,3 +133,6 @@ dotnet_diagnostic.MVVMTK0033.severity = silent
 
 [*.{csproj,props}]
 indent_size = 2
+
+[*.md]
+indent_size = 2
