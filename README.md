@@ -34,7 +34,8 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 
 1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
   ![翻訳ボタン](images/translate.png)
-2. 翻訳元のウィンドウを選択します。
+2. 翻訳したいアプリのウィンドウを選択し、「OK」ボタンを押下します。
+  ![ウィンドウ選択](images/select.png)
 3. 翻訳結果がオーバーレイで表示されます。  
   ![翻訳結果](images/result.png)
 
@@ -57,6 +58,17 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 5. 以降、対象のプロセスが起動したときに、翻訳を開始するかの通知が表示されます。  
   ![通知](images/notify.png)
 
-> warning   
+#### 通知が表示されない場合
+
 通知が表示されない場合、「応答不可」が有効になっている可能性があります。  
-WindowsTranslatorを優先通知の対象に設定してください。
+以下の方法で通知を有効化してください。
+
+1. Windowsの「設定」から「システム」の「通知」設定を開きます。  
+ ![設定](images/win_settings.png)
+2. 「応答不可を自動的にオンにする」を選択し、「全画面モードでアプリを使用するとき」にチェックを外します。
+  ![応答不可](images/full.png)
+3. 「優先通知を設定する」の「アプリの追加」を押下します。  
+ ![通知設定](images/notification.png)
+ ![優先通知](images/priority.png)
+4. 「WindowTranslator」を選択します。
+  ![アプリの選択](images/select_app.png)
