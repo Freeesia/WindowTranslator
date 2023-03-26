@@ -11,8 +11,6 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 翻訳元・翻訳先となる言語をWindowsの言語設定に追加してください。   
 [Windowsの言語追加の方法](https://support.microsoft.com/ja-jp/windows/windows-%E7%94%A8%E3%81%AE%E8%A8%80%E8%AA%9E%E3%83%91%E3%83%83%E3%82%AF-a5094319-a92d-18de-5b53-1cfc697cfca8)   
 
-[Windowsの言語設定を開く](ms-settings:regionlanguage)
-
 ### DeepL APIキーの取得
 
 [DeepLのサイト](https://www.deepl.com/ja/pro-api)からユーザー登録を行い、APIキーを取得してください。  
