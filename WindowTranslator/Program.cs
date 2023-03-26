@@ -18,6 +18,9 @@ using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
 
+var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
+Directory.SetCurrentDirectory(exeDir);
+
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
@@ -28,9 +31,10 @@ builder.Services.AddPluginFramework()
     .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule>)
     .AddPluginType<IPluginParam>();
 
-if (Directory.Exists(@".\plugins"))
+var appPluginDir = @".\plugins";
+if (Directory.Exists(appPluginDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(@".\plugins"));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir));
 }
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
@@ -63,7 +67,9 @@ builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOn
 builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+
+await app.RunAsync();
 
 static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
 {

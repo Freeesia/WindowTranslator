@@ -2,6 +2,7 @@
   "profiles": {
     "WindowTranslator": {
       "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator",
         "LOGGING__LOGLEVEL__DEFAULT": "Debug"
