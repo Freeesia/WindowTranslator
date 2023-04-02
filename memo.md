@@ -31,3 +31,11 @@ https://github.com/microsoft/Windows.UI.Composition-Win32-Samples
   * ウインドウ最前面の設定
     * `Window.Topmost`
   * マウスのスルー
+
+
+## ライセンス収集
+
+```
+dotnet restore
+dotnet project-licenses -t -u --packages-filter /Analyzers$/ -m -i WindowTranslator --include-project-file --use-project-assets-json --manual-package-information .\manual-package-information.json -f licenses -e
+```
