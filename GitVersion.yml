@@ -1,5 +1,6 @@
 assembly-versioning-scheme: MajorMinorPatchTag
 mode: Mainline
+tag-prefix: '[vV]'
 branches: {}
 ignore:
   sha: []
