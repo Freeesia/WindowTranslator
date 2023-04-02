@@ -87,8 +87,8 @@ jobs:
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
           path: |
-            publish\
-            license?\
+            publish\**\*
+            licenses\
   release:
     if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
     needs: build
