@@ -24,6 +24,7 @@ jobs:
       with:
         run_id: ${{ github.event.workflow_run.id }}
         run_number: ${{ github.event.workflow_run.run_number }}
+        skip_unpack: true
     - name: Create and Upload Release
       id: create_release
       uses: softprops/action-gh-release@v1
