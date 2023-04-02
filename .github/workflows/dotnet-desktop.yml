@@ -86,7 +86,9 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
-          path: publish\
+          path: |
+            publish\
+            license?\
   release:
     if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
     needs: build
