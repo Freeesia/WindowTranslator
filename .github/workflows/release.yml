@@ -1,0 +1,47 @@
+name: Release Artifact
+
+on:
+  workflow_run:
+    workflows: [".NET Core Desktop"]
+    types:
+      - completed
+
+jobs:
+  release:
+    if: ${{ startsWith(github.event.workflow_run.head_branch, 'refs/tags/') }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Extract version from tag
+      id: extract_version
+      run: |
+        TAG_NAME=$(basename ${{ github.event.workflow_run.head_branch }})
+        VERSION=$(echo $TAG_NAME | sed 's/v//')
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Download Artifact 1
+      uses: actions/download-artifact@v2
+      with:
+        name: WindowTranslator-${{ env.VERSION }}
+
+    - name: Download Artifact 2
+      uses: actions/download-artifact@v2
+      with:
+        name: WindowTranslator-full-${{ env.VERSION }}
+
+    - name: Create and Upload Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.TAG_NAME }}
+        name: Release ${{ env.TAG_NAME }}
+        body: |
+          Changes in this Release
+          - Add your release notes here.
+        draft: true
+        prerelease: false
+        files: |
+          WindowTranslator-${{ env.VERSION }}.zip
+          WindowTranslator-full-${{ env.VERSION }}.zip
