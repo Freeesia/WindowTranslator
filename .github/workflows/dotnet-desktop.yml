@@ -41,7 +41,7 @@ name: .NET Core Desktop
 on:
   push:
     branches: [master]
-    tags: [v*]
+    tags: [v*.*.*]
   pull_request:
     branches: [master]
 
