@@ -20,12 +20,12 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Download Artifact 1
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: WindowTranslator-${{ env.VERSION }}
 
     - name: Download Artifact 2
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: WindowTranslator-full-${{ env.VERSION }}
 
