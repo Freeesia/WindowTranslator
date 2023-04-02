@@ -1,5 +1,5 @@
 assembly-versioning-scheme: MajorMinorPatchTag
-mode: Mainline
+mode: ContinuousDelivery
 tag-prefix: '[vV]'
 branches: {}
 ignore:
