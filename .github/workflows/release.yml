@@ -8,7 +8,7 @@ on:
 
 jobs:
   release:
-    if: ${{ startsWith(github.event.workflow_run.head_branch, 'refs/tags/') }}
+    # if: ${{ startsWith(github.event.workflow_run.head_branch, 'refs/tags/') }}
     runs-on: ubuntu-latest
 
     steps:
