@@ -83,6 +83,12 @@ jobs:
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - uses: baileyjm02/markdown-to-pdf@v1
+        with:
+          input_path: README.md
+          output_dir: publish\
+          build_html: false
+          table_of_contents: true
       - uses: actions/upload-artifact@v3
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
