@@ -83,12 +83,11 @@ jobs:
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - run: xcopy /Y /S /I licenses\ publish\licenses\
       - uses: actions/upload-artifact@v3
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
-          path: |
-            publish\**\*
-            licenses\
+          path: publish\
   release:
     if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
     needs: build
