@@ -1,6 +1,7 @@
  | Reference                                                                     | Version | License Type | License                                                                           | 
  | ----------------------------------------------------------------------------- | ------- | ------------ | --------------------------------------------------------------------------------- | 
  | CommunityToolkit.Mvvm                                                         | 8.1.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | DeepL.net                                                                     | 1.7.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Hardcodet.NotifyIcon.Wpf                                                      | 1.1.0   | LICENSE      | https://www.nuget.org/packages/Hardcodet.NotifyIcon.Wpf/1.1.0/License             | 
  | Kamishibai                                                                    | 1.1.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Kamishibai.Hosting                                                            | 1.1.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
@@ -9,6 +10,7 @@
  | Microsoft-WindowsAPICodePack-Core                                             | 1.1.4   |              | https://raw.githubusercontent.com/contre/Windows-API-Code-Pack-1.1/master/LICENSE | 
  | Microsoft-WindowsAPICodePack-Shell                                            | 1.1.4   |              | https://raw.githubusercontent.com/contre/Windows-API-Code-Pack-1.1/master/LICENSE | 
  | Microsoft.Bcl.AsyncInterfaces                                                 | 6.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Build.Tasks.Git                                                     | 1.1.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.CodeAnalysis.Common                                                 | 3.3.1   | Apache-2.0   | https://licenses.nuget.org/Apache-2.0                                             | 
  | Microsoft.CodeAnalysis.CSharp                                                 | 3.3.1   | Apache-2.0   | https://licenses.nuget.org/Apache-2.0                                             | 
  | Microsoft.Extensions.Configuration                                            | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
@@ -20,24 +22,35 @@
  | Microsoft.Extensions.Configuration.Json                                       | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Configuration.UserSecrets                                | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.DependencyInjection                                      | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.DependencyInjection                                      | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.DependencyInjection.Abstractions                         | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.DependencyInjection.Abstractions                         | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.FileProviders.Abstractions                               | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.FileProviders.Physical                                   | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.FileSystemGlobbing                                       | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Hosting                                                  | 7.0.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Hosting.Abstractions                                     | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.Http                                                     | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.Http.Polly                                               | 5.0.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging                                                  | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.Logging                                                  | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging.Abstractions                                     | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.Logging.Abstractions                                     | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging.Configuration                                    | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging.Console                                          | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging.Debug                                            | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging.EventLog                                         | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Logging.EventSource                                      | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Options                                                  | 7.0.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.Options                                                  | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Options.ConfigurationExtensions                          | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Extensions.Primitives                                               | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.Extensions.Primitives                                               | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.NETCore.Platforms                                                   | 1.1.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | Microsoft.NETCore.Platforms                                                   | 5.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.NETCore.Targets                                                     | 1.1.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
+ | Microsoft.SourceLink.Common                                                   | 1.1.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Microsoft.SourceLink.GitHub                                                   | 1.1.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.Toolkit.Uwp.Notifications                                           | 7.1.3   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.VisualStudio.Threading                                              | 17.5.22 | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | Microsoft.VisualStudio.Validation                                             | 17.0.65 | MIT          | https://licenses.nuget.org/MIT                                                    | 
@@ -51,6 +64,8 @@
  | PInvoke.User32                                                                | 0.7.124 | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | PInvoke.Windows.Core                                                          | 0.7.124 | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | PInvoke.Windows.ShellScalingApi                                               | 0.7.124 | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | Polly                                                                         | 7.1.0   | BSD-3-Clause | https://licenses.nuget.org/BSD-3-Clause                                           | 
+ | Polly.Extensions.Http                                                         | 3.0.0   | BSD-3-Clause | https://licenses.nuget.org/BSD-3-Clause                                           | 
  | PropertyTools                                                                 | 3.1.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | PropertyTools.Wpf                                                             | 3.1.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl      | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
@@ -80,6 +95,7 @@
  | System.ComponentModel.Annotations                                             | 4.6.0   | MIT          | https://github.com/dotnet/corefx/blob/master/LICENSE.TXT                          | 
  | System.Console                                                                | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Diagnostics.Debug                                                      | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
+ | System.Diagnostics.DiagnosticSource                                           | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Diagnostics.DiagnosticSource                                           | 7.0.1   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | System.Diagnostics.EventLog                                                   | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | System.Diagnostics.Tools                                                      | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
@@ -102,6 +118,7 @@
  | System.Net.Sockets                                                            | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.ObjectModel                                                            | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Reflection                                                             | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
+ | System.Reflection.Emit                                                        | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Reflection.Emit                                                        | 4.7.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | System.Reflection.Emit.ILGeneration                                           | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Reflection.Emit.Lightweight                                            | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
@@ -133,9 +150,11 @@
  | System.Text.Encoding.Extensions                                               | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Text.Encodings.Web                                                     | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | System.Text.Json                                                              | 7.0.0   | MIT          | https://licenses.nuget.org/MIT                                                    | 
+ | System.Text.Json                                                              | 5.0.2   | MIT          | https://licenses.nuget.org/MIT                                                    | 
  | System.Text.RegularExpressions                                                | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Threading                                                              | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Threading.Tasks                                                        | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
+ | System.Threading.Tasks.Extensions                                             | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.Threading.Tasks.Extensions                                             | 4.5.4   | MIT          | https://github.com/dotnet/corefx/blob/master/LICENSE.TXT                          | 
  | System.Threading.Timer                                                        | 4.3.0   | MS-EULA      | http://go.microsoft.com/fwlink/?LinkId=329770                                     | 
  | System.ValueTuple                                                             | 4.5.0   | MIT          | https://github.com/dotnet/corefx/blob/master/LICENSE.TXT                          | 
