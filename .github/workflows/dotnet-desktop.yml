@@ -89,6 +89,7 @@ jobs:
           output_dir: publish\
           build_html: false
           table_of_contents: true
+      - run: xcopy /Y /S /I licenses\ publish\licenses\
       - uses: actions/upload-artifact@v3
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
