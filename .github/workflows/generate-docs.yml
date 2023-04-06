@@ -3,6 +3,8 @@ name: Docs to PDF
 on:
   workflow_dispatch:
   push:
+    branches:
+      - master
     paths:
       - "README.md"
 
