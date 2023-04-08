@@ -54,7 +54,7 @@ jobs:
         with:
           input_path: README.md
           output_dir: pdfs
-          images_dir: .
+          images_dir: images
           build_html: true
           table_of_contents: true
       - uses: actions/upload-artifact@v3
