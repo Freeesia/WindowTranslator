@@ -55,6 +55,7 @@ jobs:
           input_path: README.md
           build_html: false
           table_of_contents: true
+      - run: ls -l
       - uses: actions/upload-artifact@v3
         with:
           path: README.pdf
