@@ -46,6 +46,18 @@ on:
     branches: [master]
 
 jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: baileyjm02/markdown-to-pdf@v1
+        with:
+          input_path: README.md
+          build_html: false
+          table_of_contents: true
+      - uses: actions/upload-artifact@v3
+        with:
+          path: README.pdf
   build:
     strategy:
       matrix:
@@ -84,6 +96,9 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - run: xcopy /Y /S /I licenses\ publish\licenses\
+      - uses: actions/download-artifact@v3
+        with:
+          path: publish\
       - uses: actions/upload-artifact@v3
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
