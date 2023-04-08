@@ -53,12 +53,13 @@ jobs:
       - uses: baileyjm02/markdown-to-pdf@v1
         with:
           input_path: README.md
+          output_dir: pdfs
           build_html: false
           table_of_contents: true
       - run: ls -l
       - uses: actions/upload-artifact@v3
         with:
-          path: README.pdf
+          path: pdfs/README.pdf
   build:
     needs: docs
     strategy:
