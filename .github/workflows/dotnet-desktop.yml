@@ -59,6 +59,7 @@ jobs:
         with:
           path: README.pdf
   build:
+    needs: docs
     strategy:
       matrix:
         self: [true, false]
