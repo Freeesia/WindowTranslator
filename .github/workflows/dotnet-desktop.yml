@@ -54,12 +54,12 @@ jobs:
         with:
           input_path: README.md
           output_dir: pdfs
-          build_html: false
+          images_dir: .
+          build_html: true
           table_of_contents: true
-      - run: ls -l
       - uses: actions/upload-artifact@v3
         with:
-          path: pdfs/README.pdf
+          path: pdfs/*
   build:
     needs: docs
     strategy:
