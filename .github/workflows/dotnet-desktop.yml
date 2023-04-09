@@ -57,6 +57,7 @@ jobs:
           images_dir: images
           image_import: ./images
           theme: docs/theme.css
+          template: docs/template.html
           extend_default_theme: true
           build_html: true
       - uses: actions/upload-artifact@v3
