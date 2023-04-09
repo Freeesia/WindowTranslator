@@ -55,7 +55,7 @@ jobs:
           input_path: README.md
           output_dir: pdfs
           images_dir: images
-          image_import: ./images
+          image_import: images
           theme: docs/theme.css
           template: docs/template.html
           extend_default_theme: true
