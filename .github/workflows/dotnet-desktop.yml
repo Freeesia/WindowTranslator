@@ -54,12 +54,16 @@ jobs:
         with:
           input_path: README.md
           output_dir: pdfs
-          build_html: false
-          table_of_contents: true
-      - run: ls -l
+          images_dir: images
+          image_import: images
+          theme: docs/theme.css
+          template: docs/template.html
+          extend_default_theme: true
+          build_html: true
       - uses: actions/upload-artifact@v3
         with:
-          path: pdfs/README.pdf
+          name: docs
+          path: pdfs/
   build:
     needs: docs
     strategy:
@@ -98,10 +102,12 @@ jobs:
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-      - run: xcopy /Y /S /I licenses\ publish\licenses\
       - uses: actions/download-artifact@v3
         with:
-          path: publish\
+          name: docs
+          path: publish
+      - run: |
+          xcopy /Y /S /I licenses\ publish\licenses\
       - uses: actions/upload-artifact@v3
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
