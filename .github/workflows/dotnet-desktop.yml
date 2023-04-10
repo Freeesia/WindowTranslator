@@ -113,12 +113,13 @@ jobs:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
           path: publish\
   release:
-    if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
+    # if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
     needs: build
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/download-artifact@v3
+    - run: ls -R
     - uses: softprops/action-gh-release@v1
       with:
         generate_release_notes: true
