@@ -118,11 +118,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/download-artifact@v3
-    - run: ls -R
-    - uses: softprops/action-gh-release@v1
-      with:
-        generate_release_notes: true
-        draft: true
-        prerelease: false
-        files: WindowTranslator/WindowTranslator-*.zip
+      - uses: actions/download-artifact@v3
+      - run: |
+          for dir in */; do
+            base=$(basename "$dir")
+            zip -r "${base}.zip" "$dir"
+          done
+      - run: ls -R
+      - uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          draft: true
+          prerelease: false
+          files: WindowTranslator-*.zip
