@@ -122,7 +122,7 @@ jobs:
       - run: |
           for dir in */; do
             base=$(basename "$dir")
-            zip -r "${base}.zip" "$dir"
+            (cd "$dir" && zip -r "../${base}.zip" .)
           done
       - run: ls -R
       - uses: softprops/action-gh-release@v1
