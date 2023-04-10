@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PropertyTools.Wpf;
 using System.ComponentModel;
@@ -22,6 +23,12 @@ var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
+
+#if !DEBUG
+builder.Logging.AddSentry();
+#endif
+
+
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
     .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule>)
