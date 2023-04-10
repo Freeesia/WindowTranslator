@@ -25,7 +25,7 @@ Directory.SetCurrentDirectory(exeDir);
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
 #if !DEBUG
-builder.Logging.AddSentry();
+builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry());
 #endif
 
 
