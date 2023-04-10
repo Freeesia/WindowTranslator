@@ -6,23 +6,30 @@
 
 WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻訳するためのツールです。
 
-# 使い方
+## ダウンロード
 
-## 事前準備
+[GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からzipをダウンロードして任意のフォルダに展開します
 
-### 言語設定
+* `WindowTranslator-(バージョン).zip`は.NETがインストールされている環境で動作します
+* `WindowTranslator-full-(バージョン).zip`は.NETがインストールされていない環境でも動作します
+
+## 使い方
+
+### 事前準備
+
+#### 言語設定
 
 翻訳元・翻訳先となる言語をWindowsの言語設定に追加してください。   
 [Windowsの言語追加の方法](https://support.microsoft.com/ja-jp/windows/windows-%E7%94%A8%E3%81%AE%E8%A8%80%E8%AA%9E%E3%83%91%E3%83%83%E3%82%AF-a5094319-a92d-18de-5b53-1cfc697cfca8)   
 
-### DeepL APIキーの取得
+#### DeepL APIキーの取得
 
 [DeepLのサイト](https://www.deepl.com/ja/pro-api)からユーザー登録を行い、APIキーを取得してください。  
 (手元では無料プランのAPIキーにて動作確認を行っていますが、有料プランのAPIキーでも動作すると思います)
 
-## 起動
+### 起動
 
-### 初回設定
+#### 初回設定
 
 1. `WindowTranslator.exe`を起動し、設定画面を開きます。  
   ![設定](images/settings.png)
@@ -32,7 +39,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
   ![DeepL設定](images/deepl.png)
 4. 設定が完了したら「OK」ボタンを押下して設定画面を閉じます。
 
-### 翻訳の開始
+#### 翻訳の開始
 
 1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
   ![翻訳ボタン](images/translate.png)
@@ -41,9 +48,9 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 3. 翻訳結果がオーバーレイで表示されます。  
   ![翻訳結果](images/result.png)
 
-## その他の設定
+### その他の設定
 
-### 翻訳結果を別ウィンドウに表示する
+#### 翻訳結果を別ウィンドウに表示する
 
 翻訳結果を別ウィンドウに表示することができます。  
 設定画面の「全体設定」タブの「翻訳結果表示モード」で「キャプチャーウィンドウ」を選択し、「OK」ボタンを押下して設定画面を閉じます。
@@ -52,7 +59,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 翻訳したいアプリを選択すると、翻訳結果が別ウィンドウに表示されます。
 ![ウィンドウモード](images/window_mode.png)
 
-### 特定のアプリケーションのウィンドウを常に翻訳する
+#### 特定のアプリケーションのウィンドウを常に翻訳する
 
 特定のアプリケーションが起動したときに、WindowTranslatorがアプリケーションを検知して翻訳を開始するように設定できます。
 
@@ -67,7 +74,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 5. 以降、対象のプロセスが起動したときに、翻訳を開始するかの通知が表示されます。  
   ![通知](images/notify.png)
 
-#### 通知が表示されない場合
+##### 通知が表示されない場合
 
 通知が表示されない場合、「応答不可」が有効になっている可能性があります。  
 以下の方法で通知を有効化してください。
