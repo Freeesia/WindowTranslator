@@ -84,7 +84,7 @@ static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<
 }
 
 [DisplayName("空文字化")]
-public class TranslateEmptyModule : ITranslateModule
+internal class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
@@ -92,13 +92,13 @@ public class TranslateEmptyModule : ITranslateModule
 
 [DefaultModule]
 [DisplayName("翻訳しない")]
-public class NoTranslateModule : ITranslateModule
+internal class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
     => ValueTask.FromResult(srcTexts);
 }
 
-public class ConfigurePluginParam<TOptions> : IConfigureOptions<TOptions>
+internal class ConfigurePluginParam<TOptions> : IConfigureOptions<TOptions>
     where TOptions : class, IPluginParam
 {
     private readonly IConfiguration config;

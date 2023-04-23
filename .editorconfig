@@ -129,10 +129,16 @@ csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimenta
 
 # VSTHRD001: Avoid legacy thread switching APIs
 dotnet_diagnostic.VSTHRD001.severity = none
+dotnet_diagnostic.VSTHRD100.severity = silent
 dotnet_diagnostic.MVVMTK0033.severity = silent
 
 # CA1716: Identifiers should not match keywords
 dotnet_diagnostic.CA1716.severity = none
+
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA2254.severity = none
+
+dotnet_code_quality.ca1711.allowed_suffixes = EventArgs
 
 [*.{csproj,props}]
 indent_size = 2

@@ -39,7 +39,7 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
                 for (int i = 0; i < @params.Count; i++)
                 {
                     var param = @params[i];
-                    foreach (ParentablePropertyItem item in CreatePropertyItems(param, options))
+                    foreach (ParentablePropertyItem item in CreatePropertyItems(param, options).Cast<ParentablePropertyItem>())
                     {
                         item.AddParent($"{pd.Name}[{i}]");
                         yield return item;

@@ -3,6 +3,8 @@ using System.Windows.Data;
 using System.Windows;
 
 namespace WindowTranslator.Data;
+
+[ValueConversion(typeof(bool), typeof(DataTemplate))]
 public class BoolToDataTemplateConverter : IValueConverter
 {
     public DataTemplate? TrueContent { get; set; }

@@ -104,7 +104,9 @@ public partial class StartupViewModel
     }
 
     [RelayCommand]
+#pragma warning disable CA1822 // ソースジェネレーターが静的メソッドに対応していない
     public void Exit()
+#pragma warning restore CA1822
         => Application.Current.Shutdown();
 
     private static ProcessInfo? FindProcessByWindowTitle(string targetTitle)
@@ -116,7 +118,7 @@ public partial class StartupViewModel
             var windowTitle = User32.GetWindowText(hWnd);
             if (windowTitle == targetTitle)
             {
-                User32.GetWindowThreadProcessId(hWnd, out var processId);
+                _ = User32.GetWindowThreadProcessId(hWnd, out var processId);
                 var p = Process.GetProcessById(processId);
                 return new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
             }
