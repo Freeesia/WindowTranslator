@@ -6,7 +6,6 @@
     <Deterministic>true</Deterministic>
     <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AnalysisMode>Recommended</AnalysisMode>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>Freesia</Authors>

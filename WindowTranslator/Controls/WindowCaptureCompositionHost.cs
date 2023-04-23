@@ -120,7 +120,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
         return Task.CompletedTask;
     }
 
-    protected override Size MeasureOverride(Size availableSize) => new(this.lastSize.Width, this.lastSize.Height);
+    protected override Size MeasureOverride(Size constraint) => new(this.lastSize.Width, this.lastSize.Height);
 
     public class CompositionHost : HwndHost
     {
