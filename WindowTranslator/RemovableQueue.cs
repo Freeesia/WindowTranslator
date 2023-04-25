@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace WindowTranslator;
 
+#pragma warning disable CA1711 // ちゃんとdotnetのQueueとして動くのでOK
 public class RemovableQueue<T> : ICollection<T>, IReadOnlyCollection<T>
+#pragma warning restore CA1711
     where T : notnull
 {
     private readonly LinkedList<T> inner;

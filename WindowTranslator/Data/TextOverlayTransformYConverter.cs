@@ -12,7 +12,7 @@ public sealed class TextOverlayTransformYConverter : IValueConverter
     {
         if (value is double size)
         {
-            var rate = double.Parse(parameter.ToString() ?? "1");
+            var rate = double.Parse(parameter.ToString() ?? "1", CultureInfo.InvariantCulture);
             return size * rate;
         }
         return .0;

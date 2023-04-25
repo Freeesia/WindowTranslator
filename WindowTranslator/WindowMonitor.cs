@@ -5,6 +5,7 @@ using PInvoke;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using Windows.UI.Notifications;
 using WindowTranslator.Modules.Main;
@@ -66,7 +67,7 @@ public class WindowMonitor : BackgroundService
             }
 
             var windowTitle = User32.GetWindowText(hWnd);
-            User32.GetWindowThreadProcessId(hWnd, out var processId);
+            _ = User32.GetWindowThreadProcessId(hWnd, out var processId);
             var p = Process.GetProcessById(processId);
             if (this.autoTargetStore.IsTarget(hWnd, p.ProcessName))
             {
@@ -88,7 +89,7 @@ public class WindowMonitor : BackgroundService
         .AddText("翻訳対象アプリが見つかりました")
             .AddText($"「{windowTitle}」を翻訳表示しますか？")
             .AddArgument(ProcessName, process.ProcessName)
-            .AddArgument(WindowHandle, windowHandle.ToString())
+            .AddArgument(WindowHandle, windowHandle.ToString(CultureInfo.InvariantCulture))
             .AddButton(new ToastButton()
                 .SetContent("翻訳"))
             .AddButton(new ToastButton()
@@ -138,7 +139,7 @@ public class WindowMonitor : BackgroundService
     {
         var args = ToastArguments.Parse(e.Argument);
         var processName = args.Get(ProcessName);
-        var mainWindowHandle = IntPtr.Parse(args.Get(WindowHandle));
+        var mainWindowHandle = IntPtr.Parse(args.Get(WindowHandle), CultureInfo.InvariantCulture);
         this.logger.LogInformation("通知からのアタッチ");
         await this.mainWindowModule.OpenTargetAsync(mainWindowHandle, processName);
     }
