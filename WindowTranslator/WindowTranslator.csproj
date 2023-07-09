@@ -15,6 +15,12 @@
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+    <!-- Configure Sentry -->
+    <SentryOrg>studiofreesia</SentryOrg>
+    <SentryProject>window-translator</SentryProject>
+    <SentryUploadSymbols>true</SentryUploadSymbols>
+    <SentryUploadSources>true</SentryUploadSources>
   </PropertyGroup>
   <ItemGroup>
     <Resource Include="$(ApplicationIcon)" />
@@ -32,6 +38,7 @@
     <PackageReference Include="PInvoke.SHCore" Version="0.7.124" />
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
     <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
+    <PackageReference Include="Sentry.Extensions.Logging" Version="3.29.1" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="WpfAnalyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
