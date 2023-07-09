@@ -88,3 +88,5 @@ Please follow the steps below to enable notifications.
  ![Priority Notifications](images/priority.png)
 4. Select "WindowTranslator".   
   ![Select App](images/select_app.png)
+
+> Translated with ChatGPT

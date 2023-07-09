@@ -88,3 +88,5 @@ WindowTranslator是一个用于翻译Windows应用程序窗口的工具。
  ![优先通知](images/priority.png)
 4. 选择“WindowTranslator”。
   ![选择应用程序](images/select_app.png)
+
+> Translated with ChatGPT

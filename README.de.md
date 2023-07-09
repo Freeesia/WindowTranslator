@@ -89,3 +89,4 @@ Folgen Sie diesen Schritten, um Benachrichtigungen zu aktivieren:
 4. Wählen Sie "WindowTranslator" aus.   
   ![App auswählen](images/select_app.png)
 
+> Translated with ChatGPT
