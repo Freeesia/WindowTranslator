@@ -142,6 +142,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   実行 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Run {
+            get {
+                return ResourceManager.GetString("Run", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   翻訳元(認識)言語 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Source {

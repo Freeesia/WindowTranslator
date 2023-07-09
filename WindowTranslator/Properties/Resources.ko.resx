@@ -156,4 +156,7 @@
   <data name="Capture" xml:space="preserve">
     <value>캡처 창</value>
   </data>
+  <data name="Run" xml:space="preserve">
+    <value>실행</value>
+  </data>
 </root>

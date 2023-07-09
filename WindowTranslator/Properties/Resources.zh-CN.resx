@@ -156,4 +156,7 @@
   <data name="Capture" xml:space="preserve">
     <value>捕获窗口</value>
   </data>
+  <data name="Run" xml:space="preserve">
+    <value>执行</value>
+  </data>
 </root>

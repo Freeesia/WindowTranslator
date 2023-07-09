@@ -8,7 +8,7 @@ using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 
-[DisplayName("DeepL翻訳")]
+[DisplayName("DeepL")]
 public class DeepLTranslator : ITranslateModule
 {
     private readonly Translator translator;
@@ -39,7 +39,6 @@ public class DeepLOptions : IPluginParam
     public TranslatorOptions? Options { get; set; }
 
     [JsonIgnore]
-    [DisplayName("帰属表記")]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
 }

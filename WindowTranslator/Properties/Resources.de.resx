@@ -156,4 +156,7 @@
   <data name="Capture" xml:space="preserve">
     <value>Aufnahmefenster</value>
   </data>
+  <data name="Run" xml:space="preserve">
+    <value>Ausführung</value>
+  </data>
 </root>

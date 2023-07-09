@@ -156,4 +156,7 @@
   <data name="Capture" xml:space="preserve">
     <value>キャプチャーウィンドウ</value>
   </data>
+  <data name="Run" xml:space="preserve">
+    <value>実行</value>
+  </data>
 </root>

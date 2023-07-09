@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
@@ -12,7 +13,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         {
             var button = new Button();
             button.SetBinding(Button.CommandProperty, property.CreateBinding());
-            button.SetCurrentValue(Button.ContentProperty, "実行");
+            button.SetCurrentValue(Button.ContentProperty, Resources.Run);
             return button;
         }
         return base.CreateControl(property, options);
