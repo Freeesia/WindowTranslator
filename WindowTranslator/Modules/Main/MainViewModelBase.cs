@@ -1,8 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
-using System.Diagnostics;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
@@ -31,6 +31,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private double height = double.NaN;
 
     private SoftwareBitmap? sbmp;
+    private bool disposedValue;
 
     public MainViewModelBase(IProcessInfoStore processInfoStore, ICaptureModule capture, IOcrModule ocr, ITranslateModule translator, ICacheModule cache, IColorModule color, ILogger logger)
     {
@@ -45,9 +46,6 @@ public abstract partial class MainViewModelBase : IDisposable
         this.capture.StartCapture(targetProcess.MainWindowHangle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
-
-    public void Dispose()
-        => this.timer?.Dispose();
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
@@ -86,6 +84,26 @@ public abstract partial class MainViewModelBase : IDisposable
             var translated = await this.translator.TranslateAsync(transTargets);
             this.cache.AddRange(transTargets.Zip(translated));
         }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposedValue)
+        {
+            return;
+        }
+        if (disposing)
+        {
+            this.timer?.Dispose();
+        }
+        disposedValue = true;
+    }
+
+    public void Dispose()
+    {
+        // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
 

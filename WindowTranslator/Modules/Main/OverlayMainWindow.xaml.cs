@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Threading;
-using PInvoke;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Threading;
+using PInvoke;
 using WindowTranslator.Stores;
 using static PInvoke.User32;
 
@@ -39,7 +40,11 @@ public partial class OverlayMainWindow : Window
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
         var extendedStyle = (SetWindowLongFlags)GetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE);
-        SetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE, extendedStyle | SetWindowLongFlags.WS_EX_TRANSPARENT);
+        var r = SetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE, extendedStyle | SetWindowLongFlags.WS_EX_TRANSPARENT);
+        if (r == 0)
+        {
+            this.logger.LogError($"SetWindowLong failed. {Marshal.GetLastWin32Error()}");
+        }
 
         // ShowInTaskbarをfalseにすると↓の方法で一番上に表示する必要がある
         // https://social.msdn.microsoft.com/Forums/en-US/cdbe457f-d653-4a18-9295-bb9b609bc4e3/desktop-apps-on-top-of-metro-extended

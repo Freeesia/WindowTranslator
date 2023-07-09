@@ -14,7 +14,7 @@ public class ProcessWindowPresenter : HwndHostPresenter
         set => SetValue(TargetProcessProperty, value);
     }
 
-    // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+    /// <summary>Identifies the <see cref="TargetProcess"/> dependency property.</summary>
     public static readonly DependencyProperty TargetProcessProperty =
         DependencyProperty.Register(
             nameof(TargetProcess),
