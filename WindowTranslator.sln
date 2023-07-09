@@ -25,9 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{2123
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hwnd-adorner", "hwnd-adorner", "{E9254220-A2A9-4A23-814E-15029025A868}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HwndExtensions", "hwnd-adorner\HwndExtensions\HwndExtensions.csproj", "{529FE5B9-FAC5-4222-8170-C8C0B911A588}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HwndExtensions", "hwnd-adorner\HwndExtensions\HwndExtensions.csproj", "{529FE5B9-FAC5-4222-8170-C8C0B911A588}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "hwnd-adorner\Demo\Demo.csproj", "{85137B31-43B5-4DF6-B374-A14BAA1A874D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "hwnd-adorner\Demo\Demo.csproj", "{85137B31-43B5-4DF6-B374-A14BAA1A874D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +69,9 @@ Global
 		{85137B31-43B5-4DF6-B374-A14BAA1A874D} = {E9254220-A2A9-4A23-814E-15029025A868}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
+		RESX_NeutralResourcesLanguage = ja-JP
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
 	EndGlobalSection
 EndGlobal

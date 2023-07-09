@@ -15,7 +15,6 @@ using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.Modules.Startup;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 using CategoryAttribute = System.ComponentModel.CategoryAttribute;
-using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Modules.Settings;
 
@@ -57,44 +56,37 @@ internal partial class SettingsViewModel : IEditableObject
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; }
 
-    [Category("全体設定|言語設定")]
+    [Category("Generic|Language")]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
-    [DisplayName("翻訳元(認識)言語")]
     public string Source { get; set; }
 
-    [Category("全体設定|言語設定")]
+    [Category("Generic|Language")]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
-    [DisplayName("翻訳先(表示)言語")]
     public string Target { get; set; }
 
-    [Category("全体設定|プラグイン設定")]
+    [Category("Generic|Plugin")]
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
-    [DisplayName("翻訳モジュール選択")]
     public string TranslateModule { get; set; }
 
-    [Category("全体設定|プラグイン設定")]
+    [Category("Generic|Plugin")]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
-    [DisplayName("キャッシュモジュール選択")]
     public string CacheModule { get; set; }
 
-    [Category("全体設定|その他")]
-    [DisplayName("翻訳結果表示モード")]
+    [Category("Generic|Misc")]
     public ViewMode ViewMode { get; set; }
 
-    [Category("全体設定|その他")]
-    [DisplayName("自動翻訳対象")]
+    [Category("Generic|Misc")]
     public IList<ProcessName> AutoTargets { get; set; } = new List<ProcessName>();
 
-    [Category("全体設定|その他")]
-    [DisplayName("一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する")]
+    [Category("Generic|Misc")]
     public bool IsEnableAutoTarget { get; set; }
 
     public IPluginParam[] Params { get; }

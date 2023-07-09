@@ -18,8 +18,8 @@ public class UserSettings
 
 public enum ViewMode
 {
-    [Description("キャプチャーウィンドウ")]
+    [Description(nameof(Capture))]
     Capture,
-    [Description("オーバレイ")]
+    [Description(nameof(Overlay))]
     Overlay,
 }

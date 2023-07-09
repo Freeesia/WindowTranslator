@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PropertyTools.Wpf;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Weikio.PluginFramework.Catalogs;
@@ -17,6 +18,9 @@ using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
+
+Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
 
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
