@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
 
 namespace WindowTranslator;
 public class UserSettings
@@ -18,8 +19,8 @@ public class UserSettings
 
 public enum ViewMode
 {
-    [Description("キャプチャーウィンドウ")]
+    [LocalizedDescription(typeof(Resources), nameof(Capture))]
     Capture,
-    [Description("オーバレイ")]
+    [LocalizedDescription(typeof(Resources), nameof(Overlay))]
     Overlay,
 }

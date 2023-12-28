@@ -8,8 +8,10 @@ using PropertyTools.Wpf;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 using WindowTranslator;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Main;
@@ -18,6 +20,9 @@ using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Stores;
+
+//Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
+//Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
@@ -30,7 +35,7 @@ builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddS
 
 
 builder.Services.AddPluginFramework()
-    .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly()))
+    .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
     .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule>)
     .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule>)
     .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule>)
@@ -41,13 +46,13 @@ builder.Services.AddPluginFramework()
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, new FolderPluginCatalogOptions() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, new FolderPluginCatalogOptions() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 builder.Configuration
@@ -90,6 +95,22 @@ static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<
     return GetDefaultPlugin();
 }
 
+static string GetPluginName(PluginNameOptions options, Type type)
+{
+    if (type.GetCustomAttribute<LocalizedDisplayNameAttribute>() is { } ldattr)
+    {
+        return ldattr.DisplayName;
+    }
+    else if (type.GetCustomAttribute<DisplayNameAttribute>() is { } dattr)
+    {
+        return dattr.DisplayName;
+    }
+    else
+    {
+        return type.Name;
+    }
+}
+
 [DisplayName("空文字化")]
 internal class TranslateEmptyModule : ITranslateModule
 {
@@ -105,13 +126,10 @@ internal class NoTranslateModule : ITranslateModule
     => ValueTask.FromResult(srcTexts);
 }
 
-internal class ConfigurePluginParam<TOptions> : IConfigureOptions<TOptions>
+public class ConfigurePluginParam<TOptions>(IConfiguration config) : IConfigureOptions<TOptions>
     where TOptions : class, IPluginParam
 {
-    private readonly IConfiguration config;
-
-    public ConfigurePluginParam(IConfiguration config)
-        => this.config = config.GetSection(nameof(UserSettings.PluginParams));
+    private readonly IConfiguration config = config.GetSection(nameof(UserSettings.PluginParams));
 
     public void Configure(TOptions options)
         => this.config.GetSection(typeof(TOptions).Name).Bind(options);

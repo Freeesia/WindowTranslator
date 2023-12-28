@@ -2,10 +2,24 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Windows.Data;
+using WindowTranslator.Properties;
+using System.Globalization;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
+
+    public SettingsPropertyGridOperator()
+    {
+        this.ModifyCamelCaseDisplayNames = false;
+    }
+
+    protected override string GetLocalizedString(string key, Type declaringType)
+        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
+
+    protected override string GetLocalizedDescription(string key, Type declaringType)
+        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedDescription(key, declaringType);
+
     protected override IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
     {
         var instanceType = instance.GetType();
@@ -56,13 +70,10 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
     protected override PropertyItem CreateCore(PropertyDescriptor pd, PropertyDescriptorCollection propertyDescriptors)
         => new ParentablePropertyItem(pd, propertyDescriptors);
 
-    private class ParentablePropertyItem : PropertyItem
+    private class ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
+        : PropertyItem(propertyDescriptor, propertyDescriptors)
     {
         private readonly Stack<string> parents = new();
-        public ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
-            : base(propertyDescriptor, propertyDescriptors)
-        {
-        }
 
         public void AddParent(string parent)
             => parents.Push(parent);

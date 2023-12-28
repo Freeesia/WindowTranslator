@@ -1,30 +1,22 @@
 ﻿using DeepL;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
-using System.ComponentModel;
 using System.Text.Json.Serialization;
 using WindowTranslator.Modules;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 
-[DisplayName("DeepL翻訳")]
-public class DeepLTranslator : ITranslateModule
+[DisplayName("DeepL")]
+public class DeepLTranslator(IOptionsSnapshot<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions) : ITranslateModule
 {
-    private readonly Translator translator;
-    private readonly string sourceLang;
-    private readonly string targetLang;
-
-    public DeepLTranslator(IOptionsSnapshot<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions)
+    private readonly Translator translator = new(deeplOptions.Value.AuthKey, deeplOptions.Value.Options);
+    private readonly string sourceLang = langOptions.Value.Source[..2];
+    private readonly string targetLang = langOptions.Value.Target switch
     {
-        this.translator = new(deeplOptions.Value.AuthKey, deeplOptions.Value.Options);
-        this.sourceLang = langOptions.Value.Source[..2];
-        this.targetLang = langOptions.Value.Target switch
-        {
-            "en-US" or "en-GB" or "pt-BR" or "pt-PT" => langOptions.Value.Target,
-            var t => t[..2],
-        };
-    }
+        "en-US" or "en-GB" or "pt-BR" or "pt-PT" => langOptions.Value.Target,
+        var t => t[..2],
+    };
 
     public async ValueTask<string[]> TranslateAsync(string[] srcTexts)
     {
@@ -39,7 +31,6 @@ public class DeepLOptions : IPluginParam
     public TranslatorOptions? Options { get; set; }
 
     [JsonIgnore]
-    [DisplayName("帰属表記")]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
 }
