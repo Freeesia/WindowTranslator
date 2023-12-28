@@ -6,6 +6,8 @@
 
 WindowTranslator는 윈도우 애플리케이션의 창을 번역하는 도구입니다.
 
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.zh.md) | [KO](./README.ko.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+
 ## 다운로드
 
 [GitHub 릴리즈 페이지](https://github.com/Freeesia/WindowTranslator/releases/latest)에서 zip을 다운로드하여 원하는 폴더에 압축을 풀고 압축을 해제합니다.

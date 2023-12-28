@@ -6,6 +6,8 @@
 
 WindowTranslator是一个用于翻译Windows应用程序窗口的工具。
 
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.zh.md) | [KO](./README.ko.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+
 ## 下载
 
 从 [GitHub的发布页面](https://github.com/Freeesia/WindowTranslator/releases/latest)下载zip文件，然后解压到任意文件夹。

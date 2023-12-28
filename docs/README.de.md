@@ -6,6 +6,8 @@
 
 WindowTranslator ist ein Tool zum Übersetzen von Windows-Anwendungsfenstern.
 
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.zh.md) | [KO](./README.ko.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+
 ## Download
 
 Laden Sie die ZIP-Datei von der [GitHub-Releases-Seite](https://github.com/Freeesia/WindowTranslator/releases/latest) herunter und entpacken Sie sie in einem beliebigen Ordner.
