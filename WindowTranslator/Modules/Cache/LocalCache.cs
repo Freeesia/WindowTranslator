@@ -1,14 +1,15 @@
 ﻿using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
 
-[DisplayName("ローカルファイルキャッシュ")]
+[LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
 [DefaultModule]
 public sealed class LocalCache : ICacheModule, IDisposable
 {
@@ -29,7 +30,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
         if (File.Exists(path))
         {
             using var fs = File.OpenRead(path);
-            cache = new(JsonSerializer.Deserialize<Dictionary<string, string>>(fs, serializerOptions) ?? new());
+            cache = new(JsonSerializer.Deserialize<Dictionary<string, string>>(fs, serializerOptions) ?? []);
         }
         else
         {

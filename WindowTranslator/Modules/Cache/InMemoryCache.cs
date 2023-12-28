@@ -1,9 +1,10 @@
 using System.Collections.Concurrent;
-using System.ComponentModel;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.Cache;
 
-[DisplayName("ƒƒ‚ƒŠ“àƒLƒƒƒbƒVƒ…")]
+[LocalizedDisplayName(typeof(Resources), nameof(InMemoryCache))]
 public class InMemoryCache : ICacheModule
 {
     private readonly ConcurrentDictionary<string, string> cache = new();

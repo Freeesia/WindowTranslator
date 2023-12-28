@@ -88,11 +88,11 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   全体設定 に類似しているローカライズされた文字列を検索します。
+        ///   メモリ内キャッシュ に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string Generic {
+        public static string InMemoryCache {
             get {
-                return ResourceManager.GetString("Generic", resourceCulture);
+                return ResourceManager.GetString("InMemoryCache", resourceCulture);
             }
         }
         
@@ -111,6 +111,15 @@ namespace WindowTranslator.Properties {
         public static string Language {
             get {
                 return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ローカルファイルキャッシュ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LocalCache {
+            get {
+                return ResourceManager.GetString("LocalCache", resourceCulture);
             }
         }
         
@@ -142,11 +151,29 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   アプリを自動的に起動する に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RegisterToStartupCommand {
+            get {
+                return ResourceManager.GetString("RegisterToStartupCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   実行 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Run {
             get {
                 return ResourceManager.GetString("Run", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   全体設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SettingsViewModel {
+            get {
+                return ResourceManager.GetString("SettingsViewModel", resourceCulture);
             }
         }
         
@@ -174,6 +201,15 @@ namespace WindowTranslator.Properties {
         public static string TranslateModule {
             get {
                 return ResourceManager.GetString("TranslateModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   アプリの自動起動を解除 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnregisterFromStartupCommand {
+            get {
+                return ResourceManager.GetString("UnregisterFromStartupCommand", resourceCulture);
             }
         }
         

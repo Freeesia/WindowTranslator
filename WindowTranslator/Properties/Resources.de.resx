@@ -136,13 +136,11 @@
     <value>Ziel der automatischen Übersetzung</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Sobald ein Prozess zur Übersetzung ausgewählt wurde, wird er automatisch übersetzt, wenn er gestartet wird.</value>
-  </data>
-  <data name="Generic" xml:space="preserve">
-    <value>Allgemeine Einstellung</value>
+    <value>Sobald ein Prozess zur Übersetzung ausgewählt wurde, wird er automatisch übersetzt, wenn er gestartet wird</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>Sonstiges.</value>
+    <value>Sonstiges</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>Plug-in-Einstellungen</value>
@@ -158,5 +156,20 @@
   </data>
   <data name="Run" xml:space="preserve">
     <value>Ausführung</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Allgemeine Einstellung</value>
+  </data>
+  <data name="RegisterToStartupCommand" xml:space="preserve">
+    <value>Starten Sie die App automatisch</value>
+  </data>
+  <data name="UnregisterFromStartupCommand" xml:space="preserve">
+    <value>Entsperren Sie die App automatisch</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Lokaler Datei-Cache</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>In-Memory-Cache</value>
   </data>
 </root>

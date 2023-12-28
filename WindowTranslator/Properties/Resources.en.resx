@@ -138,9 +138,6 @@
   <data name="IsEnableAutoTarget" xml:space="preserve">
     <value>Translate automatically when a process is launched once selected for translation</value>
   </data>
-  <data name="Generic" xml:space="preserve">
-    <value>Overall setting</value>
-  </data>
   <data name="Misc" xml:space="preserve">
     <value>Other</value>
   </data>
@@ -158,5 +155,20 @@
   </data>
   <data name="Run" xml:space="preserve">
     <value>execute</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Overall setting</value>
+  </data>
+  <data name="RegisterToStartupCommand" xml:space="preserve">
+    <value>Start the app automatically</value>
+  </data>
+  <data name="UnregisterFromStartupCommand" xml:space="preserve">
+    <value>Unlock the app automatically</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Local file cache</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>In-memory cache</value>
   </data>
 </root>

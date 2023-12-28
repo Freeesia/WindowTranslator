@@ -136,10 +136,7 @@
     <value>自动翻译目标</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一旦一个进程被选中进行翻译，它将在启动时自动进行翻译。</value>
-  </data>
-  <data name="Generic" xml:space="preserve">
-    <value>总体设置</value>
+    <value>一旦一个进程被选中进行翻译，它将在启动时自动进行翻译</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
@@ -158,5 +155,20 @@
   </data>
   <data name="Run" xml:space="preserve">
     <value>执行</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>总体设置</value>
+  </data>
+  <data name="RegisterToStartupCommand" xml:space="preserve">
+    <value>自动启动应用</value>
+  </data>
+  <data name="UnregisterFromStartupCommand" xml:space="preserve">
+    <value>自动解锁应用</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>本地文件缓存</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>内存缓存</value>
   </data>
 </root>

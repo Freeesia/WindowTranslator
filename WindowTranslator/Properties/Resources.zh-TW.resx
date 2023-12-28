@@ -124,7 +124,7 @@
     <value>緩存模塊選擇</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一旦一個進程被選中進行翻譯，它將在啟動時自動進行翻譯。</value>
+    <value>一旦一個進程被選中進行翻譯，它將在啟動時自動進行翻譯</value>
   </data>
   <data name="Source" xml:space="preserve">
     <value>來源（認可）語言</value>
@@ -137,5 +137,38 @@
   </data>
   <data name="ViewMode" xml:space="preserve">
     <value>翻譯結果顯示模式</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>全域設定</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>外掛程式設定</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>語言設定</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>重疊</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>擷取視窗</value>
+  </data>
+  <data name="Run" xml:space="preserve">
+    <value>執行</value>
+  </data>
+  <data name="RegisterToStartupCommand" xml:space="preserve">
+    <value>自動啟動應用程式</value>
+  </data>
+  <data name="UnregisterFromStartupCommand" xml:space="preserve">
+    <value>自動解鎖應用程式</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>本機檔案快取</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>記憶體中快取</value>
   </data>
 </root>
