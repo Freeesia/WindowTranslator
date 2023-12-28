@@ -54,10 +54,10 @@ jobs:
         with:
           input_path: docs
           output_dir: pdfs
-          images_dir: images
+          images_dir: docs/images
           image_import: images
-          theme: temp/theme.css
-          template: temp/template.html
+          theme: docs/theme.css
+          template: docs/template.html
           extend_default_theme: true
           build_html: true
       - uses: actions/upload-artifact@v3
