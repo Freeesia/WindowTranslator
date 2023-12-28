@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PropertyTools.Wpf;
 using System.ComponentModel;
@@ -27,6 +28,12 @@ var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
+
+#if !DEBUG
+builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry());
+#endif
+
+
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
     .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule>)
@@ -105,7 +112,7 @@ static string GetPluginName(PluginNameOptions options, Type type)
 }
 
 [DisplayName("空文字化")]
-public class TranslateEmptyModule : ITranslateModule
+internal class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
@@ -113,7 +120,7 @@ public class TranslateEmptyModule : ITranslateModule
 
 [DefaultModule]
 [DisplayName("翻訳しない")]
-public class NoTranslateModule : ITranslateModule
+internal class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
     => ValueTask.FromResult(srcTexts);

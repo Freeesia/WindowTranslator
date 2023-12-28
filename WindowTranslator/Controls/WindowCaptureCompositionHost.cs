@@ -125,7 +125,8 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
     public class CompositionHost : HwndHost
     {
         IntPtr hwndHost;
-        int hostHeight, hostWidth;
+        private readonly int hostHeight;
+        private readonly int hostWidth;
         CompositionTarget? compositionTarget;
 
         public Compositor? Compositor { get; private set; }

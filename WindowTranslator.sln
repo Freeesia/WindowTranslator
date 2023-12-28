@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HwndExtensions", "hwnd-ador
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "hwnd-adorner\Demo\Demo.csproj", "{85137B31-43B5-4DF6-B374-A14BAA1A874D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.DummyPlugin", "Plugins\WindowTranslator.Plugin.DummyPlugin\WindowTranslator.Plugin.DummyPlugin.csproj", "{61A30147-5600-41E9-AF5C-DA103D7E0B11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85137B31-43B5-4DF6-B374-A14BAA1A874D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{75C63D99-006D-47AB-A6E1-25005D2E337C} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{529FE5B9-FAC5-4222-8170-C8C0B911A588} = {E9254220-A2A9-4A23-814E-15029025A868}
 		{85137B31-43B5-4DF6-B374-A14BAA1A874D} = {E9254220-A2A9-4A23-814E-15029025A868}
+		{61A30147-5600-41E9-AF5C-DA103D7E0B11} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_AutoCreateNewLanguageFiles = True
