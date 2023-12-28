@@ -6,7 +6,7 @@
 
 WindowTranslator是一個用於翻譯Windows應用程序窗口的工具。
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KO](./README.ko.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
 
 ## 下載
 

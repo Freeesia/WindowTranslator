@@ -6,7 +6,7 @@
 
 WindowTranslator is a tool for translating Windows application windows.
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KO](./README.ko.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
 
 ## Download
 
