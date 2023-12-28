@@ -36,6 +36,8 @@ dotnet_style_predefined_type_for_locals_parameters_members = true:silent
 dotnet_style_predefined_type_for_member_access = true:silent
 dotnet_diagnostic.VSTHRD100.severity = suggestion
 dotnet_diagnostic.CA1050.severity = none
+dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1852.severity = none
 
 [*.cs]
 csharp_indent_labels = one_less_than_current
