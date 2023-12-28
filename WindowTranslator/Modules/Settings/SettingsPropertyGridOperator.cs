@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Windows.Data;
 using WindowTranslator.Properties;
+using System.Globalization;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridOperator : PropertyGridOperator
@@ -14,10 +15,10 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
     }
 
     protected override string GetLocalizedString(string key, Type declaringType)
-        => Resources.ResourceManager.GetString(key) ?? base.GetLocalizedString(key, declaringType);
+        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
 
     protected override string GetLocalizedDescription(string key, Type declaringType)
-        => Resources.ResourceManager.GetString(key) ?? base.GetLocalizedDescription(key, declaringType);
+        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedDescription(key, declaringType);
 
     protected override IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
     {
