@@ -1,11 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
+using Microsoft.PowerShell;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
+using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -151,6 +156,20 @@ internal partial class SettingsViewModel : IEditableObject
         }
     }
 
+    private static bool IsInstalledLanguage(string lang)
+    {
+        using var ps = PowerShell.Create();
+        ps.AddScript($"Get-InstalledLanguage -language {lang}");
+        var output = (IList)ps.Invoke().Single().BaseObject;
+        if (output.Count == 0)
+        {
+            return false;
+        }
+        var langInfo = output[0];
+        var features = langInfo!.GetType().GetField("LanguageFeatures")!.GetValue(langInfo);
+        return (((int)features!) & 0x20) == 0x20;
+    }
+
     public void BeginEdit()
     {
     }
@@ -161,6 +180,15 @@ internal partial class SettingsViewModel : IEditableObject
 
     public void EndEdit()
     {
+        if (!IsInstalledLanguage(this.Source))
+        {
+            this.presentationService.ShowMessage($"""
+                翻訳元言語の{this.Source}は文字認識のために必要なOCR機能がインストールされていません。
+                翻訳開始前に言語機能をインストールしてください。
+                """,
+                icon: MessageBoxImage.Warning);
+            Process.Start(new ProcessStartInfo("cmd.exe", "/c start \"\" ms-settings:regionlanguage-adddisplaylanguage") { CreateNoWindow = true });
+        }
         var settings = new UserSettings()
         {
             Language = { Source = this.Source, Target = this.Target },

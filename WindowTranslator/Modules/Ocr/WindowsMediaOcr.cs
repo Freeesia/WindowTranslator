@@ -8,20 +8,14 @@ namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
 [DisplayName("Windows標準文字認識")]
-public class WindowsMediaOcr : IOcrModule
+public class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
 {
     private const double IndentThrethold = .005;
     private const double LeadingThrethold = .95;
     private const double FontSizeThrethold = .25;
-    private readonly string source;
-    private readonly OcrEngine ocr;
-
-    public WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options)
-    {
-        this.source = options.Value.Source;
-        this.ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
+    private readonly string source = options.Value.Source;
+    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
             ?? throw new InvalidOperationException($"{options.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
-    }
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
