@@ -56,37 +56,37 @@ internal partial class SettingsViewModel : IEditableObject
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; }
 
-    [Category("Generic|Language")]
+    [Category("SettingsViewModel|Language")]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Source { get; set; }
 
-    [Category("Generic|Language")]
+    [Category("SettingsViewModel|Language")]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Target { get; set; }
 
-    [Category("Generic|Plugin")]
+    [Category("SettingsViewModel|Plugin")]
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string TranslateModule { get; set; }
 
-    [Category("Generic|Plugin")]
+    [Category("SettingsViewModel|Plugin")]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
 
-    [Category("Generic|Misc")]
+    [Category("SettingsViewModel|Misc")]
     public ViewMode ViewMode { get; set; }
 
-    [Category("Generic|Misc")]
+    [Category("SettingsViewModel|Misc")]
     public IList<ProcessName> AutoTargets { get; set; } = new List<ProcessName>();
 
-    [Category("Generic|Misc")]
+    [Category("SettingsViewModel|Misc")]
     public bool IsEnableAutoTarget { get; set; }
 
     public IPluginParam[] Params { get; }
