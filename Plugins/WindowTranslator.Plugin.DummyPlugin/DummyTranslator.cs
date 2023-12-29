@@ -7,7 +7,5 @@ namespace WindowTranslator.Plugin.DummyPlugin;
 public class DummyTranslator : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
-    {
-        throw new NotImplementedException();
-    }
+        => ValueTask.FromResult(srcTexts);
 }

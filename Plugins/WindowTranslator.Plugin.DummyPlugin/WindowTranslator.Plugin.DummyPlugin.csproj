@@ -23,4 +23,8 @@
     </ProjectReference>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call $(ProjectDir)..\copy_plugins.bat $(OutDir) $(ProjectName) $(Configuration)" />
+  </Target>
+
 </Project>
