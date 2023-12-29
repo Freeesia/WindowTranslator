@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using Composition.WindowsRuntimeHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using PInvoke;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -18,6 +20,7 @@ public partial class StartupViewModel
     private readonly IPresentationService presentationService;
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
+    private readonly ObservableCollection<MenuItemViewModel> detatchableMenues = new();
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
@@ -26,12 +29,37 @@ public partial class StartupViewModel
         this.presentationService = presentationService;
         this.serviceProvider = serviceProvider;
         this.mainWindowModule = mainWindowModule;
+        this.mainWindowModule.OpenedWindows.CollectionChanged += OpenedWindows_CollectionChanged;
         this.TaskBarIconMenus = new[]
         {
-            new MenuItemViewModel("アタッチ", this.RunCommand),
-            new MenuItemViewModel("設定", this.OpenSettingsDialogCommand),
-            new MenuItemViewModel("終了", this.ExitCommand),
+            new MenuItemViewModel("アタッチ", this.RunCommand, []),
+            new MenuItemViewModel("デタッチ", null, this.detatchableMenues),
+            new MenuItemViewModel("設定", this.OpenSettingsDialogCommand, []),
+            new MenuItemViewModel("終了", this.ExitCommand, []),
         };
+    }
+
+    private void OpenedWindows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch(e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                foreach (var item in e.NewItems!.OfType<WindowInfo>())
+                {
+                    this.detatchableMenues.Add(new MenuItemViewModel(item.Name, new RelayCommand(item.Window.Close), []));
+                }
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                foreach (var item in e.OldItems!.OfType<WindowInfo>())
+                {
+                    var menu = this.detatchableMenues.FirstOrDefault(x => x.Header == item.Name);
+                    if (menu is not null)
+                    {
+                        this.detatchableMenues.Remove(menu);
+                    }
+                }
+                break;
+        }
     }
 
     [RelayCommand]
@@ -131,4 +159,4 @@ public partial class StartupViewModel
     private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);
 }
 
-public record MenuItemViewModel(string Header, ICommand Command);
+public record MenuItemViewModel(string Header, ICommand? Command, IReadOnlyList<MenuItemViewModel> SubCommands);

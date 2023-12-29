@@ -55,6 +55,12 @@ public partial class OverlayMainWindow : Window
         this.timer.Start();
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        this.timer.Stop();
+    }
+
     private void UpdateWindowPositionAndSize()
     {
         var sw = Stopwatch.StartNew();

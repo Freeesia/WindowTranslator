@@ -34,6 +34,7 @@
                         <Style TargetType="{x:Type MenuItem}">
                             <Setter Property="Command" Value="{Binding Command}" />
                             <Setter Property="Header" Value="{Binding Header}" />
+                            <Setter Property="ItemsSource" Value="{Binding SubCommands}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
