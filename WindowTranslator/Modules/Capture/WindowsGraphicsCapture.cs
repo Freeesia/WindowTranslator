@@ -7,6 +7,7 @@ using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
+using WindowTranslator.ComponentModel;
 
 namespace WindowTranslator.Modules.Capture;
 

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using WindowTranslator.ComponentModel;
 using Color = System.Drawing.Color;
 
 namespace WindowTranslator.Modules.OverlayColor;

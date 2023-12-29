@@ -4,6 +4,7 @@ using Kamishibai;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
