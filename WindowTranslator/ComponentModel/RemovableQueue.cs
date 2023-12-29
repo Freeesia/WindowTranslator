@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace WindowTranslator;
+namespace WindowTranslator.ComponentModel;
 
 #pragma warning disable CA1711 // ちゃんとdotnetのQueueとして動くのでOK
 public class RemovableQueue<T> : ICollection<T>, IReadOnlyCollection<T>

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
+using WindowTranslator.ComponentModel;
 
 namespace WindowTranslator.Modules.Ocr;
 
