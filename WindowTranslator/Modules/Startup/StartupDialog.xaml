@@ -1,56 +1,73 @@
-﻿<Window
+﻿<ui:FluentWindow
     x:Class="WindowTranslator.Modules.Startup.StartupDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Startup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    Title="WindowTranslator"
-    MinWidth="120"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Width="240"
+    Height="168"
+    MinWidth="240"
+    MinHeight="168"
     d:DataContext="{d:DesignInstance local:StartupViewModel}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Closing="Window_Closing"
-    Icon="/wt.ico"
+    ExtendsContentIntoTitleBar="True"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Loaded="Window_Loaded"
-    SizeToContent="WidthAndHeight"
-    WindowStyle="ToolWindow"
+    ResizeMode="NoResize"
+    WindowBackdropType="Mica"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Window.Resources>
-        <data:BoolToVisibilityConverter
-            x:Key="r2vConv"
-            FalseValue="Visible"
-            TrueValue="Collapsed" />
-        <Style TargetType="{x:Type Button}">
+    <ui:FluentWindow.Resources>
+        <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="{x:Type ui:Button}">
             <Setter Property="Width" Value="120" />
             <Setter Property="Height" Value="120" />
+            <Setter Property="FontSize" Value="48" />
         </Style>
-    </Window.Resources>
-    <StackPanel Orientation="Horizontal" Visibility="{Binding RunCommand.IsRunning, Converter={StaticResource r2vConv}}">
-        <tb:TaskbarIcon IconSource="/wt.ico" LeftClickCommand="{Binding RunCommand}">
-            <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu ItemsSource="{Binding TaskBarIconMenus}">
-                    <ContextMenu.ItemContainerStyle>
-                        <Style TargetType="{x:Type MenuItem}">
-                            <Setter Property="Command" Value="{Binding Command}" />
-                            <Setter Property="Header" Value="{Binding Header}" />
-                            <Setter Property="ItemsSource" Value="{Binding SubCommands}" />
-                        </Style>
-                    </ContextMenu.ItemContainerStyle>
-                </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>
-        <Button
-            Command="{Binding RunCommand}"
-            Content="&#xf2b7;"
-            FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
-            FontSize="48"
-            FontWeight="Bold" />
-        <Button
-            Command="{Binding OpenSettingsDialogCommand}"
-            Content="&#xe713;"
-            FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
-            FontSize="48"
-            FontWeight="Bold" />
+    </ui:FluentWindow.Resources>
+    <StackPanel Orientation="Vertical">
+        <ui:TitleBar
+            Title="WindowTranslator"
+            Icon="{ui:ImageIcon '/wt.ico'}"
+            ShowMaximize="False"
+            ShowMinimize="False" />
+        <StackPanel Orientation="Horizontal">
+            <tb:TaskbarIcon
+                IconSource="/wt.ico"
+                LeftClickCommand="{Binding RunCommand, Mode=OneWay}"
+                NoLeftClickDelay="True">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu ItemsSource="{Binding TaskBarIconMenus, Mode=OneWay}">
+                        <ContextMenu.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="Command" Value="{Binding Command, Mode=OneWay}" />
+                                <Setter Property="Header" Value="{Binding Header, Mode=OneWay}" />
+                                <Setter Property="ItemsSource" Value="{Binding SubCommands, Mode=OneWay}" />
+                            </Style>
+                        </ContextMenu.ItemContainerStyle>
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+            <ui:Button
+                Grid.Row="1"
+                Grid.Column="0"
+                Command="{Binding RunCommand}">
+                <ui:FontIcon
+                    FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
+                    FontSize="48"
+                    Glyph="&#xf2b7;" />
+            </ui:Button>
+            <ui:Button
+                Grid.Row="1"
+                Grid.Column="1"
+                Command="{Binding OpenSettingsDialogCommand}"
+                FontSize="48">
+                <ui:SymbolIcon Symbol="Settings48" />
+            </ui:Button>
+        </StackPanel>
     </StackPanel>
-</Window>
+</ui:FluentWindow>

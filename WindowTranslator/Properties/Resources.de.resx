@@ -140,7 +140,6 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Sonstiges</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>Plug-in-Einstellungen</value>
@@ -171,5 +170,17 @@
   </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>In-Memory-Cache</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>Lösen</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Ende</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>Anfügen</value>
   </data>
 </root>

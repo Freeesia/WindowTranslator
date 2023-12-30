@@ -171,4 +171,16 @@
   <data name="LocalCache" xml:space="preserve">
     <value>ローカルファイルキャッシュ</value>
   </data>
+  <data name="Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>アタッチ</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>デタッチ</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>終了</value>
+  </data>
 </root>

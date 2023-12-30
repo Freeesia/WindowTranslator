@@ -61,6 +61,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   アタッチ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Attach {
+            get {
+                return ResourceManager.GetString("Attach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   自動翻訳対象 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AutoTargets {
@@ -84,6 +93,24 @@ namespace WindowTranslator.Properties {
         public static string Capture {
             get {
                 return ResourceManager.GetString("Capture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   デタッチ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Detach {
+            get {
+                return ResourceManager.GetString("Detach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   終了 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Exit {
+            get {
+                return ResourceManager.GetString("Exit", resourceCulture);
             }
         }
         
@@ -165,6 +192,15 @@ namespace WindowTranslator.Properties {
         public static string Run {
             get {
                 return ResourceManager.GetString("Run", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
         

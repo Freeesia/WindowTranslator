@@ -8,6 +8,8 @@ using PropertyTools.Wpf;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 using WindowTranslator;
@@ -19,7 +21,11 @@ using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
+using WindowTranslator.Properties;
 using WindowTranslator.Stores;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
+using Button = System.Windows.Controls.Button;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
@@ -72,6 +78,23 @@ builder.Services.AddTransient(_ =>
     var dlg = new PropertyDialog();
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.OperatorProperty, new SettingsPropertyGridOperator());
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.ControlFactoryProperty, new SettingsPropertyGridFactory());
+    dlg.SetResourceReference(Control.BackgroundProperty, "ApplicationBackgroundBrush");
+    dlg.SetResourceReference(FrameworkElement.StyleProperty, "UiWindow");
+    dlg.Resources.Remove(typeof(Button));
+    dlg.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
+    dlg.SetCurrentValue(Window.TitleProperty, string.Empty);
+    WindowBackgroundManager.UpdateBackground(dlg, ApplicationTheme.Dark, WindowBackdropType.Mica, false);
+    var btnStyle = new Style(typeof(Button), (Style)Application.Current.FindResource(typeof(Button)));
+    btnStyle.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, 120d));
+    btnStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));
+    btnStyle.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(4)));
+    btnStyle.Seal();
+    dlg.Resources.Add(typeof(Button), btnStyle);
+    var panel = (DockPanel)dlg.Content;
+    var bar = new TitleBar() { ShowMinimize = false, ShowMaximize = false, Title = Resources.Settings };
+    DockPanel.SetDock(bar, Dock.Top);
+    panel.Children.Insert(0, bar);
+    SystemThemeWatcher.Watch(dlg);
     return dlg;
 });
 builder.Services.AddTransient<SettingsViewModel>();
@@ -112,7 +135,7 @@ static string GetPluginName(PluginNameOptions options, Type type)
 }
 
 [DisplayName("空文字化")]
-internal class TranslateEmptyModule : ITranslateModule
+public class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
         => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
@@ -120,7 +143,7 @@ internal class TranslateEmptyModule : ITranslateModule
 
 [DefaultModule]
 [DisplayName("翻訳しない")]
-internal class NoTranslateModule : ITranslateModule
+public class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(string[] srcTexts)
     => ValueTask.FromResult(srcTexts);

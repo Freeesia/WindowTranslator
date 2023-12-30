@@ -9,7 +9,7 @@ namespace WindowTranslator.Modules.Main;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class CaptureMainWindow : Window
+public partial class CaptureMainWindow
 {
     private readonly IProcessInfoStore processInfo;
     private readonly IPresentationService presentationService;

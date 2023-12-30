@@ -4,6 +4,9 @@ using System.ComponentModel;
 using System.Windows.Data;
 using WindowTranslator.Properties;
 using System.Globalization;
+using System.Windows.Input;
+using PropertyTools.DataAnnotations;
+using System.Windows.Controls;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridOperator : PropertyGridOperator
@@ -64,6 +67,19 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
             {
                 yield return CreatePropertyItem(pd, properties, instance);
             }
+        }
+    }
+
+    protected override void SetProperties(PropertyItem pi, object instance)
+    {
+        base.SetProperties(pi, instance);
+        if (pi.Is(typeof(ICommand)))
+        {
+            pi.HeaderPlacement = HeaderPlacement.Hidden;
+        }
+        if (pi.Is(typeof(bool)))
+        {
+            pi.HeaderPlacement = HeaderPlacement.Hidden;
         }
     }
 

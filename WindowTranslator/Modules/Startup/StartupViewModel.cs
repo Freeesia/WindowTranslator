@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Graphics.Capture;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.Startup;
 
@@ -32,10 +33,10 @@ public partial class StartupViewModel
         this.mainWindowModule.OpenedWindows.CollectionChanged += OpenedWindows_CollectionChanged;
         this.TaskBarIconMenus = new[]
         {
-            new MenuItemViewModel("アタッチ", this.RunCommand, []),
-            new MenuItemViewModel("デタッチ", null, this.detatchableMenues),
-            new MenuItemViewModel("設定", this.OpenSettingsDialogCommand, []),
-            new MenuItemViewModel("終了", this.ExitCommand, []),
+            new MenuItemViewModel(Resources.Attach, this.RunCommand, []),
+            new MenuItemViewModel(Resources.Detach, null, this.detatchableMenues),
+            new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
+            new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
         };
     }
 

@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
@@ -12,10 +11,18 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         if (property.Is(typeof(ICommand)))
         {
             var button = new Button();
-            button.SetBinding(Button.CommandProperty, property.CreateBinding());
-            button.SetCurrentValue(Button.ContentProperty, Resources.Run);
+            button.SetBinding(System.Windows.Controls.Primitives.ButtonBase.CommandProperty, property.CreateOneWayBinding());
+            button.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
+            button.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
             return button;
         }
         return base.CreateControl(property, options);
+    }
+
+    protected override FrameworkElement CreateBoolControl(PropertyItem property)
+    {
+        var fe = base.CreateBoolControl(property);
+        fe.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
+        return fe;
     }
 }

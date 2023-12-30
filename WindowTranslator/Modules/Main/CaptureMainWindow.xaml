@@ -1,4 +1,4 @@
-﻿<Window
+﻿<ui:FluentWindow
     x:Class="WindowTranslator.Modules.Main.CaptureMainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,23 +8,29 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="WindowTranslator"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Width="800"
     Height="450"
     d:DataContext="{d:DesignInstance local:CaptureMainViewModel}"
-    Icon="/wt.ico"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
-    <adorner:HwndAdornerManager>
-        <Viewbox>
-            <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">
-                <ctl:WindowCaptureCompositionHost.Adornment>
-                    <control:OverlayTextsControl
-                        RectHeight="{Binding Height}"
-                        RectWidth="{Binding Width}"
-                        Texts="{Binding OcrTexts}" />
-                </ctl:WindowCaptureCompositionHost.Adornment>
-            </ctl:WindowCaptureCompositionHost>
-        </Viewbox>
-    </adorner:HwndAdornerManager>
-</Window>
+    <DockPanel LastChildFill="True">
+        <ui:TitleBar
+            Title="WindowTranslator"
+            DockPanel.Dock="Top"
+            Icon="{ui:ImageIcon '/wt.ico'}"
+            ShowMinimize="False" />
+        <adorner:HwndAdornerManager>
+            <Viewbox>
+                <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">
+                    <ctl:WindowCaptureCompositionHost.Adornment>
+                        <control:OverlayTextsControl
+                            RectHeight="{Binding Height}"
+                            RectWidth="{Binding Width}"
+                            Texts="{Binding OcrTexts}" />
+                    </ctl:WindowCaptureCompositionHost.Adornment>
+                </ctl:WindowCaptureCompositionHost>
+            </Viewbox>
+        </adorner:HwndAdornerManager>
+    </DockPanel>
+</ui:FluentWindow>
