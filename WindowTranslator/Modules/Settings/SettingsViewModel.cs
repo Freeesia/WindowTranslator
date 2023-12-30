@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
+using Microsoft.PowerShell;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
 using System.Collections;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -157,7 +159,10 @@ internal partial class SettingsViewModel : IEditableObject
 
     private static bool IsInstalledLanguage(string lang)
     {
+        using var runspace = RunspaceFactory.CreateRunspace();
+        runspace.Open();
         using var ps = PowerShell.Create();
+        ps.Runspace = runspace;
         ps.AddScript($"Get-InstalledLanguage -language {lang}");
         var output = (IList)ps.Invoke().Single().BaseObject;
         if (output.Count == 0)
