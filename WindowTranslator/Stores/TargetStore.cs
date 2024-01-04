@@ -8,7 +8,7 @@ public sealed class TargetStore : ITargetStore, IDisposable
     private readonly static string targetsPath = Path.Combine(PathUtility.UserDir, "autoTargets.json");
     private readonly IOptionsMonitor<UserSettings> userSettings;
     private readonly List<string> targets;
-    private readonly List<IntPtr> activeWindows = new();
+    private readonly List<IntPtr> activeWindows = [];
 
     public TargetStore(IOptionsMonitor<UserSettings> userSettings)
     {
@@ -16,11 +16,11 @@ public sealed class TargetStore : ITargetStore, IDisposable
         if (File.Exists(targetsPath))
         {
             using var fs = File.OpenRead(targetsPath);
-            this.targets = JsonSerializer.Deserialize<List<string>>(fs) ?? new();
+            this.targets = JsonSerializer.Deserialize<List<string>>(fs) ?? [];
         }
         else
         {
-            this.targets = new();
+            this.targets = [];
         }
     }
 

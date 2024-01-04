@@ -22,6 +22,26 @@ public partial class OverlayMainWindow : Window
     private readonly ILogger<OverlayMainWindow> logger;
     private IntPtr windowHandle;
 
+    public Point MousePos
+    {
+        get => (Point)GetValue(MousePosProperty);
+        set => SetValue(MousePosProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="MousePos"/> dependency property.</summary>
+    public static readonly DependencyProperty MousePosProperty =
+        DependencyProperty.Register(nameof(MousePos), typeof(Point), typeof(OverlayMainWindow), new PropertyMetadata(new Point(double.NaN, double.NaN)));
+
+    public double Scale
+    {
+        get => (double)GetValue(ScaleProperty);
+        set => SetValue(ScaleProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="Scale"/> dependency property.</summary>
+    public static readonly DependencyProperty ScaleProperty =
+        DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayMainWindow), new PropertyMetadata(1.0));
+
     public OverlayMainWindow(IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
     {
         InitializeComponent();
@@ -31,8 +51,10 @@ public partial class OverlayMainWindow : Window
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
 #if DEBUG
-        this.Background = System.Windows.Media.Brushes.Red;
-        this.Opacity = 0.2;
+        var brush = System.Windows.Media.Brushes.Red.Clone();
+        brush.Opacity = 0.2;
+        this.Background = brush;
+        this.Opacity = 0.8;
 #endif
     }
 
@@ -61,7 +83,7 @@ public partial class OverlayMainWindow : Window
         this.timer.Stop();
     }
 
-    private void UpdateWindowPositionAndSize()
+    private unsafe void UpdateWindowPositionAndSize()
     {
         var sw = Stopwatch.StartNew();
         var windowInfo = WINDOWINFO.Create();
@@ -73,22 +95,32 @@ public partial class OverlayMainWindow : Window
         }
 
         var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHangle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-        SHCore.GetDpiForMonitor(monitorHandle, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out var dpiX, out var dpiY);
-        var dpiScaleX = dpiX / 96.0;
-        var dpiScaleY = dpiY / 96.0;
+        GetMonitorInfo(monitorHandle, out var monitorInfo);
+        var mode = DEVMODE.Create();
+        EnumDisplaySettings(monitorInfo.DeviceName, ENUM_CURRENT_SETTINGS, &mode);
+        var eDpiScale = GetDpiForSystem() / 96.0;
+        var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.Monitor.right - monitorInfo.Monitor.left);
 
         var clientRect = windowInfo.rcClient;
         var windowRect = windowInfo.rcWindow;
 
-        var left = clientRect.left / dpiScaleX;
-        var top = windowRect.top / dpiScaleY;
-        var width = (clientRect.right - clientRect.left) / dpiScaleX;
-        var height = (clientRect.bottom - windowRect.top) / dpiScaleY;
+        var p = GetWindowPlacement(this.processInfo.MainWindowHangle);
 
-        this.SetCurrentValue(LeftProperty, left);
-        this.SetCurrentValue(TopProperty, top);
-        this.SetCurrentValue(WidthProperty, width);
-        this.SetCurrentValue(HeightProperty, height);
-        this.logger.LogDebug($"(x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}) {sw.Elapsed}");
+        var left = clientRect.left;
+        var top = p.showCmd.HasFlag(WindowShowStyle.SW_MAXIMIZE) ? clientRect.top : windowRect.top;
+        var width = clientRect.right - left;
+        var height = clientRect.bottom - top;
+
+        var nativePos = GetCursorPos();
+        var x = (nativePos.x - left) / eDpiScale;
+        var y = (nativePos.y - top) / eDpiScale;
+
+        this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
+        this.SetCurrentValue(LeftProperty, left / eDpiScale);
+        this.SetCurrentValue(TopProperty, top / eDpiScale);
+        this.SetCurrentValue(WidthProperty, width / eDpiScale);
+        this.SetCurrentValue(HeightProperty, height / eDpiScale);
+        this.SetCurrentValue(MousePosProperty, new Point(x, y));
+        this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
     }
 }
