@@ -8,99 +8,105 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type control:OverlayTextsControl}">
-                    <Viewbox>
-                        <ItemsControl
-                            Width="{TemplateBinding RectWidth}"
-                            Height="{TemplateBinding RectHeight}"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            ItemsSource="{TemplateBinding Texts}">
-                            <ItemsControl.Resources>
-                                <data:BoolToDoubleConverter
-                                    x:Key="b2dConv"
-                                    FalseValue="0.5"
-                                    TrueValue="1.0" />
-                            </ItemsControl.Resources>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type root:TextRect}">
-                                    <Border
-                                        MinWidth="{Binding Width}"
-                                        MinHeight="{Binding Height}"
-                                        Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                        BorderBrush="#40000000"
-                                        BorderThickness="2"
-                                        ClipToBounds="True"
-                                        CornerRadius="10"
-                                        Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}"
-                                        RenderTransformOrigin="0.5,0.5">
-                                        <Border.Resources>
-                                            <TranslateTransform x:Key="trans" Y="{Binding FontSize, Converter={x:Static data:TextOverlayTransformYConverter.Default}, ConverterParameter=-0.2, FallbackValue=0.0}" />
-                                            <data:BoolToDataTemplateConverter x:Key="b2dtConv">
-                                                <data:BoolToDataTemplateConverter.TrueContent>
-                                                    <DataTemplate DataType="{x:Type root:TextRect}">
-                                                        <TextBlock
-                                                            Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
-                                                            FontSize="{Binding FontSize}"
-                                                            Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                                            RenderTransform="{StaticResource trans}"
-                                                            Text="{Binding Text}"
-                                                            TextWrapping="Wrap" />
-                                                    </DataTemplate>
-                                                </data:BoolToDataTemplateConverter.TrueContent>
-                                                <data:BoolToDataTemplateConverter.FalseContent>
-                                                    <DataTemplate DataType="{x:Type root:TextRect}">
-                                                        <Viewbox
-                                                            Width="{Binding Width}"
-                                                            Height="{Binding Height}"
-                                                            HorizontalAlignment="Center"
-                                                            VerticalAlignment="Center">
-                                                            <Path
-                                                                Data="M 25,1 A 24,24 180 1 1 25,49"
-                                                                Stroke="DodgerBlue"
-                                                                StrokeThickness="2">
-                                                                <Path.RenderTransform>
-                                                                    <RotateTransform CenterX="25" CenterY="25" />
-                                                                </Path.RenderTransform>
-                                                                <Path.Triggers>
-                                                                    <EventTrigger RoutedEvent="Path.Loaded">
-                                                                        <BeginStoryboard>
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation
-                                                                                    RepeatBehavior="Forever"
-                                                                                    Storyboard.TargetProperty="RenderTransform.Angle"
-                                                                                    From="0"
-                                                                                    To="360"
-                                                                                    Duration="0:0:2" />
-                                                                            </Storyboard>
-                                                                        </BeginStoryboard>
-                                                                    </EventTrigger>
-                                                                </Path.Triggers>
-                                                            </Path>
-                                                        </Viewbox>
-                                                    </DataTemplate>
-                                                </data:BoolToDataTemplateConverter.FalseContent>
-                                            </data:BoolToDataTemplateConverter>
-                                        </Border.Resources>
-                                        <Border.RenderTransform>
-                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
-                                        </Border.RenderTransform>
-                                        <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                            <ItemsControl.ItemContainerStyle>
-                                <Style>
-                                    <Setter Property="Canvas.Top" Value="{Binding Converter={x:Static data:TextOverlayTopConverter.Default}}" />
-                                    <Setter Property="Canvas.Left" Value="{Binding Converter={x:Static data:TextOverlayLeftConverter.Default}}" />
-                                </Style>
-                            </ItemsControl.ItemContainerStyle>
-                        </ItemsControl>
-                    </Viewbox>
+                    <ItemsControl
+                        Width="{TemplateBinding RectWidth}"
+                        Height="{TemplateBinding RectHeight}"
+                        ItemsSource="{TemplateBinding Texts}">
+                        <ItemsControl.Resources>
+                            <data:BoolToDoubleConverter
+                                x:Key="b2dConv"
+                                FalseValue="0.5"
+                                TrueValue="1.0" />
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type root:TextRect}">
+                                <Border
+                                    MinWidth="{Binding Width}"
+                                    MinHeight="{Binding Height}"
+                                    Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                                    BorderBrush="#40000000"
+                                    BorderThickness="2"
+                                    ClipToBounds="True"
+                                    CornerRadius="10"
+                                    Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                    <Border.Resources>
+                                        <data:BoolToDataTemplateConverter x:Key="b2dtConv">
+                                            <data:BoolToDataTemplateConverter.TrueContent>
+                                                <DataTemplate DataType="{x:Type root:TextRect}">
+                                                    <TextBlock
+                                                        Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
+                                                        FontSize="{Binding FontSize}"
+                                                        Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
+                                                        Text="{Binding Text}"
+                                                        TextWrapping="Wrap" />
+                                                </DataTemplate>
+                                            </data:BoolToDataTemplateConverter.TrueContent>
+                                            <data:BoolToDataTemplateConverter.FalseContent>
+                                                <DataTemplate DataType="{x:Type root:TextRect}">
+                                                    <Viewbox
+                                                        Width="{Binding Width}"
+                                                        Height="{Binding Height}"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center">
+                                                        <Path
+                                                            Data="M 25,1 A 24,24 180 1 1 25,49"
+                                                            Stroke="DodgerBlue"
+                                                            StrokeThickness="2">
+                                                            <Path.RenderTransform>
+                                                                <RotateTransform CenterX="25" CenterY="25" />
+                                                            </Path.RenderTransform>
+                                                            <Path.Triggers>
+                                                                <EventTrigger RoutedEvent="Path.Loaded">
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation
+                                                                                RepeatBehavior="Forever"
+                                                                                Storyboard.TargetProperty="RenderTransform.Angle"
+                                                                                From="0"
+                                                                                To="360"
+                                                                                Duration="0:0:2" />
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </EventTrigger>
+                                                            </Path.Triggers>
+                                                        </Path>
+                                                    </Viewbox>
+                                                </DataTemplate>
+                                            </data:BoolToDataTemplateConverter.FalseContent>
+                                        </data:BoolToDataTemplateConverter>
+                                    </Border.Resources>
+                                    <Border.RenderTransform>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.1" />
+                                    </Border.RenderTransform>
+                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                <Setter Property="Visibility">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{x:Static data:TextOverlayVisibilityConverter.Default}">
+                                            <Binding Path="" />
+                                            <Binding Path="MousePos" RelativeSource="{RelativeSource AncestorType=control:OverlayTextsControl}" />
+                                            <Binding Path="Scale" RelativeSource="{RelativeSource AncestorType=control:OverlayTextsControl}" />
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Scale, RelativeSource={RelativeSource Mode=TemplatedParent}}" ScaleY="{Binding Scale, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                        </ItemsControl.LayoutTransform>
+                    </ItemsControl>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

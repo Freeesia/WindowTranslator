@@ -34,4 +34,24 @@ public class OverlayTextsControl : Control
     /// <summary>Identifies the <see cref="RectHeight"/> dependency property.</summary>
     public static readonly DependencyProperty RectHeightProperty = DependencyProperty.Register(nameof(RectHeight), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(double.NaN));
 
+    public Point MousePos
+    {
+        get => (Point)GetValue(MousePosProperty);
+        set => SetValue(MousePosProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="MousePos"/> dependency property.</summary>
+    public static readonly DependencyProperty MousePosProperty =
+        DependencyProperty.Register(nameof(MousePos), typeof(Point), typeof(OverlayTextsControl), new PropertyMetadata(new Point(double.NaN, double.NaN)));
+
+    public double Scale
+    {
+        get => (double)GetValue(ScaleProperty);
+        set => SetValue(ScaleProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="Scale"/> dependency property.</summary>
+    public static readonly DependencyProperty ScaleProperty =
+        DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(1.0));
+
 }

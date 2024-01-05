@@ -10,6 +10,7 @@
     <ApplicationIcon>$(MSBuildThisFileDirectory)..\docs\images\wt.ico</ApplicationIcon>
     <NeutralLanguage>ja-JP</NeutralLanguage>
     <AnalysisMode>Recommended</AnalysisMode>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishReadyToRun>true</PublishReadyToRun>

@@ -24,10 +24,12 @@
             <Viewbox>
                 <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">
                     <ctl:WindowCaptureCompositionHost.Adornment>
-                        <control:OverlayTextsControl
-                            RectHeight="{Binding Height}"
-                            RectWidth="{Binding Width}"
-                            Texts="{Binding OcrTexts}" />
+                        <Viewbox>
+                            <control:OverlayTextsControl
+                                RectHeight="{Binding Height}"
+                                RectWidth="{Binding Width}"
+                                Texts="{Binding OcrTexts}" />
+                        </Viewbox>
                     </ctl:WindowCaptureCompositionHost.Adornment>
                 </ctl:WindowCaptureCompositionHost>
             </Viewbox>
