@@ -2,6 +2,7 @@
 using PInvoke;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -66,21 +67,22 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
         compositionHost = new(lastSize.Height, lastSize.Width);
         this.HwndHost = compositionHost;
 
-        var compositor = compositionHost.Compositor ?? throw new InvalidOperationException();
+        if (compositionHost.Compositor is { } compositor)
+        {
+            var brush = compositor.CreateSurfaceBrush();
+            brush.HorizontalAlignmentRatio = 0.5f;
+            brush.VerticalAlignmentRatio = 0.5f;
+            brush.Stretch = CompositionStretch.Uniform;
+            brush.Surface = compositionHost.Compositor?.CreateCompositionSurfaceForSwapChain(swapChain);
 
-        var brush = compositor.CreateSurfaceBrush();
-        brush.HorizontalAlignmentRatio = 0.5f;
-        brush.VerticalAlignmentRatio = 0.5f;
-        brush.Stretch = CompositionStretch.Uniform;
-        brush.Surface = compositionHost.Compositor?.CreateCompositionSurfaceForSwapChain(swapChain);
+            var content = compositor.CreateSpriteVisual();
+            content.AnchorPoint = new Vector2(0.5f);
+            content.RelativeOffsetAdjustment = new Vector3(0.5f, 0.5f, 0);
+            content.RelativeSizeAdjustment = Vector2.One;
+            content.Brush = brush;
 
-        var content = compositor.CreateSpriteVisual();
-        content.AnchorPoint = new Vector2(0.5f);
-        content.RelativeOffsetAdjustment = new Vector3(0.5f, 0.5f, 0);
-        content.RelativeSizeAdjustment = Vector2.One;
-        content.Brush = brush;
-
-        compositionHost.Child = content;
+            compositionHost.Child = content;
+        }
 
         InvalidateMeasure();
     }
@@ -122,11 +124,11 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
 
     protected override Size MeasureOverride(Size constraint) => new(this.lastSize.Width, this.lastSize.Height);
 
-    public class CompositionHost : HwndHost
+    public class CompositionHost(double height, double width) : HwndHost
     {
         IntPtr hwndHost;
-        private readonly int hostHeight;
-        private readonly int hostWidth;
+        private readonly int hostHeight = (int)height;
+        private readonly int hostWidth = (int)width;
         CompositionTarget? compositionTarget;
 
         public Compositor? Compositor { get; private set; }
@@ -139,14 +141,11 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 {
                     InitComposition(hwndHost);
                 }
-                compositionTarget.Root = value;
+                if (compositionTarget is not null)
+                {
+                    compositionTarget.Root = value;
+                }
             }
-        }
-
-        public CompositionHost(double height, double width)
-        {
-            hostHeight = (int)height;
-            hostWidth = (int)width;
         }
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
@@ -161,7 +160,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 IntPtr.Zero);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
-            User32.SetWindowPos(hwndHost, (IntPtr)1, 0, 0, 0, 0, User32.SetWindowPosFlags.SWP_NOMOVE | User32.SetWindowPosFlags.SWP_NOSIZE);
+            User32.SetWindowPos(hwndHost, 1, 0, 0, 0, 0, User32.SetWindowPosFlags.SWP_NOMOVE | User32.SetWindowPosFlags.SWP_NOSIZE);
 
             // Build Composition Tree of content
             InitComposition(hwndHost);
@@ -176,11 +175,13 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
             User32.DestroyWindow(hwnd.Handle);
         }
 
-        [MemberNotNull(nameof(compositionTarget), nameof(Compositor))]
         private void InitComposition(IntPtr hwndHost)
         {
-            Compositor = new Compositor();
-            compositionTarget = Compositor.CreateDesktopWindowTarget(hwndHost, true);
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                Compositor = new Compositor();
+                compositionTarget = Compositor.CreateDesktopWindowTarget(hwndHost, true);
+            }
         }
     }
 }

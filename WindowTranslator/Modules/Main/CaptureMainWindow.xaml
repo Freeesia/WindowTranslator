@@ -28,12 +28,7 @@
                             <control:OverlayTextsControl
                                 RectHeight="{Binding Height}"
                                 RectWidth="{Binding Width}"
-                                Scale="0.55"
-                                Texts="{Binding OcrTexts}">
-                                <control:OverlayTextsControl.RenderTransform>
-                                    <TranslateTransform X="0" Y="0" />
-                                </control:OverlayTextsControl.RenderTransform>
-                            </control:OverlayTextsControl>
+                                Texts="{Binding OcrTexts}" />
                         </Viewbox>
                     </ctl:WindowCaptureCompositionHost.Adornment>
                 </ctl:WindowCaptureCompositionHost>
