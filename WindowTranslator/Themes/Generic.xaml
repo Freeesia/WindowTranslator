@@ -82,7 +82,7 @@
                                         </data:BoolToDataTemplateConverter>
                                     </Border.Resources>
                                     <Border.RenderTransform>
-                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.1" />
                                     </Border.RenderTransform>
                                     <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
                                 </Border>
