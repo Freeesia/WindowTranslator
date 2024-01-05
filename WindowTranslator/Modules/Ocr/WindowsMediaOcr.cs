@@ -9,7 +9,7 @@ namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
 [DisplayName("Windows標準文字認識")]
-public class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
+public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
 {
     private const double IndentThrethold = .005;
     private const double LeadingThrethold = .95;
@@ -28,6 +28,7 @@ public class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrMo
             .Where(w => w.Height < bitmap.PixelHeight * 0.1)
             // 少なすぎる文字も認識ミス扱い
             .Where(w => w.Text.Length > 2)
+            .Where(w => !IsAllNum().IsMatch(w.Text))
             .OrderBy(w => w.Y)
                 .ThenBy(w => w.X)
             .ToArray();
@@ -85,20 +86,20 @@ public class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrMo
     {
         var text = this.source[..2] switch
         {
-            "ja" => string.Join(null, line.Words.Select(w => w.Text)),
+            "ja" or "zh" => string.Join(null, line.Words.Select(w => w.Text)),
             _ => line.Text,
         };
         var x = line.Words.Select(w => w.BoundingRect.X).Min();
         var y = line.Words.Select(w => w.BoundingRect.Y).Min();
         var width = line.Words.Select(w => w.BoundingRect.Right).Max() - line.Words.Select(w => w.BoundingRect.Left).Min();
         var height = line.Words.Select(w => w.BoundingRect.Bottom).Max() - line.Words.Select(w => w.BoundingRect.Top).Min();
+        var fontSize = line.Words.Select(w =>
+        {
+            var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(w.Text);
+            return CorrectHeight(w.BoundingRect.Height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
+        }).Average();
 
-        // abcdefghijklmnopqrstuvwxyz
-        // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-        var isxHeight = Regex.IsMatch(text, "[acemnosuvwxz]");
-        var hasAcent = Regex.IsMatch(text, "[A-Zbdfhijkl]");
-        var hasHarfAcent = text.Contains('t');
-        var hasDecent = Regex.IsMatch(text, "[gjpqy]");
+        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(text);
 
         // 文字種類による位置補正
         y -= (hasAcent, hasHarfAcent) switch
@@ -109,18 +110,7 @@ public class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrMo
         };
 
         // 文字種類による高さ補正
-        height = (isxHeight, hasAcent, hasHarfAcent, hasDecent) switch
-        {
-            (true, true, _, true) => height,
-            (true, true, _, false) => height * 1.2,
-            (true, false, true, true) => height * (1 + .1 + .0),
-            (true, false, false, true) => height * (1 + .2 + .0),
-            (true, false, true, false) => height * (1 + .1 + .2),
-            (true, false, false, false) => height * (1 + .2 + .2),
-            (false, _, _, _) => height,
-        };
-
-        var fontSize = height;
+        height = CorrectHeight(height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
 
         // 若干太らせて完全に文字を覆う
         const double fat = .2;
@@ -131,4 +121,37 @@ public class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrMo
 
         return new(text, x, y, width, height, fontSize, 1);
     }
+
+    private static double CorrectHeight(double height, bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent)
+        => (isxHeight, hasAcent, hasHarfAcent, hasDecent) switch
+        {
+            (true, true, _, true) => height,
+            (true, true, _, false) => height * 1.2,
+            (true, false, true, true) => height * (1 + .1 + .0),
+            (true, false, false, true) => height * (1 + .2 + .0),
+            (true, false, true, false) => height * (1 + .1 + .2),
+            (true, false, false, false) => height * (1 + .2 + .2),
+            (false, _, _, _) => height,
+        };
+
+    private static (bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent) GetTextType(string text)
+    {
+        // abcdefghijklmnopqrstuvwxyz
+        // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        var isxHeight = Contains(text, "acemnosuvwxz");
+        var hasAcent = Contains(text, "ABCDEFGHIJKLMNOPQRSTUVWXYZbdfhijkl");
+        var hasHarfAcent = text.Contains('t');
+        var hasDecent = Contains(text, "gjpqy");
+        return (isxHeight, hasAcent, hasHarfAcent, hasDecent);
+    }
+
+    private static bool Contains(string text, string target)
+    {
+        ReadOnlySpan<char> te = text;
+        ReadOnlySpan<char> ta = target;
+        return te.ContainsAny(ta);
+    }
+
+    [GeneratedRegex(@"^\d+$")]
+    private static partial Regex IsAllNum();
 }
