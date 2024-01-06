@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
 using Microsoft.PowerShell;
@@ -25,7 +26,7 @@ using CategoryAttribute = System.ComponentModel.CategoryAttribute;
 namespace WindowTranslator.Modules.Settings;
 
 [OpenDialog]
-internal partial class SettingsViewModel : IEditableObject
+internal partial class SettingsViewModel : ObservableObject, IEditableObject
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
@@ -38,13 +39,13 @@ internal partial class SettingsViewModel : IEditableObject
     };
     private readonly IPresentationService presentationService;
 
+    private Task<bool> checkTask;
+
     [Browsable(false)]
     public IEnumerable<CultureInfo> Languages { get; } = new[]
     {
         CultureInfo.GetCultureInfo("ja-JP"),
         CultureInfo.GetCultureInfo("en-US"),
-        CultureInfo.GetCultureInfo("pt-BR"),
-        CultureInfo.GetCultureInfo("fr-CA"),
         CultureInfo.GetCultureInfo("fr-FR"),
         CultureInfo.GetCultureInfo("it-IT"),
         CultureInfo.GetCultureInfo("de-DE"),
@@ -62,11 +63,12 @@ internal partial class SettingsViewModel : IEditableObject
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; }
 
-    [Category("SettingsViewModel|Language")]
-    [ItemsSourceProperty(nameof(Languages))]
-    [SelectedValuePath(nameof(CultureInfo.Name))]
-    [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
-    public string Source { get; set; }
+    [property: Category("SettingsViewModel|Language")]
+    [property: ItemsSourceProperty(nameof(Languages))]
+    [property: SelectedValuePath(nameof(CultureInfo.Name))]
+    [property: DisplayMemberPath(nameof(CultureInfo.DisplayName))]
+    [ObservableProperty]
+    private string source;
 
     [Category("SettingsViewModel|Language")]
     [ItemsSourceProperty(nameof(Languages))]
@@ -157,14 +159,20 @@ internal partial class SettingsViewModel : IEditableObject
         }
     }
 
-    private static bool IsInstalledLanguage(string lang)
+    partial void OnSourceChanged(string value)
+    {
+        this.checkTask = IsInstalledLanguageAsync(value);
+    }
+
+    private static async Task<bool> IsInstalledLanguageAsync(string lang)
     {
         using var runspace = RunspaceFactory.CreateRunspace();
         runspace.Open();
         using var ps = PowerShell.Create();
         ps.Runspace = runspace;
         ps.AddScript($"Get-InstalledLanguage -language {lang}");
-        var output = (IList)ps.Invoke().Single().BaseObject;
+        var res = await ps.InvokeAsync().ConfigureAwait(false);
+        var output = (IList)res.Single().BaseObject;
         if (output.Count == 0)
         {
             return false;
@@ -172,6 +180,22 @@ internal partial class SettingsViewModel : IEditableObject
         var langInfo = output[0];
         var features = langInfo!.GetType().GetField("LanguageFeatures")!.GetValue(langInfo);
         return (((int)features!) & 0x20) == 0x20;
+    }
+
+    private static async Task InstallLanguage(string lang)
+    {
+        var defaultSessionState = InitialSessionState.CreateDefault();
+        defaultSessionState.ExecutionPolicy = ExecutionPolicy.RemoteSigned;
+        using var runspace = RunspaceFactory.CreateRunspace(defaultSessionState);
+        runspace.Open();
+        using var ps = PowerShell.Create();
+        ps.Runspace = runspace;
+        ps.AddScript($"Get-WindowsCapability -Online | Where-Object {{ $_.Name -Like 'Language.OCR*{lang}*' }} | Add-WindowsCapability -Online");
+        await ps.InvokeAsync().ConfigureAwait(false);
+        if (ps.HadErrors)
+        {
+            throw new InvalidOperationException("OCR言語パックインストール失敗", ps.Streams.Error.First().Exception);
+        }
     }
 
     public void BeginEdit()
@@ -184,14 +208,15 @@ internal partial class SettingsViewModel : IEditableObject
 
     public void EndEdit()
     {
-        if (!IsInstalledLanguage(this.Source))
+        if (!this.checkTask.Result)
         {
             this.presentationService.ShowMessage($"""
                 翻訳元言語の{this.Source}は文字認識のために必要なOCR機能がインストールされていません。
                 翻訳開始前に言語機能をインストールしてください。
                 """,
                 icon: MessageBoxImage.Warning);
-            Process.Start(new ProcessStartInfo("cmd.exe", "/c start \"\" ms-settings:regionlanguage-adddisplaylanguage") { CreateNoWindow = true });
+            InstallLanguage(this.Source).Wait();
+            //Process.Start(new ProcessStartInfo("cmd.exe", "/c start \"\" ms-settings:regionlanguage-adddisplaylanguage") { CreateNoWindow = true });
         }
         var settings = new UserSettings()
         {
