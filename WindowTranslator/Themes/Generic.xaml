@@ -33,8 +33,7 @@
                                     BorderThickness="2"
                                     ClipToBounds="True"
                                     CornerRadius="10"
-                                    Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}"
-                                    RenderTransformOrigin="0.5,0.5">
+                                    Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}">
                                     <Border.Resources>
                                         <data:BoolToDataTemplateConverter x:Key="b2dtConv">
                                             <data:BoolToDataTemplateConverter.TrueContent>
@@ -82,7 +81,8 @@
                                         </data:BoolToDataTemplateConverter>
                                     </Border.Resources>
                                     <Border.RenderTransform>
-                                        <ScaleTransform ScaleX="1.05" ScaleY="1.1" />
+                                        <!--  TODO: Fix Scale  -->
+                                        <ScaleTransform ScaleY="1.1" />
                                     </Border.RenderTransform>
                                     <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
                                 </Border>

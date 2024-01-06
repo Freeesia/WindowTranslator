@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Media.Media3D;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
@@ -29,8 +31,6 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             // 少なすぎる文字も認識ミス扱い
             .Where(w => w.Text.Length > 2)
             .Where(w => !IsAllNum().IsMatch(w.Text))
-            .OrderBy(w => w.Y)
-                .ThenBy(w => w.X)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -40,44 +40,135 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
 
         var xt = IndentThrethold * bitmap.PixelWidth;
 
-        var results = new List<TextRect>(lineResults.Length);
-        var queue = new RemovableQueue<TextRect>(lineResults);
-        while (queue.TryDequeue(out var target))
+        var results = new List<TempMergeRect>(lineResults.Length);
         {
-            var temp = target;
-            foreach (var lineResult in queue.ToArray())
+            var queue = new RemovableQueue<TextRect>(lineResults.OrderBy(r => r.Y));
+            while (queue.TryDequeue(out var target))
             {
-                var xDiff = Math.Abs(temp.X - lineResult.X);
-                var yDiff = Math.Abs((temp.Y + temp.Height) - lineResult.Y);
-                var fDiff = Math.Abs(1.0 - (temp.FontSize / lineResult.FontSize));
-                var lThre = (1.0 + (fDiff / 2)) * Math.Min(temp.FontSize, lineResult.FontSize) * LeadingThrethold;
-                if (xDiff < xt && yDiff < lThre && fDiff < FontSizeThrethold)
+                var temp = new TempMergeRect(target);
+                var merged = false;
+                do
                 {
-                    var top = Math.Min(temp.Y, lineResult.Y);
-                    var bottom = Math.Max(temp.Y + temp.Height, lineResult.Y + lineResult.Height);
-                    var left = Math.Min(temp.X, lineResult.X);
-                    var right = Math.Max(temp.X + temp.Width, lineResult.X + lineResult.Width);
-                    temp = new(
-                        temp.Y < lineResult.Y ? CreateConcatText(temp.Text, lineResult.Text) : CreateConcatText(lineResult.Text, temp.Text),
-                        left,
-                        top,
-                        right - left,
-                        bottom - top,
-                        temp.FontSize + ((lineResult.FontSize - temp.FontSize) / (temp.Line + 1)),
-                        temp.Line + 1);
-                    queue.Remove(lineResult);
-                }
+                    merged = false;
+                    foreach (var lineResult in queue.ToArray())
+                    {
+                        if (temp.TryMerge(lineResult, xt))
+                        {
+                            queue.Remove(lineResult);
+                            merged = true;
+                        }
+                    }
+                } while (merged);
+                results.Add(temp);
             }
-            results.Add(temp);
         }
 
-        return results;
+        return results.Select(ToTextRect).ToArray();
     }
+
+    private class TempMergeRect
+    {
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
+        public double FontSize { get; private set; }
+        public List<TextRect> Rects { get; } = [];
+
+        public double Left => X;
+        public double Top => Y;
+        public double Right => X + Width;
+        public double Bottom => Y + Height;
+
+        public TempMergeRect(TextRect rect)
+        {
+            (_, X, Y, Width, Height, FontSize, _, _, _, _) = rect;
+            Rects.Add(rect);
+        }
+
+        public bool TryMerge(TextRect rect, double xThreshold)
+        {
+            //return false;
+            if (!CanMerge(rect, xThreshold))
+            {
+                return false;
+            }
+            var (_, x, y, width, height, _, _, _, _, _) = rect;
+            Rects.Add(rect);
+            var x1 = Math.Min(X, x);
+            var y1 = Math.Min(Y, y);
+            var x2 = Math.Max(X + Width, x + width);
+            var y2 = Math.Max(Y + Height, y + height);
+            (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
+            return true;
+        }
+
+        private bool CanMerge(TextRect rect, double xThreshold)
+        {
+            // 重なっている場合はマージできる
+            if (IntersectsWith(rect))
+            {
+                return true;
+            }
+            // 重なっていない場合は、x座標が近く、y座標が近く、フォントサイズが近い場合にマージできる
+            var (_, x, y, _, _, _, _, _, _, _) = rect;
+            var xDiff = Math.Abs(X - x);
+            var yDiff = Math.Abs((Y + Height) - y);
+            var fDiff = Math.Abs(1.0 - (FontSize / rect.FontSize));
+            var lThre = (1.0 + (fDiff / 2)) * Math.Min(FontSize, rect.FontSize) * LeadingThrethold;
+            return xDiff < xThreshold && yDiff < lThre && fDiff < FontSizeThrethold;
+        }
+
+        public bool IntersectsWith(TextRect rect)
+            => (rect.X < X + Width) && (X < rect.X + rect.Width) &&
+            (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
+
+        public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out List<TextRect> rects)
+        {
+            x = X;
+            y = Y;
+            width = Width;
+            height = Height;
+            fontSize = FontSize;
+            rects = Rects;
+        }
+    }
+
+    private TextRect ToTextRect(TempMergeRect combinedRect)
+    {
+        var (x, y, width, height, fontSize, rects) = combinedRect;
+        var builder = new StringBuilder(combinedRect.Rects.Sum(r => r.Text.Length + 1));
+        var lines = (int)(height / fontSize);
+        foreach (var rect in combinedRect.Rects.OrderBy(r => (int)((r.Y - y) / fontSize)).ThenBy(r => r.X))
+        {
+            builder.Append(rect.Text);
+            if (IsSpaceLang())
+            {
+                builder.Append(' ');
+            }
+        }
+        if (IsSpaceLang())
+        {
+            builder.Length--;
+        }
+
+        // 若干太らせて完全に文字を覆う
+        const double fat = .2;
+        width += fontSize * fat;
+        x -= fontSize * fat * .5;
+        height += fontSize * fat;
+        y -= fontSize * fat * .5;
+
+        return new(builder.ToString(), x, y, width, height, fontSize, lines);
+    }
+
+    private bool IsSpaceLang()
+        => this.source[..2] is not "ja" or "zh";
 
     private string CreateConcatText(string str1, string str2)
         => this.source[..2] switch
         {
-            "ja" => $"{str1}{str2}",
+            "ja" or "zh" => $"{str1}{str2}",
             _ => $"{str1} {str2}",
         };
 
@@ -111,13 +202,6 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
 
         // 文字種類による高さ補正
         height = CorrectHeight(height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
-
-        // 若干太らせて完全に文字を覆う
-        const double fat = .2;
-        width += fontSize * fat;
-        x -= fontSize * fat * .5;
-        height += fontSize * fat;
-        y -= fontSize * fat * .5;
 
         return new(text, x, y, width, height, fontSize, 1);
     }
