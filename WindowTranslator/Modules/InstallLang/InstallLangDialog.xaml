@@ -1,0 +1,73 @@
+﻿<ui:FluentWindow
+    x:Class="WindowTranslator.Modules.InstallLang.InstallLangDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:WindowTranslator.Data"
+    xmlns:k="clr-namespace:Kamishibai;assembly=Kamishibai.View"
+    xmlns:local="clr-namespace:WindowTranslator.Modules.InstallLang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Width="380"
+    Height="180"
+    MinHeight="120"
+    d:DataContext="{d:DesignInstance {x:Type local:InstallLangViewModel}}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    ExtendsContentIntoTitleBar="True"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    ResizeMode="NoResize"
+    WindowBackdropType="Mica"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Normal"
+    mc:Ignorable="d">
+    <ui:FluentWindow.Resources>
+        <data:BooleanToVisibilityConverter
+            x:Key="t2vConv"
+            False="Collapsed"
+            True="Visible" />
+        <data:BooleanToVisibilityConverter
+            x:Key="f2vConv2"
+            False="Visible"
+            True="Collapsed" />
+        <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="ui:Button">
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Width" Value="120" />
+        </Style>
+    </ui:FluentWindow.Resources>
+    <DockPanel LastChildFill="True">
+        <ui:TitleBar
+            Title="言語のインストール"
+            DockPanel.Dock="Top"
+            Icon="{ui:ImageIcon '/wt.ico'}"
+            ShowMaximize="False"
+            ShowMinimize="False" />
+        <StackPanel
+            Margin="8"
+            HorizontalAlignment="Right"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <ui:Button
+                Command="{Binding InstallLangCommand, Mode=OneWay}"
+                CommandParameter="{k:Window}"
+                Content="インストール"
+                IsDefault="True"
+                Visibility="{Binding IsAdmin, Mode=OneWay, Converter={StaticResource t2vConv}}" />
+            <ui:Button
+                Command="{Binding RestartAsAdminCommand, Mode=OneWay}"
+                Content="再起動"
+                IsDefault="True"
+                Visibility="{Binding IsAdmin, Mode=OneWay, Converter={StaticResource f2vConv2}}" />
+            <ui:Button Content="キャンセル" IsCancel="True" />
+        </StackPanel>
+        <StackPanel Margin="16,8">
+            <TextBlock Text="翻訳元(認識)言語に選択されたはインストールされていません。" />
+            <TextBlock Text="インストールしますか？" />
+            <ProgressBar
+                Height="8"
+                Maximum="100"
+                Visibility="{Binding InstallLangCommand.IsRunning, Mode=OneWay, Converter={StaticResource t2vConv}}"
+                Value="{Binding ProgressValue, Mode=OneWay}" />
+        </StackPanel>
+    </DockPanel>
+</ui:FluentWindow>

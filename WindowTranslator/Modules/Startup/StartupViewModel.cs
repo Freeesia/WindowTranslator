@@ -6,12 +6,18 @@ using PInvoke;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Management.Automation.Runspaces;
+using System.Management.Automation;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Graphics.Capture;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
+using System.Collections;
+using Microsoft.Extensions.Options;
+using Microsoft.VisualStudio.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace WindowTranslator.Modules.Startup;
 
@@ -21,7 +27,10 @@ public partial class StartupViewModel
     private readonly IPresentationService presentationService;
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
-    private readonly ObservableCollection<MenuItemViewModel> detatchableMenues = new();
+    private readonly ObservableCollection<MenuItemViewModel> detatchableMenues = [];
+
+    [ObservableProperty]
+    private bool checkingLanguage;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
@@ -38,11 +47,12 @@ public partial class StartupViewModel
             new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
             new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
         };
+        InstallLangIfNotInstalledAsync().Forget();
     }
 
     private void OpenedWindows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        switch(e.Action)
+        switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
                 foreach (var item in e.NewItems!.OfType<WindowInfo>())
@@ -125,17 +135,57 @@ public partial class StartupViewModel
     [RelayCommand]
     public async Task OpenSettingsDialogAsync()
     {
+        using (var scope = this.serviceProvider.CreateScope())
+        {
+            var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
+            var app = Application.Current;
+            await ps.OpenSettingsDialogAsync(app.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        }
+        await InstallLangIfNotInstalledAsync();
+    }
+
+    private async Task InstallLangIfNotInstalledAsync()
+    {
         using var scope = this.serviceProvider.CreateScope();
+        try
+        {
+            this.CheckingLanguage = true;
+            await Task.Delay(500);
+            var lang = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<LanguageOptions>>();
+            if (await IsInstalledLanguageAsync(lang.Value.Source))
+            {
+                return;
+            }
+        }
+        finally
+        {
+            this.CheckingLanguage = false;
+        }
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var app = Application.Current;
-        var window = app.MainWindow;
-        await ps.OpenSettingsDialogAsync(window, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        await ps.OpenInstallLangDialogAsync(app.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+    }
+
+    private static async Task<bool> IsInstalledLanguageAsync(string lang)
+    {
+        using var runspace = RunspaceFactory.CreateRunspace();
+        runspace.Open();
+        using var ps = PowerShell.Create();
+        ps.Runspace = runspace;
+        ps.AddScript($"Get-InstalledLanguage -language {lang}");
+        var res = await ps.InvokeAsync().ConfigureAwait(false);
+        var output = (IList)res.Single().BaseObject;
+        if (output.Count == 0)
+        {
+            return false;
+        }
+        var langInfo = output[0];
+        var features = langInfo!.GetType().GetField("LanguageFeatures")!.GetValue(langInfo);
+        return (((int)features!) & 0x20) == 0x20;
     }
 
     [RelayCommand]
-#pragma warning disable CA1822 // ソースジェネレーターが静的メソッドに対応していない
-    public void Exit()
-#pragma warning restore CA1822
+    public static void Exit()
         => Application.Current.Shutdown();
 
     private static ProcessInfo? FindProcessByWindowTitle(string targetTitle)

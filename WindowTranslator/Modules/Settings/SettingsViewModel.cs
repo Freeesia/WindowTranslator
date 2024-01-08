@@ -2,16 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
-using Microsoft.PowerShell;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
-using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -39,8 +34,6 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     };
     private readonly IPresentationService presentationService;
 
-    private Task<bool> checkTask;
-
     [Browsable(false)]
     public IEnumerable<CultureInfo> Languages { get; } = new[]
     {
@@ -63,12 +56,11 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; }
 
-    [property: Category("SettingsViewModel|Language")]
-    [property: ItemsSourceProperty(nameof(Languages))]
-    [property: SelectedValuePath(nameof(CultureInfo.Name))]
-    [property: DisplayMemberPath(nameof(CultureInfo.DisplayName))]
-    [ObservableProperty]
-    private string source;
+    [Category("SettingsViewModel|Language")]
+    [ItemsSourceProperty(nameof(Languages))]
+    [SelectedValuePath(nameof(CultureInfo.Name))]
+    [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
+    public string Source { get; set; }
 
     [Category("SettingsViewModel|Language")]
     [ItemsSourceProperty(nameof(Languages))]
@@ -159,45 +151,6 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         }
     }
 
-    partial void OnSourceChanged(string value)
-    {
-        this.checkTask = IsInstalledLanguageAsync(value);
-    }
-
-    private static async Task<bool> IsInstalledLanguageAsync(string lang)
-    {
-        using var runspace = RunspaceFactory.CreateRunspace();
-        runspace.Open();
-        using var ps = PowerShell.Create();
-        ps.Runspace = runspace;
-        ps.AddScript($"Get-InstalledLanguage -language {lang}");
-        var res = await ps.InvokeAsync().ConfigureAwait(false);
-        var output = (IList)res.Single().BaseObject;
-        if (output.Count == 0)
-        {
-            return false;
-        }
-        var langInfo = output[0];
-        var features = langInfo!.GetType().GetField("LanguageFeatures")!.GetValue(langInfo);
-        return (((int)features!) & 0x20) == 0x20;
-    }
-
-    private static async Task InstallLanguage(string lang)
-    {
-        var defaultSessionState = InitialSessionState.CreateDefault();
-        defaultSessionState.ExecutionPolicy = ExecutionPolicy.RemoteSigned;
-        using var runspace = RunspaceFactory.CreateRunspace(defaultSessionState);
-        runspace.Open();
-        using var ps = PowerShell.Create();
-        ps.Runspace = runspace;
-        ps.AddScript($"Get-WindowsCapability -Online | Where-Object {{ $_.Name -Like 'Language.OCR*{lang}*' }} | Add-WindowsCapability -Online");
-        await ps.InvokeAsync().ConfigureAwait(false);
-        if (ps.HadErrors)
-        {
-            throw new InvalidOperationException("OCR言語パックインストール失敗", ps.Streams.Error.First().Exception);
-        }
-    }
-
     public void BeginEdit()
     {
     }
@@ -208,16 +161,6 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
 
     public void EndEdit()
     {
-        if (!this.checkTask.Result)
-        {
-            this.presentationService.ShowMessage($"""
-                翻訳元言語の{this.Source}は文字認識のために必要なOCR機能がインストールされていません。
-                翻訳開始前に言語機能をインストールしてください。
-                """,
-                icon: MessageBoxImage.Warning);
-            InstallLanguage(this.Source).Wait();
-            //Process.Start(new ProcessStartInfo("cmd.exe", "/c start \"\" ms-settings:regionlanguage-adddisplaylanguage") { CreateNoWindow = true });
-        }
         var settings = new UserSettings()
         {
             Language = { Source = this.Source, Target = this.Target },

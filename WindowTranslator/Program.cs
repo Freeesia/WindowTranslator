@@ -16,6 +16,7 @@ using WindowTranslator;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
+using WindowTranslator.Modules.InstallLang;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
@@ -63,6 +64,13 @@ if (Directory.Exists(userPluginsDir))
 
 builder.Configuration
     .AddCommandLine(args)
+    .AddJsonFile(s =>
+    {
+        s.Path = PathUtility.UserSettings;
+        s.Optional = true;
+        s.ReloadOnChange = true;
+        s.ReloadDelay = 10;
+    })
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
@@ -72,6 +80,7 @@ builder.Services.AddScoped<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
+builder.Services.AddPresentation<InstallLangDialog, InstallLangViewModel>();
 ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(_ =>
 {
