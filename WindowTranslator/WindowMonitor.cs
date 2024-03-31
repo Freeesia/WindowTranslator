@@ -67,8 +67,19 @@ public class WindowMonitor : BackgroundService
             }
 
             var windowTitle = User32.GetWindowText(hWnd);
-            _ = User32.GetWindowThreadProcessId(hWnd, out var processId);
-            var p = Process.GetProcessById(processId);
+            if (User32.GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            {
+                return true;
+            }
+            Process p;
+            try
+            {
+                p = Process.GetProcessById(processId);
+            }
+            catch (ArgumentException)
+            {
+                return true;
+            }
             if (this.autoTargetStore.IsTarget(hWnd, p.ProcessName))
             {
                 ShowNotification(p, windowTitle, hWnd);
