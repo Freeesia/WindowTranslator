@@ -76,6 +76,7 @@ ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(_ =>
 {
     var dlg = new PropertyDialog();
+    dlg.ShowInTaskbar = true;
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.OperatorProperty, new SettingsPropertyGridOperator());
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.ControlFactoryProperty, new SettingsPropertyGridFactory());
     dlg.SetResourceReference(Control.BackgroundProperty, "ApplicationBackgroundBrush");

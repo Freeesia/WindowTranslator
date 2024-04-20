@@ -43,8 +43,8 @@
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
     <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
     <PackageReference Include="Sentry.Extensions.Logging" Version="4.4.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.4" />
     <PackageReference Include="WPF-UI" Version="3.0.4" />
+    <PackageReference Include="WPF-UI.Tray" Version="3.0.4" />
     <PackageReference Include="WpfAnalyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -52,7 +52,6 @@
     <PackageReference Include="Kamishibai.Hosting" Version="2.6.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.9.28" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
