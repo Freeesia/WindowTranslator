@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Media.Media3D;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
@@ -27,7 +26,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             .Lines
             .Select(CalcRect)
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < bitmap.PixelHeight * 0.1)
+            //.Where(w => w.Height < bitmap.PixelHeight * 0.1)
             // 少なすぎる文字も認識ミス扱い
             .Where(w => w.Text.Length > 2)
             .Where(w => !IsAllNum().IsMatch(w.Text))

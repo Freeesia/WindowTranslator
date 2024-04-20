@@ -83,7 +83,7 @@ builder.Services.AddTransient(_ =>
     dlg.Resources.Remove(typeof(Button));
     dlg.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
     dlg.SetCurrentValue(Window.TitleProperty, string.Empty);
-    WindowBackgroundManager.UpdateBackground(dlg, ApplicationTheme.Dark, WindowBackdropType.Mica, false);
+    WindowBackgroundManager.UpdateBackground(dlg, ApplicationTheme.Dark, WindowBackdropType.Mica);
     var btnStyle = new Style(typeof(Button), (Style)Application.Current.FindResource(typeof(Button)));
     btnStyle.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, 120d));
     btnStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));

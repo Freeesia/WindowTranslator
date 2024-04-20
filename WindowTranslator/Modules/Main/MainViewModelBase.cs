@@ -109,22 +109,28 @@ public abstract partial class MainViewModelBase : IDisposable
 }
 
 [OpenWindow]
-public sealed class CaptureMainViewModel : MainViewModelBase
+public sealed class CaptureMainViewModel(
+    [Inject] IProcessInfoStore processInfoStore,
+    [Inject] ICaptureModule capture,
+    [Inject] IOcrModule ocr,
+    [Inject] ITranslateModule translator,
+    [Inject] ICacheModule cache,
+    [Inject] IColorModule color,
+    [Inject] ILogger<CaptureMainViewModel> logger)
+    : MainViewModelBase(processInfoStore, capture, ocr, translator, cache, color, logger)
 {
-    public ICaptureModule Capture { get; }
-
-    public CaptureMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color, [Inject] ILogger<CaptureMainViewModel> logger)
-        : base(processInfoStore, capture, ocr, translator, cache, color, logger)
-    {
-        this.Capture = capture ?? throw new ArgumentNullException(nameof(capture));
-    }
+    public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
 
 [OpenWindow]
-public sealed class OverlayMainViewModel : MainViewModelBase
+public sealed class OverlayMainViewModel(
+    [Inject] IProcessInfoStore processInfoStore,
+    [Inject] ICaptureModule capture,
+    [Inject] IOcrModule ocr,
+    [Inject] ITranslateModule translator,
+    [Inject] ICacheModule cache,
+    [Inject] IColorModule color,
+    [Inject] ILogger<OverlayMainViewModel> logger)
+    : MainViewModelBase(processInfoStore, capture, ocr, translator, cache, color, logger)
 {
-    public OverlayMainViewModel([Inject] IProcessInfoStore processInfoStore, [Inject] ICaptureModule capture, [Inject] IOcrModule ocr, [Inject] ITranslateModule translator, [Inject] ICacheModule cache, [Inject] IColorModule color, [Inject] ILogger<OverlayMainViewModel> logger)
-        : base(processInfoStore, capture, ocr, translator, cache, color, logger)
-    {
-    }
 }
