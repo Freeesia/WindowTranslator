@@ -41,6 +41,7 @@ var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry(op => op.Dsn = ""));
 #endif
 
+builder.Services.AddHttpClient();
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
