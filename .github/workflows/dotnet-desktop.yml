@@ -173,7 +173,7 @@ jobs:
           name: WindowTranslator-${{ needs.build.outputs.version }}.msi
           path: publish\
   release:
-    if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
+    # if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
     needs:
       - installer
       - build
