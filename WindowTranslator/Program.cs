@@ -36,7 +36,9 @@ Directory.SetCurrentDirectory(exeDir);
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
 #if !DEBUG
-builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry());
+// Sentryを無効化するために空のDSNを設定する必要があるけど、環境変数からは空文字を設定できないので、ここで設定する
+// 環境変数でDNSが設定されているときはそちらが優先されるはず
+builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry(op => op.Dsn = ""));
 #endif
 
 

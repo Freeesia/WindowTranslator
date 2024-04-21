@@ -129,7 +129,7 @@ public class WindowMonitor : BackgroundService
         {
             return iconPath;
         }
-        if (process.MainModule?.FileName is not { } exePath)
+        if (GetProcessPath(process) is not { } exePath)
         {
             return null;
         }
@@ -153,5 +153,17 @@ public class WindowMonitor : BackgroundService
         var mainWindowHandle = IntPtr.Parse(args.Get(WindowHandle), CultureInfo.InvariantCulture);
         this.logger.LogInformation("通知からのアタッチ");
         await this.mainWindowModule.OpenTargetAsync(mainWindowHandle, processName);
+    }
+
+    private static string? GetProcessPath(Process process)
+    {
+        try
+        {
+            return process.MainModule?.FileName;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }
