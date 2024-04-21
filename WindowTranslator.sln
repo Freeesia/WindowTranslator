@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HwndExtensions", "hwnd-ador
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "hwnd-adorner\Demo\Demo.csproj", "{85137B31-43B5-4DF6-B374-A14BAA1A874D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.DummyPlugin", "Plugins\WindowTranslator.Plugin.DummyPlugin\WindowTranslator.Plugin.DummyPlugin.csproj", "{61A30147-5600-41E9-AF5C-DA103D7E0B11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Plugin.DummyPlugin", "Plugins\WindowTranslator.Plugin.DummyPlugin\WindowTranslator.Plugin.DummyPlugin.csproj", "{61A30147-5600-41E9-AF5C-DA103D7E0B11}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Wix", "WindowTranslator.Wix\WindowTranslator.Wix.csproj", "{5AF09B18-4D9A-4507-BAAB-73CE61436C25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61A30147-5600-41E9-AF5C-DA103D7E0B11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,9 +82,9 @@ Global
 		{61A30147-5600-41E9-AF5C-DA103D7E0B11} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_AutoCreateNewLanguageFiles = True
-		RESX_ConfirmAddLanguageFile = True
-		RESX_NeutralResourcesLanguage = ja-JP
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
+		RESX_NeutralResourcesLanguage = ja-JP
+		RESX_ConfirmAddLanguageFile = True
+		RESX_AutoCreateNewLanguageFiles = True
 	EndGlobalSection
 EndGlobal
