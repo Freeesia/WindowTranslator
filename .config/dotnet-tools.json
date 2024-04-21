@@ -7,6 +7,12 @@
       "commands": [
         "dotnet-project-licenses"
       ]
+    },
+    "wix": {
+      "version": "5.0.0",
+      "commands": [
+        "wix"
+      ]
     }
   }
 }
