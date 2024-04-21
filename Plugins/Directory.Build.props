@@ -1,0 +1,8 @@
+<Project>
+  <!-- 親ディレクトリの Directory.Build.props をインポート -->
+  <Import Project="../Directory.Build.props" />
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+</Project>

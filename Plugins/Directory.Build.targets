@@ -1,0 +1,15 @@
+<Project>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call $(ProjectDir)..\copy_plugins.bat $(OutDir) $(ProjectName) $(Configuration)" />
+  </Target>
+
+  <!-- 親ディレクトリの Directory.Build.targets が存在する場合にのみインポート -->
+  <Import Project="../Directory.Build.targets" Condition="Exists('../Directory.Build.targets')" />
+</Project>
