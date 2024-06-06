@@ -42,7 +42,7 @@
     <PackageReference Include="PInvoke.SHCore" Version="0.7.124" />
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
     <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
-    <PackageReference Include="Sentry.Extensions.Logging" Version="4.6.2" />
+    <PackageReference Include="Sentry.Extensions.Logging" Version="4.7.0" />
     <PackageReference Include="WPF-UI" Version="3.0.4" />
     <PackageReference Include="WPF-UI.Tray" Version="3.0.4" />
     <PackageReference Include="WpfAnalyzers" Version="4.1.1">
