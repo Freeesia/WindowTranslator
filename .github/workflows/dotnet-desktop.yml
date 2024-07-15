@@ -114,11 +114,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - uses: gittools/actions/gitversion/setup@v1.1.1
+      - uses: gittools/actions/gitversion/setup@v1.2.0
         with:
           versionSpec: "5.x"
       - id: gitversion
-        uses: gittools/actions/gitversion/execute@v1.1.1
+        uses: gittools/actions/gitversion/execute@v1.2.0
       - env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
