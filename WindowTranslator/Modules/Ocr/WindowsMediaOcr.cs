@@ -12,7 +12,7 @@ namespace WindowTranslator.Modules.Ocr;
 [DisplayName("Windows標準文字認識")]
 public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
 {
-    private const double IndentThrethold = .005;
+    private const double PosThrethold = .005;
     private const double LeadingThrethold = .95;
     private const double FontSizeThrethold = .25;
     private readonly string source = options.Value.Source;
@@ -37,7 +37,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             return lineResults;
         }
 
-        var xt = IndentThrethold * bitmap.PixelWidth;
+        var pt = PosThrethold * bitmap.PixelWidth;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
@@ -51,7 +51,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
                     merged = false;
                     foreach (var lineResult in queue.ToArray())
                     {
-                        if (temp.TryMerge(lineResult, xt))
+                        if (temp.TryMerge(lineResult, pt))
                         {
                             queue.Remove(lineResult);
                             merged = true;
@@ -102,20 +102,41 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             return true;
         }
 
-        private bool CanMerge(TextRect rect, double xThreshold)
+        private bool CanMerge(TextRect rect, double posThreshold)
         {
             // 重なっている場合はマージできる
             if (IntersectsWith(rect))
             {
                 return true;
             }
-            // 重なっていない場合は、x座標が近く、y座標が近く、フォントサイズが近い場合にマージできる
-            var (_, x, y, _, _, _, _, _, _, _) = rect;
-            var xDiff = Math.Abs(X - x);
-            var yDiff = Math.Abs((Y + Height) - y);
-            var fDiff = Math.Abs(1.0 - (FontSize / rect.FontSize));
-            var lThre = (1.0 + (fDiff / 2)) * Math.Min(FontSize, rect.FontSize) * LeadingThrethold;
-            return xDiff < xThreshold && yDiff < lThre && fDiff < FontSizeThrethold;
+
+            // フォントサイズが大きく異なる場合はマージできない
+            var fDiff = Math.Abs(1.0 - (FontSize / rect.FontSize)); // フォントサイズの差
+            if (fDiff > FontSizeThrethold)
+            {
+                return false;
+            }
+
+
+            // x座標が近く、y間隔が近い場合にマージできる
+            var (_, x, y, w, _, _, _, _, _, _) = rect;
+            var xDiff = Math.Abs(X - x); // X座標の差
+            var yGap = Math.Abs((Y + Height) - y); // Y座標の間隔
+            var lThre = (1.0 + (fDiff / 2)) * Math.Min(FontSize, rect.FontSize) * LeadingThrethold; // 行間の閾値
+            if (xDiff < posThreshold && yGap < lThre)
+            {
+                return true;
+            }
+
+            // y座標が近く、x間隔が近い場合にマージできる
+            var xGap = Math.Min(Math.Abs((X + Width) - x), Math.Abs((x + w) - X)); // X座標の間隔
+            var yDiff = Math.Abs(Y - y); // Y座標の差
+            var gThre = (rect.FontSize + FontSize) * 0.5;
+            if (xGap < gThre && yDiff < posThreshold)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool IntersectsWith(TextRect rect)
