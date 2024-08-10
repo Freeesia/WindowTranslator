@@ -177,7 +177,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
         width += fontSize * fat;
         x -= fontSize * fat * .5;
         height += fontSize * fat;
-        y -= fontSize * fat * .5;
+        y -= fontSize * fat * 1.5;
 
         return new(builder.ToString(), x, y, width, height, fontSize, lines);
     }
@@ -195,16 +195,27 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
 
     private TextRect CalcRect(OcrLine line)
     {
+        var words = line.Words;
+        // 先頭が@やOの場合は何かしらのアイコンの可能性が高いので無視
+        if (words[0].Text is "@" or "O")
+        {
+            words = words.Skip(1).ToArray();
+        }
+        // 空行は無視
+        if (words.Count == 0)
+        {
+            return new(string.Empty, 0, 0, 0, 0, 0, 1);
+        }
         var text = this.source[..2] switch
         {
-            "ja" or "zh" => string.Join(null, line.Words.Select(w => w.Text)),
-            _ => line.Text,
+            "ja" or "zh" => string.Concat(words.Select(w => w.Text)),
+            _ => string.Join(" ", words.Select(w => w.Text)),
         };
-        var x = line.Words.Select(w => w.BoundingRect.X).Min();
-        var y = line.Words.Select(w => w.BoundingRect.Y).Min();
-        var width = line.Words.Select(w => w.BoundingRect.Right).Max() - line.Words.Select(w => w.BoundingRect.Left).Min();
-        var height = line.Words.Select(w => w.BoundingRect.Bottom).Max() - line.Words.Select(w => w.BoundingRect.Top).Min();
-        var fontSize = line.Words.Select(w =>
+        var x = words.Select(w => w.BoundingRect.X).Min();
+        var y = words.Select(w => w.BoundingRect.Y).Min();
+        var width = words.Select(w => w.BoundingRect.Right).Max() - words.Select(w => w.BoundingRect.Left).Min();
+        var height = words.Select(w => w.BoundingRect.Bottom).Max() - words.Select(w => w.BoundingRect.Top).Min();
+        var fontSize = words.Select(w =>
         {
             var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(w.Text);
             return CorrectHeight(w.BoundingRect.Height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
