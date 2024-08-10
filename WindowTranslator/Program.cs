@@ -49,7 +49,8 @@ builder.Services.AddPluginFramework()
     .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule>)
     .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule>)
     .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule>)
-    .AddPluginType<IPluginParam>();
+    .AddPluginType<IPluginParam>()
+    .AddPluginType<IFilterModule>();
 
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))

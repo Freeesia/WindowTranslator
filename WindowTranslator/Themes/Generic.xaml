@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:data="clr-namespace:WindowTranslator.Data"
-    xmlns:root="clr-namespace:WindowTranslator">
+    xmlns:root="clr-namespace:WindowTranslator;assembly=WindowTranslator.Abstractions">
     <Style TargetType="{x:Type control:OverlayTextsControl}">
         <Setter Property="Template">
             <Setter.Value>
