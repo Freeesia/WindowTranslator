@@ -12,22 +12,14 @@ using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator;
-public class WindowMonitor : BackgroundService
+public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore autoTargetStore, ILogger<WindowMonitor> logger) : BackgroundService
 {
     private const string WindowHandle = "mainWindowHandle";
     private const string ProcessName = "processName";
-    private readonly IMainWindowModule mainWindowModule;
-    private readonly ITargetStore autoTargetStore;
-    private readonly ILogger<WindowMonitor> logger;
+    private readonly IMainWindowModule mainWindowModule = mainWindowModule;
+    private readonly ITargetStore autoTargetStore = autoTargetStore;
+    private readonly ILogger<WindowMonitor> logger = logger;
     private readonly HashSet<IntPtr> checkedWindows = new();
-
-
-    public WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore autoTargetStore, ILogger<WindowMonitor> logger)
-    {
-        this.mainWindowModule = mainWindowModule;
-        this.autoTargetStore = autoTargetStore;
-        this.logger = logger;
-    }
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
@@ -97,7 +89,7 @@ public class WindowMonitor : BackgroundService
     private static void ShowNotification(Process process, string windowTitle, IntPtr windowHandle)
     {
         var builder = new ToastContentBuilder()
-        .AddText("翻訳対象アプリが見つかりました")
+            .AddText("翻訳対象アプリが見つかりました")
             .AddText($"「{windowTitle}」を翻訳表示しますか？")
             .AddArgument(ProcessName, process.ProcessName)
             .AddArgument(WindowHandle, windowHandle.ToString(CultureInfo.InvariantCulture))
