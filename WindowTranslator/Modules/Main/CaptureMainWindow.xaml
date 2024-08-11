@@ -14,12 +14,24 @@
     d:DataContext="{d:DesignInstance local:CaptureMainViewModel}"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="b2vConv" />
+    </Window.Resources>
     <DockPanel LastChildFill="True">
         <ui:TitleBar
             Title="WindowTranslator"
             DockPanel.Dock="Top"
             Icon="{ui:ImageIcon '/wt.ico'}"
-            ShowMinimize="False" />
+            ShowMinimize="False">
+            <ui:TitleBar.Header>
+                <ui:ProgressRing
+                    Width="20"
+                    Height="20"
+                    Margin="8,0"
+                    IsIndeterminate="True"
+                    Visibility="{Binding IsFirstBusy, Converter={StaticResource b2vConv}}" />
+            </ui:TitleBar.Header>
+        </ui:TitleBar>
         <adorner:HwndAdornerManager>
             <Viewbox>
                 <ctl:WindowCaptureCompositionHost x:Name="host" CaptureModule="{Binding Capture}">

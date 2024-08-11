@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
@@ -32,6 +34,9 @@ public abstract partial class MainViewModelBase : IDisposable
     private double width = double.NaN;
     [ObservableProperty]
     private double height = double.NaN;
+
+    [ObservableProperty]
+    private bool isFirstBusy = true;
 
     private SoftwareBitmap? sbmp;
     private bool disposedValue;
@@ -75,7 +80,11 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
-        using var rel = new DisposeAction(() => this.analyzing.Release());
+        using var rel = new DisposeAction(() =>
+        {
+            this.analyzing.Release();
+            this.IsFirstBusy = false;
+        });
         using var sbmp = Interlocked.Exchange(ref this.sbmp, null);
         if (sbmp is null)
         {
@@ -117,8 +126,8 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.requesting.TryRemove(t, out _);
         }
-            this.cache.AddRange(transTargets.Zip(translated));
-        }
+        this.cache.AddRange(transTargets.Zip(translated));
+    }
 
     protected virtual void Dispose(bool disposing)
     {
