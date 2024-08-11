@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
@@ -24,13 +26,17 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly ICaptureModule capture;
+    private readonly ConcurrentDictionary<string, string> requesting = new();
     [ObservableProperty]
-    private IEnumerable<TextRect> ocrTexts = Enumerable.Empty<TextRect>();
+    private IEnumerable<TextRect> ocrTexts = [];
 
     [ObservableProperty]
     private double width = double.NaN;
     [ObservableProperty]
     private double height = double.NaN;
+
+    [ObservableProperty]
+    private bool isFirstBusy = true;
 
     private SoftwareBitmap? sbmp;
     private bool disposedValue;
@@ -74,7 +80,11 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
-        using var rel = new DisposeAction(() => this.analyzing.Release());
+        using var rel = new DisposeAction(() =>
+        {
+            this.analyzing.Release();
+            this.IsFirstBusy = false;
+        });
         using var sbmp = Interlocked.Exchange(ref this.sbmp, null);
         if (sbmp is null)
         {
@@ -106,12 +116,17 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
     {
-        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
-        if (transTargets.Any())
+        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t)).ToArray();
+        if (!transTargets.Any())
         {
-            var translated = await this.translator.TranslateAsync(transTargets);
-            this.cache.AddRange(transTargets.Zip(translated));
+            return;
         }
+        var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
+        foreach (var t in transTargets)
+        {
+            this.requesting.TryRemove(t, out _);
+        }
+        this.cache.AddRange(transTargets.Zip(translated));
     }
 
     protected virtual void Dispose(bool disposing)

@@ -18,10 +18,42 @@
     ShowInTaskbar="False"
     WindowStyle="None"
     mc:Ignorable="d">
-    <control:OverlayTextsControl
-        MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
-        RectHeight="{Binding Height}"
-        RectWidth="{Binding Width}"
-        Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
-        Texts="{Binding OcrTexts}" />
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="b2vConv" />
+        <Storyboard x:Key="busyAnim">
+            <DoubleAnimation
+                AutoReverse="True"
+                RepeatBehavior="Forever"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                From="1"
+                To="-1"
+                Duration="0:0:1" />
+        </Storyboard>
+    </Window.Resources>
+    <Canvas>
+        <control:OverlayTextsControl
+            MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
+            RectHeight="{Binding Height}"
+            RectWidth="{Binding Width}"
+            Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
+            Texts="{Binding OcrTexts}" />
+        <Image
+            Canvas.Right="0"
+            Width="20"
+            Height="20"
+            Margin="4"
+            Opacity="0.6"
+            RenderTransformOrigin="0.5,0.5"
+            Source="/wt.ico"
+            Visibility="{Binding IsFirstBusy, Converter={StaticResource b2vConv}}">
+            <Image.RenderTransform>
+                <ScaleTransform />
+            </Image.RenderTransform>
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Image.Loaded">
+                    <BeginStoryboard Storyboard="{StaticResource busyAnim}" />
+                </EventTrigger>
+            </Image.Triggers>
+        </Image>
+    </Canvas>
 </Window>
