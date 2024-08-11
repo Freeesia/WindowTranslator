@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -78,14 +77,4 @@ public class OcrCorrectionFilter : IFilterModule
             this.logger.LogError(e, $"Failed to correct `{text}`");
         }
     }
-}
-
-public class LLMOptions : IPluginParam
-{
-    public string? Model { get; set; }
-    public string? ApiKey { get; set; }
-    public string? Endpoint { get; set; }
-
-    [DataType(DataType.MultilineText)]
-    public string? CorrectSample { get; set; }
 }
