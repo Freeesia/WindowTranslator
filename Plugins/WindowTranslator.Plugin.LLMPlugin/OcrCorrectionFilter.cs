@@ -14,7 +14,7 @@ public class OcrCorrectionFilter : IFilterModule
     private readonly ConcurrentDictionary<string, string?> cache = new();
     private readonly ChatClient? client;
     private readonly ChatMessage system;
-    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("\"");
+    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
     private readonly ILogger<OcrCorrectionFilter> logger;
 
     public OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionFilter> logger)
@@ -43,7 +43,7 @@ public class OcrCorrectionFilter : IFilterModule
 
         修正する文字列は以下のJsonフォーマットになっています。出力文字列も同じJsonフォーマットで、入力文字列の順序を維持してください。
         <入力テキストのJsonフォーマット>
-        "修正する文字列1"
+        ["誤字修正するテキスト1","誤字修正するテキスト2"]
         </入力テキストのJsonフォーマット>
         """);
         this.logger = logger;
@@ -52,22 +52,32 @@ public class OcrCorrectionFilter : IFilterModule
     public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts)
         => texts;
 
-    public IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
-        => texts.Select(text =>
+    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    {
+        var targets = new List<string>();
+        await foreach (var text in texts.ConfigureAwait(false))
         {
             if (!this.cache.TryGetValue(text.Text, out var corrected))
             {
-                Correct(text.Text);
+                targets.Add(text.Text);
             }
             if (corrected is not null)
             {
-                return text.Text != corrected ? text with { Text = corrected } : text;
+                yield return text.Text != corrected ? text with { Text = corrected } : text;
             }
-            return text;
-        })
-        .Where(t => !string.IsNullOrEmpty(t.Text));
+            else
+            {
+                yield return text;
+            }
+        }
 
-    private async void Correct(string text)
+        if (targets.Count > 0)
+        {
+            Correct(targets);
+        }
+    }
+
+    private async void Correct(IReadOnlyList<string> texts)
     {
         if (this.client is null)
         {
@@ -75,20 +85,28 @@ public class OcrCorrectionFilter : IFilterModule
         }
         try
         {
-            this.cache[text] = null;
+            foreach (var text in texts)
+            {
+                this.cache.TryAdd(text, null);
+            }
             var completion = await this.client.CompleteChatAsync([
                 this.system,
-                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(text)),
+                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(texts)),
                 assitant,
             ], new()
             {
-                StopSequences = { "\"" }
+                StopSequences = { "\"]" }
             }).ConfigureAwait(false);
-            this.cache[text] = completion.Value.ToString().Trim();
+            var json = assitant.Content[0].Text + completion.Value.ToString().Trim() + "\"]";
+            var corrected = JsonSerializer.Deserialize<string[]>(json) ?? [];
+            for (var i = 0; i < texts.Count; i++)
+            {
+                this.cache[texts[i]] = corrected[i];
+            }
         }
         catch (Exception e)
         {
-            this.logger.LogError(e, $"Failed to correct `{text}`");
+            this.logger.LogError(e, $"Failed to correct `{texts}`");
         }
     }
 }
