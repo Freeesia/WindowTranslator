@@ -24,8 +24,9 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly ICaptureModule capture;
+    private readonly ConcurrentDictionary<string, string> requesting = new();
     [ObservableProperty]
-    private IEnumerable<TextRect> ocrTexts = Enumerable.Empty<TextRect>();
+    private IEnumerable<TextRect> ocrTexts = [];
 
     [ObservableProperty]
     private double width = double.NaN;
@@ -106,13 +107,18 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
     {
-        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => !this.cache.Contains(t)).ToArray();
-        if (transTargets.Any())
+        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t)).ToArray();
+        if (!transTargets.Any())
         {
-            var translated = await this.translator.TranslateAsync(transTargets);
+            return;
+        }
+        var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
+        foreach (var t in transTargets)
+        {
+            this.requesting.TryRemove(t, out _);
+        }
             this.cache.AddRange(transTargets.Zip(translated));
         }
-    }
 
     protected virtual void Dispose(bool disposing)
     {
