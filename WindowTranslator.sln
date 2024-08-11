@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Plugin.Dum
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Wix", "WindowTranslator.Wix\WindowTranslator.Wix.csproj", "{5AF09B18-4D9A-4507-BAAB-73CE61436C25}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.LLMPlugin", "Plugins\WindowTranslator.Plugin.LLMPlugin\WindowTranslator.Plugin.LLMPlugin.csproj", "{2A451935-EC1B-443E-9E54-EF3648F95D72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AF09B18-4D9A-4507-BAAB-73CE61436C25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A451935-EC1B-443E-9E54-EF3648F95D72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A451935-EC1B-443E-9E54-EF3648F95D72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A451935-EC1B-443E-9E54-EF3648F95D72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A451935-EC1B-443E-9E54-EF3648F95D72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,11 +86,12 @@ Global
 		{529FE5B9-FAC5-4222-8170-C8C0B911A588} = {E9254220-A2A9-4A23-814E-15029025A868}
 		{85137B31-43B5-4DF6-B374-A14BAA1A874D} = {E9254220-A2A9-4A23-814E-15029025A868}
 		{61A30147-5600-41E9-AF5C-DA103D7E0B11} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
+		{2A451935-EC1B-443E-9E54-EF3648F95D72} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
-		RESX_NeutralResourcesLanguage = ja-JP
-		RESX_ConfirmAddLanguageFile = True
 		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
+		RESX_NeutralResourcesLanguage = ja-JP
+		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
 	EndGlobalSection
 EndGlobal
