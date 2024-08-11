@@ -10,4 +10,7 @@ public class LLMOptions : IPluginParam
 
     [DataType(DataType.MultilineText)]
     public string? CorrectSample { get; set; }
+
+    [DataType(DataType.MultilineText)]
+    public string? TranslateSample { get; set; }
 }

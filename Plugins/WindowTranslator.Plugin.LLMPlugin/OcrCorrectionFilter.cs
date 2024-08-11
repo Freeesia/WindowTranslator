@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Globalization;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI;
@@ -13,6 +14,7 @@ public class OcrCorrectionFilter : IFilterModule
     private readonly ConcurrentDictionary<string, string?> cache = new();
     private readonly ChatClient? client;
     private readonly ChatMessage system;
+    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("\"");
     private readonly ILogger<OcrCorrectionFilter> logger;
 
     public OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionFilter> logger)
@@ -38,6 +40,11 @@ public class OcrCorrectionFilter : IFilterModule
         <誤字修正の例>
         {llmOptions.Value.CorrectSample}
         </誤字修正の例>
+
+        修正する文字列は以下のJsonフォーマットになっています。出力文字列も同じJsonフォーマットで、入力文字列の順序を維持してください。
+        <入力テキストのJsonフォーマット>
+        "修正する文字列1"
+        </入力テキストのJsonフォーマット>
         """);
         this.logger = logger;
     }
@@ -69,7 +76,14 @@ public class OcrCorrectionFilter : IFilterModule
         try
         {
             this.cache[text] = null;
-            var completion = await this.client.CompleteChatAsync([this.system, ChatMessage.CreateUserMessage(text)]).ConfigureAwait(false);
+            var completion = await this.client.CompleteChatAsync([
+                this.system,
+                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(text)),
+                assitant,
+            ], new()
+            {
+                StopSequences = { "\"" }
+            }).ConfigureAwait(false);
             this.cache[text] = completion.Value.ToString().Trim();
         }
         catch (Exception e)

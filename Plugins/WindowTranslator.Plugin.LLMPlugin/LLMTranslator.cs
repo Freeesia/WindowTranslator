@@ -24,6 +24,10 @@ public class LLMTranslator(IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnap
         <入力テキストのJsonフォーマット>
         ["翻訳するテキスト1","翻訳するテキスト2"]
         </入力テキストのフォーマット>
+
+        <翻訳の例>
+        {llmOptions.Value.TranslateSample}
+        </翻訳の例>
         """);
     private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
 
