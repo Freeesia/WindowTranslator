@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: baileyjm02/markdown-to-pdf@v1
+      - uses: baileyjm02/markdown-to-pdf@v2
         with:
           input_path: docs
           output_dir: pdfs
