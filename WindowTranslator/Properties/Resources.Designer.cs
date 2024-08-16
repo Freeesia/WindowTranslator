@@ -160,6 +160,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   すでにWindowTranslatorが起動中です に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MutexError {
+            get {
+                return ResourceManager.GetString("MutexError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   オーバレイ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Overlay {

@@ -183,4 +183,7 @@
   <data name="Attach" xml:space="preserve">
     <value>附加</value>
   </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>WindowTranslator 已在运行。</value>
+  </data>
 </root>
