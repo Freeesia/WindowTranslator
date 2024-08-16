@@ -183,4 +183,7 @@
   <data name="Exit" xml:space="preserve">
     <value>終了</value>
   </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>すでにWindowTranslatorが起動中です</value>
+  </data>
 </root>

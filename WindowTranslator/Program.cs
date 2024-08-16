@@ -107,7 +107,17 @@ builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nam
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 
 var app = builder.Build();
-
+using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+if (!createdNew)
+{
+    new MessageDialog()
+    {
+        Caption = "WindowTranslator",
+        Icon = Kamishibai.MessageBoxImage.Error,
+        Text = Resources.MutexError,
+    }.Show();
+    return;
+}
 await app.RunAsync();
 
 static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
