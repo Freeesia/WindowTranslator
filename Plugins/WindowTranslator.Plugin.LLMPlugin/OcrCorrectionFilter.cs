@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Json;
+using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI;
@@ -11,21 +12,15 @@ namespace WindowTranslator.Plugin.LLMPlugin;
 
 public class OcrCorrectionFilter : IFilterModule
 {
+    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
     private readonly ConcurrentDictionary<string, string?> cache = new();
+    private readonly Channel<IReadOnlyList<string>> queue;
     private readonly ChatClient? client;
     private readonly ChatMessage system;
-    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
     private readonly ILogger<OcrCorrectionFilter> logger;
 
     public OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionFilter> logger)
     {
-        if (llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
-        {
-            this.client = new(
-                model,
-                apiKey,
-                llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
-        }
         this.system = ChatMessage.CreateSystemMessage($"""
         あなたは{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}の専門家です。
         これから渡される文字列はOCRによって認識されたものであり、誤字や脱字が含まれています。
@@ -47,6 +42,21 @@ public class OcrCorrectionFilter : IFilterModule
         </入力テキストのJsonフォーマット>
         """);
         this.logger = logger;
+        this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
+        {
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest,
+            SingleReader = true,
+            SingleWriter = true,
+        }, Dropped);
+        if (llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
+        {
+            this.client = new(
+                model,
+                apiKey,
+                llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
+            Task.Run(Correct);
+        }
     }
 
     public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts)
@@ -73,40 +83,38 @@ public class OcrCorrectionFilter : IFilterModule
 
         if (targets.Count > 0)
         {
-            Correct(targets);
+            await this.queue.Writer.WriteAsync(targets).ConfigureAwait(false);
         }
     }
 
-    private async void Correct(IReadOnlyList<string> texts)
+    private async Task Correct()
     {
-        if (this.client is null)
-        {
-            return;
-        }
-        try
+        await foreach (var texts in this.queue.Reader.ReadAllAsync())
         {
             foreach (var text in texts)
             {
                 this.cache.TryAdd(text, null);
             }
-            var completion = await this.client.CompleteChatAsync([
-                this.system,
-                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(texts)),
-                assitant,
-            ], new()
+            try
             {
-                StopSequences = { "\"]" }
-            }).ConfigureAwait(false);
-            var json = assitant.Content[0].Text + completion.Value.ToString().Trim() + "\"]";
-            var corrected = JsonSerializer.Deserialize<string[]>(json) ?? [];
-            for (var i = 0; i < texts.Count; i++)
+                var ums = ChatMessage.CreateUserMessage(JsonSerializer.Serialize(texts));
+                var completion = await this.client!.CompleteChatAsync([this.system, ums, assitant],
+                    new() { StopSequences = { "\"]" } })
+                    .ConfigureAwait(false);
+                var json = assitant.Content[0].Text + completion.Value.ToString().Trim() + "\"]";
+                var corrected = JsonSerializer.Deserialize<string[]>(json) ?? [];
+                for (var i = 0; i < texts.Count; i++)
+                {
+                    this.cache[texts[i]] = corrected[i];
+                }
+            }
+            catch (Exception e)
             {
-                this.cache[texts[i]] = corrected[i];
+                this.logger.LogError(e, $"Failed to correct `{texts}`");
             }
         }
-        catch (Exception e)
-        {
-            this.logger.LogError(e, $"Failed to correct `{texts}`");
-        }
     }
+
+    private void Dropped(IReadOnlyList<string> texts)
+        => this.logger.LogDebug($"Dropped texts: {string.Join(", ", texts)}");
 }
