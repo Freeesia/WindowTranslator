@@ -61,6 +61,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   このアプリについて に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Attach {
@@ -165,6 +174,15 @@ namespace WindowTranslator.Properties {
         public static string MutexError {
             get {
                 return ResourceManager.GetString("MutexError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   サードパーティーライセンスの確認 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OpenThirdPartyLicensesCommand {
+            get {
+                return ResourceManager.GetString("OpenThirdPartyLicensesCommand", resourceCulture);
             }
         }
         

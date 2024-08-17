@@ -12,6 +12,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -95,6 +96,25 @@ internal partial class SettingsViewModel : IEditableObject
     [Category("SettingsViewModel|Misc")]
     public bool IsEnableAutoTarget { get; set; }
 
+    [Comment]
+    [Category("About|")]
+    public string App { get; }
+
+    [Comment]
+    [Category("About|")]
+    public DateTime BuildDate { get; }
+
+    [Comment]
+    [Category("About|")]
+    public string DevelopedBy { get; }
+
+    [Category("About|")]
+    public Uri Link { get; }
+
+    [Comment]
+    [Category("About|")]
+    public string License { get; }
+
     public IPluginParam[] Params { get; }
 
     public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings, [Inject] IEnumerable<IPluginParam> @params, [Inject] IServiceProvider sp, [Inject] IPresentationService presentationService)
@@ -110,6 +130,18 @@ internal partial class SettingsViewModel : IEditableObject
         this.ViewMode = userSettings.Value.ViewMode;
         this.AutoTargets = userSettings.Value.AutoTargets.Select(t => new ProcessName() { Name = t }).ToList();
         this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
+
+        var asm = Assembly.GetExecutingAssembly();
+        var name = asm.GetName();
+        this.App = $"{name.Name} {name.Version}";
+        this.BuildDate = asm.GetCustomAttributes<AssemblyMetadataAttribute>()
+            .Where(a => a.Key == "BuildDateTime")?
+            .Select(a => DateTime.Parse(a.Value!, CultureInfo.InvariantCulture))
+            .FirstOrDefault() ?? default;
+        this.DevelopedBy = "Freesia";
+        this.Link = new("https://github.com/Freeesia/WindowTranslator");
+        this.License = "MIT License";
+
         this.Params = @params.Select(p =>
         {
             var configureType = typeof(IConfigureOptions<>).MakeGenericType(p.GetType());
@@ -127,6 +159,7 @@ internal partial class SettingsViewModel : IEditableObject
     private static ModuleItem Convert(Plugin plugin)
         => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
+    [property: Category("SettingsViewModel|Misc")]
     [RelayCommand]
     public void RegisterToStartup()
     {
@@ -144,6 +177,7 @@ internal partial class SettingsViewModel : IEditableObject
         }
     }
 
+    [property: Category("SettingsViewModel|Misc")]
     [RelayCommand]
     public void UnregisterFromStartup()
     {
@@ -155,6 +189,14 @@ internal partial class SettingsViewModel : IEditableObject
             key.DeleteValue(name);
             this.presentationService.ShowMessage($"{name}を自動起動を解除しました。", icon: MessageBoxImage.Information);
         }
+    }
+
+    [property: Category("About|")]
+    [RelayCommand]
+    public static void OpenThirdPartyLicenses()
+    {
+        var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
+        Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
     }
 
     private static bool IsInstalledLanguage(string lang)

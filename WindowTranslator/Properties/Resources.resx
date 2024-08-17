@@ -186,4 +186,10 @@
   <data name="MutexError" xml:space="preserve">
     <value>すでにWindowTranslatorが起動中です</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>このアプリについて</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>サードパーティーライセンスの確認</value>
+  </data>
 </root>

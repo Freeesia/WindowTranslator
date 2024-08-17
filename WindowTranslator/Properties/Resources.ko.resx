@@ -186,4 +186,10 @@
   <data name="MutexError" xml:space="preserve">
     <value>WindowTranslator가 이미 실행 중입니다.</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>정보</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>타사 라이선스 확인</value>
+  </data>
 </root>
