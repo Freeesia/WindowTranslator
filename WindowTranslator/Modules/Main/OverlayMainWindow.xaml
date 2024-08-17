@@ -32,6 +32,7 @@
     </Window.Resources>
     <Canvas>
         <control:OverlayTextsControl
+            x:Name="overlay"
             MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"
