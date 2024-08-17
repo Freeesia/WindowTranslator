@@ -192,4 +192,19 @@
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
     <value>타사 라이선스 확인</value>
   </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>세부 정보 확인</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>최신 버전으로 업데이트</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>업데이트 정보</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>최신 버전을 사용하고 있습니다.</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>업데이트를 사용할 수 있습니다: {0}</value>
+  </data>
 </root>

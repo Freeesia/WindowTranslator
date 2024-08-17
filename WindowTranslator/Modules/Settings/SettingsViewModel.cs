@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
-using Microsoft.PowerShell;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
 using System.Collections;
@@ -12,7 +11,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
-using System.Reflection.Metadata;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -20,6 +19,7 @@ using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules.Startup;
+using WindowTranslator.Properties;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 using CategoryAttribute = System.ComponentModel.CategoryAttribute;
 
@@ -28,6 +28,7 @@ namespace WindowTranslator.Modules.Settings;
 [OpenDialog]
 internal partial class SettingsViewModel : IEditableObject
 {
+    private static readonly CompositeFormat HasUpdateText = CompositeFormat.Parse(Resources.HasUpdate);
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
         Converters =
@@ -38,6 +39,7 @@ internal partial class SettingsViewModel : IEditableObject
         WriteIndented = true,
     };
     private readonly IPresentationService presentationService;
+    private readonly IUpdateChecker checker;
 
     [Browsable(false)]
     public IEnumerable<CultureInfo> Languages { get; } = new[]
@@ -115,9 +117,23 @@ internal partial class SettingsViewModel : IEditableObject
     [Category("About|")]
     public string License { get; }
 
+    [Browsable(false)]
+    public bool HasUpdate { get; }
+
+    [Comment]
+    [PropertyTools.DataAnnotations.DisplayName("")]
+    [Category("About|UpdateInfo")]
+    public string UpdateInfo { get; }
+
     public IPluginParam[] Params { get; }
 
-    public SettingsViewModel([Inject] PluginProvider provider, [Inject] IOptionsSnapshot<UserSettings> userSettings, [Inject] IEnumerable<IPluginParam> @params, [Inject] IServiceProvider sp, [Inject] IPresentationService presentationService)
+    public SettingsViewModel(
+        [Inject] PluginProvider provider,
+        [Inject] IOptionsSnapshot<UserSettings> userSettings,
+        [Inject] IEnumerable<IPluginParam> @params,
+        [Inject] IServiceProvider sp,
+        [Inject] IPresentationService presentationService,
+        [Inject] IUpdateChecker checker)
     {
         var items = provider.GetPlugins();
         this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
@@ -149,11 +165,14 @@ internal partial class SettingsViewModel : IEditableObject
             var configureMethod = configureType.GetMethod(nameof(IConfigureOptions<object>.Configure))!;
             foreach (var configure in configures)
             {
-                configureMethod.Invoke(configure, new[] { p });
+                configureMethod.Invoke(configure, [p]);
             }
             return p;
         }).ToArray();
         this.presentationService = presentationService;
+        this.checker = checker;
+        this.HasUpdate = checker.HasUpdate;
+        this.UpdateInfo = checker.HasUpdate ? string.Format(CultureInfo.CurrentCulture, HasUpdateText, checker.LatestVersion) : Resources.IsLatest;
     }
 
     private static ModuleItem Convert(Plugin plugin)
@@ -198,6 +217,18 @@ internal partial class SettingsViewModel : IEditableObject
         var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
         Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
     }
+
+    [property: Category("About|UpdateInfo")]
+    [property: VisibleBy(nameof(HasUpdate))]
+    [RelayCommand]
+    public void OpenChangelog()
+        => this.checker.OpenChangelog();
+
+    [property: Category("About|UpdateInfo")]
+    [property: VisibleBy(nameof(HasUpdate))]
+    [RelayCommand]
+    public void Update()
+        => this.checker.Update();
 
     private static bool IsInstalledLanguage(string lang)
     {
