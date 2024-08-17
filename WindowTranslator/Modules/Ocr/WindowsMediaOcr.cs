@@ -78,6 +78,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
         public double Top => Y;
         public double Right => X + Width;
         public double Bottom => Y + Height;
+        public double CenterX => X + (Width * .5);
 
         public TempMergeRect(TextRect rect)
         {
@@ -124,6 +125,14 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             var yGap = Math.Abs((Y + Height) - y); // Y座標の間隔
             var lThre = (1.0 + (fDiff / 2)) * Math.Min(FontSize, rect.FontSize) * LeadingThrethold; // 行間の閾値
             if (xDiff < posThreshold && yGap < lThre)
+            {
+                return true;
+            }
+
+            // x座標の中心が近く、y間隔が近い場合にマージできる
+            var xCenter2 = x + (w * .5);
+            var xCenterDiff = Math.Abs(CenterX - xCenter2); // X座標の中心の差
+            if (xCenterDiff < posThreshold && yGap < lThre)
             {
                 return true;
             }
