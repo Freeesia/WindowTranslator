@@ -1,14 +1,20 @@
 # WindowTranslator
 
 [![App Build](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml)
-[![GitHub version](https://badge.fury.io/gh/Freeesia%2FWindowTranslator.svg)](https://badge.fury.io/gh/Freeesia%2FWindowTranslator)
-[![NuGet version](https://badge.fury.io/nu/WindowTranslator.Abstractions.svg)](https://badge.fury.io/nu/WindowTranslator.Abstractions)
+[![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 
 WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻訳するためのツールです。
 
 [JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
 
 ## ダウンロード
+### インストール版
+
+[GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からmsiをダウンロードおよび実行してインストールを行います。
+
+### ポータブル版
 
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からzipをダウンロードして任意のフォルダに展開します
 
