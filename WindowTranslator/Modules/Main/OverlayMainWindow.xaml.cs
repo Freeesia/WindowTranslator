@@ -1,12 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
 using PInvoke;
+using Windows.Win32.UI.Input.KeyboardAndMouse;
 using WindowTranslator.Stores;
+using static Windows.Win32.PInvoke;
 using static PInvoke.User32;
 
 namespace WindowTranslator.Modules.Main;
@@ -21,6 +24,7 @@ public partial class OverlayMainWindow : Window
     private readonly DispatcherTimer timer = new();
     private readonly ILogger<OverlayMainWindow> logger;
     private IntPtr windowHandle;
+    private int overlayHiddenCount;
 
     public Point MousePos
     {
@@ -75,6 +79,11 @@ public partial class OverlayMainWindow : Window
         // 2回呼ばないと安定して最上位にならない
         SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
         this.timer.Start();
+
+        RegisterHotKey(new(this.windowHandle), 0, HOT_KEY_MODIFIERS.MOD_WIN | HOT_KEY_MODIFIERS.MOD_ALT, (uint)KeyInterop.VirtualKeyFromKey(Key.O));
+        var source = HwndSource.FromHwnd(this.windowHandle);
+        source.AddHook(WndProc);
+
     }
 
     protected override void OnClosed(EventArgs e)
@@ -122,5 +131,27 @@ public partial class OverlayMainWindow : Window
         this.SetCurrentValue(HeightProperty, height / eDpiScale);
         this.SetCurrentValue(MousePosProperty, new Point(x, y));
         this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
+    }
+
+    private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+    {
+        if (msg != WM_HOTKEY)
+        {
+            return 0;
+        }
+
+        HideOverlay();
+        return 0;
+    }
+
+    private async void HideOverlay()
+    {
+        var current = Interlocked.Increment(ref this.overlayHiddenCount);
+        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        await Task.Delay(500);
+        if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
+        {
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+        }
     }
 }
