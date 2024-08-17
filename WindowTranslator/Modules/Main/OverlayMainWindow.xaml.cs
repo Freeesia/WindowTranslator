@@ -24,6 +24,7 @@ public partial class OverlayMainWindow : Window
     private readonly DispatcherTimer timer = new();
     private readonly ILogger<OverlayMainWindow> logger;
     private IntPtr windowHandle;
+    private int overlayHiddenCount;
 
     public Point MousePos
     {
@@ -139,7 +140,18 @@ public partial class OverlayMainWindow : Window
             return 0;
         }
 
-        this.overlay.SetCurrentValue(VisibilityProperty, this.overlay.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
+        HideOverlay();
         return 0;
+    }
+
+    private async void HideOverlay()
+    {
+        var current = Interlocked.Increment(ref this.overlayHiddenCount);
+        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        await Task.Delay(500);
+        if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
+        {
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+        }
     }
 }
