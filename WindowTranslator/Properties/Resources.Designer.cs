@@ -124,6 +124,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   アップデートがあります: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string HasUpdate {
+            get {
+                return ResourceManager.GetString("HasUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   メモリ内キャッシュ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InMemoryCache {
@@ -138,6 +147,15 @@ namespace WindowTranslator.Properties {
         public static string IsEnableAutoTarget {
             get {
                 return ResourceManager.GetString("IsEnableAutoTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   最新バージョンをご利用中です。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string IsLatest {
+            get {
+                return ResourceManager.GetString("IsLatest", resourceCulture);
             }
         }
         
@@ -174,6 +192,15 @@ namespace WindowTranslator.Properties {
         public static string MutexError {
             get {
                 return ResourceManager.GetString("MutexError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   詳細情報の確認 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OpenChangelogCommand {
+            get {
+                return ResourceManager.GetString("OpenChangelogCommand", resourceCulture);
             }
         }
         
@@ -273,6 +300,24 @@ namespace WindowTranslator.Properties {
         public static string UnregisterFromStartupCommand {
             get {
                 return ResourceManager.GetString("UnregisterFromStartupCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   最新バージョンに更新 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UpdateCommand {
+            get {
+                return ResourceManager.GetString("UpdateCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   更新情報 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UpdateInfo {
+            get {
+                return ResourceManager.GetString("UpdateInfo", resourceCulture);
             }
         }
         

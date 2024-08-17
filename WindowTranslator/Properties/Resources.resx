@@ -192,4 +192,19 @@
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
     <value>サードパーティーライセンスの確認</value>
   </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>アップデートがあります: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>最新バージョンをご利用中です。</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>更新情報</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>最新バージョンに更新</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>詳細情報の確認</value>
+  </data>
 </root>

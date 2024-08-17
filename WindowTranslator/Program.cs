@@ -71,6 +71,9 @@ builder.Configuration
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
 builder.Services.AddSingleton<ITargetStore, TargetStore>();
 builder.Services.AddHostedService<WindowMonitor>();
+builder.Services.AddSingleton<UpdateChecker>()
+    .AddSingleton<IUpdateChecker>(sp => sp.GetRequiredService<UpdateChecker>())
+    .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
 builder.Services.AddScoped<IProcessInfoStore, ProcessInfoStore>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();

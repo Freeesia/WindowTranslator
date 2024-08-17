@@ -192,4 +192,19 @@
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
     <value>Check third party licenses</value>
   </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>Check details</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>Update to latest version</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>Update Information</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>You are using the latest version.</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>Updates available: {0}</value>
+  </data>
 </root>

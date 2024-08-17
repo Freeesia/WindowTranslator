@@ -91,6 +91,7 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore auto
         var builder = new ToastContentBuilder()
             .AddText("翻訳対象アプリが見つかりました")
             .AddText($"「{windowTitle}」を翻訳表示しますか？")
+            .AddArgument(nameof(WindowMonitor))
             .AddArgument(ProcessName, process.ProcessName)
             .AddArgument(WindowHandle, windowHandle.ToString(CultureInfo.InvariantCulture))
             .AddButton(new ToastButton()
@@ -141,6 +142,10 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore auto
     private async void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
     {
         var args = ToastArguments.Parse(e.Argument);
+        if (!args.Contains(nameof(WindowMonitor)))
+        {
+            return;
+        }
         var processName = args.Get(ProcessName);
         var mainWindowHandle = IntPtr.Parse(args.Get(WindowHandle), CultureInfo.InvariantCulture);
         this.logger.LogInformation("通知からのアタッチ");
