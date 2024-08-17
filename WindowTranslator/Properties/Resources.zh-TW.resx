@@ -186,4 +186,10 @@
   <data name="MutexError" xml:space="preserve">
     <value>WindowTranslator 已在執行中。</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>關於</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>檢查第三方授權</value>
+  </data>
 </root>

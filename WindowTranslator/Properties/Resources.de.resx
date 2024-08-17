@@ -186,4 +186,10 @@
   <data name="MutexError" xml:space="preserve">
     <value>Der WindowTranslator läuft bereits.</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>Über</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>Lizenzen von Drittanbietern prüfen</value>
+  </data>
 </root>
