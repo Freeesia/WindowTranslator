@@ -49,7 +49,7 @@ public class OcrCorrectionFilter : IFilterModule
             SingleReader = true,
             SingleWriter = true,
         }, Dropped);
-        if (llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
+        if (llmOptions.Value.IsEnabledCorrect && llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
         {
             this.client = new(
                 model,
@@ -64,6 +64,14 @@ public class OcrCorrectionFilter : IFilterModule
 
     public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
     {
+        if (this.client is null)
+        {
+            await foreach (var text in texts.ConfigureAwait(false))
+            {
+                yield return text;
+            }
+            yield break;
+        }
         var targets = new List<string>();
         await foreach (var text in texts.ConfigureAwait(false))
         {

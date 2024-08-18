@@ -139,6 +139,12 @@ jobs:
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - run: |
+          dotnet publish Plugins\WindowTranslator.Plugin.GoogleAIPlugin -c Release -o publish\plugins\GoogleAIPlugin `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - uses: actions/download-artifact@v4
         if: ${{ needs.docs.result == 'success' }}
         with:
