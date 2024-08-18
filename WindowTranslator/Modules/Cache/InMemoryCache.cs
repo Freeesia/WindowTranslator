@@ -1,8 +1,13 @@
+using System.Collections.Concurrent;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
+
 namespace WindowTranslator.Modules.Cache;
 
+[LocalizedDisplayName(typeof(Resources), nameof(InMemoryCache))]
 public class InMemoryCache : ICacheModule
 {
-    private readonly Dictionary<string,string> cache = new();
+    private readonly ConcurrentDictionary<string, string> cache = new();
 
     public bool Contains(string src)
         => this.cache.ContainsKey(src);
@@ -10,9 +15,9 @@ public class InMemoryCache : ICacheModule
     {
         foreach (var (src, dst) in pairs)
         {
-            this.cache.Add(src, dst);
+            this.cache.AddOrUpdate(src, dst, (_, _) => dst);
         }
     }
     public string Get(string src)
-        => this.cache[src];
+        => this.cache.TryGetValue(src, out var dst) ? dst : string.Empty;
 }

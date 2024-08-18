@@ -1,12 +1,17 @@
 ﻿using ColorThiefDotNet;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using WindowTranslator.ComponentModel;
 using Color = System.Drawing.Color;
+using ColorConverter = ColorHelper.ColorConverter;
 
 namespace WindowTranslator.Modules.OverlayColor;
 
+[DefaultModule]
+[DisplayName("近似カラー")]
 public class ColorThiefModule : IColorModule
 {
     private readonly ColorThief colorThief = new();
@@ -37,9 +42,15 @@ public class ColorThiefModule : IColorModule
                 .Select(c => c.Color)
                 .ToArray();
             var back = colors[0];
-            var front = colors[1];
+
+            // 文字影が文字色より大きくなることがあるので、背景色とのBrightness距離が大きい方を文字色とする
+            var backB = ColorConverter.RgbToHsv(new(back.R, back.G, back.B)).V;
+            var front = GetDistance(backB, colors[1]) > GetDistance(backB, colors[2]) ? colors[1] : colors[2];
             results.Add(text with { Foreground = Color.FromArgb(front.R, front.G, front.B), Background = Color.FromArgb(0xF0, back.R, back.G, back.B) });
         }
         return results;
     }
+
+    private static double GetDistance(double h1, ColorThiefDotNet.Color h2)
+        => Math.Abs(h1 - ColorConverter.RgbToHsv(new(h2.R, h2.G, h2.B)).V);
 }

@@ -1,0 +1,60 @@
+﻿<Window
+    x:Class="WindowTranslator.Modules.Main.OverlayMainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:WindowTranslator.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="host"
+    Title="OverlayMainWindow"
+    d:DataContext="{d:DesignInstance local:OverlayMainViewModel}"
+    d:Height="450"
+    d:Width="800"
+    AllowsTransparency="True"
+    Background="Transparent"
+    Loaded="Window_Loaded"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="b2vConv" />
+        <Storyboard x:Key="busyAnim">
+            <DoubleAnimation
+                AutoReverse="True"
+                RepeatBehavior="Forever"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                From="1"
+                To="-1"
+                Duration="0:0:1" />
+        </Storyboard>
+    </Window.Resources>
+    <Canvas>
+        <control:OverlayTextsControl
+            x:Name="overlay"
+            MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
+            RectHeight="{Binding Height}"
+            RectWidth="{Binding Width}"
+            Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
+            Texts="{Binding OcrTexts}" />
+        <Image
+            Canvas.Right="0"
+            Width="20"
+            Height="20"
+            Margin="4"
+            Opacity="0.6"
+            RenderTransformOrigin="0.5,0.5"
+            Source="/wt.ico"
+            Visibility="{Binding IsFirstBusy, Converter={StaticResource b2vConv}}">
+            <Image.RenderTransform>
+                <ScaleTransform />
+            </Image.RenderTransform>
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Image.Loaded">
+                    <BeginStoryboard Storyboard="{StaticResource busyAnim}" />
+                </EventTrigger>
+            </Image.Triggers>
+        </Image>
+    </Canvas>
+</Window>

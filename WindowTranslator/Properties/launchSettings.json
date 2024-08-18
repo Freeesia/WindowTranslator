@@ -2,8 +2,17 @@
   "profiles": {
     "WindowTranslator": {
       "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
-        "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator"
+        "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator",
+        "LOGGING__LOGLEVEL__DEFAULT": "Debug"
+      }
+    },
+    "StartupMode": {
+      "commandName": "Project",
+      "commandLineArgs": "--LaunchMode Startup",
+      "environmentVariables": {
+        "LOGGING__LOGLEVEL__DEFAULT": "Debug"
       }
     },
     "RectDebug": {
@@ -11,6 +20,11 @@
       "environmentVariables": {
         "SELECTEDPLUGINS__ICOLORMODULE": "TransparentColorModule",
         "SELECTEDPLUGINS__ICACHEMODULE": "InMemoryCache"
+      }
+    },
+    "Empty": {
+      "commandName": "Project",
+      "environmentVariables": {
       }
     }
   }

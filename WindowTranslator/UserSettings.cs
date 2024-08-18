@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
 
 namespace WindowTranslator;
 public class UserSettings
 {
-    public LanguageOptions Language { get; set; } = new();
-    public Dictionary<string, string> SelectedPlugins { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public LanguageOptions Language { get; init; } = new();
 
-    public Dictionary<string, object> PluginParams { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public ViewMode ViewMode { get; set; } = ViewMode.Capture;
+
+    public IList<string> AutoTargets { get; set; } = new List<string>();
+
+    public bool IsEnableAutoTarget { get; set; }
+
+    public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public Dictionary<string, IPluginParam> PluginParams { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+}
+
+public enum ViewMode
+{
+    [LocalizedDescription(typeof(Resources), nameof(Capture))]
+    Capture,
+    [LocalizedDescription(typeof(Resources), nameof(Overlay))]
+    Overlay,
 }

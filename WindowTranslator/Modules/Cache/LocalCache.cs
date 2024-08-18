@@ -1,10 +1,16 @@
-﻿using System.IO;
+﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
+
+[LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
+[DefaultModule]
 public sealed class LocalCache : ICacheModule, IDisposable
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
@@ -12,7 +18,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
     };
     private readonly IProcessInfoStore processInfoStore;
-    private readonly Dictionary<string, string> cache;
+    private readonly ConcurrentDictionary<string, string> cache;
     private readonly string path;
 
     public LocalCache(IProcessInfoStore processInfoStore)
@@ -20,11 +26,11 @@ public sealed class LocalCache : ICacheModule, IDisposable
         this.processInfoStore = processInfoStore;
         var dir = Path.Combine(PathUtility.UserDir, "cache");
         Directory.CreateDirectory(dir);
-        this.path = Path.Combine(dir, Path.ChangeExtension(Path.GetFileName(this.processInfoStore.FileName), ".json"));
+        this.path = Path.Combine(dir, Path.ChangeExtension(this.processInfoStore.Name, ".json"));
         if (File.Exists(path))
         {
             using var fs = File.OpenRead(path);
-            cache = JsonSerializer.Deserialize<Dictionary<string, string>>(fs, serializerOptions) ?? new();
+            cache = new(JsonSerializer.Deserialize<Dictionary<string, string>>(fs, serializerOptions) ?? []);
         }
         else
         {
@@ -34,7 +40,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
 
     public void Dispose()
     {
-        using var fs = File.OpenWrite(this.path);
+        using var fs = File.Open(this.path, FileMode.Create, FileAccess.Write, FileShare.None);
         JsonSerializer.Serialize(fs, this.cache, serializerOptions);
     }
 
@@ -42,7 +48,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
     {
         foreach (var (src, dst) in pairs)
         {
-            this.cache.Add(src, dst);
+            this.cache.AddOrUpdate(src, dst, (_, _) => dst);
         }
     }
 
@@ -50,5 +56,5 @@ public sealed class LocalCache : ICacheModule, IDisposable
         => this.cache.ContainsKey(src);
 
     public string Get(string src)
-        => this.cache[src];
+        => this.cache.TryGetValue(src, out var dst) ? dst : string.Empty;
 }

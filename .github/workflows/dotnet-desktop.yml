@@ -40,26 +40,173 @@ name: .NET Core Desktop
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
+    tags: [v*.*.*]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-
-  build:
-
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-
-    env:
-      Solution_Name: WindowTranslator.sln
-
+  docs:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 6.0.x
-    - uses: microsoft/setup-msbuild@v1.0.2
-    - run: msbuild $env:Solution_Name /restore /t:Rebuild /p:Configuration=Release
+      - uses: actions/checkout@v4
+      - uses: baileyjm02/markdown-to-pdf@v1
+        with:
+          input_path: docs
+          output_dir: pdfs
+          images_dir: docs/images
+          image_import: images
+          theme: docs/theme.css
+          template: docs/template.html
+          extend_default_theme: true
+          build_html: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: pdfs/
+  license:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: licenses
+          key: ${{ runner.os }}-licenses-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-licenses-
+      - run: |
+          dotnet tool restore
+          dotnet project-licenses -t -u -m -e \
+            --packages-filter /Analyzers$/ \
+            --include-project-file \
+            --manual-package-information manual-package-information.json \
+            -i WindowTranslator \
+            -f licenses
+      - uses: actions/upload-artifact@v4
+        with:
+          name: licenses
+          path: licenses/
+  build:
+    needs:
+      - docs
+      - license
+    if: always()
+    strategy:
+      matrix:
+        self: [true, false]
+    # For a list of available runner types, refer to
+    # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.gitversion.outputs.assemblySemFileVer }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: "5.x"
+      - id: gitversion
+        uses: gittools/actions/gitversion/execute@v3.0.0
+      - env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          dotnet publish WindowTranslator -c Release -o publish --sc ${{ matrix.self }} `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - run: |
+          dotnet publish Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin -c Release -o publish\plugins\DeepLTranslatePlugin `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - run: |
+          dotnet publish Plugins\WindowTranslator.Plugin.LLMPlugin -c Release -o publish\plugins\LLMPlugin `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+      - uses: actions/download-artifact@v4
+        if: ${{ needs.docs.result == 'success' }}
+        with:
+          name: docs
+          path: publish
+      - uses: actions/download-artifact@v4
+        if: ${{ needs.license.result == 'success' }}
+        with:
+          name: licenses
+          path: publish/licenses
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
+          path: publish\
+  installer:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: WindowTranslator-full-*
+          merge-multiple: true
+      - run: |
+          dotnet tool restore
+          dotnet wix extension -g add WixToolset.Util.wixext WixToolset.UI.wixext
+          dotnet run -c Release
+        working-directory: WindowTranslator.Wix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WindowTranslator-${{ needs.build.outputs.version }}.msi
+          path: publish\
+  release:
+    if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
+    needs:
+      - installer
+      - build
+      - license
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+      - run: |
+          for dir in WindowTranslator-*/; do
+            base=$(basename "$dir")
+            if ! find "$dir" -maxdepth 1 -type f -name "*.msi" | read; then
+                # .msiファイルが存在しない場合、既存の処理を実行
+                (cd "$dir" && zip -r "../${base}.zip" .)
+            fi
+            # .msiファイルが存在する場合は何もしない
+          done
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: true
+          prerelease: false
+          files: |
+            WindowTranslator-*.zip
+            WindowTranslator-*.msi/WindowTranslator-*.msi

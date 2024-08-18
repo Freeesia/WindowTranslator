@@ -1,0 +1,62 @@
+# WindowTranslator
+
+[![App Build](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+
+WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻訳するためのツールです。
+
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+
+## ダウンロード
+### インストール版 ![オススメ](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
+
+[GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)から`WindowTranslator-(バージョン).msi`をダウンロードおよび実行してインストールを行います。
+
+### ポータブル版
+
+[GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からzipファイルをダウンロードして任意のフォルダに展開します
+
+* `WindowTranslator-(バージョン).zip`は.NETがインストールされている環境で動作します
+* `WindowTranslator-full-(バージョン).zip`は.NETがインストールされていない環境でも動作します
+
+## 使い方
+
+### 事前準備
+
+#### 言語設定
+
+翻訳元となる言語をWindowsの言語設定に追加してください。   
+[Windowsの言語追加の方法](https://support.microsoft.com/ja-jp/windows/windows-%E7%94%A8%E3%81%AE%E8%A8%80%E8%AA%9E%E3%83%91%E3%83%83%E3%82%AF-a5094319-a92d-18de-5b53-1cfc697cfca8)
+
+> ウィンドウ上のテキストを認識するために利用します。
+
+#### DeepL APIキーの取得
+
+[DeepLのサイト](https://www.deepl.com/ja/pro-api)からユーザー登録を行い、APIキーを取得してください。  
+(手元では無料プランのAPIキーにて動作確認を行っていますが、有料プランのAPIキーでも動作すると思います)
+
+> 翻訳エンジンとしてDeepLを利用しています。
+> 翻訳に生成AIを利用するには[LLMプラグイン](https://github.com/Freeesia/WindowTranslator/wiki/LLMPlugin)の設定を行ってください。
+
+### 起動
+
+#### 初回設定
+
+1. `WindowTranslator.exe`を起動し、設定画面を開きます。  
+  ![設定](images/settings.png)
+2. 「全体設定」タブの「言語設定」から翻訳元・翻訳先の言語を選択します。  
+  ![言語設定](images/language.png)
+3. 「DeepLOptions」タブのAPI Key: DeepLのAPIキーを入力します。
+  ![DeepL設定](images/deepl.png)
+4. 設定が完了したら「OK」ボタンを押下して設定画面を閉じます。
+
+#### 翻訳の開始
+
+1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
+  ![翻訳ボタン](images/translate.png)
+2. 翻訳したいアプリのウィンドウを選択し、「OK」ボタンを押下します。
+  ![ウィンドウ選択](images/select.png)
+3. 翻訳結果がオーバーレイで表示されます。  
+  ![翻訳結果](images/result.png)

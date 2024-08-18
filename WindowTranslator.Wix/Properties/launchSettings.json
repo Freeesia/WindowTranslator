@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WindowTranslator.Wix": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

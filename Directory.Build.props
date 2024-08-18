@@ -4,5 +4,26 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <Deterministic>true</Deterministic>
+    <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Freesia</Authors>
+    <Description>WindowTranslator is a tool to translate the text on the screen.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Freeesia/WindowTranslator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Freeesia/WindowTranslator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>WindowTranslator;OCR;Translation</PackageTags>    
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDateTime</_Parameter1>
+      <_Parameter2>$([System.DateTime]::UtcNow.ToString("o"))</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
