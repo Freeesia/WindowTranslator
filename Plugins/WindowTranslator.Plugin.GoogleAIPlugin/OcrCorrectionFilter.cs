@@ -55,7 +55,7 @@ public class OcrCorrectionFilter : IFilterModule
             SingleReader = true,
             SingleWriter = true,
         }, Dropped);
-        if (googleAiOptions.Value.IsEnabledCorrenct && googleAiOptions.Value.ApiKey is { Length: > 0 } apiKey)
+        if (googleAiOptions.Value.IsEnabledCorrect && googleAiOptions.Value.ApiKey is { Length: > 0 } apiKey)
         {
             this.client = new(
                 apiKey,

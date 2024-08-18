@@ -4,7 +4,7 @@ namespace WindowTranslator.Plugin.LLMPlugin;
 
 public class LLMOptions : IPluginParam
 {
-    public bool IsEnabledCorrenct { get; set; }
+    public bool IsEnabledCorrect { get; set; }
     public string? Model { get; set; }
     public string? ApiKey { get; set; }
     public string? Endpoint { get; set; }

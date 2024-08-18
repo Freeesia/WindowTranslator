@@ -49,7 +49,7 @@ public class OcrCorrectionFilter : IFilterModule
             SingleReader = true,
             SingleWriter = true,
         }, Dropped);
-        if (llmOptions.Value.IsEnabledCorrenct && llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
+        if (llmOptions.Value.IsEnabledCorrect && llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
         {
             this.client = new(
                 model,

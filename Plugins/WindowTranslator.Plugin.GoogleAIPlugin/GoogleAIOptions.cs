@@ -5,7 +5,7 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 public class GoogleAIOptions : IPluginParam
 {
-    public bool IsEnabledCorrenct { get; set; }
+    public bool IsEnabledCorrect { get; set; }
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
     public string? ApiKey { get; set; }
 
