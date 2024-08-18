@@ -60,3 +60,8 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
   ![ウィンドウ選択](images/select.png)
 3. 翻訳結果がオーバーレイで表示されます。  
   ![翻訳結果](images/result.png)
+
+
+### その他の機能
+
+[Wiki](https://github.com/Freeesia/WindowTranslator/wiki)を参照してください。
