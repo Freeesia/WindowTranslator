@@ -44,9 +44,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.2.10" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.10" />
-    <PackageReference Include="Microsoft.WSMan.Management" Version="7.2.10" />
     <PackageReference Include="Octokit" Version="13.0.1" />
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
     <PackageReference Include="ProcessX" Version="1.5.5" />
