@@ -33,6 +33,8 @@ public partial class LanguagePackInstallDialog : FluentWindow
         this.text.SetCurrentValue(TextBlock.TextProperty, $"""
             {culture.DisplayName} の言語パックをインストール中...
             5,6分程度かかる場合があります。
+
+            再起動が促された場合は再起動してください。
             """);
         try
         {
