@@ -3,13 +3,10 @@ using Kamishibai;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
-using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -18,6 +15,7 @@ using System.Text.Unicode;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Modules.LanguagePackInstaller;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
@@ -42,8 +40,7 @@ internal partial class SettingsViewModel : IEditableObject
     private readonly IUpdateChecker checker;
 
     [Browsable(false)]
-    public IEnumerable<CultureInfo> Languages { get; } = new[]
-    {
+    public IEnumerable<CultureInfo> Languages { get; } = [
         CultureInfo.GetCultureInfo("ja-JP"),
         CultureInfo.GetCultureInfo("en-US"),
         CultureInfo.GetCultureInfo("pt-BR"),
@@ -58,7 +55,7 @@ internal partial class SettingsViewModel : IEditableObject
         CultureInfo.GetCultureInfo("ko-KR"),
         CultureInfo.GetCultureInfo("zh-CN"),
         CultureInfo.GetCultureInfo("zh-TW"),
-    };
+    ];
 
     [Browsable(false)]
     public IEnumerable<ModuleItem> TranslateModules { get; }
@@ -230,23 +227,6 @@ internal partial class SettingsViewModel : IEditableObject
     public void Update()
         => this.checker.Update();
 
-    private static bool IsInstalledLanguage(string lang)
-    {
-        using var runspace = RunspaceFactory.CreateRunspace();
-        runspace.Open();
-        using var ps = PowerShell.Create();
-        ps.Runspace = runspace;
-        ps.AddScript($"Get-InstalledLanguage -language {lang}");
-        var output = (IList)ps.Invoke().Single().BaseObject;
-        if (output.Count == 0)
-        {
-            return false;
-        }
-        var langInfo = output[0];
-        var features = langInfo!.GetType().GetField("LanguageFeatures")!.GetValue(langInfo);
-        return (((int)features!) & 0x20) == 0x20;
-    }
-
     public void BeginEdit()
     {
     }
@@ -257,14 +237,10 @@ internal partial class SettingsViewModel : IEditableObject
 
     public void EndEdit()
     {
-        if (!IsInstalledLanguage(this.Source))
+        if (!LanguagePackUtility.IsInstalledLanguage(this.Source) &&
+            !LanguagePackUtility.InstallLanguageWithDialog(this.Source))
         {
-            this.presentationService.ShowMessage($"""
-                翻訳元言語の{this.Source}は文字認識のために必要なOCR機能がインストールされていません。
-                翻訳開始前に言語機能をインストールしてください。
-                """,
-                icon: MessageBoxImage.Warning);
-            Process.Start(new ProcessStartInfo("cmd.exe", "/c start \"\" ms-settings:regionlanguage-adddisplaylanguage") { CreateNoWindow = true });
+            return;
         }
         var settings = new UserSettings()
         {
