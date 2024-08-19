@@ -9,13 +9,15 @@ using WindowTranslator.Modules;
 namespace WindowTranslator.Plugin.LLMPlugin;
 
 [DisplayName("LLM")]
-public class LLMTranslator(IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnapshot<LanguageOptions> langOptions) : ITranslateModule
+public class LLMTranslator : ITranslateModule
 {
-    private readonly ChatClient client = new(
-                llmOptions.Value.Model ?? string.Empty,
-                llmOptions.Value.ApiKey ?? string.Empty,
-                llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
-    private readonly ChatMessage system = ChatMessage.CreateSystemMessage($"""
+    private readonly ChatClient? client;
+    private readonly ChatMessage system;
+    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
+
+    public LLMTranslator(IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnapshot<LanguageOptions> langOptions)
+    {
+        this.system = ChatMessage.CreateSystemMessage($"""
         あなたは{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}から{CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName}へ翻訳するの専門家です。
         入力テキストは{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}のテキストであり、翻訳が必要です。
         渡されたテキストを{CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName}へ翻訳して出力してください。
@@ -29,10 +31,18 @@ public class LLMTranslator(IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnap
         {llmOptions.Value.TranslateSample}
         </翻訳の例>
         """);
-    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
+        if (llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } key)
+        {
+            this.client = new(model, key, llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
+        }
+    }
 
     public async ValueTask<string[]> TranslateAsync(string[] srcTexts)
     {
+        if (this.client is null)
+        {
+            throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+        }
         var completion = await this.client.CompleteChatAsync([
             this.system,
             ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcTexts)),
@@ -41,7 +51,7 @@ public class LLMTranslator(IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnap
         {
             StopSequences = { "\"]" }
         }).ConfigureAwait(false);
-        var json = assitant.Content[0].Text + completion.Value.ToString().Trim()+ "\"]";
+        var json = assitant.Content[0].Text + completion.Value.ToString().Trim() + "\"]";
         return JsonSerializer.Deserialize<string[]>(json) ?? [];
     }
 }

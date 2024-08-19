@@ -3,7 +3,6 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
@@ -25,6 +24,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IEnumerable<IFilterModule> filters;
     private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
+    private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
     private readonly ConcurrentDictionary<string, string> requesting = new();
     [ObservableProperty]
@@ -42,6 +42,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private bool disposedValue;
 
     public MainViewModelBase(
+        IPresentationService presentationService,
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
@@ -52,6 +53,7 @@ public abstract partial class MainViewModelBase : IDisposable
         ILogger logger)
     {
         var targetProcess = processInfoStore;
+        this.presentationService = presentationService;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
@@ -116,17 +118,25 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
     {
-        var transTargets = texts.Select(w => w.Text).Distinct().Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t)).ToArray();
-        if (!transTargets.Any())
+        try
         {
-            return;
+            var transTargets = texts.Select(w => w.Text).Distinct().Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t)).ToArray();
+            if (!transTargets.Any())
+            {
+                return;
+            }
+            var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
+            foreach (var t in transTargets)
+            {
+                this.requesting.TryRemove(t, out _);
+            }
+            this.cache.AddRange(transTargets.Zip(translated));
         }
-        var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
-        foreach (var t in transTargets)
+        catch (Exception e)
         {
-            this.requesting.TryRemove(t, out _);
+            this.timer.DisposeAsync().Forget();
+            this.presentationService.ShowMessage(e.Message, icon: MessageBoxImage.Error);
         }
-        this.cache.AddRange(transTargets.Zip(translated));
     }
 
     protected virtual void Dispose(bool disposing)
@@ -152,6 +162,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
 [OpenWindow]
 public sealed class CaptureMainViewModel(
+    [Inject] IPresentationService presentationService,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -160,13 +171,14 @@ public sealed class CaptureMainViewModel(
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
 
 [OpenWindow]
 public sealed class OverlayMainViewModel(
+    [Inject] IPresentationService presentationService,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -175,6 +187,6 @@ public sealed class OverlayMainViewModel(
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
 {
 }
