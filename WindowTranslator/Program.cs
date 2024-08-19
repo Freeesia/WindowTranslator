@@ -85,12 +85,10 @@ builder.Services.AddTransient(_ =>
     dlg.ShowInTaskbar = true;
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.OperatorProperty, new SettingsPropertyGridOperator());
     dlg.PropertyControl.SetCurrentValue(PropertyGrid.ControlFactoryProperty, new SettingsPropertyGridFactory());
-    dlg.SetResourceReference(Control.BackgroundProperty, "ApplicationBackgroundBrush");
-    dlg.SetResourceReference(FrameworkElement.StyleProperty, "UiWindow");
+    dlg.SetResourceReference(FrameworkElement.StyleProperty, "DefaultWindowStyle");
     dlg.Resources.Remove(typeof(Button));
     dlg.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
     dlg.SetCurrentValue(Window.TitleProperty, string.Empty);
-    WindowBackgroundManager.UpdateBackground(dlg, ApplicationTheme.Dark, WindowBackdropType.Mica);
     var btnStyle = new Style(typeof(Button), (Style)Application.Current.FindResource(typeof(Button)));
     btnStyle.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, 120d));
     btnStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));
@@ -102,6 +100,7 @@ builder.Services.AddTransient(_ =>
     DockPanel.SetDock(bar, Dock.Top);
     panel.Children.Insert(0, bar);
     SystemThemeWatcher.Watch(dlg);
+    dlg.Loaded += static (_, _) => ApplicationThemeManager.ApplySystemTheme(true);
     return dlg;
 });
 builder.Services.AddTransient<SettingsViewModel>();
