@@ -21,6 +21,11 @@ namespace WindowTranslator;
 public record TextRect(string Text, double X, double Y, double Width, double Height, double FontSize, int Line, Color Foreground, Color Background, bool IsTranslated = false)
 {
     /// <summary>
+    /// 空
+    /// </summary>
+    public static TextRect Empty { get; } = new TextRect(string.Empty, 0, 0, 0, 0, 0, 0);
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="text">テキスト</param>
