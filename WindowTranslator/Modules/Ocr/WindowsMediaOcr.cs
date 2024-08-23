@@ -13,7 +13,7 @@ namespace WindowTranslator.Modules.Ocr;
 public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
 {
     private const double PosThrethold = .005;
-    private const double LeadingThrethold = .95;
+    private const double LeadingThrethold = .75;
     private const double FontSizeThrethold = .25;
     private readonly string source = options.Value.Source;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
@@ -22,14 +22,29 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         var rawResults = await ocr.RecognizeAsync(bitmap);
+
+        // フィルター＆マージ処理について
+        // 1. 認識直後にワード単位のフィルター
+        //     * おかしい先頭文字(@,O,Ö)
+        //     * 2文字以上かつ同じ文字で構成されている
+        // 2. ワードからブロックへマージ
+        //     * 文字種類による位置・サイズ補正
+        // 3. ブロック単位のフィルター
+        //     * 中途半端な文字列での判定なので、極力ここの処理は減らす
+        //     * 大きすぎる文字は映像の認識ミスとみなす
+        // 4. ブロック同士のマージ
+        //     * 座標が近いor被ってる場合にマージできる
+        // 5. マージ後のフィルター
+        //     * 最終的な文字列で判定する
+        //     * 少なすぎる文字も認識ミス扱い
+        //     * 全部数字なら対象外
+
+
         var lineResults = rawResults
             .Lines
             .Select(CalcRect)
             // 大きすぎる文字は映像の認識ミスとみなす
-            //.Where(w => w.Height < bitmap.PixelHeight * 0.1)
-            // 少なすぎる文字も認識ミス扱い
-            .Where(w => w.Text.Length > 2)
-            .Where(w => !IsAllNum().IsMatch(w.Text))
+            .Where(w => w.Height < bitmap.PixelHeight * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -62,7 +77,12 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             }
         }
 
-        return results.Select(ToTextRect).ToArray();
+        return results.Select(ToTextRect)
+            // マージ後に少なすぎる文字も認識ミス扱い
+            .Where(w => w.Text.Length > 2)
+            // 全部数字なら対象外
+            .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
+            .ToArray();
     }
 
     private class TempMergeRect
@@ -140,7 +160,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             // y座標が近く、x間隔が近い場合にマージできる
             var xGap = Math.Min(Math.Abs((X + Width) - x), Math.Abs((x + w) - X)); // X座標の間隔
             var yDiff = Math.Abs(Y - y); // Y座標の差
-            var gThre = (rect.FontSize + FontSize) * 0.5;
+            var gThre = (rect.FontSize + FontSize) * .5;
             if (xGap < gThre && yDiff < posThreshold)
             {
                 return true;
@@ -194,26 +214,13 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
     private bool IsSpaceLang()
         => this.source[..2] is not "ja" or "zh";
 
-    private string CreateConcatText(string str1, string str2)
-        => this.source[..2] switch
-        {
-            "ja" or "zh" => $"{str1}{str2}",
-            _ => $"{str1} {str2}",
-        };
-
-
     private TextRect CalcRect(OcrLine line)
     {
-        var words = line.Words;
-        // 先頭が@やOの場合は何かしらのアイコンの可能性が高いので無視
-        if (words[0].Text is "@" or "O")
+        // ワードのフィルタリング
+        var words = FilterWords(line.Words).ToArray();
+        if (words.Length == 0)
         {
-            words = words.Skip(1).ToArray();
-        }
-        // 空行は無視
-        if (words.Count == 0)
-        {
-            return new(string.Empty, 0, 0, 0, 0, 0, 1);
+            return TextRect.Empty;
         }
         var text = this.source[..2] switch
         {
@@ -246,6 +253,18 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
         return new(text, x, y, width, height, fontSize, 1);
     }
 
+    private static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
+    {
+        // 先頭が@やOの場合は何かしらのアイコンの可能性が高いので無視
+        if (words.First().Text is "@" or "O" or "Ö")
+        {
+            words = words.Skip(1);
+        }
+        // 2文字以上かつ同じ文字で構成されている場合は無視
+        words = words.Where(w => w.Text.Length < 2 || !IsAllSameChar(w.Text));
+        return words;
+    }
+
     private static double CorrectHeight(double height, bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent)
         => (isxHeight, hasAcent, hasHarfAcent, hasDecent) switch
         {
@@ -276,6 +295,12 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
         return te.ContainsAny(ta);
     }
 
-    [GeneratedRegex(@"^\d+$")]
-    private static partial Regex IsAllNum();
+    [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
+    private static partial Regex IsAllSymbolOrSpace();
+
+    private static bool IsAllSameChar(string text)
+    {
+        ReadOnlySpan<char> chars = text;
+        return !chars[1..].ContainsAnyExcept(chars[0]);
+    }
 }
