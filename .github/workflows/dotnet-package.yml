@@ -2,7 +2,6 @@ name: .NET Core Package
 
 on:
   push:
-    branches: [master]
     tags: [v*]
 
 jobs:
