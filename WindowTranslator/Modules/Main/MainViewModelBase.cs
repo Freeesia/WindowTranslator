@@ -62,7 +62,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters;
         this.logger = logger;
-        this.capture.StartCapture(targetProcess.MainWindowHangle);
+        this.capture.StartCapture(targetProcess.MainWindowHandle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
 
@@ -95,7 +95,7 @@ public abstract partial class MainViewModelBase : IDisposable
         var texts = await this.ocr.RecognizeAsync(sbmp);
         {
             var tmp = texts.ToAsyncEnumerable();
-            foreach (var filter in this.filters)
+            foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
             {
                 tmp = filter.ExecutePreTranslate(tmp);
             }
@@ -103,10 +103,10 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         TranslateAsync(texts).Forget();
         texts = await this.color.ConvertColorAsync(sbmp, texts);
-        texts = texts.Select(t => t with { IsTranslated = this.cache.Contains(t.Text), Text = this.cache.Get(t.Text) }).ToArray();
+        texts = texts.Select(t => t.IsTranslated ? t : t with { IsTranslated = this.cache.Contains(t.Text), Text = this.cache.Get(t.Text) }).ToArray();
         {
             var tmp = texts.ToAsyncEnumerable();
-            foreach (var filter in this.filters)
+            foreach (var filter in this.filters.OrderBy(f => f.Priority))
             {
                 tmp = filter.ExecutePostTranslate(tmp);
             }
@@ -120,7 +120,12 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         try
         {
-            var transTargets = texts.Select(w => w.Text).Distinct().Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t)).ToArray();
+            var transTargets = texts
+                .Where(t => !t.IsTranslated)
+                .Select(w => w.Text)
+                .Distinct()
+                .Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t))
+                .ToArray();
             if (!transTargets.Any())
             {
                 return;
