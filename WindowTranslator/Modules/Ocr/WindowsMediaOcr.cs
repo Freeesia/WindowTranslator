@@ -13,7 +13,7 @@ namespace WindowTranslator.Modules.Ocr;
 public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
 {
     private const double PosThrethold = .005;
-    private const double LeadingThrethold = .75;
+    private const double LeadingThrethold = .80;
     private const double FontSizeThrethold = .25;
     private readonly string source = options.Value.Source;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
