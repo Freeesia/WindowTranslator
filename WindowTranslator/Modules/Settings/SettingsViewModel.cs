@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
@@ -24,7 +25,7 @@ using CategoryAttribute = System.ComponentModel.CategoryAttribute;
 namespace WindowTranslator.Modules.Settings;
 
 [OpenDialog]
-internal partial class SettingsViewModel : IEditableObject
+internal partial class SettingsViewModel : ObservableObject, IEditableObject
 {
     private static readonly CompositeFormat HasUpdateText = CompositeFormat.Parse(Resources.HasUpdate);
     private static readonly JsonSerializerOptions serializerOptions = new()
@@ -114,13 +115,15 @@ internal partial class SettingsViewModel : IEditableObject
     [Category("About|")]
     public string License { get; }
 
-    [Browsable(false)]
-    public bool HasUpdate { get; }
+    [property: Browsable(false)]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdateInfo))]
+    private bool hasUpdate;
 
     [Comment]
     [PropertyTools.DataAnnotations.DisplayName("")]
     [Category("About|UpdateInfo")]
-    public string UpdateInfo { get; }
+    public string UpdateInfo => this.HasUpdate ? string.Format(CultureInfo.CurrentCulture, HasUpdateText, this.checker.LatestVersion) : Resources.IsLatest;
 
     public IPluginParam[] Params { get; }
 
@@ -169,8 +172,10 @@ internal partial class SettingsViewModel : IEditableObject
         this.presentationService = presentationService;
         this.checker = checker;
         this.HasUpdate = checker.HasUpdate;
-        this.UpdateInfo = checker.HasUpdate ? string.Format(CultureInfo.CurrentCulture, HasUpdateText, checker.LatestVersion) : Resources.IsLatest;
     }
+
+    private void Checker_UpdateAvailable(object? sender, EventArgs e)
+        => this.HasUpdate = this.checker.HasUpdate;
 
     private static ModuleItem Convert(Plugin plugin)
         => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
@@ -227,16 +232,21 @@ internal partial class SettingsViewModel : IEditableObject
     public void Update()
         => this.checker.Update();
 
+    [property: Category("About|UpdateInfo")]
+    [property: VisibleBy(nameof(HasUpdate), false)]
+    [RelayCommand]
+    public Task CheckUpdateAsync()
+        => this.checker.CheckAsync();
+
     public void BeginEdit()
-    {
-    }
+        => this.checker.UpdateAvailable += Checker_UpdateAvailable;
 
     public void CancelEdit()
-    {
-    }
+        => this.checker.UpdateAvailable -= Checker_UpdateAvailable;
 
     public void EndEdit()
     {
+        this.checker.UpdateAvailable -= Checker_UpdateAvailable;
         if (!LanguagePackUtility.IsInstalledLanguage(this.Source) &&
             !LanguagePackUtility.InstallLanguageWithDialog(this.Source))
         {
