@@ -128,7 +128,7 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - run: |
-          $folders = Get-ChildItem -Path "Plugins" -Directory
+          $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" }
           for ($i = 0; $i -lt $folders.Count; $i++) {
             dotnet publish $folders[$i].FullName -c Release -o "publish\plugins\$($folders[$i].Name)" `
               -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
