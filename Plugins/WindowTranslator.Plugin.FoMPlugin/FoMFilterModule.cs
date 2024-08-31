@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Quickenshtein;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
+using System.ComponentModel;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
@@ -21,6 +22,7 @@ public class FoMFilterModule : IFilterModule
         PropertyNameCaseInsensitive = true,
     };
     private readonly bool isTarget;
+    private readonly bool exclude;
     private readonly FrozenDictionary<string, string> builtin;
     private readonly ConcurrentDictionary<string, (string en, string ja)> cache = [];
     private readonly ILogger<FoMFilterModule> logger;
@@ -36,10 +38,16 @@ public class FoMFilterModule : IFilterModule
             var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
             using var fs = File.OpenRead(path);
             var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions);
-            var name = options.Value.PlayerName;
+            var player = options.Value.PlayerName;
+            var farm = options.Value.FarmName;
+            this.exclude = options.Value.ExcludeUnspecifiedText;
             this.builtin = loc!.Eng
                 .DistinctBy(p => p.Value)
-                .Select(p => (en: p.Value.Replace("[Ari]", name), ja: loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? s.Replace("[Ari]", name) : string.Empty))
+                .Select(p => (
+                    en: ReplaceToPlain(p.Value, player, farm),
+                    ja: loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? ReplaceToPlain(s, player, farm) : string.Empty))
+                // 置換系は対象外
+                .Where(p => !p.en.Contains('['))
                 .ToFrozenDictionary(p => p.en, p => p.ja);
         }
         else
@@ -48,6 +56,13 @@ public class FoMFilterModule : IFilterModule
         }
         this.logger = logger;
     }
+
+    private static string ReplaceToPlain(string s, string player, string farm)
+        => s.Replace("[Ari]", player)
+            .Replace("[farm_name]", farm)
+            .Replace("$", string.Empty)
+            .Replace("=", string.Empty)
+            .ReplaceLineEndings(string.Empty);
 
     public IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
     {
@@ -75,7 +90,6 @@ public class FoMFilterModule : IFilterModule
             return string.IsNullOrEmpty(c.ja) ? src with { Text = c.en } : src with { Text = c.ja, IsTranslated = true };
         }
         var t = DateTime.UtcNow;
-        // TODO: $マーク、改行の調整
         var (key, near, l) = this.builtin.Select(p => (p.Key, p.Value, length: Levenshtein.GetDistance(p.Key, src.Text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
         // 編集距離のパーセンテージ
         var p = 100.0 * l / Math.Max(src.Text.Length, key.Length);
@@ -93,7 +107,7 @@ public class FoMFilterModule : IFilterModule
                 return src with { Text = near, IsTranslated = true };
             }
         }
-        return null;
+        return exclude ? null : src;
     }
 
     private static string? GetProcessPath(int processId)
@@ -114,7 +128,18 @@ public class FoMFilterModule : IFilterModule
 
 public record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
 
+[DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
 {
+    [DisplayName("ゲームに含まれているリソースを利用した補正を利用するかどうか")]
+    public bool IsEnabledCorrect { get; set; } = true;
+
+    [DisplayName("プレイヤー名")]
     public string PlayerName { get; set; } = string.Empty;
+
+    [DisplayName("農場名")]
+    public string FarmName { get; set; } = string.Empty;
+
+    [DisplayName("特定できないテキストを除外")]
+    public bool ExcludeUnspecifiedText { get; set; } = true;
 }
