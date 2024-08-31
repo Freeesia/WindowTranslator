@@ -54,7 +54,7 @@ public partial class OverlayMainWindow : Window
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
-#if DEBUG
+#if false
         var brush = System.Windows.Media.Brushes.Red.Clone();
         brush.Opacity = 0.2;
         this.Background = brush;
