@@ -128,11 +128,14 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - run: |
-          for /d %D in ("Plugins\*") do dotnet publish %D -c Release -o publish\plugins\%~nxD `
+          $folders = Get-ChildItem -Path "Plugins" -Directory
+          for ($i = 0; $i -lt $folders.Count; $i++) {
+            dotnet publish $folders[$i].FullName -c Release -o publish\plugins\$folders[$i].Name ^
               -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
               -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
               -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
               -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+          }
       - uses: actions/download-artifact@v4
         if: ${{ needs.docs.result == 'success' }}
         with:
