@@ -122,7 +122,7 @@ public class OcrCorrectionFilter : IFilterModule
             {
                 var completion = await this.client!.GenerateContentAsync(JsonSerializer.Serialize(texts))
                     .ConfigureAwait(false);
-                var corrected = JsonSerializer.Deserialize<string[]>(completion + "\"]") ?? [];
+                var corrected = completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion + "\"]") ?? [];
                 for (var i = 0; i < texts.Count; i++)
                 {
                     this.cache[texts[i]] = corrected[i];
@@ -171,6 +171,12 @@ public class GenerativeModelEx(string apiKey, ModelParams modelParams, string sy
 
             throw new GenerativeAIException($"Error while requesting {url.ToString("__API_Key__")}:\r\n\r\n{content}", content);
         }
+    }
+
+    private class EnhancedGenerateContentResponseEx : EnhancedGenerateContentResponse
+    {
+        public override string? Text()
+            => base.Text() ?? throw new InvalidOperationException();
     }
 
     private class PolymorphicTypeResolver : DefaultJsonTypeInfoResolver
