@@ -74,7 +74,8 @@ builder.Services.AddHostedService<WindowMonitor>();
 builder.Services.AddSingleton<UpdateChecker>()
     .AddSingleton<IUpdateChecker>(sp => sp.GetRequiredService<UpdateChecker>())
     .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
-builder.Services.AddScoped<IProcessInfoStore, ProcessInfoStore>();
+builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
+    .AddScoped<IProcessInfoStore>(sp => sp.GetRequiredService<IProcessInfoStoreInternal>());
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();

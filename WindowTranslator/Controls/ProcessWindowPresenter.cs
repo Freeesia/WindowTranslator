@@ -30,13 +30,10 @@ public class ProcessWindowPresenter : HwndHostPresenter
         }
     }
 
-    private class ProcessWindowHost : HwndHost
+    private class ProcessWindowHost(IProcessInfoStore process) : HwndHost
     {
-        private readonly IProcessInfoStore process;
+        private readonly IProcessInfoStore process = process;
         private IntPtr beforeStyle;
-
-        public ProcessWindowHost(IProcessInfoStore process)
-            => this.process = process;
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {

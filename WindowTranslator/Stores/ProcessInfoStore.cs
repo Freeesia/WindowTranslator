@@ -1,6 +1,6 @@
 ﻿namespace WindowTranslator.Stores;
 
-public sealed class ProcessInfoStore(ITargetStore targetStore) : IProcessInfoStore, IDisposable
+public sealed class ProcessInfoStore(ITargetStore targetStore) : IProcessInfoStoreInternal, IDisposable
 {
     private readonly ITargetStore targetStore = targetStore;
 
@@ -16,4 +16,9 @@ public sealed class ProcessInfoStore(ITargetStore targetStore) : IProcessInfoSto
 
     public void Dispose()
         => this.targetStore.RemoveTarget(this.MainWindowHandle);
+}
+
+interface IProcessInfoStoreInternal : IProcessInfoStore
+{
+    void SetTargetProcess(IntPtr mainWindowHandle, string name);
 }
