@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="PInvoke.User32" Version="0.7.124" ExcludeAssets="runtime" />
+    <PackageReference Include="Quickenshtein" Version="1.5.1" />
+  </ItemGroup>
+</Project>

@@ -54,7 +54,7 @@ public partial class OverlayMainWindow : Window
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
-#if DEBUG
+#if false
         var brush = System.Windows.Media.Brushes.Red.Clone();
         brush.Opacity = 0.2;
         this.Background = brush;
@@ -96,14 +96,14 @@ public partial class OverlayMainWindow : Window
     {
         var sw = Stopwatch.StartNew();
         var windowInfo = WINDOWINFO.Create();
-        if (!GetWindowInfo(this.processInfo.MainWindowHangle, ref windowInfo))
+        if (!GetWindowInfo(this.processInfo.MainWindowHandle, ref windowInfo))
         {
             this.timer.Stop();
             this.presentationService.CloseWindowAsync(this).Forget();
             return;
         }
 
-        var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHangle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+        var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
         GetMonitorInfo(monitorHandle, out var monitorInfo);
         var mode = DEVMODE.Create();
         EnumDisplaySettings(monitorInfo.DeviceName, ENUM_CURRENT_SETTINGS, &mode);
@@ -113,7 +113,7 @@ public partial class OverlayMainWindow : Window
         var clientRect = windowInfo.rcClient;
         var windowRect = windowInfo.rcWindow;
 
-        var p = GetWindowPlacement(this.processInfo.MainWindowHangle);
+        var p = GetWindowPlacement(this.processInfo.MainWindowHandle);
 
         var left = clientRect.left;
         var top = p.showCmd.HasFlag(WindowShowStyle.SW_MAXIMIZE) ? clientRect.top : windowRect.top;

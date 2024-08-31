@@ -19,7 +19,7 @@ public class MainWindowModule(App app, IServiceProvider provider) : IMainWindowM
         var scope = provider.CreateScope();
         var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
         var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
-        var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStore>();
+        var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
         processInfo.SetTargetProcess(mainWindowHandle, name);
         var window = options.Value.ViewMode switch
         {

@@ -6,7 +6,7 @@ using WindowTranslator.Properties;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyTools.DataAnnotations;
-using System.Windows.Controls;
+using System.Reflection;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridOperator : PropertyGridOperator
@@ -56,9 +56,12 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
                 for (int i = 0; i < @params.Count; i++)
                 {
                     var param = @params[i];
+                    var tag = param.GetType().GetCustomAttribute<System.ComponentModel.DisplayNameAttribute>()?.DisplayName;
                     foreach (ParentablePropertyItem item in CreatePropertyItems(param, options).Cast<ParentablePropertyItem>())
                     {
                         item.AddParent($"{pd.Name}[{i}]");
+
+                        item.Tab = tag ?? item.Tab;
                         yield return item;
                     }
                 }

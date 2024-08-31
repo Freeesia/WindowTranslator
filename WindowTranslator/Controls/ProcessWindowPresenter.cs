@@ -30,13 +30,10 @@ public class ProcessWindowPresenter : HwndHostPresenter
         }
     }
 
-    private class ProcessWindowHost : HwndHost
+    private class ProcessWindowHost(IProcessInfoStore process) : HwndHost
     {
-        private readonly IProcessInfoStore process;
+        private readonly IProcessInfoStore process = process;
         private IntPtr beforeStyle;
-
-        public ProcessWindowHost(IProcessInfoStore process)
-            => this.process = process;
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
@@ -47,16 +44,16 @@ public class ProcessWindowPresenter : HwndHostPresenter
                                       User32.WindowStyles.WS_CLIPCHILDREN |
                                       User32.WindowStyles.WS_VISIBLE |
                                       User32.WindowStyles.WS_MAXIMIZE);
-            this.beforeStyle = User32.GetWindowLongPtr_IntPtr(this.process.MainWindowHangle, User32.WindowLongIndexFlags.GWL_STYLE);
-            User32.SetWindowLongPtr(this.process.MainWindowHangle, User32.WindowLongIndexFlags.GWL_STYLE, childStyle);
-            User32.SetParent(this.process.MainWindowHangle, hwndParent.Handle);
-            return new HandleRef(this, this.process.MainWindowHangle);
+            this.beforeStyle = User32.GetWindowLongPtr_IntPtr(this.process.MainWindowHandle, User32.WindowLongIndexFlags.GWL_STYLE);
+            User32.SetWindowLongPtr(this.process.MainWindowHandle, User32.WindowLongIndexFlags.GWL_STYLE, childStyle);
+            User32.SetParent(this.process.MainWindowHandle, hwndParent.Handle);
+            return new HandleRef(this, this.process.MainWindowHandle);
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            User32.SetParent(this.process.MainWindowHangle, IntPtr.Zero);
-            User32.SetWindowLongPtr(this.process.MainWindowHangle, User32.WindowLongIndexFlags.GWL_STYLE, this.beforeStyle);
+            User32.SetParent(this.process.MainWindowHandle, IntPtr.Zero);
+            User32.SetWindowLongPtr(this.process.MainWindowHandle, User32.WindowLongIndexFlags.GWL_STYLE, this.beforeStyle);
             User32.DestroyWindow(hwnd.Handle);
         }
     }

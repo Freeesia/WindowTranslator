@@ -128,23 +128,14 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - run: |
-          dotnet publish Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin -c Release -o publish\plugins\DeepLTranslatePlugin `
-            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-      - run: |
-          dotnet publish Plugins\WindowTranslator.Plugin.LLMPlugin -c Release -o publish\plugins\LLMPlugin `
-            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-      - run: |
-          dotnet publish Plugins\WindowTranslator.Plugin.GoogleAIPlugin -c Release -o publish\plugins\GoogleAIPlugin `
-            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+          $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" }
+          for ($i = 0; $i -lt $folders.Count; $i++) {
+            dotnet publish $folders[$i].FullName -c Release -o "publish\plugins\$($folders[$i].Name)" `
+              -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+              -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+              -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+              -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+          }
       - uses: actions/download-artifact@v4
         if: ${{ needs.docs.result == 'success' }}
         with:

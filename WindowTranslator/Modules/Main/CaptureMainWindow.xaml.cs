@@ -32,7 +32,7 @@ public partial class CaptureMainWindow
     private void CheckTargetWindow()
     {
         var windowInfo = WINDOWINFO.Create();
-        if (!GetWindowInfo(this.processInfo.MainWindowHangle, ref windowInfo))
+        if (!GetWindowInfo(this.processInfo.MainWindowHandle, ref windowInfo))
         {
             this.timer.Stop();
             this.presentationService.CloseWindowAsync(this).Forget();

@@ -90,7 +90,7 @@ internal partial class SettingsViewModel : IEditableObject
     public ViewMode ViewMode { get; set; }
 
     [Category("SettingsViewModel|Misc")]
-    public IList<ProcessName> AutoTargets { get; set; } = new List<ProcessName>();
+    public IList<ProcessName> AutoTargets { get; set; } = [];
 
     [Category("SettingsViewModel|Misc")]
     public bool IsEnableAutoTarget { get; set; }
