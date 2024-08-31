@@ -1,0 +1,8 @@
+<Project>
+  <!-- 上位階層の Directory.Build.targets をインクルード -->
+  <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.targets')" />
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call $(ProjectDir)..\copy_plugins.bat $(OutDir) $(ProjectName) $(Configuration)" />
+  </Target>
+</Project>

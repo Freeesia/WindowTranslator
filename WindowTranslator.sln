@@ -21,6 +21,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{2123A8A4-05BB-4D10-AA07-E02207E55B14}"
 	ProjectSection(SolutionItems) = preProject
 		Plugins\copy_plugins.bat = Plugins\copy_plugins.bat
+		Plugins\Directory.Build.props = Plugins\Directory.Build.props
+		Plugins\Directory.Build.targets = Plugins\Directory.Build.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hwnd-adorner", "hwnd-adorner", "{E9254220-A2A9-4A23-814E-15029025A868}"
@@ -103,9 +105,9 @@ Global
 		{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
-		RESX_NeutralResourcesLanguage = ja-JP
-		RESX_ConfirmAddLanguageFile = True
 		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
+		RESX_NeutralResourcesLanguage = ja-JP
+		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
 	EndGlobalSection
 EndGlobal
