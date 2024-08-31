@@ -130,7 +130,7 @@ jobs:
       - run: |
           $folders = Get-ChildItem -Path "Plugins" -Directory
           for ($i = 0; $i -lt $folders.Count; $i++) {
-            dotnet publish $folders[$i].FullName -c Release -o publish\plugins\$folders[$i].Name ^
+            dotnet publish $folders[$i].FullName -c Release -o publish\plugins\$folders[$i].Name `
               -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
               -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
               -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
