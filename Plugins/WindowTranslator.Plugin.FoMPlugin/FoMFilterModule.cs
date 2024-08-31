@@ -42,12 +42,12 @@ public class FoMFilterModule : IFilterModule
             var farm = options.Value.FarmName;
             this.exclude = options.Value.ExcludeUnspecifiedText;
             this.builtin = loc!.Eng
-                .DistinctBy(p => p.Value)
                 .Select(p => (
-                    en: ReplaceToPlain(p.Value, player, farm),
+                    en: ReplaceToPlain(p.Value, player, farm).ReplaceLineEndings(string.Empty),
                     ja: loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? ReplaceToPlain(s, player, farm) : string.Empty))
                 // 置換系は対象外
                 .Where(p => !p.en.Contains('['))
+                .DistinctBy(p => p.en)
                 .ToFrozenDictionary(p => p.en, p => p.ja);
         }
         else
@@ -61,8 +61,7 @@ public class FoMFilterModule : IFilterModule
         => s.Replace("[Ari]", player)
             .Replace("[farm_name]", farm)
             .Replace("$", string.Empty)
-            .Replace("=", string.Empty)
-            .ReplaceLineEndings(string.Empty);
+            .Replace("=", string.Empty);
 
     public IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
     {
