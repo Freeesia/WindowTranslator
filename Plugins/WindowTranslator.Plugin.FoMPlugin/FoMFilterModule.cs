@@ -21,7 +21,7 @@ public class FoMFilterModule : IFilterModule
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
         PropertyNameCaseInsensitive = true,
     };
-    private readonly bool isTarget;
+    private readonly bool isEnabled;
     private readonly bool exclude;
     private readonly FrozenDictionary<string, string> builtin;
     private readonly ConcurrentDictionary<string, (string en, string ja)> cache = [];
@@ -32,9 +32,9 @@ public class FoMFilterModule : IFilterModule
     public FoMFilterModule(IProcessInfoStore processInfo, IOptions<FoMOptions> options, ILogger<FoMFilterModule> logger)
     {
         _ = User32.GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
-        if (GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
+        if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
-            this.isTarget = true;
+            this.isEnabled = true;
             var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
             using var fs = File.OpenRead(path);
             var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions);
@@ -65,7 +65,7 @@ public class FoMFilterModule : IFilterModule
 
     public IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
     {
-        if (this.isTarget)
+        if (this.isEnabled)
         {
             return texts.Select(Correct).OfType<TextRect>();
         }
@@ -130,7 +130,7 @@ public record Localization(Dictionary<string, string> Eng, Dictionary<string, st
 [DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
 {
-    [DisplayName("ゲームに含まれているリソースを利用した補正を利用するかどうか")]
+    [DisplayName("ゲームに含まれているリソースを利用した補正を利用する")]
     public bool IsEnabledCorrect { get; set; } = true;
 
     [DisplayName("プレイヤー名")]

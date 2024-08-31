@@ -90,6 +90,8 @@ builder.Services.AddTransient(_ =>
     dlg.Resources.Remove(typeof(Button));
     dlg.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
     dlg.SetCurrentValue(Window.TitleProperty, string.Empty);
+    dlg.SetCurrentValue(FrameworkElement.WidthProperty, 600d);
+    dlg.SetCurrentValue(Window.SizeToContentProperty, SizeToContent.Height);
     var btnStyle = new Style(typeof(Button), (Style)Application.Current.FindResource(typeof(Button)));
     btnStyle.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, 120d));
     btnStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));

@@ -272,7 +272,7 @@ interface IUpdateChecker
 
     event EventHandler? UpdateAvailable;
 
-    Task CheckAsync(CancellationToken token);
+    Task CheckAsync(CancellationToken token = default);
     void Update();
     void OpenChangelog();
 }
