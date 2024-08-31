@@ -120,6 +120,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
             var x2 = Math.Max(X + Width, x + width);
             var y2 = Math.Max(Y + Height, y + height);
             (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
+            FontSize = Rects.Average(r => r.FontSize);
             return true;
         }
 
@@ -256,12 +257,13 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
     private static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
     {
         // 先頭が@やOの場合は何かしらのアイコンの可能性が高いので無視
-        if (words.First().Text is "@" or "O" or "Ö")
+        if (words.First().Text is "@" or "O" or "Ö" or "Ü")
         {
             words = words.Skip(1);
         }
         // 2文字以上かつ同じ文字で構成されている場合は無視
-        words = words.Where(w => w.Text.Length < 2 || !IsAllSameChar(w.Text));
+        // `•`は大抵の場合は認識ミスなので無視
+        words = words.Where(w => w.Text.Length < 2 || !IsAllSameChar(w.Text.Replace("•", string.Empty)));
         return words;
     }
 
