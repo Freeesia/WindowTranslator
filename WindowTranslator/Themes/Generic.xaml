@@ -40,6 +40,7 @@
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <TextBlock
                                                         Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
+                                                        VerticalAlignment="Center"
                                                         FontSize="{Binding FontSize}"
                                                         Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                                         Text="{Binding Text}"

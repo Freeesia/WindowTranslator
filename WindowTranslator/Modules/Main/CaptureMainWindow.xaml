@@ -38,6 +38,7 @@
                     <ctl:WindowCaptureCompositionHost.Adornment>
                         <Viewbox>
                             <control:OverlayTextsControl
+                                FontFamily="{Binding Font, Mode=OneWay}"
                                 RectHeight="{Binding Height}"
                                 RectWidth="{Binding Width}"
                                 Texts="{Binding OcrTexts}" />

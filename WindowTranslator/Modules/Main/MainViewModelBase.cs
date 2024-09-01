@@ -3,6 +3,7 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
@@ -26,6 +27,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
+    private readonly double fontScale;
     private readonly ConcurrentDictionary<string, string> requesting = new();
     [ObservableProperty]
     private IEnumerable<TextRect> ocrTexts = [];
@@ -38,11 +40,14 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private bool isFirstBusy = true;
 
+    public string Font { get; }
+
     private SoftwareBitmap? sbmp;
     private bool disposedValue;
 
     public MainViewModelBase(
         IPresentationService presentationService,
+        IOptions<UserSettings> options,
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
@@ -54,6 +59,8 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         var targetProcess = processInfoStore;
         this.presentationService = presentationService;
+        this.Font = options.Value.Font;
+        this.fontScale = options.Value.FontScale;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
@@ -112,7 +119,7 @@ public abstract partial class MainViewModelBase : IDisposable
             }
             texts = await tmp.ToArrayAsync();
         }
-        this.OcrTexts = texts;
+        this.OcrTexts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
         this.logger.LogDebug(sw.Elapsed.ToString());
     }
 
@@ -168,6 +175,7 @@ public abstract partial class MainViewModelBase : IDisposable
 [OpenWindow]
 public sealed class CaptureMainViewModel(
     [Inject] IPresentationService presentationService,
+    [Inject] IOptions<UserSettings> options,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -176,7 +184,7 @@ public sealed class CaptureMainViewModel(
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(presentationService, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
@@ -184,6 +192,7 @@ public sealed class CaptureMainViewModel(
 [OpenWindow]
 public sealed class OverlayMainViewModel(
     [Inject] IPresentationService presentationService,
+    [Inject] IOptions<UserSettings> options,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -192,6 +201,6 @@ public sealed class OverlayMainViewModel(
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(presentationService, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
 {
 }

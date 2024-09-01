@@ -33,6 +33,7 @@
     <Canvas>
         <control:OverlayTextsControl
             x:Name="overlay"
+            FontFamily="{Binding Font, Mode=OneWay}"
             MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"

@@ -13,6 +13,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using System.Windows.Markup;
+using System.Windows.Media;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
@@ -62,6 +64,8 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     public IEnumerable<ModuleItem> TranslateModules { get; }
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; }
+    [Browsable(false)]
+    public IEnumerable<FontItem> AvailableFonts { get; } = Fonts.SystemFontFamilies.Select(f => (FontItem)f).ToArray();
 
     [Category("SettingsViewModel|Language")]
     [ItemsSourceProperty(nameof(Languages))]
@@ -86,6 +90,15 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
+
+    [Category("SettingsViewModel|Misc")]
+    [ItemsSourceProperty(nameof(AvailableFonts))]
+    [SelectedValuePath(nameof(FontItem.Name))]
+    [DisplayMemberPath(nameof(FontItem.DisplayName))]
+    public string Font { get; set; }
+
+    [Category("SettingsViewModel|Misc")]
+    public double FontScale { get; set; }
 
     [Category("SettingsViewModel|Misc")]
     public ViewMode ViewMode { get; set; }
@@ -143,6 +156,8 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         this.CacheModule = dic.TryGetValue(nameof(ICacheModule), out var c) ? c : this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
         this.Source = userSettings.Value.Language.Source;
         this.Target = userSettings.Value.Language.Target;
+        this.Font = userSettings.Value.Font;
+        this.FontScale = userSettings.Value.FontScale;
         this.ViewMode = userSettings.Value.ViewMode;
         this.AutoTargets = userSettings.Value.AutoTargets.Select(t => new ProcessName() { Name = t }).ToList();
         this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
@@ -256,6 +271,8 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         {
             Language = { Source = this.Source, Target = this.Target },
             ViewMode = this.ViewMode,
+            Font = this.Font,
+            FontScale = this.FontScale,
             AutoTargets = this.AutoTargets.Select(t => t.Name).OfType<string>().ToList(),
             IsEnableAutoTarget = this.IsEnableAutoTarget,
             SelectedPlugins =
@@ -272,6 +289,16 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
 }
 
 public record ModuleItem(string Name, string DisplayName, bool IsDefault);
+public record FontItem(string Name, string DisplayName)
+{
+    public static explicit operator FontItem(FontFamily font)
+    {
+        var name = font.Source;
+        var lang = XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag);
+        var displayName = font.FamilyNames.TryGetValue(lang, out var d) ? d : name;
+        return new FontItem(name, displayName);
+    }
+}
 public record ProcessName
 {
     public string? Name { get; set; }
