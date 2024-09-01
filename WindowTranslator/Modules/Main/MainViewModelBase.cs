@@ -90,12 +90,11 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task CreateTextOverlayAsync()
     {
-        var sw = Stopwatch.StartNew();
         if (!await this.analyzing.WaitAsync(0))
         {
             return;
         }
-        this.logger.LogDebug("TextOverlay");
+        using var to = this.logger.LogDebugTime("TextOverlay");
         using var rel = new DisposeAction(() =>
         {
             this.analyzing.Release();

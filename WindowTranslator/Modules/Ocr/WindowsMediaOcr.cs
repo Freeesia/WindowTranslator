@@ -1,16 +1,18 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
 [DisplayName("Windows標準文字認識")]
-public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) : IOcrModule
+public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, ILogger<WindowsMediaOcr> logger) : IOcrModule
 {
     private const double PosThrethold = .005;
     private const double LeadingThrethold = .80;
@@ -18,10 +20,13 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options) 
     private readonly string source = options.Value.Source;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
             ?? throw new InvalidOperationException($"{options.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
+    private readonly ILogger<WindowsMediaOcr> logger = logger;
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
+        var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(bitmap);
+        t.Dispose();
 
         // フィルター＆マージ処理について
         // 1. 認識直後にワード単位のフィルター
