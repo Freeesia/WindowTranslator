@@ -79,10 +79,6 @@ public class FoMFilterModule : IFilterModule
 
     private static IEnumerable<(string en, string ja)> SplitParagraph(string en, string ja)
     {
-        if (string.IsNullOrEmpty(ja))
-        {
-            return [(en, ja)];
-        }
         var enLines = en.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
         var jaLines = ja.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
         if (enLines.Length == jaLines.Length)
