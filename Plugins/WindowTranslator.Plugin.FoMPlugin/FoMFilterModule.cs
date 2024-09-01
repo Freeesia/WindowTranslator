@@ -33,6 +33,13 @@ public class FoMFilterModule : IFilterModule
 
     public FoMFilterModule(IProcessInfoStore processInfo, IOptions<FoMOptions> options, ILogger<FoMFilterModule> logger)
     {
+        this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
+        {
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest,
+            SingleReader = true,
+            SingleWriter = true,
+        }, Dropped);
         _ = User32.GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
         if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
@@ -61,13 +68,6 @@ public class FoMFilterModule : IFilterModule
         {
             this.builtin = FrozenDictionary<string, string>.Empty;
         }
-        this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
-        {
-            AllowSynchronousContinuations = true,
-            FullMode = BoundedChannelFullMode.DropOldest,
-            SingleReader = true,
-            SingleWriter = true,
-        }, Dropped);
         this.logger = logger;
     }
 
