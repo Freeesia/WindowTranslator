@@ -11,6 +11,7 @@ using Quickenshtein;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
+using System.Threading.Channels;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
@@ -25,12 +26,20 @@ public class FoMFilterModule : IFilterModule
     private readonly bool exclude;
     private readonly FrozenDictionary<string, string> builtin;
     private readonly ConcurrentDictionary<string, (string en, string ja)> cache = [];
+    private readonly Channel<IReadOnlyList<string>> queue;
     private readonly ILogger<FoMFilterModule> logger;
 
     public double Priority => -1;
 
     public FoMFilterModule(IProcessInfoStore processInfo, IOptions<FoMOptions> options, ILogger<FoMFilterModule> logger)
     {
+        this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
+        {
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest,
+            SingleReader = true,
+            SingleWriter = true,
+        }, Dropped);
         _ = User32.GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
         if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
@@ -43,12 +52,17 @@ public class FoMFilterModule : IFilterModule
             this.exclude = options.Value.ExcludeUnspecifiedText;
             this.builtin = loc!.Eng
                 .Select(p => (
-                    en: ReplaceToPlain(p.Value, player, farm).ReplaceLineEndings(string.Empty),
+                    en: ReplaceToPlain(p.Value, player, farm),
                     ja: loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? ReplaceToPlain(s, player, farm) : string.Empty))
+                // OCRで段落ごとに分割されている場合があるので、それを考慮する
+                .SelectMany(p => SplitParagraph(p.en, p.ja))
+                // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
+                .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.ja))
                 // 置換系は対象外
                 .Where(p => !p.en.Contains('['))
                 .DistinctBy(p => p.en)
                 .ToFrozenDictionary(p => p.en, p => p.ja);
+            Task.Run(Correct);
         }
         else
         {
@@ -63,50 +77,90 @@ public class FoMFilterModule : IFilterModule
             .Replace("$", string.Empty)
             .Replace("=", string.Empty);
 
-    public IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    private static IEnumerable<(string en, string ja)> SplitParagraph(string en, string ja)
     {
-        if (this.isEnabled)
+        if (string.IsNullOrEmpty(ja))
         {
-            return texts.Select(Correct).OfType<TextRect>();
+            return [(en, ja)];
+        }
+        var enLines = en.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
+        var jaLines = ja.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
+        if (enLines.Length == jaLines.Length)
+        {
+            return enLines.Zip(jaLines, (en, ja) => (en, ja));
+        }
+        else if (enLines.Length > jaLines.Length)
+        {
+            return enLines.Select((en, i) => (en, ja: i < jaLines.Length ? jaLines[i] : string.Empty));
         }
         else
         {
-            return texts;
+            return enLines.Select((en, i) => (en, ja: i == enLines.Length - 1 ? string.Join("\n\n", jaLines[i..]) : jaLines[i]));
+        }
+    }
+
+
+    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    {
+        if (!this.isEnabled)
+        {
+            await foreach (var text in texts.ConfigureAwait(false))
+            {
+                yield return text;
+            }
+            yield break;
+        }
+        var targets = new List<string>();
+        await foreach (var src in texts.ConfigureAwait(false))
+        {
+            if (this.builtin.TryGetValue(src.Text, out var dst))
+            {
+                yield return string.IsNullOrEmpty(dst) ? src : src with { Text = dst, IsTranslated = true };
+            }
+            else if (this.cache.TryGetValue(src.Text, out var c))
+            {
+                yield return string.IsNullOrEmpty(c.ja) ? src with { Text = c.en } : src with { Text = c.ja, IsTranslated = true };
+            }
+            else
+            {
+                targets.Add(src.Text);
+                if (!this.exclude)
+                {
+                    yield return src;
+                }
+            }
+        }
+
+        if (targets.Count > 0)
+        {
+            await this.queue.Writer.WriteAsync(targets).ConfigureAwait(false);
         }
     }
 
     public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts)
         => texts;
 
-    public TextRect? Correct(TextRect src)
+    private void Dropped(IReadOnlyList<string> texts)
+        => this.logger.LogDebug($"Dropped texts: {string.Join(", ", texts)}");
+
+    private async Task Correct()
     {
-        if (this.builtin.TryGetValue(src.Text, out var dst))
+        await foreach (var texts in this.queue.Reader.ReadAllAsync())
         {
-            return string.IsNullOrEmpty(dst) ? src : src with { Text = dst, IsTranslated = true };
-        }
-        else if (this.cache.TryGetValue(src.Text, out var c))
-        {
-            return string.IsNullOrEmpty(c.ja) ? src with { Text = c.en } : src with { Text = c.ja, IsTranslated = true };
-        }
-        var t = DateTime.UtcNow;
-        var (key, near, l) = this.builtin.Select(p => (p.Key, p.Value, length: Levenshtein.GetDistance(p.Key, src.Text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
-        // 編集距離のパーセンテージ
-        var p = 100.0 * l / Math.Max(src.Text.Length, key.Length);
-        this.logger.LogDebug($"LevenshteinDistance: {src.Text} -> {key} ({p:f2}%) [{DateTime.UtcNow - t}]");
-        // 編集距離が短いほうの30%以下なら利用する
-        if (p < 30)
-        {
-            this.cache.TryAdd(src.Text, (key, near));
-            if (string.IsNullOrEmpty(near))
+            foreach (var text in texts)
             {
-                return src with { Text = key };
-            }
-            else
-            {
-                return src with { Text = near, IsTranslated = true };
+                var t = DateTime.UtcNow;
+                var (key, near, l) = this.builtin.Select(p => (p.Key, p.Value, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
+                // 編集距離のパーセンテージ
+                var p = 100.0 * l / Math.Max(text.Length, key.Length);
+                this.logger.LogDebug($"LevenshteinDistance: {text} -> {key} ({p:f2}%) [{DateTime.UtcNow - t}]");
+                // 編集距離が短いほうの30%以下なら利用する
+                if (p < 30)
+                {
+                    this.cache.TryAdd(text, (key, near));
+                }
             }
         }
-        return exclude ? null : src;
     }
 
     private static string? GetProcessPath(int processId)

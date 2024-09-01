@@ -6,9 +6,12 @@ public class UserSettings
 {
     public LanguageOptions Language { get; init; } = new();
 
+    public string Font { get; set; } = "Yu Gothic UI";
+    public double FontScale { get; set; } = 1.1;
+
     public ViewMode ViewMode { get; set; } = ViewMode.Capture;
 
-    public IList<string> AutoTargets { get; set; } = new List<string>();
+    public IList<string> AutoTargets { get; set; } = [];
 
     public bool IsEnableAutoTarget { get; set; }
 

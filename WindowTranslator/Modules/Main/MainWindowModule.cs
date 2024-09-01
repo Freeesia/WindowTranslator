@@ -17,7 +17,7 @@ public class MainWindowModule(App app, IServiceProvider provider) : IMainWindowM
     private async Task OpenTargetWindowCoreAsync(IntPtr mainWindowHandle, string name)
     {
         var scope = provider.CreateScope();
-        var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
         var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
         processInfo.SetTargetProcess(mainWindowHandle, name);

@@ -3,9 +3,11 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
@@ -26,6 +28,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
+    private readonly double fontScale;
     private readonly ConcurrentDictionary<string, string> requesting = new();
     [ObservableProperty]
     private IEnumerable<TextRect> ocrTexts = [];
@@ -38,11 +41,14 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private bool isFirstBusy = true;
 
+    public string Font { get; }
+
     private SoftwareBitmap? sbmp;
     private bool disposedValue;
 
     public MainViewModelBase(
         IPresentationService presentationService,
+        IOptions<UserSettings> options,
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
@@ -54,13 +60,15 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         var targetProcess = processInfoStore;
         this.presentationService = presentationService;
+        this.Font = options.Value.Font;
+        this.fontScale = options.Value.FontScale;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
-        this.filters = filters;
+        this.filters = filters.ToArray();
         this.logger = logger;
         this.capture.StartCapture(targetProcess.MainWindowHandle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
@@ -68,10 +76,15 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
+        if (this.analyzing.CurrentCount == 0)
+        {
+            return;
+        }
         var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
         var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
         this.Width = newBmp.PixelWidth;
         this.Height = newBmp.PixelHeight;
+        CreateTextOverlayAsync().Forget();
         sbmp?.Dispose();
     }
 
@@ -82,6 +95,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
+        this.logger.LogDebug("TextOverlay");
         using var rel = new DisposeAction(() =>
         {
             this.analyzing.Release();
@@ -99,6 +113,7 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 tmp = filter.ExecutePreTranslate(tmp);
             }
+            using var t = this.logger.LogDebugTime("PreTranslate");
             texts = await tmp.ToArrayAsync();
         }
         TranslateAsync(texts).Forget();
@@ -110,10 +125,10 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 tmp = filter.ExecutePostTranslate(tmp);
             }
+            using var t = this.logger.LogDebugTime("PostTranslate");
             texts = await tmp.ToArrayAsync();
         }
-        this.OcrTexts = texts;
-        this.logger.LogDebug(sw.Elapsed.ToString());
+        this.OcrTexts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
     }
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
@@ -130,6 +145,7 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 return;
             }
+            this.logger.LogDebug("Translate");
             var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
             foreach (var t in transTargets)
             {
@@ -168,6 +184,7 @@ public abstract partial class MainViewModelBase : IDisposable
 [OpenWindow]
 public sealed class CaptureMainViewModel(
     [Inject] IPresentationService presentationService,
+    [Inject] IOptions<UserSettings> options,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -176,7 +193,7 @@ public sealed class CaptureMainViewModel(
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(presentationService, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
@@ -184,6 +201,7 @@ public sealed class CaptureMainViewModel(
 [OpenWindow]
 public sealed class OverlayMainViewModel(
     [Inject] IPresentationService presentationService,
+    [Inject] IOptions<UserSettings> options,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -192,6 +210,6 @@ public sealed class OverlayMainViewModel(
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(presentationService, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
 {
 }
