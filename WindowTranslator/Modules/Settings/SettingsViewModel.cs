@@ -64,8 +64,6 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     public IEnumerable<ModuleItem> TranslateModules { get; }
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; }
-    [Browsable(false)]
-    public IEnumerable<FontItem> AvailableFonts { get; } = Fonts.SystemFontFamilies.Select(f => (FontItem)f).ToArray();
 
     [Category("SettingsViewModel|Language")]
     [ItemsSourceProperty(nameof(Languages))]
@@ -92,13 +90,17 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     public string CacheModule { get; set; }
 
     [Category("SettingsViewModel|Misc")]
-    [ItemsSourceProperty(nameof(AvailableFonts))]
-    [SelectedValuePath(nameof(FontItem.Name))]
-    [DisplayMemberPath(nameof(FontItem.DisplayName))]
+    [FontFamilySelector]
+    [FontPreview(18)]
+    [SortIndex(5)]
     public string Font { get; set; }
 
-    [Category("SettingsViewModel|Misc")]
-    public double FontScale { get; set; }
+    [property: Category("SettingsViewModel|Misc")]
+    [property: Slidable(0.1, 5, 0.1, 1.0, true, 0.1)]
+    [property: FormatString("F2")]
+    [property: SortIndex(6)]
+    [ObservableProperty]
+    private double fontScale;
 
     [Category("SettingsViewModel|Misc")]
     public ViewMode ViewMode { get; set; }
@@ -196,6 +198,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
     [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(10)]
     [RelayCommand]
     public void RegisterToStartup()
     {
@@ -214,6 +217,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     }
 
     [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(10)]
     [RelayCommand]
     public void UnregisterFromStartup()
     {
@@ -289,16 +293,6 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
 }
 
 public record ModuleItem(string Name, string DisplayName, bool IsDefault);
-public record FontItem(string Name, string DisplayName)
-{
-    public static explicit operator FontItem(FontFamily font)
-    {
-        var name = font.Source;
-        var lang = XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag);
-        var displayName = font.FamilyNames.TryGetValue(lang, out var d) ? d : name;
-        return new FontItem(name, displayName);
-    }
-}
 public record ProcessName
 {
     public string? Name { get; set; }
