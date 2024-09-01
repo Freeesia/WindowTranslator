@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
@@ -67,7 +68,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
-        this.filters = filters;
+        this.filters = filters.ToArray();
         this.logger = logger;
         this.capture.StartCapture(targetProcess.MainWindowHandle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
@@ -75,10 +76,15 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
+        if (this.analyzing.CurrentCount == 0)
+        {
+            return;
+        }
         var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
         var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
         this.Width = newBmp.PixelWidth;
         this.Height = newBmp.PixelHeight;
+        CreateTextOverlayAsync().Forget();
         sbmp?.Dispose();
     }
 
@@ -89,6 +95,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
+        this.logger.LogDebug("TextOverlay");
         using var rel = new DisposeAction(() =>
         {
             this.analyzing.Release();
@@ -106,6 +113,7 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 tmp = filter.ExecutePreTranslate(tmp);
             }
+            using var t = this.logger.LogDebugTime("PreTranslate");
             texts = await tmp.ToArrayAsync();
         }
         TranslateAsync(texts).Forget();
@@ -117,10 +125,10 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 tmp = filter.ExecutePostTranslate(tmp);
             }
+            using var t = this.logger.LogDebugTime("PostTranslate");
             texts = await tmp.ToArrayAsync();
         }
         this.OcrTexts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
-        this.logger.LogDebug(sw.Elapsed.ToString());
     }
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
@@ -137,6 +145,7 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 return;
             }
+            this.logger.LogDebug("Translate");
             var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
             foreach (var t in transTargets)
             {
