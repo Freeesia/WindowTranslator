@@ -1,14 +1,13 @@
-﻿using ColorThiefDotNet;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using WindowTranslator.ComponentModel;
-using WindowTranslator.Extensions;
 using Color = System.Drawing.Color;
 using ColorConverter = ColorHelper.ColorConverter;
+using StudioFreesia.ColorThief;
 
 namespace WindowTranslator.Modules.OverlayColor;
 
@@ -16,7 +15,6 @@ namespace WindowTranslator.Modules.OverlayColor;
 [DisplayName("近似カラー")]
 public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
 {
-    private readonly ColorThief colorThief = new();
     private readonly ILogger<ColorThiefModule> logger = logger;
 
     public async ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
@@ -39,7 +37,7 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
             // SIMD使えば速くなりそう…
             var now = DateTime.UtcNow;
             using var bmp = new Bitmap(ms.AsStream());
-            var colors = colorThief.GetPalette(bmp, ignoreWhite: false)
+            var colors = ColorThief.GetPalette(bmp, ignoreWhite: false)
                 .OrderByDescending(c => c.Population)
                 .Select(c => c.Color)
                 .ToArray();
@@ -56,6 +54,6 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
         return results;
     }
 
-    private static double GetDistance(double h1, ColorThiefDotNet.Color h2)
+    private static double GetDistance(double h1, Color h2)
         => Math.Abs(h1 - ColorConverter.RgbToHsv(new(h2.R, h2.G, h2.B)).V);
 }

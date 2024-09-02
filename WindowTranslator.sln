@@ -41,6 +41,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Plugin.Goo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowTranslator.Plugin.FoMPlugin", "Plugins\WindowTranslator.Plugin.FoMPlugin\WindowTranslator.Plugin.FoMPlugin.csproj", "{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ColorThief", "ColorThief", "{0B1130E1-2666-4D0F-B69E-4C0A849C56E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\ColorThief\ColorThief.csproj", "{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +95,10 @@ Global
 		{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,11 +111,12 @@ Global
 		{2A451935-EC1B-443E-9E54-EF3648F95D72} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{8B3CF7E6-9C49-4B74-A9F9-8F3733564669} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
+		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF} = {0B1130E1-2666-4D0F-B69E-4C0A849C56E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_AutoCreateNewLanguageFiles = True
-		RESX_ConfirmAddLanguageFile = True
-		RESX_NeutralResourcesLanguage = ja-JP
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
+		RESX_NeutralResourcesLanguage = ja-JP
+		RESX_ConfirmAddLanguageFile = True
+		RESX_AutoCreateNewLanguageFiles = True
 	EndGlobalSection
 EndGlobal
