@@ -1,4 +1,7 @@
 ﻿using System.Drawing;
+using System.Runtime.InteropServices;
+using Windows.Graphics.Imaging;
+using WinRT;
 
 namespace StudioFreesia.ColorThief;
 
@@ -23,9 +26,30 @@ public static class ColorThief
     /// <param name="ignoreWhite">if set to <c>true</c> [ignore white].</param>
     /// <returns></returns>
     /// <code>true</code>
-    public static List<QuantizedColor> GetPalette(Bitmap sourceImage, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
+    public static List<QuantizedColor> GetPalette(SoftwareBitmap sourceImage, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
+        => GetPalette(sourceImage, Rectangle.Empty, colorCount, quality, ignoreWhite);
+
+    /// <summary>
+    ///     Use the median cut algorithm to cluster similar colors.
+    /// </summary>
+    /// <param name="sourceImage">The source image.</param>
+    /// <param name="colorCount">The color count.</param>
+    /// <param name="quality">
+    ///     1 is the highest quality settings. 10 is the default. There is
+    ///     a trade-off between quality and speed. The bigger the number,
+    ///     the faster a color will be returned but the greater the
+    ///     likelihood that it will not be the visually most dominant color.
+    /// </param>
+    /// <param name="ignoreWhite">if set to <c>true</c> [ignore white].</param>
+    /// <returns></returns>
+    /// <code>true</code>
+    public static List<QuantizedColor> GetPalette(SoftwareBitmap sourceImage, Rectangle rect, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
     {
-        var pixelArray = GetPixelsFast(sourceImage, quality, ignoreWhite);
+        if (rect == Rectangle.Empty)
+        {
+            rect = new(0, 0, sourceImage.PixelWidth, sourceImage.PixelHeight);
+        }
+        var pixelArray = GetPixelsFast(sourceImage, rect, quality, ignoreWhite);
         var cmap = GetColorMap(pixelArray, colorCount);
         if (cmap != null)
         {
@@ -35,43 +59,43 @@ public static class ColorThief
         return [];
     }
 
-    private static byte[][] GetPixelsFast(Bitmap sourceImage, int quality, bool ignoreWhite)
+    private static byte[][] GetPixelsFast(SoftwareBitmap sourceImage, Rectangle rect, int quality, bool ignoreWhite)
     {
         if (quality < 1)
         {
             quality = DefaultQuality;
         }
 
-        var pixels = GetIntFromPixel(sourceImage);
-        var pixelCount = sourceImage.Width * sourceImage.Height;
+        var pixels = GetIntFromPixel(sourceImage, rect);
+        var pixelCount = rect.Width * rect.Height;
 
         return ConvertPixels(pixels, pixelCount, quality, ignoreWhite);
     }
 
-    private static byte[] GetIntFromPixel(Bitmap bmp)
+    unsafe private static byte[] GetIntFromPixel(SoftwareBitmap bmp, Rectangle rect)
     {
-        var pixelList = new byte[bmp.Width * bmp.Height * 4];
-        int count = 0;
+        using var buffer = bmp.LockBuffer(BitmapBufferAccessMode.Read);
+        var pixelList = new byte[rect.Width * rect.Height * 4];
+        var count = 0;
 
-        for (var x = 0; x < bmp.Width; x++)
-        {
-            for (var y = 0; y < bmp.Height; y++)
+        using var reference = buffer.CreateReference();
+        reference.As<IMemoryBufferByteAccess>().GetBuffer(out var data, out _);
+
+        // スキャンラインの長さとピクセルごとのサイズを取得
+        var bufferLayout = buffer.GetPlaneDescription(0);
+        int bytesPerPixel = 4; // BGRA8フォーマットの場合
+
+        for (var x = rect.Left; x < rect.Right; x++)
+            for (var y = rect.Top; y < rect.Bottom; y++)
             {
-                var clr = bmp.GetPixel(x, y);
+                // 指定されたピクセルの位置を計算
+                int pixelIndex = bufferLayout.StartIndex + (y * bufferLayout.Stride) + (x * bytesPerPixel);
 
-                pixelList[count] = clr.B;
-                count++;
-
-                pixelList[count] = clr.G;
-                count++;
-
-                pixelList[count] = clr.R;
-                count++;
-
-                pixelList[count] = clr.A;
-                count++;
+                pixelList[count++] = data[pixelIndex];
+                pixelList[count++] = data[pixelIndex + 1];
+                pixelList[count++] = data[pixelIndex + 2];
+                pixelList[count++] = data[pixelIndex + 3]; // アルファ値が必要な場合
             }
-        }
 
         return pixelList;
     }
@@ -130,7 +154,7 @@ public static class ColorThief
             // If pixel is mostly opaque and not white
             if (a >= 125 && !(ignoreWhite && r > 250 && g > 250 && b > 250))
             {
-                pixelArray[numUsedPixels] = new[] { r, g, b };
+                pixelArray[numUsedPixels] = [r, g, b];
                 numUsedPixels++;
             }
         }
@@ -140,4 +164,13 @@ public static class ColorThief
         Array.Copy(pixelArray, copy, numUsedPixels);
         return copy;
     }
+}
+
+// Using the COM interface IMemoryBufferByteAccess allows us to access the underlying byte array in an AudioFrame
+[ComImport]
+[Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+unsafe interface IMemoryBufferByteAccess
+{
+    void GetBuffer(out byte* buffer, out uint capacity);
 }

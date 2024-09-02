@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 using WindowTranslator.ComponentModel;
-using Color = System.Drawing.Color;
 using ColorConverter = ColorHelper.ColorConverter;
 using StudioFreesia.ColorThief;
+using System.Drawing;
 
 namespace WindowTranslator.Modules.OverlayColor;
 
@@ -19,25 +16,14 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
 
     public async ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
     {
-        using var ms = new InMemoryRandomAccessStream();
         var results = new List<TextRect>(texts.Count());
         var palette = TimeSpan.Zero;
-        var scale = Math.Clamp(Math.Max(bitmap.PixelWidth / 1280.0, bitmap.PixelHeight / 720.0), 1, double.MaxValue);
         foreach (var text in texts)
         {
-            ms.Seek(0);
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, ms);
-            encoder.SetSoftwareBitmap(bitmap);
-            encoder.BitmapTransform.ScaledWidth = (uint)(bitmap.PixelWidth / scale);
-            encoder.BitmapTransform.ScaledHeight = (uint)(bitmap.PixelHeight / scale);
-            encoder.BitmapTransform.Bounds = new((uint)(text.X / scale), (uint)(text.Y / scale), (uint)(text.Width / scale), (uint)(text.Height / scale));
-            await encoder.FlushAsync();
-
             // パレット取得が遅い
             // SIMD使えば速くなりそう…
             var now = DateTime.UtcNow;
-            using var bmp = new Bitmap(ms.AsStream());
-            var colors = ColorThief.GetPalette(bmp, ignoreWhite: false)
+            var colors = ColorThief.GetPalette(bitmap, new((int)text.X, (int)text.Y, (int)text.Width, (int)text.Height), ignoreWhite: false)
                 .OrderByDescending(c => c.Population)
                 .Select(c => c.Color)
                 .ToArray();
