@@ -17,12 +17,9 @@ internal class CMap
     }
 
     public List<QuantizedColor> GeneratePalette()
-    {
-        palette ??= (from vBox in vboxes
-                       let rgb = vBox.Avg(false)
-                       let color = Color.FromArgb(rgb[0], rgb[1], rgb[2])
-                       select new QuantizedColor(color, vBox.Count(false))).ToList();
-
-        return palette;
-    }
+        => palette ??= (from vBox in vboxes
+                        let rgb = vBox.Avg(false)
+                        let color = Color.FromArgb(rgb[0], rgb[1], rgb[2])
+                        select new QuantizedColor(color, vBox.Count(false)))
+                       .ToList();
 }
