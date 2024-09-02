@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ColorThief", "ColorThief", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\ColorThief\ColorThief.csproj", "{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorThief.Bench", "ColorThief\ColorThief.Bench\ColorThief.Bench.csproj", "{EFC22BF1-27FA-42E1-B468-139A370EFBF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFC22BF1-27FA-42E1-B468-139A370EFBF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC22BF1-27FA-42E1-B468-139A370EFBF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC22BF1-27FA-42E1-B468-139A370EFBF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC22BF1-27FA-42E1-B468-139A370EFBF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +118,7 @@ Global
 		{8B3CF7E6-9C49-4B74-A9F9-8F3733564669} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{06ABA897-B8B1-4DF2-9D59-0D029D2F7CEB} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF} = {0B1130E1-2666-4D0F-B69E-4C0A849C56E6}
+		{EFC22BF1-27FA-42E1-B468-139A370EFBF0} = {0B1130E1-2666-4D0F-B69E-4C0A849C56E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
