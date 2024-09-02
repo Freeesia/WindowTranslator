@@ -1,13 +1,17 @@
 ﻿using System.Drawing;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using StudioFreesia.ColorThief;
 
-BenchmarkRunner.Run<ColorThiefTest>();
+var config = DefaultConfig.Instance
+    .AddJob(Job.InProcess);
 
-[SimpleJob(RuntimeMoniker.HostProcess)]
+_ = BenchmarkRunner.Run<ColorThiefTest>(config);
+
 [RPlotExporter]
+[MemoryDiagnoser]
 public class ColorThiefTest
 {
     private readonly ColorThiefDotNet.ColorThief colorThief = new();
