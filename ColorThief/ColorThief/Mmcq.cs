@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace StudioFreesia.ColorThief;
+﻿namespace StudioFreesia.ColorThief;
 
 internal static class Mmcq
 {
@@ -24,35 +22,33 @@ internal static class Mmcq
     /// </summary>
     /// <param name="pixels">The pixels.</param>
     /// <returns>Histo (1-d array, giving the number of pixels in each quantized region of color space), or null on error.</returns>
-    private static int[] GetHisto(IEnumerable<byte[]> pixels)
+    private static int[] GetHisto(Memory<RGB> pixels)
     {
         var histo = new int[Histosize];
 
-        foreach (var pixel in pixels)
+        foreach (var pixel in pixels.Span)
         {
-            var rval = pixel[0] >> Rshift;
-            var gval = pixel[1] >> Rshift;
-            var bval = pixel[2] >> Rshift;
+            var rval = pixel.R >> Rshift;
+            var gval = pixel.G >> Rshift;
+            var bval = pixel.B >> Rshift;
             var index = GetColorIndex(rval, gval, bval);
             histo[index]++;
         }
         return histo;
     }
 
-    private static VBox VboxFromPixels(IList<byte[]> pixels, int[] histo)
+    private static VBox VboxFromPixels(Memory<RGB> pixels, int[] histo)
     {
         int rmin = 1000000, rmax = 0;
         int gmin = 1000000, gmax = 0;
         int bmin = 1000000, bmax = 0;
 
         // find min/max
-        var numPixels = pixels.Count;
-        for (var i = 0; i < numPixels; i++)
+        foreach (var pixel in pixels.Span)
         {
-            var pixel = pixels[i];
-            var rval = pixel[0] >> Rshift;
-            var gval = pixel[1] >> Rshift;
-            var bval = pixel[2] >> Rshift;
+            var rval = pixel.R >> Rshift;
+            var gval = pixel.G >> Rshift;
+            var bval = pixel.B >> Rshift;
 
             if (rval < rmin)
             {
@@ -303,7 +299,7 @@ internal static class Mmcq
         }
     }
 
-    public static CMap Quantize(byte[][] pixels, int maxcolors)
+    public static CMap Quantize(Memory<RGB> pixels, int maxcolors)
     {
         // short-circuit
         if (pixels.Length == 0 || maxcolors < 2 || maxcolors > 256)

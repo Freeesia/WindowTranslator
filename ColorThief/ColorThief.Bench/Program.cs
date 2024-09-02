@@ -16,8 +16,8 @@ _ = BenchmarkRunner.Run<ColorThiefTest>(config);
 public class ColorThiefTest
 {
     private readonly ColorThiefDotNet.ColorThief colorThief = new();
-    private readonly SoftwareBitmap sbmp;
     private readonly Bitmap bmp;
+    private readonly SoftwareBitmap sbmp;
 
     public ColorThiefTest()
     {

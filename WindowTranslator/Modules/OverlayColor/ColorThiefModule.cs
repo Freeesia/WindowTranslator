@@ -14,7 +14,7 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
 {
     private readonly ILogger<ColorThiefModule> logger = logger;
 
-    public async ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
+    public ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
     {
         var results = new List<TextRect>(texts.Count());
         var palette = TimeSpan.Zero;
@@ -23,7 +23,7 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
             // パレット取得が遅い
             // SIMD使えば速くなりそう…
             var now = DateTime.UtcNow;
-            var colors = ColorThief.GetPalette(bitmap, new((int)text.X, (int)text.Y, (int)text.Width, (int)text.Height), ignoreWhite: false)
+            var colors = ColorThief.GetPalette(bitmap, new Rectangle((int)text.X, (int)text.Y, (int)text.Width, (int)text.Height), ignoreWhite: false)
                 .OrderByDescending(c => c.Population)
                 .Select(c => c.Color)
                 .ToArray();
@@ -37,7 +37,7 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
         }
 
         this.logger.LogDebug($"Palette:{palette}");
-        return results;
+        return new(results);
     }
 
     private static double GetDistance(double h1, Color h2)
