@@ -17,10 +17,7 @@ internal static class Mmcq
     private static readonly VBoxComparer ComparatorProduct = new();
     private static readonly VBoxCountComparer ComparatorCount = new();
 
-    public static int GetColorIndex(int r, int g, int b)
-    {
-        return (r << (2 * Sigbits)) + (g << Sigbits) + b;
-    }
+    public static int GetColorIndex(int r, int g, int b) => (r << (2 * Sigbits)) + (g << Sigbits) + b;
 
     /// <summary>
     ///     Gets the histo.
@@ -274,7 +271,7 @@ internal static class Mmcq
 
         while (niters < MaxIterations)
         {
-            var vbox = lh[lh.Count - 1];
+            var vbox = lh[^1];
             if (vbox.Count(false) == 0)
             {
                 lh.Sort(comparator);
@@ -345,34 +342,4 @@ internal static class Mmcq
 
         return cmap;
     }
-
-    public static double CreateComparisonValue(double saturation, double targetSaturation, double luma, double targetLuma, int population, int highestPopulation)
-        => WeightedMean(
-            InvertDiff(saturation, targetSaturation),
-            WeightSaturation,
-            InvertDiff(luma, targetLuma),
-            WeightLuma,
-            population / (double)highestPopulation,
-            WeightPopulation);
-
-    private static double WeightedMean(params double[] values)
-    {
-        double sum = 0;
-        double sumWeight = 0;
-
-        for (var i = 0; i < values.Length; i += 2)
-        {
-            var value = values[i];
-            var weight = values[i + 1];
-
-            sum += value * weight;
-            sumWeight += weight;
-        }
-
-        return sum / sumWeight;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static double InvertDiff(double value, double targetValue)
-        => 1 - Math.Abs(value - targetValue);
 }
