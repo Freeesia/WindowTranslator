@@ -1,4 +1,8 @@
-﻿namespace StudioFreesia.ColorThief;
+﻿using System.Numerics;
+using System.Runtime.Intrinsics.X86;
+using Windows.Devices.Enumeration;
+
+namespace StudioFreesia.ColorThief;
 
 internal static class Mmcq
 {
@@ -22,61 +26,24 @@ internal static class Mmcq
     /// </summary>
     /// <param name="pixels">The pixels.</param>
     /// <returns>Histo (1-d array, giving the number of pixels in each quantized region of color space), or null on error.</returns>
-    private static int[] GetHisto(Memory<RGB> pixels)
+    private static int[] GetHisto(ReadOnlySpan<byte> r, ReadOnlySpan<byte> g, ReadOnlySpan<byte> b)
     {
         var histo = new int[Histosize];
 
-        foreach (var pixel in pixels.Span)
+        for (int i = 0; i < r.Length; i++)
         {
-            var rval = pixel.R >> Rshift;
-            var gval = pixel.G >> Rshift;
-            var bval = pixel.B >> Rshift;
-            var index = GetColorIndex(rval, gval, bval);
+            var index = GetColorIndex(r[i], g[i], b[i]);
             histo[index]++;
         }
+
         return histo;
     }
 
-    private static VBox VboxFromPixels(Memory<RGB> pixels, int[] histo)
+    private static VBox VboxFromPixels(ReadOnlySpan<byte> r, ReadOnlySpan<byte> g, ReadOnlySpan<byte> b, int[] histo)
     {
-        int rmin = 1000000, rmax = 0;
-        int gmin = 1000000, gmax = 0;
-        int bmin = 1000000, bmax = 0;
-
-        // find min/max
-        foreach (var pixel in pixels.Span)
-        {
-            var rval = pixel.R >> Rshift;
-            var gval = pixel.G >> Rshift;
-            var bval = pixel.B >> Rshift;
-
-            if (rval < rmin)
-            {
-                rmin = rval;
-            }
-            else if (rval > rmax)
-            {
-                rmax = rval;
-            }
-
-            if (gval < gmin)
-            {
-                gmin = gval;
-            }
-            else if (gval > gmax)
-            {
-                gmax = gval;
-            }
-
-            if (bval < bmin)
-            {
-                bmin = bval;
-            }
-            else if (bval > bmax)
-            {
-                bmax = bval;
-            }
-        }
+        var (rmin, rmax) = Simd.MinMax(r);
+        var (gmin, gmax) = Simd.MinMax(g);
+        var (bmin, bmax) = Simd.MinMax(b);
 
         return new VBox(rmin, rmax, gmin, gmax, bmin, bmax, histo);
     }
@@ -299,18 +266,22 @@ internal static class Mmcq
         }
     }
 
-    public static CMap Quantize(Memory<RGB> pixels, int maxcolors)
+    public static CMap Quantize(Span<byte> r, Span<byte> g, Span<byte> b, int maxcolors)
     {
         // short-circuit
-        if (pixels.Length == 0 || maxcolors < 2 || maxcolors > 256)
+        if (r.IsEmpty || g.IsEmpty || b.IsEmpty || maxcolors < 2 || maxcolors > 256)
         {
             throw new ArgumentException("Wrong number of maxcolors");
         }
 
-        var histo = GetHisto(pixels);
+        Simd.Rshift(r, Rshift);
+        Simd.Rshift(g, Rshift);
+        Simd.Rshift(b, Rshift);
+
+        var histo = GetHisto(r, g, b);
 
         // get the beginning vbox from the colors
-        var vbox = VboxFromPixels(pixels, histo);
+        var vbox = VboxFromPixels(r, g, b, histo);
         var pq = new List<VBox> { vbox };
 
         // Round up to have the same behaviour as in JavaScript

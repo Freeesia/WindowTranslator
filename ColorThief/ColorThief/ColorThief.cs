@@ -56,14 +56,20 @@ public static class ColorThief
         }
         var pixelCount = rect.Width * rect.Height;
         var numRegardedPixels = (pixelCount + quality - 1) / quality;
-        using var pixels = MemoryPool<RGB>.Shared.Rent(numRegardedPixels);
+        using var r = MemoryPool<byte>.Shared.Rent(numRegardedPixels);
+        using var g = MemoryPool<byte>.Shared.Rent(numRegardedPixels);
+        using var b = MemoryPool<byte>.Shared.Rent(numRegardedPixels);
 
-        var target = GetPixelsFast(sourceImage, rect, pixels.Memory, quality, ignoreWhite);
-        var cmap = Mmcq.Quantize(target, --colorCount);
+        var sr = r.Memory.Span;
+        var sg = g.Memory.Span;
+        var sb = b.Memory.Span;
+
+        GetPixelsFast(sourceImage, rect, quality, ignoreWhite, ref sr, ref sg, ref sb);
+        var cmap = Mmcq.Quantize(sr, sg, sb, --colorCount);
         return cmap.GeneratePalette();
     }
 
-    unsafe private static Memory<RGB> GetPixelsFast(SoftwareBitmap bmp, Rectangle rect, Memory<RGB> mem, int quality, bool ignoreWhite)
+    unsafe private static void GetPixelsFast(SoftwareBitmap bmp, Rectangle rect, int quality, bool ignoreWhite, ref Span<byte> r, ref Span<byte> g, ref Span<byte> b)
     {
         using var buffer = bmp.LockBuffer(BitmapBufferAccessMode.Read);
         using var reference = buffer.CreateReference();
@@ -74,32 +80,35 @@ public static class ColorThief
         const int bytesPerPixel = 4; // BGRA8フォーマットの場合
 
         var numUsedPixels = 0;
-        var span = mem.Span;
 
         // ループの順序を変更してキャッシュの局所性を向上
         var mod = 0;
         for (var y = rect.Top; y < rect.Bottom; y++)
         {
             int rowStartIndex = bufferLayout.StartIndex + (y * bufferLayout.Stride) + (rect.Left * bytesPerPixel);
-            mod %= rect.Width;
-            int pixelIndex = rowStartIndex;
             for (; mod < rect.Width; mod += quality)
             {
-                pixelIndex = rowStartIndex + (mod * bytesPerPixel);
-                var b = data[pixelIndex++];
-                var g = data[pixelIndex++];
-                var r = data[pixelIndex++];
-                var a = data[pixelIndex++];
+                var pixelIndex = rowStartIndex + (mod * bytesPerPixel);
+                var pb = data[pixelIndex++];
+                var pg = data[pixelIndex++];
+                var pr = data[pixelIndex++];
+                var pa = data[pixelIndex++];
 
                 // If pixel is mostly opaque and not white
-                if (a >= 125 && !(ignoreWhite && r > 250 && g > 250 && b > 250))
+                if (pa >= 125 && !(ignoreWhite && pr > 250 && pg > 250 && pb > 250))
                 {
-                    span[numUsedPixels++] = new(r, g, b);
+                    r[numUsedPixels] = pr;
+                    g[numUsedPixels] = pg;
+                    b[numUsedPixels] = pb;
+                    numUsedPixels++;
                 }
             }
+            mod -= rect.Width;
         }
 
-        return mem[..numUsedPixels];
+        r = r[..numUsedPixels];
+        g = g[..numUsedPixels];
+        b = b[..numUsedPixels];
     }
 }
 

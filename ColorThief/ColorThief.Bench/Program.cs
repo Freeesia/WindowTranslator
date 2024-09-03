@@ -11,7 +11,6 @@ var config = DefaultConfig.Instance
 
 _ = BenchmarkRunner.Run<ColorThiefTest>(config);
 
-[RPlotExporter]
 [MemoryDiagnoser]
 public class ColorThiefTest
 {
