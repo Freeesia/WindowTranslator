@@ -16,10 +16,10 @@ internal class CMap
         vboxes.Add(box);
     }
 
-    public List<QuantizedColor> GeneratePalette()
-        => palette ??= (from vBox in vboxes
-                        let rgb = vBox.Avg(false)
-                        let color = Color.FromArgb(rgb[0], rgb[1], rgb[2])
-                        select new QuantizedColor(color, vBox.Count(false)))
-                       .ToList();
+    public IEnumerable<QuantizedColor> GeneratePalette()
+        => palette ??= vboxes.Select(vBox =>
+        {
+            var rgb = vBox.Avg(false);
+            return new QuantizedColor(Color.FromArgb(rgb[0], rgb[1], rgb[2]), vBox.Count(false));
+        }).ToList();
 }

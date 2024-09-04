@@ -1,4 +1,6 @@
-﻿namespace StudioFreesia.ColorThief;
+﻿using System.Buffers;
+
+namespace StudioFreesia.ColorThief;
 
 internal static class Mmcq
 {
@@ -26,9 +28,12 @@ internal static class Mmcq
     {
         var histo = new int[Histosize];
 
-        for (int i = 0; i < r.Length; i++)
+        using var memory = MemoryPool<short>.Shared.Rent(r.Length);
+        Span<short> indexies = memory.Memory.Span[..r.Length];
+
+        Simd.GetColorIndexies(r, g, b, indexies);
+        foreach (var index in indexies)
         {
-            var index = GetColorIndex(r[i], g[i], b[i]);
             histo[index]++;
         }
 

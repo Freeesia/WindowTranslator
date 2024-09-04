@@ -114,15 +114,6 @@ internal class VBox
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int ClampAbsByte(int i)
         => Math.Clamp(Math.Abs(i), byte.MinValue, byte.MaxValue);
-
-    public bool Contains(int[] pixel)
-    {
-        var rval = pixel[0] >> Mmcq.Rshift;
-        var gval = pixel[1] >> Mmcq.Rshift;
-        var bval = pixel[2] >> Mmcq.Rshift;
-
-        return rval >= R1 && rval <= R2 && gval >= G1 && gval <= G2 && bval >= B1 && bval <= B2;
-    }
 }
 
 internal class VBoxCountComparer : IComparer<VBox>

@@ -27,7 +27,7 @@ public static class ColorThief
     /// <param name="ignoreWhite">if set to <c>true</c> [ignore white].</param>
     /// <returns></returns>
     /// <code>true</code>
-    public static List<QuantizedColor> GetPalette(SoftwareBitmap sourceImage, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
+    public static IEnumerable<QuantizedColor> GetPalette(SoftwareBitmap sourceImage, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
         => GetPalette(sourceImage, Rectangle.Empty, colorCount, quality, ignoreWhite);
 
     /// <summary>
@@ -44,7 +44,7 @@ public static class ColorThief
     /// <param name="ignoreWhite">if set to <c>true</c> [ignore white].</param>
     /// <returns></returns>
     /// <code>true</code>
-    public static List<QuantizedColor> GetPalette(SoftwareBitmap sourceImage, Rectangle rect, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
+    public static IEnumerable<QuantizedColor> GetPalette(SoftwareBitmap sourceImage, Rectangle rect, int colorCount = DefaultColorCount, int quality = DefaultQuality, bool ignoreWhite = DefaultIgnoreWhite)
     {
         if (rect == Rectangle.Empty)
         {

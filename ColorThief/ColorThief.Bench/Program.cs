@@ -32,5 +32,5 @@ public class ColorThiefTest
     public List<ColorThiefDotNet.QuantizedColor> Original() => this.colorThief.GetPalette(this.bmp);
 
     [Benchmark]
-    public List<QuantizedColor> ColorThiefEx() => ColorThief.GetPalette(this.sbmp);
+    public List<QuantizedColor> ColorThiefEx() => ColorThief.GetPalette(this.sbmp).ToList();
 }
