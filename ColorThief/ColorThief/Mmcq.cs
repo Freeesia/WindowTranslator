@@ -1,8 +1,4 @@
-﻿using System.Numerics;
-using System.Runtime.Intrinsics.X86;
-using Windows.Devices.Enumeration;
-
-namespace StudioFreesia.ColorThief;
+﻿namespace StudioFreesia.ColorThief;
 
 internal static class Mmcq
 {
@@ -266,17 +262,19 @@ internal static class Mmcq
         }
     }
 
-    public static CMap Quantize(Span<byte> r, Span<byte> g, Span<byte> b, int maxcolors)
+    public static CMap Quantize(Span<byte> rgb, int numRegardedPixels, int maxcolors)
     {
         // short-circuit
-        if (r.IsEmpty || g.IsEmpty || b.IsEmpty || maxcolors < 2 || maxcolors > 256)
+        if (rgb.IsEmpty || rgb.Length != numRegardedPixels * 3 || maxcolors < 2 || maxcolors > 256)
         {
             throw new ArgumentException("Wrong number of maxcolors");
         }
 
-        Simd.Rshift(r, Rshift);
-        Simd.Rshift(g, Rshift);
-        Simd.Rshift(b, Rshift);
+        Simd.Rshift(rgb, Rshift);
+
+        var r = rgb[..numRegardedPixels];
+        var g = rgb[numRegardedPixels..(numRegardedPixels * 2)];
+        var b = rgb[(numRegardedPixels * 2)..(numRegardedPixels * 3)];
 
         var histo = GetHisto(r, g, b);
 

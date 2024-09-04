@@ -56,20 +56,18 @@ public static class ColorThief
         }
         var pixelCount = rect.Width * rect.Height;
         var numRegardedPixels = (pixelCount + quality - 1) / quality;
-        using var r = MemoryPool<byte>.Shared.Rent(numRegardedPixels);
-        using var g = MemoryPool<byte>.Shared.Rent(numRegardedPixels);
-        using var b = MemoryPool<byte>.Shared.Rent(numRegardedPixels);
+        using var mem = MemoryPool<byte>.Shared.Rent(numRegardedPixels * 3);
 
-        var sr = r.Memory.Span;
-        var sg = g.Memory.Span;
-        var sb = b.Memory.Span;
+        var r = mem.Memory.Span[..numRegardedPixels];
+        var g = mem.Memory.Span[numRegardedPixels..(numRegardedPixels * 2)];
+        var b = mem.Memory.Span[(numRegardedPixels * 2)..(numRegardedPixels * 3)];
 
-        GetPixelsFast(sourceImage, rect, quality, ignoreWhite, ref sr, ref sg, ref sb);
-        var cmap = Mmcq.Quantize(sr, sg, sb, --colorCount);
+        GetPixelsFast(sourceImage, rect, quality, ignoreWhite, r, g, b);
+        var cmap = Mmcq.Quantize(mem.Memory.Span[..(numRegardedPixels * 3)], numRegardedPixels, --colorCount);
         return cmap.GeneratePalette();
     }
 
-    unsafe private static void GetPixelsFast(SoftwareBitmap bmp, Rectangle rect, int quality, bool ignoreWhite, ref Span<byte> r, ref Span<byte> g, ref Span<byte> b)
+    unsafe private static void GetPixelsFast(SoftwareBitmap bmp, Rectangle rect, int quality, bool ignoreWhite, Span<byte> r, Span<byte> g, Span<byte> b)
     {
         using var buffer = bmp.LockBuffer(BitmapBufferAccessMode.Read);
         using var reference = buffer.CreateReference();
@@ -105,10 +103,6 @@ public static class ColorThief
             }
             mod -= rect.Width;
         }
-
-        r = r[..numUsedPixels];
-        g = g[..numUsedPixels];
-        b = b[..numUsedPixels];
     }
 }
 

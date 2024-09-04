@@ -17,7 +17,7 @@ public class ColorThiefTest
         using var sbmp = await decoder.GetSoftwareBitmapAsync();
         using var bmp = new Bitmap(randomAccessStream.AsStream());
         var expect = this.colorThief.GetPalette(bmp);
-        var actual = ColorThief.GetPalette(sbmp);
+        var actual = ColorThief.GetPalette(sbmp, quality: 10000);
         Assert.Equal(expect.Count, actual.Count);
         for (var i = 0; i < expect.Count; i++)
         {
