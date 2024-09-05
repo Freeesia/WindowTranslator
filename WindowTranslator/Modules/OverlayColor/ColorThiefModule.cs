@@ -18,10 +18,9 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
     {
         var results = new List<TextRect>(texts.Count());
         var palette = TimeSpan.Zero;
+        // テキスト数が少ない時に並列化すると逆に遅くなり、総合すると並列化しないほうがよさそう
         foreach (var text in texts)
         {
-            // パレット取得が遅い
-            // SIMD使えば速くなりそう…
             var now = DateTime.UtcNow;
             var colors = ColorThief.GetPalette(bitmap, new Rectangle((int)text.X, (int)text.Y, (int)text.Width, (int)text.Height), ignoreWhite: false)
                 .OrderByDescending(c => c.Population)
