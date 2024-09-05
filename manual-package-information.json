@@ -32,5 +32,10 @@
     "PackageName": "Microsoft-WindowsAPICodePack-Shell",
     "PackageVersion": "1.1.4",
     "LicenseUrl": "https://raw.githubusercontent.com/contre/Windows-API-Code-Pack-1.1/master/LICENSE"
+  },
+  {
+    "PackageName": "ksemenenko.ColorThief",
+    "PackageVersion": "1.1.1.4",
+    "LicenseUrl": "https://github.com/KSemenenko/ColorThief/blob/master/LICENSE"
   }
 ]
