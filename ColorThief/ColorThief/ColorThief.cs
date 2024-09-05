@@ -64,7 +64,9 @@ public static class ColorThief
         var b = span[(numRegardedPixels * 2)..(numRegardedPixels * 3)];
 
         GetPixelsFast(sourceImage, rect, quality, ignoreWhite, r, g, b);
-        var cmap = Mmcq.Quantize(span, numRegardedPixels, --colorCount);
+        Simd.Rshift(span, Mmcq.Rshift);
+
+        var cmap = Mmcq.Quantize(r, g, b, --colorCount);
         ArrayPool<byte>.Shared.Return(buf);
         return cmap.GeneratePalette();
     }

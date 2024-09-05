@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
@@ -9,6 +8,8 @@ namespace StudioFreesia.ColorThief;
 static class Simd
 {
     public const int Sigbits = 5;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Rshift(Span<byte> source, int shift)
     {
         if (!Vector.IsHardwareAccelerated || source.Length < Vector<byte>.Count)
@@ -45,6 +46,7 @@ static class Simd
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static (byte min, byte mas) MinMax(ReadOnlySpan<byte> source)
     {
         if (!Vector128.IsHardwareAccelerated || source.Length < Vector128<byte>.Count)
@@ -138,6 +140,7 @@ static class Simd
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GetColorIndexies(ReadOnlySpan<byte> r, ReadOnlySpan<byte> g, ReadOnlySpan<byte> b, Span<short> indexis)
     {
         if (!Vector.IsHardwareAccelerated || indexis.Length < Vector<byte>.Count)
@@ -199,6 +202,41 @@ static class Simd
                 var bL = Vector.WidenLower(Vector.LoadUnsafe(ref bLast, (nuint)remainingBytes));
                 var indexL = Vector.Add(Vector.Add(rL, gL), bL);
                 indexL.As<ushort, short>().StoreUnsafe(ref iLast, (nuint)remainingShorts);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Init<T>(Span<T> data, T value)
+        where T : struct
+    {
+        if (!Vector.IsHardwareAccelerated || data.Length < Vector<T>.Count)
+        {
+            for (var l = 0; l < data.Length; l++)
+            {
+                data[l] = value;
+            }
+        }
+        else
+        {
+            ref var current = ref MemoryMarshal.GetReference(data);
+            ref var end = ref Unsafe.Add(ref current, data.Length);
+            ref var to = ref Unsafe.Add(ref current, data.Length - Vector<T>.Count);
+            var initValue = new Vector<T>(value);
+
+            // SIMDを使用して処理
+            while (Unsafe.IsAddressLessThan(ref current, ref to))
+            {
+                initValue.StoreUnsafe(ref current);
+                current = ref Unsafe.Add(ref current, Vector<T>.Count);
+            }
+
+            // SIMDで処理できなかった余り部分を処理
+            if (Unsafe.IsAddressLessThan(ref current, ref end))
+            {
+                var remainingBytes = data.Length % Vector<T>.Count;
+                ref var last = ref Unsafe.Add(ref current, -remainingBytes);
+                initValue.StoreUnsafe(ref last, (nuint)remainingBytes);
             }
         }
     }

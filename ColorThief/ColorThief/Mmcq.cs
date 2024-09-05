@@ -11,9 +11,6 @@ internal static class Mmcq
     public const int VboxLength = 1 << Sigbits;
     public const double FractByPopulation = 0.75;
     public const int MaxIterations = 1000;
-    public const double WeightSaturation = 3d;
-    public const double WeightLuma = 6d;
-    public const double WeightPopulation = 1d;
     private static readonly VBoxComparer ComparatorProduct = new();
     private static readonly VBoxCountComparer ComparatorCount = new();
 
@@ -50,7 +47,7 @@ internal static class Mmcq
         return new VBox(rmin, rmax, gmin, gmax, bmin, bmax, histo);
     }
 
-    private static (VBox vbox1, VBox vbox2) DoCut(char color, VBox vbox, IList<int> partialsum, IList<int> lookaheadsum, int total)
+    private static (VBox vbox1, VBox vbox2) DoCut(char color, VBox vbox, ReadOnlySpan<int> partialsum, ReadOnlySpan<int> lookaheadsum, int total)
     {
         int vboxDim1;
         int vboxDim2;
@@ -140,19 +137,13 @@ internal static class Mmcq
 
         // Find the partial sum arrays along the selected axis.
         var total = 0;
-        var partialsum = new int[VboxLength];
+        Span<int> partialsum = stackalloc int[VboxLength];
         // -1 = not set / 0 = 0
-        for (var l = 0; l < partialsum.Length; l++)
-        {
-            partialsum[l] = -1;
-        }
+        Simd.Init(partialsum, -1);
 
         // -1 = not set / 0 = 0
-        var lookaheadsum = new int[VboxLength];
-        for (var l = 0; l < lookaheadsum.Length; l++)
-        {
-            lookaheadsum[l] = -1;
-        }
+        Span<int> lookaheadsum = stackalloc int[VboxLength];
+        Simd.Init(lookaheadsum, -1);
 
         int i, j, k, sum, index;
 
@@ -268,19 +259,13 @@ internal static class Mmcq
         }
     }
 
-    public static CMap Quantize(Span<byte> rgb, int numRegardedPixels, int maxcolors)
+    public static CMap Quantize(Span<byte> r, Span<byte> g, Span<byte> b, int maxcolors)
     {
         // short-circuit
-        if (rgb.IsEmpty || rgb.Length != numRegardedPixels * 3 || maxcolors < 2 || maxcolors > 256)
+        if (r.IsEmpty || g.IsEmpty || b.IsEmpty || maxcolors < 2 || maxcolors > 256)
         {
             throw new ArgumentException("Wrong number of maxcolors");
         }
-
-        Simd.Rshift(rgb, Rshift);
-
-        var r = rgb[..numRegardedPixels];
-        var g = rgb[numRegardedPixels..(numRegardedPixels * 2)];
-        var b = rgb[(numRegardedPixels * 2)..(numRegardedPixels * 3)];
 
         var histo = GetHisto(r, g, b);
 
