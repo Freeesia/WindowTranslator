@@ -28,14 +28,15 @@ internal static class Mmcq
     {
         var histo = new int[Histosize];
 
-        using var memory = MemoryPool<short>.Shared.Rent(r.Length);
-        Span<short> indexies = memory.Memory.Span[..r.Length];
+        var buf = ArrayPool<short>.Shared.Rent(r.Length);
+        Span<short> indexies = buf.AsSpan(0, r.Length);
 
         Simd.GetColorIndexies(r, g, b, indexies);
         foreach (var index in indexies)
         {
             histo[index]++;
         }
+        ArrayPool<short>.Shared.Return(buf);
 
         return histo;
     }

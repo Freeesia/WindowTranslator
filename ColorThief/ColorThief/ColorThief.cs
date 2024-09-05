@@ -56,14 +56,16 @@ public static class ColorThief
         }
         var pixelCount = rect.Width * rect.Height;
         var numRegardedPixels = (pixelCount + quality - 1) / quality;
-        using var mem = MemoryPool<byte>.Shared.Rent(numRegardedPixels * 3);
+        var buf = ArrayPool<byte>.Shared.Rent(numRegardedPixels * 3);
+        var span = buf.AsSpan(0, numRegardedPixels * 3);
 
-        var r = mem.Memory.Span[..numRegardedPixels];
-        var g = mem.Memory.Span[numRegardedPixels..(numRegardedPixels * 2)];
-        var b = mem.Memory.Span[(numRegardedPixels * 2)..(numRegardedPixels * 3)];
+        var r = span[..numRegardedPixels];
+        var g = span[numRegardedPixels..(numRegardedPixels * 2)];
+        var b = span[(numRegardedPixels * 2)..(numRegardedPixels * 3)];
 
         GetPixelsFast(sourceImage, rect, quality, ignoreWhite, r, g, b);
-        var cmap = Mmcq.Quantize(mem.Memory.Span[..(numRegardedPixels * 3)], numRegardedPixels, --colorCount);
+        var cmap = Mmcq.Quantize(span, numRegardedPixels, --colorCount);
+        ArrayPool<byte>.Shared.Return(buf);
         return cmap.GeneratePalette();
     }
 
