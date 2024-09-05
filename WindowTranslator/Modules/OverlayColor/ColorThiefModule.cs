@@ -1,14 +1,10 @@
-﻿using ColorThiefDotNet;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 using WindowTranslator.ComponentModel;
-using WindowTranslator.Extensions;
-using Color = System.Drawing.Color;
 using ColorConverter = ColorHelper.ColorConverter;
+using StudioFreesia.ColorThief;
+using System.Drawing;
 
 namespace WindowTranslator.Modules.OverlayColor;
 
@@ -16,30 +12,17 @@ namespace WindowTranslator.Modules.OverlayColor;
 [DisplayName("近似カラー")]
 public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
 {
-    private readonly ColorThief colorThief = new();
     private readonly ILogger<ColorThiefModule> logger = logger;
 
-    public async ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
+    public ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
     {
-        using var ms = new InMemoryRandomAccessStream();
         var results = new List<TextRect>(texts.Count());
         var palette = TimeSpan.Zero;
-        var scale = Math.Clamp(Math.Max(bitmap.PixelWidth / 1280.0, bitmap.PixelHeight / 720.0), 1, double.MaxValue);
+        // テキスト数が少ない時に並列化すると逆に遅くなり、総合すると並列化しないほうがよさそう
         foreach (var text in texts)
         {
-            ms.Seek(0);
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, ms);
-            encoder.SetSoftwareBitmap(bitmap);
-            encoder.BitmapTransform.ScaledWidth = (uint)(bitmap.PixelWidth / scale);
-            encoder.BitmapTransform.ScaledHeight = (uint)(bitmap.PixelHeight / scale);
-            encoder.BitmapTransform.Bounds = new((uint)(text.X / scale), (uint)(text.Y / scale), (uint)(text.Width / scale), (uint)(text.Height / scale));
-            await encoder.FlushAsync();
-
-            // パレット取得が遅い
-            // SIMD使えば速くなりそう…
             var now = DateTime.UtcNow;
-            using var bmp = new Bitmap(ms.AsStream());
-            var colors = colorThief.GetPalette(bmp, ignoreWhite: false)
+            var colors = ColorThief.GetPalette(bitmap, new Rectangle((int)text.X, (int)text.Y, (int)text.Width, (int)text.Height), ignoreWhite: false)
                 .OrderByDescending(c => c.Population)
                 .Select(c => c.Color)
                 .ToArray();
@@ -53,9 +36,9 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
         }
 
         this.logger.LogDebug($"Palette:{palette}");
-        return results;
+        return new(results);
     }
 
-    private static double GetDistance(double h1, ColorThiefDotNet.Color h2)
+    private static double GetDistance(double h1, Color h2)
         => Math.Abs(h1 - ColorConverter.RgbToHsv(new(h2.R, h2.G, h2.B)).V);
 }

@@ -60,6 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
     <ProjectReference Include="..\Composition.WindowsRuntimeHelpers\Composition.WindowsRuntimeHelpers.csproj" />
     <ProjectReference Include="..\hwnd-adorner\HwndExtensions\HwndExtensions.csproj" />
     <ProjectReference Include="..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
