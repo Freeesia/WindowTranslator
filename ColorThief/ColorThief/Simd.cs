@@ -11,85 +11,35 @@ static class Simd
     public const int Sigbits = 5;
     public static void Rshift(Span<byte> source, int shift)
     {
-        if (!Vector128.IsHardwareAccelerated || source.Length < Vector128<byte>.Count)
+        if (!Vector.IsHardwareAccelerated || source.Length < Vector<byte>.Count)
         {
             foreach (ref var item in source)
             {
                 item >>= shift;
             }
         }
-        else if (!Vector256.IsHardwareAccelerated || source.Length < Vector256<byte>.Count)
-        {
-            ref var current = ref MemoryMarshal.GetReference(source);
-            ref var end = ref Unsafe.Add(ref current, source.Length);
-            ref var to = ref Unsafe.Add(ref current, source.Length - Vector128<byte>.Count);
-
-            // SIMDを使用して処理
-            while (Unsafe.IsAddressLessThan(ref current, ref to))
-            {
-                var chunk = Vector128.LoadUnsafe(ref current);
-                chunk = Vector128.ShiftRightLogical(chunk, shift);
-                chunk.StoreUnsafe(ref current);
-                current = ref Unsafe.Add(ref current, Vector128<byte>.Count);
-            }
-
-            // SIMDで処理できなかった余り部分を処理
-            if (Unsafe.IsAddressLessThan(ref current, ref end))
-            {
-                var remainingBytes = source.Length % Vector128<byte>.Count;
-                ref var last = ref Unsafe.Add(ref current, -remainingBytes);
-                var lastChunk = Vector128.LoadUnsafe(ref last, (nuint)remainingBytes);
-                lastChunk = Vector128.ShiftRightLogical(lastChunk, shift);
-                lastChunk.StoreUnsafe(ref last, (nuint)remainingBytes);
-            }
-        }
-        else if (!Vector512.IsHardwareAccelerated || source.Length < Vector512<byte>.Count)
-        {
-            ref var current = ref MemoryMarshal.GetReference(source);
-            ref var end = ref Unsafe.Add(ref current, source.Length);
-            ref var to = ref Unsafe.Add(ref current, source.Length - Vector256<byte>.Count);
-
-            // SIMDを使用して処理
-            while (Unsafe.IsAddressLessThan(ref current, ref to))
-            {
-                var chunk = Vector256.LoadUnsafe(ref current);
-                chunk = Vector256.ShiftRightLogical(chunk, shift);
-                chunk.StoreUnsafe(ref current);
-                current = ref Unsafe.Add(ref current, Vector256<byte>.Count);
-            }
-
-            // SIMDで処理できなかった余り部分を処理
-            if (Unsafe.IsAddressLessThan(ref current, ref end))
-            {
-                var remainingBytes = source.Length % Vector256<byte>.Count;
-                ref var last = ref Unsafe.Add(ref current, -remainingBytes);
-                var lastChunk = Vector256.LoadUnsafe(ref last, (nuint)remainingBytes);
-                lastChunk = Vector256.ShiftRightLogical(lastChunk, shift);
-                lastChunk.StoreUnsafe(ref last, (nuint)remainingBytes);
-            }
-        }
         else
         {
             ref var current = ref MemoryMarshal.GetReference(source);
             ref var end = ref Unsafe.Add(ref current, source.Length);
-            ref var to = ref Unsafe.Add(ref current, source.Length - Vector512<byte>.Count);
+            ref var to = ref Unsafe.Add(ref current, source.Length - Vector<byte>.Count);
 
             // SIMDを使用して処理
             while (Unsafe.IsAddressLessThan(ref current, ref to))
             {
-                var chunk = Vector512.LoadUnsafe(ref current);
-                chunk = Vector512.ShiftRightLogical(chunk, shift);
+                var chunk = Vector.LoadUnsafe(ref current);
+                chunk = Vector.ShiftRightLogical(chunk, shift);
                 chunk.StoreUnsafe(ref current);
-                current = ref Unsafe.Add(ref current, Vector512<byte>.Count);
+                current = ref Unsafe.Add(ref current, Vector<byte>.Count);
             }
 
             // SIMDで処理できなかった余り部分を処理
             if (Unsafe.IsAddressLessThan(ref current, ref end))
             {
-                var remainingBytes = source.Length % Vector512<byte>.Count;
+                var remainingBytes = source.Length % Vector<byte>.Count;
                 ref var last = ref Unsafe.Add(ref current, -remainingBytes);
-                var lastChunk = Vector512.LoadUnsafe(ref last, (nuint)remainingBytes);
-                lastChunk = Vector512.ShiftRightLogical(lastChunk, shift);
+                var lastChunk = Vector.LoadUnsafe(ref last, (nuint)remainingBytes);
+                lastChunk = Vector.ShiftRightLogical(lastChunk, shift);
                 lastChunk.StoreUnsafe(ref last, (nuint)remainingBytes);
             }
         }
