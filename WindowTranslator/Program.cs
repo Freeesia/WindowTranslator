@@ -153,13 +153,6 @@ static string GetPluginName(PluginNameOptions options, Type type)
     }
 }
 
-[DisplayName("空文字化")]
-public class TranslateEmptyModule : ITranslateModule
-{
-    public ValueTask<string[]> TranslateAsync(string[] srcTexts)
-        => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
-}
-
 [DefaultModule]
 [DisplayName("翻訳しない")]
 public class NoTranslateModule : ITranslateModule
