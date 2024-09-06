@@ -150,7 +150,7 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 this.requesting.TryRemove(t, out _);
             }
-            this.cache.AddRange(transTargets.Zip(translated));
+            this.cache.AddRange(transTargets.Zip(translated).Where(p => p.First != p.Second));
         }
         catch (Exception e)
         {
