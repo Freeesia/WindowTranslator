@@ -41,9 +41,11 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
   ![設定](images/settings.png)
 2. 「全体設定」タブの「言語設定」から翻訳元・翻訳先の言語を選択します。  
   ![言語設定](images/language.png)
-3. 「DeepLOptions」タブのAPI Key: DeepLのAPIキーを入力します。
+3. 「全般設定」タブの「プラグイン設定」から「翻訳モジュール選択」で「DeepL」を選択します。  
+  ![プラグイン設定・翻訳モジュール](images/translate_module.png)
+4. 「DeepLOptions」タブのAPI Key: DeepLのAPIキーを入力します。
   ![DeepL設定](images/deepl.png)
-4. 設定が完了したら「OK」ボタンを押下して設定画面を閉じます。
+5. 設定が完了したら「OK」ボタンを押下して設定画面を閉じます。
 
 > 設定ダイアログを閉じる際に、翻訳元の言語を認識するため、OCR機能のインストールが必要になる場合があります。
 > 指示に従ってインストールを行うことで、アプリを利用できるようになります。
