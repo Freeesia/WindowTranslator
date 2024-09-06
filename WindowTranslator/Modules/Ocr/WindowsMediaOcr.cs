@@ -24,6 +24,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
+        // 認識前に縮小したら時間短くなるかと思ったけど、速くはなるけど精度が落ちるのでやめた
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(bitmap);
         t.Dispose();
