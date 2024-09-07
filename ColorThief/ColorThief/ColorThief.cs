@@ -83,12 +83,17 @@ public static class ColorThief
 
         var numUsedPixels = 0;
 
-        // ループの順序を変更してキャッシュの局所性を向上
+        // 元画像の範囲を超えないようにクリップ
+        var top = Math.Clamp(rect.Top, 0, bmp.PixelWidth);
+        var bottom = Math.Clamp(rect.Bottom, 0, bmp.PixelHeight);
+        var left = Math.Clamp(rect.Left, 0, bmp.PixelWidth);
+        var width = Math.Clamp(rect.Right - left, 0, bmp.PixelWidth - left);
+
         var mod = 0;
-        for (var y = rect.Top; y < rect.Bottom; y++)
+        for (var y = top; y < bottom; y++)
         {
-            int rowStartIndex = bufferLayout.StartIndex + (y * bufferLayout.Stride) + (rect.Left * bytesPerPixel);
-            for (; mod < rect.Width; mod += quality)
+            int rowStartIndex = bufferLayout.StartIndex + (y * bufferLayout.Stride) + (left * bytesPerPixel);
+            for (; mod < width; mod += quality)
             {
                 var pixelIndex = rowStartIndex + (mod * bytesPerPixel);
                 var pb = data[pixelIndex++];
@@ -105,7 +110,7 @@ public static class ColorThief
                     numUsedPixels++;
                 }
             }
-            mod -= rect.Width;
+            mod -= width;
         }
     }
 }
