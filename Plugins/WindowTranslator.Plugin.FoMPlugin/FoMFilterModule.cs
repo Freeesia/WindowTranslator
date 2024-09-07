@@ -12,10 +12,11 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
 using System.Threading.Channels;
+using System.Text.RegularExpressions;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
-public class FoMFilterModule : IFilterModule
+public partial class FoMFilterModule : IFilterModule
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
@@ -24,14 +25,14 @@ public class FoMFilterModule : IFilterModule
     };
     private readonly bool isEnabled;
     private readonly bool exclude;
-    private readonly FrozenDictionary<string, string> builtin;
+    private readonly FrozenDictionary<string, LocInto> builtin;
     private readonly ConcurrentDictionary<string, (string en, string ja)> cache = [];
     private readonly Channel<IReadOnlyList<string>> queue;
     private readonly ILogger<FoMFilterModule> logger;
 
     public double Priority => -1;
 
-    public FoMFilterModule(IProcessInfoStore processInfo, IOptions<FoMOptions> options, ILogger<FoMFilterModule> logger)
+    public FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptions<FoMOptions> options, ILogger<FoMFilterModule> logger)
     {
         this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
         {
@@ -40,6 +41,7 @@ public class FoMFilterModule : IFilterModule
             SingleReader = true,
             SingleWriter = true,
         }, Dropped);
+        this.logger = logger;
         _ = User32.GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
         if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
@@ -53,7 +55,7 @@ public class FoMFilterModule : IFilterModule
             this.builtin = loc!.Eng
                 .Select(p => (
                     en: ReplaceToPlain(p.Value, player, farm),
-                    ja: loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? ReplaceToPlain(s, player, farm) : string.Empty))
+                    ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? ReplaceToPlain(s, player, farm) : string.Empty)))
                 // OCRで段落ごとに分割されている場合があるので、それを考慮する
                 .SelectMany(p => SplitParagraph(p.en, p.ja))
                 // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
@@ -62,36 +64,46 @@ public class FoMFilterModule : IFilterModule
                 .Where(p => !p.en.Contains('['))
                 .DistinctBy(p => p.en)
                 .ToFrozenDictionary(p => p.en, p => p.ja);
+
+            // キャラ名やアイテム名を用語集として登録
+            translateModule.RegisterGlossaryAsync(
+                this.builtin.Where(p => GlossaryRegex().IsMatch(p.Value.Key))
+                    .Select(p => (p.Key, p.Value.Text))
+                    .Append((player, player))
+                    .Append((farm, farm))
+                    .Where(p => !string.IsNullOrEmpty(p.Item2))
+                    .DistinctBy(p => p.Item1)
+                    .ToDictionary(p => p.Item1, p => p.Item2));
             Task.Run(Correct);
         }
         else
         {
-            this.builtin = FrozenDictionary<string, string>.Empty;
+            this.builtin = FrozenDictionary<string, LocInto>.Empty;
         }
-        this.logger = logger;
     }
 
     private static string ReplaceToPlain(string s, string player, string farm)
         => s.Replace("[Ari]", player)
             .Replace("[farm_name]", farm)
             .Replace("$", string.Empty)
-            .Replace("=", string.Empty);
+            .Replace("=", string.Empty)
+            .Replace("{}", string.Empty);
 
-    private static IEnumerable<(string en, string ja)> SplitParagraph(string en, string ja)
+    private static IEnumerable<(string en, LocInto ja)> SplitParagraph(string en, LocInto ja)
     {
         var enLines = en.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
-        var jaLines = ja.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
+        var jaLines = ja.Text.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
         if (enLines.Length == jaLines.Length)
         {
-            return enLines.Zip(jaLines, (en, ja) => (en, ja));
+            return enLines.Zip(jaLines, (e, j) => (e, ja with { Text = j }));
         }
         else if (enLines.Length > jaLines.Length)
         {
-            return enLines.Select((en, i) => (en, ja: i < jaLines.Length ? jaLines[i] : string.Empty));
+            return enLines.Select((e, i) => (e, ja with { Text = i < jaLines.Length ? jaLines[i] : string.Empty }));
         }
         else
         {
-            return enLines.Select((en, i) => (en, ja: i == enLines.Length - 1 ? string.Join("\n\n", jaLines[i..]) : jaLines[i]));
+            return enLines.Select((e, i) => (e, ja with { Text = i == enLines.Length - 1 ? string.Join("\n\n", jaLines[i..]) : jaLines[i] }));
         }
     }
 
@@ -111,7 +123,7 @@ public class FoMFilterModule : IFilterModule
         {
             if (this.builtin.TryGetValue(src.Text, out var dst))
             {
-                yield return string.IsNullOrEmpty(dst) ? src : src with { Text = dst, IsTranslated = true };
+                yield return string.IsNullOrEmpty(dst.Text) ? src : src with { Text = dst.Text, IsTranslated = true };
             }
             else if (this.cache.TryGetValue(src.Text, out var c))
             {
@@ -146,7 +158,7 @@ public class FoMFilterModule : IFilterModule
             foreach (var text in texts)
             {
                 var t = DateTime.UtcNow;
-                var (key, near, l) = this.builtin.Select(p => (p.Key, p.Value, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
+                var (key, near, l) = this.builtin.Select(p => (p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
                 // 編集距離のパーセンテージ
                 var p = 100.0 * l / Math.Max(text.Length, key.Length);
                 this.logger.LogDebug($"LevenshteinDistance: {text} -> {key} ({p:f2}%) [{DateTime.UtcNow - t}]");
@@ -173,9 +185,14 @@ public class FoMFilterModule : IFilterModule
             return null;
         }
     }
+
+    [GeneratedRegex("^(npcs|items|locations|festivals)/.*/name$")]
+    private static partial Regex GlossaryRegex();
 }
 
-public record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
+record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
+record LocInto(string Key, string Text);
+
 
 [DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
