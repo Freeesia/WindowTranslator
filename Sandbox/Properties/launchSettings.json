@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DeepL": {
+      "commandName": "Project",
+      "commandLineArgs": "DeepL"
+    }
+  }
+}

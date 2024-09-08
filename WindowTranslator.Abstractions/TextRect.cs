@@ -19,6 +19,7 @@ namespace WindowTranslator;
 /// <param name="Background">背景色</param>
 /// <param name="IsTranslated"><paramref name="Text"/>が翻訳後のテキストかどうか</param>
 public record TextRect(string Text, double X, double Y, double Width, double Height, double FontSize, int Line, Color Foreground, Color Background, bool IsTranslated = false)
+    : TextInfo(Text, IsTranslated)
 {
     /// <summary>
     /// 空
@@ -39,4 +40,20 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
         : this(text, x, y, width, height, fontSize, line, Color.Red, Color.WhiteSmoke)
     {
     }
+};
+
+/// <summary>
+/// 翻訳テキストの矩形情報
+/// </summary>
+/// <param name="Text">
+/// テキスト
+/// <paramref name="IsTranslated"/> が true の場合は翻訳後のテキスト
+/// </param>
+/// <param name="IsTranslated"><paramref name="Text"/>が翻訳後のテキストかどうか</param>
+public record TextInfo(string Text, bool IsTranslated = false)
+{
+    /// <summary>
+    /// このテキストの文脈
+    /// </summary>
+    public string Context { get; init; } = string.Empty;
 };

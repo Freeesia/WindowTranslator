@@ -37,7 +37,7 @@ public class LLMTranslator : ITranslateModule
         }
     }
 
-    public async ValueTask<string[]> TranslateAsync(string[] srcTexts)
+    public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
         if (this.client is null)
         {
@@ -45,7 +45,7 @@ public class LLMTranslator : ITranslateModule
         }
         var completion = await this.client.CompleteChatAsync([
             this.system,
-            ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcTexts)),
+            ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcTexts.Select(s => s.Text))),
             assitant,
         ], new()
         {

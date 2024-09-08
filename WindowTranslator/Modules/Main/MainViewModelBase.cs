@@ -136,9 +136,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             var transTargets = texts
                 .Where(t => !t.IsTranslated)
-                .Select(w => w.Text)
-                .Distinct()
-                .Where(t => this.requesting.TryAdd(t, t) && !this.cache.Contains(t))
+                .Where(t => this.requesting.TryAdd(t.Text, t.Text) && !this.cache.Contains(t.Text))
                 .ToArray();
             if (!transTargets.Any())
             {
@@ -148,9 +146,9 @@ public abstract partial class MainViewModelBase : IDisposable
             var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
             foreach (var t in transTargets)
             {
-                this.requesting.TryRemove(t, out _);
+                this.requesting.TryRemove(t.Text, out _);
             }
-            this.cache.AddRange(transTargets.Zip(translated).Where(p => p.First != p.Second));
+            this.cache.AddRange(transTargets.Select(t => t.Text).Zip(translated).Where(p => p.First != p.Second));
         }
         catch (Exception e)
         {

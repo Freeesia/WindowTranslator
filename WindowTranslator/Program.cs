@@ -157,8 +157,8 @@ static string GetPluginName(PluginNameOptions options, Type type)
 [DisplayName("翻訳しない")]
 public class NoTranslateModule : ITranslateModule
 {
-    public ValueTask<string[]> TranslateAsync(string[] srcTexts)
-    => ValueTask.FromResult(srcTexts);
+    public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
+        => ValueTask.FromResult(srcTexts.Select(s => s.Text).ToArray());
 }
 
 public class ConfigurePluginParam<TOptions>(IConfiguration config) : IConfigureOptions<TOptions>

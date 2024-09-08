@@ -45,9 +45,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ColorThief", "ColorThief", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\ColorThief\ColorThief.csproj", "{7714CEC8-A44D-4BD3-A142-D7E3E85EF7BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorThief.Bench", "ColorThief\ColorThief.Bench\ColorThief.Bench.csproj", "{EFC22BF1-27FA-42E1-B468-139A370EFBF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief.Bench", "ColorThief\ColorThief.Bench\ColorThief.Bench.csproj", "{EFC22BF1-27FA-42E1-B468-139A370EFBF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorThief.Test", "ColorThief\ColorThief.Test\ColorThief.Test.csproj", "{A7E6289F-9FF6-43E9-904F-AEC929248BC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief.Test", "ColorThief\ColorThief.Test\ColorThief.Test.csproj", "{A7E6289F-9FF6-43E9-904F-AEC929248BC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{ACD99755-4A4E-4C62-A70D-7C1060C7F288}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{A7E6289F-9FF6-43E9-904F-AEC929248BC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E6289F-9FF6-43E9-904F-AEC929248BC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E6289F-9FF6-43E9-904F-AEC929248BC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACD99755-4A4E-4C62-A70D-7C1060C7F288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACD99755-4A4E-4C62-A70D-7C1060C7F288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACD99755-4A4E-4C62-A70D-7C1060C7F288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD99755-4A4E-4C62-A70D-7C1060C7F288}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,9 +134,9 @@ Global
 		{A7E6289F-9FF6-43E9-904F-AEC929248BC2} = {0B1130E1-2666-4D0F-B69E-4C0A849C56E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
-		RESX_NeutralResourcesLanguage = ja-JP
-		RESX_ConfirmAddLanguageFile = True
 		RESX_AutoCreateNewLanguageFiles = True
+		RESX_ConfirmAddLanguageFile = True
+		RESX_NeutralResourcesLanguage = ja-JP
+		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
 	EndGlobalSection
 EndGlobal
