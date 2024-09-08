@@ -19,12 +19,25 @@ public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<Dee
         var t => t[..2],
     };
     private readonly IProcessInfoStore processInfo = processInfo;
-    private readonly TextTranslateOptions translateOptions = new();
+    private string? glossaryId = null;
+    private string? context = null;
 
-    public async ValueTask<string[]> TranslateAsync(string[] srcTexts)
+    public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
-        var translated = await translator.TranslateTextAsync(srcTexts, this.sourceLang, this.targetLang, this.translateOptions);
-        return translated.Select(t => t.Text).ToArray();
+        var translated = srcTexts.Select(t => t.Text).ToArray();
+        await Parallel.ForEachAsync(srcTexts.GroupBy(t => t.Context).ToAsyncEnumerable(), async (g, ct) =>
+        {
+            var context = string.Join('\n', this.context, g.Key);
+            var srcs = g.Select(t => t.Text).ToArray();
+            var results = await translator.TranslateTextAsync(srcs, this.sourceLang, this.targetLang, new() { Context = context, GlossaryId = this.glossaryId }, ct)
+                .ConfigureAwait(false);
+            foreach (var (s, t) in srcs.Zip(results))
+            {
+                var i = Array.IndexOf(translated, s);
+                translated[i] = t.Text;
+            }
+        }).ConfigureAwait(false);
+        return translated;
     }
 
     public async ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
@@ -35,8 +48,11 @@ public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<Dee
             await this.translator.DeleteGlossaryAsync(exist.GlossaryId).ConfigureAwait(false);
         }
         var created = await this.translator.CreateGlossaryAsync(this.processInfo.Name, this.sourceLang, this.targetLang, new(glossary, true)).ConfigureAwait(false);
-        this.translateOptions.GlossaryId = created.GlossaryId;
+        this.glossaryId = created.GlossaryId;
     }
+
+    public void RegisterContext(string context)
+        => this.context = context;
 }
 
 public class DeepLOptions : IPluginParam

@@ -10,7 +10,7 @@ public interface ITranslateModule
     /// </summary>
     /// <param name="srcTexts">翻訳するテキストの配列。</param>
     /// <returns>翻訳されたテキストの配列。</returns>
-    ValueTask<string[]> TranslateAsync(string[] srcTexts);
+    ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts);
 
     /// <summary>
     /// 翻訳モジュールに用語を登録します。
@@ -19,4 +19,12 @@ public interface ITranslateModule
     /// <returns>非同期処理</returns>
     ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
         => default;
+
+    /// <summary>
+    /// 翻訳するテキストの文脈を登録します。
+    /// </summary>
+    /// <param name="context">文脈</param>
+    void RegisterContext(string context)
+    {
+    }
 }
