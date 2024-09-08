@@ -44,13 +44,13 @@ builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddS
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
-    .AddPluginType<ITranslateModule>(configureDefault: op => op.DefaultType = GetPlugin<ITranslateModule>)
-    .AddPluginType<ICacheModule>(configureDefault: op => op.DefaultType = GetPlugin<ICacheModule>)
-    .AddPluginType<IOcrModule>(configureDefault: op => op.DefaultType = GetPlugin<IOcrModule>)
-    .AddPluginType<ICaptureModule>(configureDefault: op => op.DefaultType = GetPlugin<ICaptureModule>)
-    .AddPluginType<IColorModule>(configureDefault: op => op.DefaultType = GetPlugin<IColorModule>)
-    .AddPluginType<IPluginParam>()
-    .AddPluginType<IFilterModule>();
+    .AddPluginType<ITranslateModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<ITranslateModule>)
+    .AddPluginType<ICacheModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<ICacheModule>)
+    .AddPluginType<IOcrModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<IOcrModule>)
+    .AddPluginType<ICaptureModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<ICaptureModule>)
+    .AddPluginType<IColorModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<IColorModule>)
+    .AddPluginType<IFilterModule>(ServiceLifetime.Scoped)
+    .AddPluginType<IPluginParam>();
 
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
