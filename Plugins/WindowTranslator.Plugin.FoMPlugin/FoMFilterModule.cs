@@ -208,66 +208,66 @@ public partial class FoMFilterModule : IFilterModule
                 This line is said by the female character.
                 She is the daughter of Holt and Nora, co-owners of The General Store, and older sister to Dell.
                 She has a sweet, caring, and friendly personality, as well as an affinity for all things flora.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             "Juniper" => """
                 This line is said by the female character.
                 She is a mysterious sorceress drawn to Mistria when she learns that magical mists and monsters of legend have begun appearing in the area after the recent earthquake.
-                Her first person is "わたくし".
+                Her first person is "わたくし" in Hiragana.
                 """,
             "Reina" => """
                 This line is said by the female character.
                 She works at the Sleeping Dragon Inn and enjoys reading in front of the fireplace on a rainy day.
                 She is the daughter of Hemlock and Josephine and the older sister of Luc and Maple.
                 She is hard-working, friendly, and a romantic. She loves cooking, often experimenting with new recipes.
-                Her first person is "ワタシ".
+                Her first person is "ワタシ" in Katanaka.
                 """,
             "Valen" => """
                 This line is said by the female character.
                 She works in Mistria Clinic, which has been owned by her family for generations.
                 Valen displays an informal, friendly approach to her profession as she insists that the player call her Valen instead of Doctor.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             "Adeline" => """
                 This line is said by the female character.
                 She is the daughter of the Baron and Baroness of Mistria and its current Town Leader.
                 The "restoration and revitalization" of Mistria is her life's goal and she works tirelessly to this end.
                 Luckily for her, Adeline's work often doubles as her play--things like filling out tax documents are fun to her--and she takes on each task with equal parts determination and enthusiasm.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             "Balor" => """
                 This line is said by the male character.
                 He is a merchant.
-                His first person is "俺".
+                His first person is "俺" in Kanji.
                 """,
             "March" => """
                 This line is said by the male character.
                 He is an award-winning blacksmith with a chip on his shoulder.
                 While he'll be curt with you at first, and is a bit vain and grumpy, his heart is not impenetrable.
-                His first person is "オレ".
+                His first person is "オレ" in Katanaka.
                 """,
             "Hayden" => """
                 This line is said by the male character.
                 He is Bold and friendly.
                 He loves animals, especially his prize chicken Henrietta.
-                His first person is "オレ".
+                His first person is "オレ" in Katanaka.
                 """,
             "Ryis" => """
                 This line is said by the male character.
                 Like his Uncle Landen, he is a woodworker and runs the Carpenter's Shop in The Eastern Road.
                 He has a thoughtful and calm personality.
-                His first person is "僕".
+                His first person is "僕" in Kanji.
                 """,
             "Eiland" => """
                 This line is said by the male character.
                 He likes archaeology, and is head of the Historical Society.
                 He believes that reconnecting with Mistria's past is the key to its future.
-                His first person is "僕".
+                His first person is "僕" in Kanji.
                 """,
             "Dell" => """
                 This line is said by the little girl.
                 She is the excitable, wildchild.
-                Her first person is "ボク".
+                Her first person is "ボク" in Katanaka.
                 """,
             "Dozy" => """
                 This line is the dog's feeling.
@@ -275,24 +275,24 @@ public partial class FoMFilterModule : IFilterModule
                 """,
             "Elsie" => """
                 This line is said by the woman of odd age.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             "Errol" => """
                 This line is said by the man of odd age.
                 He is a member of the Historical Society, and works as the curator at Mistria's museum.
                 He also used to be the previous mines foreman.
-                His first person is "ワシ".
+                His first person is "ワシ" in Katanaka.
                 """,
             "Hemlock" => """
                 This line is said by the man of odd age.
                 Laid-back innkeeper, former touring musician.
                 Married to Josephine, father to Reina, Luc and Maple.
-                His first person is "ボク".
+                His first person is "ボク" in Katanaka.
                 """,
             "Holt" => """
                 This line is said by the man of odd age.
                 He is Nora's husband, as well as Celine and Dell's father. He has a penchant for puns.
-                His first person is "僕".
+                His first person is "僕" in Kanji.
                 """,
             "Henrietta" => """
                 This line is the chicken's feeling.
@@ -301,37 +301,37 @@ public partial class FoMFilterModule : IFilterModule
             "Josephine" => """
                 This line is said by the woman of odd age.
                 She is Hemlock's wife, as well as Reina, Luc and Maple's mother.
-                Her first person is "アタシ".
+                Her first person is "アタシ" in Katanaka.
                 """,
             "Landen" => """
                 This line is said by the man of odd age.
                 Suave, 'retired' carpenter who, ah, you're doing it wrong, let me show you how a pro does it! Uncle to Ryis.
-                His first person is "ボク".
+                His first person is "ボク" in Katanaka.
                 """,
             "Luc" => """
                 This line is said by the little boy.
                 He is a budding entomologist with big dreams and bigger bugs.
-                His first person is "ぼく".
+                His first person is "ぼく" in Hiragana.
                 """,
             "Maple" => """
                 This line is said by the little girl.
-                Her first person is "わたし".
+                Her first person is "わたし" in Hiragana.
                 """,
             "Nora" => """
                 This line is said by the woman of odd age.
                 As both the Head of Commerce and the Saturday Market for Mistria, Nora is a rather keen, business-minded woman who keeps all her ledgers neat and tidy.
                 While she can be stern--at least in comparison to her husband--Nora isn't too stuffy to enjoy a game.
-                Her first person is "ワタシ".
+                Her first person is "ワタシ" in Katanaka.
                 """,
             "Olric" => """
                 This line is said by the male character.
                 He has a friendly and cheerful personality, and lives at the Blacksmith with his little brother March.
-                His first person is "オレ".
+                His first person is "オレ" in Katanaka.
                 """,
             "Terithia" => """
                 This line is said by the woman of odd age.
                 She is rough and tough fisherwoman and former soldier with a million stories to tell, living by the ocean.
-                Her first person is "ワシ".
+                Her first person is "ワシ" in Katanaka.
                 """,
             "Darcy" => """
                 This line is said by the female character.
@@ -340,17 +340,17 @@ public partial class FoMFilterModule : IFilterModule
             "Louis" => """
                 This line is said by the man of odd age.
                 He was once a Legendary tailor, however he was banished from the Capital.
-                His first person is "私".
+                His first person is "私" in Kanji.
                 """,
             "Merri" => """
                 This line is said by the female character.
                 She is a plump woman.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             "Vera" => """
                 This line is said by the female character.
                 She is a friendly lady.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             "Caldarus" => """
                 This line is said by a male dragon.
@@ -359,7 +359,7 @@ public partial class FoMFilterModule : IFilterModule
             "Priestess" => """
                 This line is a strange woman's statement.
                 She speaks in one language.
-                Her first person is "私".
+                Her first person is "私" in Kanji.
                 """,
             _ => string.Empty,
         };

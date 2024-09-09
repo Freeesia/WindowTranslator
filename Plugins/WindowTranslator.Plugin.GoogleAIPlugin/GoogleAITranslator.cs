@@ -1,8 +1,9 @@
 ﻿using System.Globalization;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using GenerativeAI.Helpers;
 using GenerativeAI.Types;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
 
@@ -10,11 +11,15 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 public class GoogleAITranslator : ITranslateModule
 {
-    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
     private readonly string preSystem;
     private readonly string postSystem;
     private readonly GenerativeModelEx? client;
     private IReadOnlyDictionary<string, string> glossary = new Dictionary<string, string>();
+    private IReadOnlyList<string> common = [];
     private string? context;
 
     public GoogleAITranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions)
@@ -27,7 +32,9 @@ public class GoogleAITranslator : ITranslateModule
         渡されたテキストを{{target}}へ翻訳して出力してください。
         """;
         this.postSystem = """
-        入力テキストは以下のJsonフォーマットになっています。        
+        入力テキストは以下のJsonフォーマットになっています。
+        各textの内容はペアとなるcontextの文脈を考慮して翻訳してください。
+        contextに一人称が指定されている場合は、漢字、ひらがな、カタカナの表記を変更せずに一人称をそのまま使ってください。
         <入力テキストのJsonフォーマット>
         [{"text":"翻訳対象のテキスト1", "context": "翻訳対象のテキスト1の文脈"}, {"text":"翻訳対象のテキスト2", "context": "翻訳対象のテキスト2の文脈"}]
         </入力テキストのJsonフォーマット>
@@ -69,16 +76,32 @@ public class GoogleAITranslator : ITranslateModule
             throw new InvalidOperationException("GoogleAI機能が初期化されていません。設定ダイアログからGoogleAIオプションを設定してください");
         }
         var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.Text.Contains(kv.Key))).ToArray();
-        var glossarySystem = glossary.Length > 0 ? $"""
+        var common = this.common.Where(c => srcTexts.Any(s => s.Text.Contains(c))).ToArray();
+        var sb = new StringBuilder();
+        if (glossary.Length > 0)
+        {
+            sb.AppendLine($"""
             翻訳する際に以下の用語集を参照して、一貫した翻訳を行ってください。
             <用語集>
             {string.Join(Environment.NewLine, glossary.Select(kv => $"<用語>{kv.Key}</用語><翻訳>{kv.Value}</翻訳>"))}
             </用語集>
-            """ : string.Empty;
+            """);
+        }
+        if (common.Length > 0)
+        {
+            // TODO: 用語はやっぱりだめ
+            sb.AppendLine($"""
+            翻訳する際に以下の用語は翻訳せずにそのまま出力してください。
+            <共通の用語>
+            {string.Join(Environment.NewLine, common.Select(c => $"<用語>{c}</用語>"))}
+            </共通の用語>
+            """);
+        }
+
         var req = new GenerateContentRequest()
         {
             Contents = [RequestExtensions.FormatGenerateContentInput(JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions))],
-            SystemInstruction = RequestExtensions.FormatSystemInstruction(string.Join(Environment.NewLine, [this.preSystem, this.context, glossarySystem, this.postSystem])),
+            SystemInstruction = RequestExtensions.FormatSystemInstruction(string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.postSystem])),
         };
         var completion = await this.client.GenerateContentAsync(req).ConfigureAwait(false);
         return completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion.Text() + "\"]", jsonOptions) ?? [];
@@ -86,7 +109,8 @@ public class GoogleAITranslator : ITranslateModule
 
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
     {
-        this.glossary = glossary;
+        this.glossary = glossary.Where(kv => kv.Key != kv.Value).ToDictionary(kv => kv.Key, kv => kv.Value);
+        this.common = glossary.Where(kv => kv.Key == kv.Value).Select(kv => kv.Key).ToArray();
         return default;
     }
 
