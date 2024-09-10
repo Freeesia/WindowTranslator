@@ -126,16 +126,36 @@ public partial class FoMFilterModule : IFilterModule
             }
             yield break;
         }
+        var match = new List<string>();
+        var notContexts = new List<TextRect>();
         var targets = new List<string>();
         await foreach (var src in texts.ConfigureAwait(false))
         {
             if (this.builtin.TryGetValue(src.Text, out var dst))
             {
-                yield return string.IsNullOrEmpty(dst.Text) ? src with { Context = GetContext(dst.Key) } : src with { Text = dst.Text, IsTranslated = true };
+                match.Add(src.Text);
+                var ret = string.IsNullOrEmpty(dst.Text) ? src with { Context = GetContext(dst.Key) } : src with { Text = dst.Text, IsTranslated = true };
+                if (ret.IsTranslated || !string.IsNullOrEmpty(ret.Context))
+                {
+                    yield return ret;
+                }
+                else
+                {
+                    notContexts.Add(ret);
+                }
             }
             else if (this.cache.TryGetValue(src.Text, out var c))
             {
-                yield return string.IsNullOrEmpty(c.ja) ? src with { Text = c.en, Context = c.context } : src with { Text = c.ja, IsTranslated = true };
+                match.Add(c.en);
+                var ret = string.IsNullOrEmpty(c.ja) ? src with { Text = c.en, Context = c.context } : src with { Text = c.ja, IsTranslated = true };
+                if (ret.IsTranslated || !string.IsNullOrEmpty(ret.Context))
+                {
+                    yield return ret;
+                }
+                else
+                {
+                    notContexts.Add(ret);
+                }
             }
             else
             {
@@ -144,6 +164,18 @@ public partial class FoMFilterModule : IFilterModule
                 {
                     yield return src;
                 }
+            }
+        }
+        if (notContexts.Count > 0)
+        {
+            var contexts = match.Select(GetChatContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
+            if (contexts is [var context])
+            {
+                notContexts = notContexts.Select(r => r with { Context = context }).ToList();
+            }
+            foreach (var item in notContexts)
+            {
+                yield return item;
             }
         }
 
