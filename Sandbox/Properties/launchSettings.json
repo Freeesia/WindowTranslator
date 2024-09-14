@@ -3,6 +3,10 @@
     "DeepL": {
       "commandName": "Project",
       "commandLineArgs": "DeepL"
+    },
+    "GoogleAI": {
+      "commandName": "Project",
+      "commandLineArgs": "GoogleAI"
     }
   }
 }
