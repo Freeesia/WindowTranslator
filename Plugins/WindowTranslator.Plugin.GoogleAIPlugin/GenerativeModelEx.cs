@@ -39,9 +39,8 @@ class GenerativeModelEx(string apiKey, ModelParams modelParams, string? system =
         }
         else
         {
-            var content = await response.Content.ReadAsStringAsync();
-
-            throw new GenerativeAIException($"Error while requesting {url.ToString("__API_Key__")}:\r\n\r\n{content}", content);
+            var res = await response.Content.ReadFromJsonAsync<GoogleAIResponse>();
+            throw new GenerativeAIExException(res!.Error);
         }
     }
 
@@ -75,4 +74,11 @@ class GenerativeModelEx(string apiKey, ModelParams modelParams, string? system =
 class GenerationConfigEx : GenerationConfig
 {
     public string ResponseMimeType { get; set; } = "text/plain";
+}
+
+record GoogleAIResponse(GoogleAIError Error);
+record GoogleAIError(int Code, string Message, string Status);
+class GenerativeAIExException(GoogleAIError error) : Exception(error.Message)
+{
+    public GoogleAIError Error { get; } = error;
 }

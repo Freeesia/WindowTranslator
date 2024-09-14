@@ -16,6 +16,7 @@ public class GoogleAITranslator : ITranslateModule
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
     private readonly string preSystem;
+    private readonly string? userContext;
     private readonly string postSystem;
     private readonly GenerativeModelEx? client;
     private IReadOnlyDictionary<string, string> glossary = new Dictionary<string, string>();
@@ -31,6 +32,7 @@ public class GoogleAITranslator : ITranslateModule
         入力テキストは{{src}}のテキストであり、翻訳が必要です。
         渡されたテキストを{{target}}へ翻訳して出力してください。
         """;
+        this.userContext = googleAiOptions.Value.TranslateContext;
         this.postSystem = """
         入力テキストは以下のJsonフォーマットになっています。
         各textの内容はペアとなるcontextの文脈を考慮して翻訳してください。
@@ -85,26 +87,50 @@ public class GoogleAITranslator : ITranslateModule
             <用語集>
             {string.Join(Environment.NewLine, glossary.Select(kv => $"<用語>{kv.Key}</用語><翻訳>{kv.Value}</翻訳>"))}
             </用語集>
+
             """);
         }
         if (common.Length > 0)
         {
-            // TODO: 用語はやっぱりだめ
             sb.AppendLine($"""
-            翻訳する際に以下の用語は翻訳せずにそのまま出力してください。
+            翻訳するテキストに以下の共通の用語が含まれている場合は、その用語のみは必ず翻訳せずにそのままの表記を利用してください。
             <共通の用語>
-            {string.Join(Environment.NewLine, common.Select(c => $"<用語>{c}</用語>"))}
+            {string.Join(Environment.NewLine, common)}
             </共通の用語>
+
             """);
         }
 
         var req = new GenerateContentRequest()
         {
             Contents = [RequestExtensions.FormatGenerateContentInput(JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions))],
-            SystemInstruction = RequestExtensions.FormatSystemInstruction(string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.postSystem])),
+            SystemInstruction = RequestExtensions.FormatSystemInstruction(string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem])),
         };
-        var completion = await this.client.GenerateContentAsync(req).ConfigureAwait(false);
-        return completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion.Text() + "\"]", jsonOptions) ?? [];
+        while (true)
+        {
+            try
+            {
+                var completion = await this.client.GenerateContentAsync(req).ConfigureAwait(false);
+                return completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion.Text() + "\"]", jsonOptions) ?? [];
+            }
+            // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
+            catch (GenerativeAIExException e) when (e.Error.Code == 503)
+            {
+                await Task.Delay(500).ConfigureAwait(false);
+                continue;
+            }
+            // レート制限を超えました。
+            catch (GenerativeAIExException e) when (e.Error.Code == 429)
+            {
+                await Task.Delay(10000).ConfigureAwait(false);
+                continue;
+            }
+            // Jsonエラーということは指定した以外のレスポンスが返ってきたのでもう一度
+            catch (JsonException)
+            {
+                continue;
+            }
+        }
     }
 
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
@@ -120,5 +146,6 @@ public class GoogleAITranslator : ITranslateModule
         <背景>
         {context}
         </背景>
+
         """;
 }
