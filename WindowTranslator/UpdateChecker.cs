@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Win32;
 using Octokit;
 using System.Diagnostics;
 using System.IO;
@@ -53,7 +54,11 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-
+        if (!IsInstalled())
+        {
+            this.logger.LogInformation("インストールされていないアプリなのでチェックしない");
+            return;
+        }
         await this.app.WaitForStartupAsync();
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
         try
@@ -262,6 +267,22 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
         {
             this.logger.LogError("更新情報の保存に失敗しました");
         }
+    }
+
+    private static bool IsInstalled()
+    {
+        if (GetInstallDir() is not { } path)
+        {
+            return false;
+        }
+        return Path.GetDirectoryName(Environment.ProcessPath) == path;
+    }
+
+    private static string? GetInstallDir()
+    {
+        string registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{1D495A96-C8B4-4314-A08B-60665057B447}";
+        using var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default).OpenSubKey(registryKey);
+        return key?.GetValue("InstallLocation") as string;
     }
 }
 
