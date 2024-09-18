@@ -1,4 +1,6 @@
-﻿using WindowTranslator.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Properties;
 
 namespace WindowTranslator;
@@ -15,6 +17,8 @@ public class UserSettings
 
     public bool IsEnableAutoTarget { get; set; }
 
+    public OverlaySwitch OverlaySwitch { get; set; } = OverlaySwitch.Hold;
+
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
     public Dictionary<string, IPluginParam> PluginParams { get; init; } = new(StringComparer.OrdinalIgnoreCase);
@@ -26,4 +30,12 @@ public enum ViewMode
     Capture,
     [LocalizedDescription(typeof(Resources), nameof(Overlay))]
     Overlay,
+}
+
+public enum OverlaySwitch
+{
+    [LocalizedDescription(typeof(Resources), nameof(Hold))]
+    Hold,
+    [LocalizedDescription(typeof(Resources), nameof(Toggle))]
+    Toggle,
 }
