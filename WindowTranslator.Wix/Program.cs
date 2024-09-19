@@ -32,6 +32,7 @@ project.ControlPanelInfo = new()
 {
     Manufacturer = Manufacturer,
     ProductIcon = @"..\docs\images\wt.ico",
+    InstallLocation = "[INSTALLDIR]",
     UrlInfoAbout = "https://github.com/Freeesia/WindowTranslator",
     UrlUpdateInfo = "https://github.com/Freeesia/WindowTranslator/releases",
 };
