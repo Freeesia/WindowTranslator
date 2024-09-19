@@ -106,6 +106,9 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     public ViewMode ViewMode { get; set; }
 
     [Category("SettingsViewModel|Misc")]
+    public OverlaySwitch OverlaySwitch { get; set; }
+
+    [Category("SettingsViewModel|Misc")]
     public IList<ProcessName> AutoTargets { get; set; } = [];
 
     [Category("SettingsViewModel|Misc")]
@@ -163,6 +166,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         this.ViewMode = userSettings.Value.ViewMode;
         this.AutoTargets = userSettings.Value.AutoTargets.Select(t => new ProcessName() { Name = t }).ToList();
         this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
+        this.OverlaySwitch = userSettings.Value.OverlaySwitch;
 
         var asm = Assembly.GetExecutingAssembly();
         var name = asm.GetName();
@@ -279,6 +283,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
             FontScale = this.FontScale,
             AutoTargets = this.AutoTargets.Select(t => t.Name).OfType<string>().ToList(),
             IsEnableAutoTarget = this.IsEnableAutoTarget,
+            OverlaySwitch = this.OverlaySwitch,
             SelectedPlugins =
             {
                 [nameof(ITranslateModule)] = this.TranslateModule,

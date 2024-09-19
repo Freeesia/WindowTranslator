@@ -133,6 +133,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   押している間だけ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Hold {
+            get {
+                return ResourceManager.GetString("Hold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   メモリ内キャッシュ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InMemoryCache {
@@ -223,6 +232,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   オーバーレイ表示の切り替え(Win+Alt+O) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OverlaySwitch {
+            get {
+                return ResourceManager.GetString("OverlaySwitch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   プラグイン設定 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Plugin {
@@ -282,6 +300,15 @@ namespace WindowTranslator.Properties {
         public static string Target {
             get {
                 return ResourceManager.GetString("Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   押してON/OFFを切り替える に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Toggle {
+            get {
+                return ResourceManager.GetString("Toggle", resourceCulture);
             }
         }
         

@@ -207,4 +207,13 @@
   <data name="OpenChangelogCommand" xml:space="preserve">
     <value>詳細情報の確認</value>
   </data>
+  <data name="Hold" xml:space="preserve">
+    <value>押している間だけ</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>押してON/OFFを切り替える</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>オーバーレイ表示の切り替え(Win+Alt+O)</value>
+  </data>
 </root>

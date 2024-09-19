@@ -11,6 +11,7 @@ using Windows.Win32.UI.Input.KeyboardAndMouse;
 using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
 using static PInvoke.User32;
+using Microsoft.Extensions.Options;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -19,6 +20,7 @@ namespace WindowTranslator.Modules.Main;
 /// </summary>
 public partial class OverlayMainWindow : Window
 {
+    private readonly OverlaySwitch overlaySwitch;
     private readonly IProcessInfoStore processInfo;
     private readonly IPresentationService presentationService;
     private readonly DispatcherTimer timer = new();
@@ -46,9 +48,10 @@ public partial class OverlayMainWindow : Window
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayMainWindow), new PropertyMetadata(1.0));
 
-    public OverlayMainWindow(IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
+    public OverlayMainWindow(IOptionsSnapshot<UserSettings> settings, IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
     {
         InitializeComponent();
+        this.overlaySwitch = settings.Value.OverlaySwitch;
         this.processInfo = processInfo;
         this.presentationService = presentationService;
         this.logger = logger;
@@ -139,12 +142,18 @@ public partial class OverlayMainWindow : Window
         {
             return 0;
         }
-
-        HideOverlay();
+        if (this.overlaySwitch == OverlaySwitch.Hold)
+        {
+            HoldHideOverlay();
+        }
+        else
+        {
+            this.overlay.SetCurrentValue(VisibilityProperty, this.overlay.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
+        }
         return 0;
     }
 
-    private async void HideOverlay()
+    private async void HoldHideOverlay()
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
         this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
