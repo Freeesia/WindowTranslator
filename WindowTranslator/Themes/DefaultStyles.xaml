@@ -36,4 +36,8 @@
     <Style BasedOn="{StaticResource {x:Type RadioButton}}" TargetType="{x:Type RadioButton}">
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
+    <Style BasedOn="{StaticResource {x:Type pt:RadioButtonList}}" TargetType="{x:Type pt:RadioButtonList}">
+        <Setter Property="pt:RadioButtonList.ItemMargin" Value="0" />
+        <Setter Property="Margin" Value="0,4" />
+    </Style>
 </ResourceDictionary>
