@@ -164,7 +164,7 @@ public class ConfigurePluginParam<TOptions>(IConfiguration config) : IConfigureO
 
 static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddPluginType<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, Action<DefaultPluginOption> configureDefault = null) where T : class
+    public static IServiceCollection AddPluginType<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, Action<DefaultPluginOption>? configureDefault = null) where T : class
     {
         var item = new ServiceDescriptor(typeof(IEnumerable<T>), (IServiceProvider sp) => sp.GetRequiredService<PluginProvider>().GetTypes<T>().AsEnumerable(), serviceLifetime);
         var item2 = new ServiceDescriptor(typeof(T), delegate (IServiceProvider sp)
