@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Weikio.PluginFramework.Abstractions;
+using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
 using WindowTranslator;
 using WindowTranslator.ComponentModel;
@@ -44,11 +45,11 @@ builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddS
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
-    .AddPluginType<ITranslateModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<ITranslateModule>)
-    .AddPluginType<ICacheModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<ICacheModule>)
-    .AddPluginType<IOcrModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<IOcrModule>)
-    .AddPluginType<ICaptureModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<ICaptureModule>)
-    .AddPluginType<IColorModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetPlugin<IColorModule>)
+    .AddPluginType<ITranslateModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<ITranslateModule>)
+    .AddPluginType<ICacheModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<ICacheModule>)
+    .AddPluginType<IOcrModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<IOcrModule>)
+    .AddPluginType<ICaptureModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<ICaptureModule>)
+    .AddPluginType<IColorModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<IColorModule>)
     .AddPluginType<IFilterModule>(ServiceLifetime.Scoped)
     .AddPluginType<IPluginParam>();
 
@@ -125,17 +126,8 @@ if (!createdNew)
 }
 await app.RunAsync();
 
-static Type GetPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
-{
-    var settings = serviceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
-    var dic = settings.Value.SelectedPlugins;
-    Type GetDefaultPlugin() => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute))).First();
-    if (dic.TryGetValue(typeof(TInterface).Name, out var name))
-    {
-        return implementingTypes.FirstOrDefault(t => t.Name == name) ?? GetDefaultPlugin();
-    }
-    return GetDefaultPlugin();
-}
+static Type GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
+    => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute))).First();
 
 static string GetPluginName(PluginNameOptions options, Type type)
 {
@@ -168,4 +160,42 @@ public class ConfigurePluginParam<TOptions>(IConfiguration config) : IConfigureO
 
     public void Configure(TOptions options)
         => this.config.GetSection(typeof(TOptions).Name).Bind(options);
+}
+
+static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddPluginType<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, Action<DefaultPluginOption> configureDefault = null) where T : class
+    {
+        var item = new ServiceDescriptor(typeof(IEnumerable<T>), (IServiceProvider sp) => sp.GetRequiredService<PluginProvider>().GetTypes<T>().AsEnumerable(), serviceLifetime);
+        var item2 = new ServiceDescriptor(typeof(T), delegate (IServiceProvider sp)
+        {
+            var defaultPluginOptions = sp.GetDefaultPluginOptions<T>(configureDefault);
+            var plugins = sp.GetRequiredService<PluginProvider>()
+                .GetPlugins()
+                .Where(p => typeof(T).IsAssignableFrom(p))
+                .ToArray();
+            var settings = sp.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+            var dic = settings.Value.SelectedPlugins;
+            var plugin = dic.TryGetValue(typeof(T).Name, out var name)
+                ? plugins.FirstOrDefault(p => p.Type.Name == name)
+                : null;
+            if (plugin is null)
+            {
+                var type = defaultPluginOptions.DefaultType(sp, plugins.Select(p => p.Type));
+                plugin = plugins.FirstOrDefault(p => p.Type == type);
+            }
+            return plugin.Create<T>(sp);
+        }, serviceLifetime);
+        services.Add(item);
+        services.Add(item2);
+        return services;
+    }
+
+    private static DefaultPluginOption GetDefaultPluginOptions<T>(this IServiceProvider sp, Action<DefaultPluginOption>? configureDefault)
+        where T : class
+    {
+        var defaultPluginOption = sp.GetService<IOptionsMonitor<DefaultPluginOption>>()?.Get(typeof(T).Name) ?? new();
+        configureDefault?.Invoke(defaultPluginOption);
+        return defaultPluginOption;
+    }
 }
