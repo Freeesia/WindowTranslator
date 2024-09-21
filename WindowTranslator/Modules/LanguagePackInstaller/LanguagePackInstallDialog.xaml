@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.LanguagePackInstaller"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="https://github.com/whistyun/MdXaml"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="LanguagePackInstallDialog"
     Width="320"
@@ -32,10 +33,73 @@
             Icon="{ui:ImageIcon '/wt.ico'}"
             ShowMaximize="False"
             ShowMinimize="False" />
-        <ui:TextBlock
+        <md:MarkdownScrollViewer
             x:Name="text"
             Margin="8"
-            TextWrapping="Wrap" />
+            ClickAction="OpenBrowser">
+            <md:MarkdownScrollViewer.MarkdownStyle>
+                <Style BasedOn="{x:Static md:MarkdownStyle.GithubLike}" TargetType="FlowDocument">
+                    <Style.Resources>
+                        <Style TargetType="Paragraph">
+                            <Setter Property="Margin" Value="0,8" />
+
+                            <Style.Triggers>
+                                <Trigger Property="Tag" Value="Heading1">
+                                    <Setter Property="Margin" Value="0,0,15,0" />
+
+                                    <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}" />
+                                    <Setter Property="FontSize" Value="28" />
+                                    <Setter Property="FontWeight" Value="UltraBold" />
+                                </Trigger>
+
+                                <Trigger Property="Tag" Value="Heading2">
+                                    <Setter Property="Margin" Value="0,0,15,0" />
+
+                                    <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}" />
+                                    <Setter Property="FontSize" Value="21" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+
+                                <Trigger Property="Tag" Value="Heading3">
+                                    <Setter Property="Margin" Value="0,0,10,0" />
+
+                                    <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}" />
+                                    <Setter Property="FontSize" Value="17.5" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+
+                                <Trigger Property="Tag" Value="Heading4">
+                                    <Setter Property="Margin" Value="0,0,5,0" />
+
+                                    <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}" />
+                                    <Setter Property="FontSize" Value="14" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+
+                                <Trigger Property="Tag" Value="CodeBlock">
+                                    <Setter Property="FontFamily" Value="Courier New" />
+                                    <Setter Property="FontSize" Value="11.9" />
+                                    <Setter Property="Background" Value="#12181F25" />
+                                    <Setter Property="Padding" Value="20,10" />
+                                </Trigger>
+
+                                <Trigger Property="Tag" Value="Note">
+                                    <Setter Property="Margin" Value="5,0,5,0" />
+                                    <Setter Property="Padding" Value="10,5" />
+                                    <Setter Property="BorderBrush" Value="#DEDEDE" />
+                                    <Setter Property="BorderThickness" Value="3,3,3,3" />
+                                    <Setter Property="Background" Value="#FAFAFA" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <Style TargetType="Hyperlink">
+                            <Setter Property="TextDecorations" Value="None" />
+                            <Setter Property="Foreground" Value="{ui:ThemeResource AccentTextFillColorSecondaryBrush}" />
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </md:MarkdownScrollViewer.MarkdownStyle>
+        </md:MarkdownScrollViewer>
         <ui:ProgressRing
             x:Name="progress"
             Width="48"
