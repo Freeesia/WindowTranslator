@@ -270,20 +270,8 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
     }
 
     private static bool IsInstalled()
-    {
-        if (GetInstallDir() is not { } path)
-        {
-            return false;
-        }
-        return Path.GetDirectoryName(Environment.ProcessPath) == path;
-    }
-
-    private static string? GetInstallDir()
-    {
-        string registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{1D495A96-C8B4-4314-A08B-60665057B447}";
-        using var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default).OpenSubKey(registryKey);
-        return key?.GetValue("InstallLocation") as string;
-    }
+        => Path.GetDirectoryName(Environment.ProcessPath)
+        == Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "StudioFreesia", "WindowTranslator");
 }
 
 interface IUpdateChecker
