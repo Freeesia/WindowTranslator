@@ -160,6 +160,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   オーバーレイ表示をキャプチャー可能にする に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string IsEnableCaptureOverlay {
+            get {
+                return ResourceManager.GetString("IsEnableCaptureOverlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   最新バージョンをご利用中です。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string IsLatest {

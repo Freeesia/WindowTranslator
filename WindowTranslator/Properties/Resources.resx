@@ -216,4 +216,7 @@
   <data name="OverlaySwitch" xml:space="preserve">
     <value>オーバーレイ表示の切り替え(Win+Alt+O)</value>
   </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>オーバーレイ表示をキャプチャー可能にする</value>
+  </data>
 </root>

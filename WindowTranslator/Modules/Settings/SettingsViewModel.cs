@@ -13,8 +13,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
-using System.Windows.Markup;
-using System.Windows.Media;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
@@ -109,6 +107,9 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     public OverlaySwitch OverlaySwitch { get; set; }
 
     [Category("SettingsViewModel|Misc")]
+    public bool IsEnableCaptureOverlay { get; set; }
+
+    [Category("SettingsViewModel|Misc")]
     public IList<ProcessName> AutoTargets { get; set; } = [];
 
     [Category("SettingsViewModel|Misc")]
@@ -167,6 +168,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         this.AutoTargets = userSettings.Value.AutoTargets.Select(t => new ProcessName() { Name = t }).ToList();
         this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
         this.OverlaySwitch = userSettings.Value.OverlaySwitch;
+        this.IsEnableCaptureOverlay = userSettings.Value.IsEnableCaptureOverlay;
 
         var asm = Assembly.GetExecutingAssembly();
         var name = asm.GetName();
@@ -284,6 +286,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
             AutoTargets = this.AutoTargets.Select(t => t.Name).OfType<string>().ToList(),
             IsEnableAutoTarget = this.IsEnableAutoTarget,
             OverlaySwitch = this.OverlaySwitch,
+            IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
             SelectedPlugins =
             {
                 [nameof(ITranslateModule)] = this.TranslateModule,

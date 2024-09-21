@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
-using WindowTranslator.ComponentModel;
+﻿using WindowTranslator.ComponentModel;
 using WindowTranslator.Properties;
 
 namespace WindowTranslator;
@@ -18,6 +16,8 @@ public class UserSettings
     public bool IsEnableAutoTarget { get; set; }
 
     public OverlaySwitch OverlaySwitch { get; set; } = OverlaySwitch.Hold;
+
+    public bool IsEnableCaptureOverlay { get; set; }
 
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 

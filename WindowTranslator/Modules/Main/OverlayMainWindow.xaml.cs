@@ -21,6 +21,7 @@ namespace WindowTranslator.Modules.Main;
 public partial class OverlayMainWindow : Window
 {
     private readonly OverlaySwitch overlaySwitch;
+    private readonly bool isEnableCapture;
     private readonly IProcessInfoStore processInfo;
     private readonly IPresentationService presentationService;
     private readonly DispatcherTimer timer = new();
@@ -52,6 +53,7 @@ public partial class OverlayMainWindow : Window
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
+        this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.processInfo = processInfo;
         this.presentationService = presentationService;
         this.logger = logger;
@@ -68,8 +70,12 @@ public partial class OverlayMainWindow : Window
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
-        var extendedStyle = (SetWindowLongFlags)GetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE);
-        var r = SetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE, extendedStyle | SetWindowLongFlags.WS_EX_TRANSPARENT | SetWindowLongFlags.WS_EX_TOOLWINDOW);
+        var extendedStyle = (SetWindowLongFlags)GetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE) | SetWindowLongFlags.WS_EX_TRANSPARENT;
+        if (!this.isEnableCapture)
+        {
+            extendedStyle |= SetWindowLongFlags.WS_EX_TOOLWINDOW;
+        }
+        var r = SetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE, extendedStyle);
         if (r == 0)
         {
             this.logger.LogError($"SetWindowLong failed. {Marshal.GetLastWin32Error()}");
