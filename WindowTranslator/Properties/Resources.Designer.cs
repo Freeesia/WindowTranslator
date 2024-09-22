@@ -241,7 +241,7 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   オーバーレイ表示の切り替え(Win+Alt+O) に類似しているローカライズされた文字列を検索します。
+        ///   オーバーレイ表示の切り替え(Ctrl+Alt+O) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OverlaySwitch {
             get {
@@ -309,6 +309,15 @@ namespace WindowTranslator.Properties {
         public static string Target {
             get {
                 return ResourceManager.GetString("Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   翻訳対象プロセス に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TargetProcesses {
+            get {
+                return ResourceManager.GetString("TargetProcesses", resourceCulture);
             }
         }
         
