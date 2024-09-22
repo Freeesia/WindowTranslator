@@ -109,8 +109,9 @@ builder.Services.AddTransient(_ =>
 });
 builder.Services.AddTransient<SettingsViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
-builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
+builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
+builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
 
 var app = builder.Build();
 using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
@@ -153,13 +154,38 @@ public class NoTranslateModule : ITranslateModule
         => ValueTask.FromResult(srcTexts.Select(s => s.Text).ToArray());
 }
 
-public class ConfigurePluginParam<TOptions>(IConfiguration config) : IConfigureOptions<TOptions>
+public class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TOptions>
     where TOptions : class, IPluginParam
 {
-    private readonly IConfiguration config = config.GetSection(nameof(UserSettings.PluginParams));
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
+    private readonly IProcessInfoStore store = store;
 
     public void Configure(TOptions options)
-        => this.config.GetSection(typeof(TOptions).Name).Bind(options);
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.GetSection(nameof(TOptions))
+            .Bind(options);
+    }
+}
+
+public class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>
+{
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
+    private readonly IProcessInfoStore store = store;
+
+    public void Configure(TargetSettings options)
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.Bind(options);
+    }
 }
 
 static class ServiceCollectionExtensions
@@ -174,7 +200,7 @@ static class ServiceCollectionExtensions
                 .GetPlugins()
                 .Where(p => typeof(T).IsAssignableFrom(p))
                 .ToArray();
-            var settings = sp.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+            var settings = sp.GetRequiredService<IOptionsSnapshot<TargetSettings>>();
             var dic = settings.Value.SelectedPlugins;
             var plugin = dic.TryGetValue(typeof(T).Name, out var name)
                 ? plugins.FirstOrDefault(p => p.Type.Name == name)

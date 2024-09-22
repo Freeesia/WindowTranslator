@@ -49,7 +49,7 @@ public partial class OverlayMainWindow : Window
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayMainWindow), new PropertyMetadata(1.0));
 
-    public OverlayMainWindow(IOptionsSnapshot<UserSettings> settings, IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
+    public OverlayMainWindow(IOptionsSnapshot<CommonSettings> settings, IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;

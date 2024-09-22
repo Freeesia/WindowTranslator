@@ -149,7 +149,8 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
 
     public SettingsViewModel(
         [Inject] PluginProvider provider,
-        [Inject] IOptionsSnapshot<UserSettings> userSettings,
+        [Inject] IOptionsSnapshot<CommonSettings> common,
+        [Inject] IOptionsSnapshot<TargetSettings> target,
         [Inject] IEnumerable<IPluginParam> @params,
         [Inject] IServiceProvider sp,
         [Inject] IPresentationService presentationService,
@@ -158,18 +159,20 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         var items = provider.GetPlugins();
         this.TranslateModules = items.Where(p => typeof(ITranslateModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
         this.CacheModules = items.Where(p => typeof(ICacheModule).IsAssignableFrom(p.Type)).Select(Convert).ToList();
-        var dic = userSettings.Value.SelectedPlugins;
+        this.ViewMode = common.Value.ViewMode;
+        this.AutoTargets = new(common.Value.AutoTargets);
+        this.IsEnableAutoTarget = common.Value.IsEnableAutoTarget;
+        this.OverlaySwitch = common.Value.OverlaySwitch;
+        this.IsEnableCaptureOverlay = common.Value.IsEnableCaptureOverlay;
+
+        var dic = target.Value.SelectedPlugins;
         this.TranslateModule = dic.TryGetValue(nameof(ITranslateModule), out var t) ? t : this.TranslateModules.OrderByDescending(i => i.IsDefault).First().Name;
         this.CacheModule = dic.TryGetValue(nameof(ICacheModule), out var c) ? c : this.CacheModules.OrderByDescending(i => i.IsDefault).First().Name;
-        this.Source = userSettings.Value.Language.Source;
-        this.Target = userSettings.Value.Language.Target;
-        this.Font = userSettings.Value.Font;
-        this.FontScale = userSettings.Value.FontScale;
-        this.ViewMode = userSettings.Value.ViewMode;
-        this.AutoTargets = new(userSettings.Value.AutoTargets);
-        this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
-        this.OverlaySwitch = userSettings.Value.OverlaySwitch;
-        this.IsEnableCaptureOverlay = userSettings.Value.IsEnableCaptureOverlay;
+        this.Source = target.Value.Language.Source;
+        this.Target = target.Value.Language.Target;
+        this.Font = target.Value.Font;
+        this.FontScale = target.Value.FontScale;
+
 
         var asm = Assembly.GetExecutingAssembly();
         var name = asm.GetName();
@@ -280,20 +283,29 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         }
         var settings = new UserSettings()
         {
-            Language = { Source = this.Source, Target = this.Target },
-            ViewMode = this.ViewMode,
-            Font = this.Font,
-            FontScale = this.FontScale,
-            AutoTargets = this.AutoTargets,
-            IsEnableAutoTarget = this.IsEnableAutoTarget,
-            OverlaySwitch = this.OverlaySwitch,
-            IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
-            SelectedPlugins =
+            Common = new()
             {
-                [nameof(ITranslateModule)] = this.TranslateModule,
-                [nameof(ICacheModule)] = this.CacheModule,
+                ViewMode = this.ViewMode,
+                AutoTargets = this.AutoTargets,
+                IsEnableAutoTarget = this.IsEnableAutoTarget,
+                OverlaySwitch = this.OverlaySwitch,
+                IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
             },
-            PluginParams = this.Params.ToDictionary(p => p.GetType().Name, p => p),
+            Targets =
+            {
+                [string.Empty] = new()
+                {
+                    Language = { Source = this.Source, Target = this.Target },
+                    Font = this.Font,
+                    FontScale = this.FontScale,
+                    SelectedPlugins =
+                    {
+                        [nameof(ITranslateModule)] = this.TranslateModule,
+                        [nameof(ICacheModule)] = this.CacheModule,
+                    },
+                    PluginParams = this.Params.ToDictionary(p => p.GetType().Name, p => p),
+                }
+            },
         };
         Directory.CreateDirectory(PathUtility.UserDir);
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);

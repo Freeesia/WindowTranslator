@@ -6,11 +6,11 @@ namespace WindowTranslator.Stores;
 public sealed class TargetStore : ITargetStore, IDisposable
 {
     private readonly static string targetsPath = Path.Combine(PathUtility.UserDir, "autoTargets.json");
-    private readonly IOptionsMonitor<UserSettings> userSettings;
+    private readonly IOptionsMonitor<CommonSettings> userSettings;
     private readonly List<string> targets;
     private readonly List<IntPtr> activeWindows = [];
 
-    public TargetStore(IOptionsMonitor<UserSettings> userSettings)
+    public TargetStore(IOptionsMonitor<CommonSettings> userSettings)
     {
         this.userSettings = userSettings;
         if (File.Exists(targetsPath))
