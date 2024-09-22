@@ -52,6 +52,7 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore auto
             }
             if (this.autoTargetStore.IsTarget(hWnd, p.ProcessName))
             {
+                this.logger.LogInformation($"`{p.ProcessName}`の翻訳を開始");
                 this.checkedWindows.Add(hWnd);
                 this.mainWindowModule.OpenTargetAsync(hWnd, p.ProcessName).Forget();
             }
