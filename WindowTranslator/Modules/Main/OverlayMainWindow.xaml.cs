@@ -89,7 +89,7 @@ public partial class OverlayMainWindow : Window
         SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
         this.timer.Start();
 
-        RegisterHotKey(new(this.windowHandle), 0, HOT_KEY_MODIFIERS.MOD_WIN | HOT_KEY_MODIFIERS.MOD_ALT, (uint)KeyInterop.VirtualKeyFromKey(Key.O));
+        RegisterHotKey(new(this.windowHandle), 0, HOT_KEY_MODIFIERS.MOD_CONTROL | HOT_KEY_MODIFIERS.MOD_ALT, (uint)KeyInterop.VirtualKeyFromKey(Key.O));
         var source = HwndSource.FromHwnd(this.windowHandle);
         source.AddHook(WndProc);
 
