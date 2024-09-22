@@ -313,6 +313,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   翻訳対象プロセス に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TargetProcesses {
+            get {
+                return ResourceManager.GetString("TargetProcesses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   押してON/OFFを切り替える に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Toggle {

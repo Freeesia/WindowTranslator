@@ -1,4 +1,5 @@
-﻿using PropertyTools.Wpf;
+﻿using HwndExtensions.Utils;
+using PropertyTools.Wpf;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Wpf.Ui.Markup;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
@@ -16,10 +18,39 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         if (property.Is(typeof(ICommand)))
         {
             var button = new Button();
-            button.SetBinding(System.Windows.Controls.Primitives.ButtonBase.CommandProperty, property.CreateOneWayBinding());
+            button.SetBinding(ButtonBase.CommandProperty, property.CreateOneWayBinding());
             button.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
             button.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
             return button;
+        }
+        else if (property.PropertyName == nameof(SettingsViewModel.AutoTargets))
+        {
+            var list = new Wpf.Ui.Controls.ListView();
+            list.SetBinding(ItemsControl.ItemsSourceProperty, property.CreateOneWayBinding());
+            var text = new FrameworkElementFactory(typeof(TextBlock));
+            text.SetBinding(TextBlock.TextProperty, new Binding());
+            var button = new FrameworkElementFactory(typeof(Wpf.Ui.Controls.Button));
+            button.SetValue(Wpf.Ui.Controls.Button.IconProperty, new SymbolIconExtension(Wpf.Ui.Controls.SymbolRegular.Delete24));
+            button.SetValue(DockPanel.DockProperty, Dock.Right);
+            button.SetValue(FrameworkElement.MarginProperty, new Thickness(0, 0, 8, 0));
+            button.AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler((s, e) =>
+            {
+                var button = s as FrameworkElement;
+                var item = button.TryFindVisualAncestor<Wpf.Ui.Controls.ListViewItem>()?.DataContext as string;
+                var list = button.TryFindVisualAncestor<Wpf.Ui.Controls.ListView>()?.ItemsSource as IList<string>;
+                if (list is not null && item is not null)
+                {
+                    list.Remove(item);
+                }
+            }));
+
+            var dock = new FrameworkElementFactory(typeof(DockPanel));
+            dock.SetValue(FrameworkElement.MarginProperty, new Thickness(8, 0, 8, 0));
+            dock.AppendChild(button);
+            dock.AppendChild(text);
+            list.SetCurrentValue(ItemsControl.ItemTemplateProperty, new DataTemplate() { VisualTree = dock });
+            list.SetCurrentValue(FrameworkElement.HeightProperty, 400d);
+            return list;
         }
         return base.CreateControl(property, options);
     }

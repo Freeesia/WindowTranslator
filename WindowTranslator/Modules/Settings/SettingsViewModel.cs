@@ -4,6 +4,7 @@ using Kamishibai;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -109,11 +110,11 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
     [Category("SettingsViewModel|Misc")]
     public bool IsEnableCaptureOverlay { get; set; }
 
-    [Category("SettingsViewModel|Misc")]
-    public IList<ProcessName> AutoTargets { get; set; } = [];
-
-    [Category("SettingsViewModel|Misc")]
+    [Category("TargetProcesses|")]
     public bool IsEnableAutoTarget { get; set; }
+
+    [Category("TargetProcesses|")]
+    public ObservableCollection<string> AutoTargets { get; set; } = [];
 
     [Comment]
     [Category("About|")]
@@ -165,7 +166,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         this.Font = userSettings.Value.Font;
         this.FontScale = userSettings.Value.FontScale;
         this.ViewMode = userSettings.Value.ViewMode;
-        this.AutoTargets = userSettings.Value.AutoTargets.Select(t => new ProcessName() { Name = t }).ToList();
+        this.AutoTargets = new(userSettings.Value.AutoTargets);
         this.IsEnableAutoTarget = userSettings.Value.IsEnableAutoTarget;
         this.OverlaySwitch = userSettings.Value.OverlaySwitch;
         this.IsEnableCaptureOverlay = userSettings.Value.IsEnableCaptureOverlay;
@@ -283,7 +284,7 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
             ViewMode = this.ViewMode,
             Font = this.Font,
             FontScale = this.FontScale,
-            AutoTargets = this.AutoTargets.Select(t => t.Name).OfType<string>().ToList(),
+            AutoTargets = this.AutoTargets,
             IsEnableAutoTarget = this.IsEnableAutoTarget,
             OverlaySwitch = this.OverlaySwitch,
             IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
@@ -301,7 +302,3 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
 }
 
 public record ModuleItem(string Name, string DisplayName, bool IsDefault);
-public record ProcessName
-{
-    public string? Name { get; set; }
-}

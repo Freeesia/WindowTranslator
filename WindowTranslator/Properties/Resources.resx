@@ -219,4 +219,7 @@
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>オーバーレイ表示をキャプチャー可能にする</value>
   </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>翻訳対象プロセス</value>
+  </data>
 </root>
