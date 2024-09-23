@@ -18,8 +18,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-
-    <!-- Configure Sentry -->
+  </PropertyGroup>
+  <!-- Configure Sentry -->
+  <PropertyGroup Condition="'$(SENTRY_AUTH_TOKEN)' != ''">
     <SentryOrg>studiofreesia</SentryOrg>
     <SentryProject>window-translator</SentryProject>
     <SentryUploadSymbols>true</SentryUploadSymbols>
