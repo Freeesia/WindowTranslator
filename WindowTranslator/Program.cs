@@ -80,6 +80,7 @@ builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
+builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
 ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(_ =>
 {

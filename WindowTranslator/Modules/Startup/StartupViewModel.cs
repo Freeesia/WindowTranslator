@@ -31,13 +31,13 @@ public partial class StartupViewModel
         this.serviceProvider = serviceProvider;
         this.mainWindowModule = mainWindowModule;
         this.mainWindowModule.OpenedWindows.CollectionChanged += OpenedWindows_CollectionChanged;
-        this.TaskBarIconMenus = new[]
-        {
+        this.TaskBarIconMenus =
+        [
             new MenuItemViewModel(Resources.Attach, this.RunCommand, []),
             new MenuItemViewModel(Resources.Detach, null, this.detatchableMenues),
             new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
             new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
-        };
+        ];
     }
 
     private void OpenedWindows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -129,7 +129,8 @@ public partial class StartupViewModel
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var app = Application.Current;
         var window = app.MainWindow;
-        await ps.OpenSettingsDialogAsync(window, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        await ps.OpenAllSettingsDialogAsync(window, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner});
+        //await ps.OpenSettingsDialogAsync(window, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
     }
 
     [RelayCommand]
