@@ -20,172 +20,179 @@
     <ui:FluentWindow.Resources>
         <BooleanToVisibilityConverter x:Key="b2vConv" />
     </ui:FluentWindow.Resources>
-    <DockPanel>
-        <ui:TitleBar
-            Title="{Binding Title}"
-            DockPanel.Dock="Top"
-            ShowMinimize="False">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="/wt.ico" />
-            </ui:TitleBar.Icon>
-            <ui:TitleBar.Header>
-                <StackPanel Orientation="Horizontal">
-                    <ui:DropDownButton
-                        Width="44"
-                        Height="30"
-                        VerticalAlignment="Top"
-                        VerticalContentAlignment="Stretch"
-                        Background="Goldenrod"
-                        BorderThickness="0"
-                        CornerRadius="0"
-                        Icon="{ui:SymbolIcon MegaphoneLoud32}"
-                        MouseOverBackground="Gold"
-                        Style="{StaticResource DefaultUiButtonStyle}"
-                        Visibility="{Binding HasUpdate, Converter={StaticResource b2vConv}}">
-                        <ui:DropDownButton.ToolTip>
-                            <ui:TextBlock Text="{Binding NewVersion, StringFormat=新しいバージョン: {0} がリリースされました}" />
-                        </ui:DropDownButton.ToolTip>
-                        <ui:DropDownButton.Flyout>
-                            <ContextMenu>
-                                <ui:MenuItem Command="{Binding InstallUpdateCommand}">
-                                    <ui:MenuItem.Header>
-                                        <ui:TextBlock Text="{Binding NewVersion, StringFormat=新しいバージョン: {0} のインストール}" />
-                                    </ui:MenuItem.Header>
-                                    <ui:MenuItem.Icon>
-                                        <ui:SymbolIcon
-                                            Filled="True"
-                                            Foreground="LawnGreen"
-                                            Symbol="PresenceAvailable24" />
-                                    </ui:MenuItem.Icon>
-                                </ui:MenuItem>
-                                <ui:MenuItem
-                                    Command="{Binding OpenReleaseNotesCommand}"
-                                    Header="更新内容の確認"
-                                    Icon="{ui:SymbolIcon Globe24}" />
-                            </ContextMenu>
-                        </ui:DropDownButton.Flyout>
-                    </ui:DropDownButton>
-                    <ui:Button
-                        Width="44"
-                        Height="30"
-                        VerticalAlignment="Top"
-                        VerticalContentAlignment="Stretch"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding CheckUpdateCommand}"
-                        CornerRadius="0"
-                        Icon="{ui:SymbolIcon ArrowSync24}"
-                        ToolTip="新しいバージョンのチェック"
-                        Visibility="{Binding HasUpdate, Mode=OneWay, Converter={x:Static local:FalseToVisibilityConverter.Default}}" />
-                </StackPanel>
-            </ui:TitleBar.Header>
-        </ui:TitleBar>
-        <ProgressBar
-            Height="4"
-            DockPanel.Dock="Top"
-            IsIndeterminate="{Binding IsBusy, Mode=OneWay}" />
-        <StackPanel
-            HorizontalAlignment="Right"
-            DockPanel.Dock="Bottom"
-            Orientation="Horizontal">
-            <StackPanel.Resources>
-                <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="{x:Type ui:Button}">
-                    <Setter Property="Margin" Value="4" />
-                    <Setter Property="Width" Value="120" />
-                </Style>
-            </StackPanel.Resources>
-            <ui:Button
-                Command="{Binding OkCommand}"
-                Content="OK"
-                IsDefault="True" />
-            <ui:Button
-                Command="{Binding CancelCommand}"
-                Content="キャンセル"
-                IsCancel="True" />
-        </StackPanel>
-        <TabControl>
-            <TabItem Header="全般設定">
-                <DockPanel>
-                    <DockPanel.Resources>
-                        <Style BasedOn="{StaticResource {x:Type GroupBox}}" TargetType="{x:Type GroupBox}">
-                            <Setter Property="Margin" Value="4" />
-                        </Style>
-                    </DockPanel.Resources>
-                    <GroupBox DockPanel.Dock="Top" Header="表示方法">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+    <Grid>
+        <DockPanel>
+            <ui:TitleBar
+                Title="{Binding Title}"
+                DockPanel.Dock="Top"
+                ShowMinimize="False">
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon Source="/wt.ico" />
+                </ui:TitleBar.Icon>
+                <ui:TitleBar.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:DropDownButton
+                            Width="44"
+                            Height="30"
+                            VerticalAlignment="Top"
+                            VerticalContentAlignment="Stretch"
+                            Background="Goldenrod"
+                            BorderThickness="0"
+                            CornerRadius="0"
+                            Icon="{ui:SymbolIcon MegaphoneLoud32}"
+                            MouseOverBackground="Gold"
+                            Style="{StaticResource DefaultUiButtonStyle}"
+                            Visibility="{Binding HasUpdate, Converter={StaticResource b2vConv}}">
+                            <ui:DropDownButton.ToolTip>
+                                <ui:TextBlock Text="{Binding NewVersion, StringFormat=新しいバージョン: {0} がリリースされました}" />
+                            </ui:DropDownButton.ToolTip>
+                            <ui:DropDownButton.Flyout>
+                                <ContextMenu>
+                                    <ui:MenuItem Command="{Binding InstallUpdateCommand}">
+                                        <ui:MenuItem.Header>
+                                            <ui:TextBlock Text="{Binding NewVersion, StringFormat=新しいバージョン: {0} のインストール}" />
+                                        </ui:MenuItem.Header>
+                                        <ui:MenuItem.Icon>
+                                            <ui:SymbolIcon
+                                                Filled="True"
+                                                Foreground="LawnGreen"
+                                                Symbol="PresenceAvailable24" />
+                                        </ui:MenuItem.Icon>
+                                    </ui:MenuItem>
+                                    <ui:MenuItem
+                                        Command="{Binding OpenReleaseNotesCommand}"
+                                        Header="更新内容の確認"
+                                        Icon="{ui:SymbolIcon Globe24}" />
+                                </ContextMenu>
+                            </ui:DropDownButton.Flyout>
+                        </ui:DropDownButton>
+                        <ui:Button
+                            Width="44"
+                            Height="30"
+                            VerticalAlignment="Top"
+                            VerticalContentAlignment="Stretch"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding CheckUpdateCommand}"
+                            CornerRadius="0"
+                            Icon="{ui:SymbolIcon ArrowSync24}"
+                            ToolTip="新しいバージョンのチェック"
+                            Visibility="{Binding HasUpdate, Mode=OneWay, Converter={x:Static local:FalseToVisibilityConverter.Default}}" />
+                    </StackPanel>
+                </ui:TitleBar.Header>
+            </ui:TitleBar>
+            <ProgressBar
+                Height="4"
+                DockPanel.Dock="Top"
+                IsIndeterminate="{Binding IsBusy, Mode=OneWay}" />
+            <DockPanel DockPanel.Dock="Bottom">
+                <DockPanel.Resources>
+                    <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="{x:Type ui:Button}">
+                        <Setter Property="Margin" Value="4" />
+                        <Setter Property="Width" Value="120" />
+                    </Style>
+                </DockPanel.Resources>
 
-                            <Label
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="翻訳結果表示モード" />
-                            <ComboBox
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                ItemsSource="{Binding ResultDisplayModes}"
-                                SelectedItem="{Binding SelectedResultDisplayMode}" />
+                <ui:Button
+                    Command="{Binding CancelCommand}"
+                    Content="キャンセル"
+                    DockPanel.Dock="Right"
+                    IsCancel="True" />
+                <ui:Button
+                    Command="{Binding OkCommand}"
+                    Content="OK"
+                    DockPanel.Dock="Right"
+                    IsDefault="True" />
+                <ui:ToggleSwitch
+                    Margin="4"
+                    Content="PC起動時に自動起動"
+                    IsChecked="{Binding IsStartup, Mode=TwoWay}" />
+            </DockPanel>
+            <TabControl>
+                <TabItem Header="全般設定">
+                    <DockPanel>
+                        <DockPanel.Resources>
+                            <Style BasedOn="{StaticResource {x:Type GroupBox}}" TargetType="{x:Type GroupBox}">
+                                <Setter Property="Margin" Value="4" />
+                            </Style>
+                        </DockPanel.Resources>
+                        <GroupBox DockPanel.Dock="Top" Header="表示方法">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <CheckBox
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Content="オーバーレイ表示をキャプチャー可能にする" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Content="翻訳結果表示モード" />
+                                <ComboBox
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding ResultDisplayModes}"
+                                    SelectedItem="{Binding SelectedResultDisplayMode}" />
 
-                            <Label
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="オーバーレイ表示の切り替え" />
-                            <ComboBox
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                ItemsSource="{Binding OverlayDisplayModes}"
-                                SelectedItem="{Binding SelectedOverlayDisplayMode}" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="自動翻訳対象">
-                        <DockPanel>
-                            <CheckBox Content="一度翻訳した対象を自動的に翻訳する" DockPanel.Dock="Top" />
-                            <ui:ListView>
-                                <ui:ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <DockPanel>
-                                            <Button Content="編集" DockPanel.Dock="Right" />
-                                            <TextBlock Text="{Binding Name}" />
-                                        </DockPanel>
-                                    </DataTemplate>
-                                </ui:ListView.ItemTemplate>
-                            </ui:ListView>
-                        </DockPanel>
-                    </GroupBox>
-                </DockPanel>
-            </TabItem>
-            <TabItem Header="対象ごとの設定">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <ListBox
-                        Grid.Column="0"
-                        Margin="4"
-                        DisplayMemberPath="Name"
-                        ItemsSource="{Binding Settings}"
-                        SelectedItem="{Binding SelectedObject}" />
-                    <pt:PropertyGrid
-                        Grid.Column="1"
-                        Margin="8"
-                        SelectedObject="{Binding SelectedObject}" />
-                </Grid>
-            </TabItem>
-        </TabControl>
-    </DockPanel>
+                                <CheckBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Content="オーバーレイ表示をキャプチャー可能にする" />
+
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Content="オーバーレイ表示の切り替え" />
+                                <ComboBox
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding OverlayDisplayModes}"
+                                    SelectedItem="{Binding SelectedOverlayDisplayMode}" />
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="自動翻訳対象">
+                            <DockPanel>
+                                <CheckBox Content="一度翻訳した対象を自動的に翻訳する" DockPanel.Dock="Top" />
+                                <ui:ListView>
+                                    <ui:ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel>
+                                                <Button Content="編集" DockPanel.Dock="Right" />
+                                                <TextBlock Text="{Binding Name}" />
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ui:ListView.ItemTemplate>
+                                </ui:ListView>
+                            </DockPanel>
+                        </GroupBox>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="対象ごとの設定">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ListBox
+                            Grid.Column="0"
+                            Margin="4"
+                            DisplayMemberPath="Name"
+                            ItemsSource="{Binding Settings}"
+                            SelectedItem="{Binding SelectedObject}" />
+                        <pt:PropertyGrid
+                            Grid.Column="1"
+                            Margin="8"
+                            SelectedObject="{Binding SelectedObject}" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+        <ContentPresenter x:Name="RootContentDialog" />
+    </Grid>
 </ui:FluentWindow>

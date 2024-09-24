@@ -24,6 +24,7 @@ using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
+using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
@@ -81,6 +82,8 @@ builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
 builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
+builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
+
 ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
 builder.Services.AddTransient(_ =>
 {

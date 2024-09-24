@@ -2,15 +2,22 @@
 using System.Windows;
 using Wpf.Ui.Controls;
 using System.Globalization;
+using Wpf.Ui;
+using Wpf.Ui.Appearance;
 
 namespace WindowTranslator.Modules.Settings;
+
 /// <summary>
 /// AllSettingsDialog.xaml の相互作用ロジック
 /// </summary>
 public partial class AllSettingsDialog : FluentWindow
 {
-    public AllSettingsDialog()
-        => InitializeComponent();
+    public AllSettingsDialog(IContentDialogService contentDialogService)
+    {
+        SystemThemeWatcher.Watch(this);
+        InitializeComponent();
+        contentDialogService.SetDialogHost(this.RootContentDialog);
+    }
 }
 
 [ValueConversion(typeof(bool), typeof(Visibility))]
