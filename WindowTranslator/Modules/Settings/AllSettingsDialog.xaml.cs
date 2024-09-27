@@ -31,3 +31,15 @@ public sealed class FalseToVisibilityConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => value is Visibility v && v != Visibility.Visible;
 }
+
+[ValueConversion(typeof(string), typeof(string))]
+public sealed class TargetNameConverter : IValueConverter
+{
+    public static TargetNameConverter Default { get; } = new TargetNameConverter();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => value is string { Length: > 0 } name ? name : "Default";
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}

@@ -7,9 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pt="http://propertytools.org/wpf"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="AllSettingsDialog"
+    Title="{Binding Title}"
     Width="800"
-    Height="450"
+    Height="720"
     d:DataContext="{d:DesignInstance {x:Type local:AllSettingsViewModel}}"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -19,6 +19,13 @@
     mc:Ignorable="d">
     <ui:FluentWindow.Resources>
         <BooleanToVisibilityConverter x:Key="b2vConv" />
+        <Style BasedOn="{StaticResource {x:Type GroupBox}}" TargetType="{x:Type GroupBox}">
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="8" />
+        </Style>
     </ui:FluentWindow.Resources>
     <Grid>
         <DockPanel>
@@ -85,7 +92,7 @@
                 Height="4"
                 DockPanel.Dock="Top"
                 IsIndeterminate="{Binding IsBusy, Mode=OneWay}" />
-            <DockPanel DockPanel.Dock="Bottom">
+            <DockPanel Margin="4" DockPanel.Dock="Bottom">
                 <DockPanel.Resources>
                     <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="{x:Type ui:Button}">
                         <Setter Property="Margin" Value="4" />
@@ -94,12 +101,11 @@
                 </DockPanel.Resources>
 
                 <ui:Button
-                    Command="{Binding CancelCommand}"
                     Content="キャンセル"
                     DockPanel.Dock="Right"
                     IsCancel="True" />
                 <ui:Button
-                    Command="{Binding OkCommand}"
+                    Command="{Binding SaveCommand}"
                     Content="OK"
                     DockPanel.Dock="Right"
                     IsDefault="True" />
@@ -108,14 +114,9 @@
                     Content="PC起動時に自動起動"
                     IsChecked="{Binding IsStartup, Mode=TwoWay}" />
             </DockPanel>
-            <TabControl>
+            <TabControl SelectedIndex="{Binding SelectedTab}">
                 <TabItem Header="全般設定">
                     <DockPanel>
-                        <DockPanel.Resources>
-                            <Style BasedOn="{StaticResource {x:Type GroupBox}}" TargetType="{x:Type GroupBox}">
-                                <Setter Property="Margin" Value="4" />
-                            </Style>
-                        </DockPanel.Resources>
                         <GroupBox DockPanel.Dock="Top" Header="表示方法">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -136,13 +137,17 @@
                                 <ComboBox
                                     Grid.Row="0"
                                     Grid.Column="1"
-                                    ItemsSource="{Binding ResultDisplayModes}"
-                                    SelectedItem="{Binding SelectedResultDisplayMode}" />
+                                    DisplayMemberPath="Display"
+                                    ItemsSource="{Binding ViewModes}"
+                                    SelectedValue="{Binding ViewMode}"
+                                    SelectedValuePath="Value" />
 
                                 <CheckBox
                                     Grid.Row="1"
                                     Grid.Column="1"
-                                    Content="オーバーレイ表示をキャプチャー可能にする" />
+                                    Content="オーバーレイ表示をキャプチャー可能にする"
+                                    IsChecked="{Binding IsEnableCaptureOverlay}"
+                                    IsEnabled="{Binding IsCheckableCapture}" />
 
                                 <Label
                                     Grid.Row="2"
@@ -152,19 +157,24 @@
                                 <ComboBox
                                     Grid.Row="2"
                                     Grid.Column="1"
-                                    ItemsSource="{Binding OverlayDisplayModes}"
-                                    SelectedItem="{Binding SelectedOverlayDisplayMode}" />
+                                    DisplayMemberPath="Display"
+                                    ItemsSource="{Binding OverlaySwitches}"
+                                    SelectedValue="{Binding OverlaySwitch}"
+                                    SelectedValuePath="Value" />
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="自動翻訳対象">
                             <DockPanel>
-                                <CheckBox Content="一度翻訳した対象を自動的に翻訳する" DockPanel.Dock="Top" />
-                                <ui:ListView>
+                                <CheckBox
+                                    Content="一度翻訳した対象を自動的に翻訳する"
+                                    DockPanel.Dock="Top"
+                                    IsChecked="{Binding IsEnableAutoTarget}" />
+                                <ui:ListView ItemsSource="{Binding AutoTargets}">
                                     <ui:ListView.ItemTemplate>
                                         <DataTemplate>
                                             <DockPanel>
                                                 <Button Content="編集" DockPanel.Dock="Right" />
-                                                <TextBlock Text="{Binding Name}" />
+                                                <TextBlock Text="{Binding}" />
                                             </DockPanel>
                                         </DataTemplate>
                                     </ui:ListView.ItemTemplate>
@@ -175,21 +185,110 @@
                 </TabItem>
                 <TabItem Header="対象ごとの設定">
                     <Grid>
+                        <Grid.Resources>
+                            <local:SettingsPropertyGridFactory x:Key="factory" />
+                            <local:SettingsPropertyGridOperator x:Key="operator" />
+                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <ListBox
+                        <ui:ListView
                             Grid.Column="0"
                             Margin="4"
-                            DisplayMemberPath="Name"
-                            ItemsSource="{Binding Settings}"
-                            SelectedItem="{Binding SelectedObject}" />
+                            ItemsSource="{Binding Targets}"
+                            SelectedItem="{Binding SelectedTarget}">
+                            <ui:ListView.ItemContainerStyle>
+                                <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
+                                    <Setter Property="Content" Value="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}" />
+                                </Style>
+                            </ui:ListView.ItemContainerStyle>
+                        </ui:ListView>
                         <pt:PropertyGrid
                             Grid.Column="1"
                             Margin="8"
-                            SelectedObject="{Binding SelectedObject}" />
+                            ControlFactory="{StaticResource factory}"
+                            Operator="{StaticResource operator}"
+                            SelectedObject="{Binding SelectedTarget}" />
                     </Grid>
+                </TabItem>
+                <TabItem Header="Abount">
+                    <GroupBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="バージョン" />
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="ビルド日時" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="Developed By" />
+                            <Label
+                                Grid.Row="3"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="公開ページ" />
+                            <Label
+                                Grid.Row="4"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="ライセンス" />
+
+                            <ui:TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Text="{Binding Version}" />
+                            <ui:TextBlock
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Text="{Binding BuildDate}" />
+                            <ui:TextBlock
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Text="{Binding DevelopedBy}" />
+                            <pt:LinkBlock
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                NavigateUri="{Binding Link}"
+                                Text="{Binding Link}" />
+                            <ui:TextBlock
+                                Grid.Row="4"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Text="{Binding License}" />
+
+                            <ui:Button
+                                Grid.Row="5"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Command="{Binding OpenThirdPartyLicensesCommand}"
+                                Content="サードパーティーライセンス" />
+                        </Grid>
+                    </GroupBox>
                 </TabItem>
             </TabControl>
         </DockPanel>

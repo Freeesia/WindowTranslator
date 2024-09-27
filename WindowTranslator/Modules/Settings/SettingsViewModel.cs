@@ -312,5 +312,3 @@ internal partial class SettingsViewModel : ObservableObject, IEditableObject
         JsonSerializer.Serialize(fs, settings, serializerOptions);
     }
 }
-
-public record ModuleItem(string Name, string DisplayName, bool IsDefault);

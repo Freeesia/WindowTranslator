@@ -12,9 +12,7 @@ public class CommonSettings
 {
     public ViewMode ViewMode { get; set; } = ViewMode.Overlay;
     public bool IsEnableCaptureOverlay { get; set; }
-
     public OverlaySwitch OverlaySwitch { get; set; } = OverlaySwitch.Hold;
-
     public bool IsEnableAutoTarget { get; set; }
     public IList<string> AutoTargets { get; set; } = [];
 }
