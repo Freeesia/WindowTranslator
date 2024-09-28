@@ -135,18 +135,22 @@ public class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProce
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.GetSection(nameof(TOptions))
+        section
+            .GetSection(nameof(TargetSettings.PluginParams))
+            .GetSection(typeof(TOptions).Name)
             .Bind(options);
     }
 
     public void Configure(string? name, TOptions options)
     {
-        var section = this.configuration.GetSection(this.store.Name);
+        var section = this.configuration.GetSection(name ?? this.store.Name);
         if (!section.Exists())
         {
             section = this.configuration.GetSection(name ?? Options.DefaultName);
         }
-        section.GetSection(nameof(TOptions))
+        section
+            .GetSection(nameof(TargetSettings.PluginParams))
+            .GetSection(typeof(TOptions).Name)
             .Bind(options);
     }
 }

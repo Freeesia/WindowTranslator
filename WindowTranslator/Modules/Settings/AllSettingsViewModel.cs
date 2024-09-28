@@ -35,7 +35,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     };
     private readonly IUpdateChecker updateChecker;
     private readonly IContentDialogService dialogService;
-
+    private readonly IPresentationService presentationService;
     [ObservableProperty]
     private bool isBusy;
 
@@ -96,6 +96,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IServiceProvider sp,
         [Inject] IUpdateChecker updateChecker,
         [Inject] IContentDialogService dialogService,
+        [Inject] IPresentationService presentationService,
         string target)
     {
         var items = provider.GetPlugins();
@@ -122,6 +123,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         this.updateChecker = updateChecker;
         this.dialogService = dialogService;
+        this.presentationService = presentationService;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
@@ -226,6 +228,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         Directory.CreateDirectory(PathUtility.UserDir);
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
         await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
+        await this.presentationService.CloseDialogAsync(true);
     }
 
     public void Dispose()
@@ -318,12 +321,12 @@ public partial class TargetSettingsViewModel(
 
     public IReadOnlyList<IPluginParam> Params { get; } = @params.Select(p =>
     {
-        var configureType = typeof(IConfigureOptions<>).MakeGenericType(p.GetType());
-        var configures = (IEnumerable<object>)sp.GetRequiredKeyedService(typeof(IEnumerable<>).MakeGenericType(configureType), name)!;
-        var configureMethod = configureType.GetMethod(nameof(IConfigureOptions<object>.Configure))!;
+        var configureType = typeof(IConfigureNamedOptions<>).MakeGenericType(p.GetType());
+        var configures = (IEnumerable<object>)sp.GetService(typeof(IEnumerable<>).MakeGenericType(configureType))!;
+        var configureMethod = configureType.GetMethod(nameof(IConfigureNamedOptions<object>.Configure))!;
         foreach (var configure in configures)
         {
-            configureMethod.Invoke(configure, [p]);
+            configureMethod.Invoke(configure, [name, p]);
         }
         return p;
     }).ToArray();

@@ -201,6 +201,7 @@
                             <ui:ListView.ItemContainerStyle>
                                 <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
                                     <Setter Property="Content" Value="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}" />
+                                    <Setter Property="Padding" Value="8" />
                                 </Style>
                             </ui:ListView.ItemContainerStyle>
                         </ui:ListView>
