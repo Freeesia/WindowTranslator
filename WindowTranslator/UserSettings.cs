@@ -14,7 +14,6 @@ public class CommonSettings
     public bool IsEnableCaptureOverlay { get; set; }
     public OverlaySwitch OverlaySwitch { get; set; } = OverlaySwitch.Hold;
     public bool IsEnableAutoTarget { get; set; }
-    public IList<string> AutoTargets { get; set; } = [];
 }
 
 public class TargetSettings

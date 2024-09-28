@@ -9,13 +9,13 @@ using System.Text.Unicode;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Extensions;
 
@@ -36,6 +36,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IUpdateChecker updateChecker;
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
+    private readonly IAutoTargetStore autoTargetStore;
     [ObservableProperty]
     private bool isBusy;
 
@@ -97,6 +98,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IUpdateChecker updateChecker,
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
+        [Inject] IAutoTargetStore autoTargetStore,
         string target)
     {
         var items = provider.GetPlugins();
@@ -108,7 +110,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.IsEnableCaptureOverlay = common.IsEnableCaptureOverlay;
         this.OverlaySwitch = common.OverlaySwitch;
         this.IsEnableAutoTarget = common.IsEnableAutoTarget;
-        this.AutoTargets = new(common.AutoTargets);
+        this.AutoTargets = new(autoTargetStore.AutoTargets);
 
         this.Targets = new(options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
@@ -116,15 +118,19 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            this.SelectedTab = 1;
             selected = new TargetSettingsViewModel(target, sp, new(), @params, translateModules, cacheModules);
             this.Targets.Add(selected);
+        }
+        if (!string.IsNullOrEmpty(target))
+        {
+            this.SelectedTab = 1;
         }
         this.SelectedTarget = selected;
 
         this.updateChecker = updateChecker;
         this.dialogService = dialogService;
         this.presentationService = presentationService;
+        this.autoTargetStore = autoTargetStore;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
@@ -190,6 +196,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
     [RelayCommand]
+    public void DeleteAutoTarget(string item)
+        => this.AutoTargets.Remove(item);
+
+    [RelayCommand]
     public static void OpenThirdPartyLicenses()
     {
         var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
@@ -204,7 +214,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             Common = new()
             {
                 ViewMode = this.ViewMode,
-                AutoTargets = this.AutoTargets,
                 IsEnableAutoTarget = this.IsEnableAutoTarget,
                 OverlaySwitch = this.OverlaySwitch,
                 IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
@@ -229,6 +238,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         Directory.CreateDirectory(PathUtility.UserDir);
         using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
         await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
+        this.autoTargetStore.AutoTargets.Clear();
+        this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
+        this.autoTargetStore.Save();
         await this.presentationService.CloseDialogAsync(true);
     }
 

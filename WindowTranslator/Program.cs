@@ -64,7 +64,7 @@ builder.Configuration
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
-builder.Services.AddSingleton<ITargetStore, TargetStore>();
+builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
 builder.Services.AddHostedService<WindowMonitor>();
 builder.Services.AddSingleton<UpdateChecker>()
     .AddSingleton<IUpdateChecker>(sp => sp.GetRequiredService<UpdateChecker>())

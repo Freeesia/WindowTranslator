@@ -173,8 +173,15 @@
                                     <ui:ListView.ItemTemplate>
                                         <DataTemplate>
                                             <DockPanel>
-                                                <Button Content="編集" DockPanel.Dock="Right" />
-                                                <TextBlock Text="{Binding}" />
+                                                <ui:Button
+                                                    Command="{Binding DataContext.DeleteAutoTargetCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="{ui:SymbolIcon Delete24}"
+                                                    DockPanel.Dock="Right" />
+                                                <TextBlock
+                                                    Margin="8,4"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding}" />
                                             </DockPanel>
                                         </DataTemplate>
                                     </ui:ListView.ItemTemplate>

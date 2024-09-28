@@ -7,10 +7,10 @@ using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator;
-public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore autoTargetStore, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
+public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore autoTargetStore, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
 {
     private readonly IMainWindowModule mainWindowModule = mainWindowModule;
-    private readonly ITargetStore autoTargetStore = autoTargetStore;
+    private readonly IAutoTargetStore autoTargetStore = autoTargetStore;
     private readonly IVirtualDesktopManager desktopManager = desktopManager;
     private readonly ILogger<WindowMonitor> logger = logger;
     private readonly HashSet<IntPtr> checkedWindows = [];
@@ -51,7 +51,7 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore auto
             {
                 return true;
             }
-            if (this.autoTargetStore.IsTarget(hWnd, p.ProcessName))
+            if (this.autoTargetStore.IsAutoTarget(hWnd, p.ProcessName))
             {
                 this.logger.LogInformation($"`{p.ProcessName}`の翻訳を開始");
                 this.checkedWindows.Add(hWnd);

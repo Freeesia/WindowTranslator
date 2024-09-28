@@ -1,8 +1,8 @@
 ﻿namespace WindowTranslator.Stores;
 
-public sealed class ProcessInfoStore(ITargetStore targetStore) : IProcessInfoStoreInternal, IDisposable
+public sealed class ProcessInfoStore(IAutoTargetStore targetStore) : IProcessInfoStoreInternal, IDisposable
 {
-    private readonly ITargetStore targetStore = targetStore;
+    private readonly IAutoTargetStore targetStore = targetStore;
 
     public IntPtr MainWindowHandle { get; private set; }
     public string Name { get; private set; } = string.Empty;
