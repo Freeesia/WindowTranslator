@@ -7,10 +7,11 @@ using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator;
-public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore autoTargetStore, ILogger<WindowMonitor> logger) : BackgroundService
+public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore autoTargetStore, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
 {
     private readonly IMainWindowModule mainWindowModule = mainWindowModule;
     private readonly ITargetStore autoTargetStore = autoTargetStore;
+    private readonly IVirtualDesktopManager desktopManager = desktopManager;
     private readonly ILogger<WindowMonitor> logger = logger;
     private readonly HashSet<IntPtr> checkedWindows = [];
 
@@ -31,7 +32,7 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, ITargetStore auto
         var windows = new HashSet<IntPtr>();
         User32.EnumWindows((hWnd, lParam) =>
         {
-            if (!User32.IsWindowVisible(hWnd) || this.checkedWindows.Contains(hWnd))
+            if (!User32.IsWindowVisible(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
             {
                 return true;
             }

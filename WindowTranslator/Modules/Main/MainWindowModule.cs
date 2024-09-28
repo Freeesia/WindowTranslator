@@ -1,14 +1,18 @@
 ﻿using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualStudio.Threading;
 using System.Collections.ObjectModel;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Main;
-public class MainWindowModule(App app, IServiceProvider provider) : IMainWindowModule
+public sealed class MainWindowModule(App app, IServiceProvider provider) : IMainWindowModule, IDisposable
 {
     private readonly App app = app;
     private readonly IServiceProvider provider = provider;
+    private readonly AsyncSemaphore asyncLock = new(1);
+
+
     public ObservableCollection<WindowInfo> OpenedWindows { get; } = new();
 
     public Task OpenTargetAsync(IntPtr mainWindowHandle, string name)
@@ -16,12 +20,19 @@ public class MainWindowModule(App app, IServiceProvider provider) : IMainWindowM
 
     private async Task OpenTargetWindowCoreAsync(IntPtr mainWindowHandle, string name)
     {
+        using var l = await this.asyncLock.EnterAsync();
         var scope = provider.CreateScope();
-        var options = scope.ServiceProvider.GetRequiredService<IOptions<CommonSettings>>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
         var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
         processInfo.SetTargetProcess(mainWindowHandle, name);
-        var window = options.Value.ViewMode switch
+
+        if (!options.Value.Targets.ContainsKey(name))
+        {
+            await presentationService.OpenAllSettingsDialogAsync(name);
+        }
+
+        var window = options.Value.Common.ViewMode switch
         {
             ViewMode.Capture => await presentationService.OpenCaptureMainWindowAsync(),
             ViewMode.Overlay => await presentationService.OpenOverlayMainWindowAsync(),
@@ -35,6 +46,9 @@ public class MainWindowModule(App app, IServiceProvider provider) : IMainWindowM
         };
         this.OpenedWindows.Add(info);
     }
+
+    public void Dispose()
+        => this.asyncLock.Dispose();
 }
 
 public interface IMainWindowModule

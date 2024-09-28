@@ -80,6 +80,7 @@ builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOn
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
+builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
 
 var app = builder.Build();
 using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
@@ -176,7 +177,7 @@ static class ServiceCollectionExtensions
     public static IServiceCollection AddPluginType<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, Action<DefaultPluginOption>? configureDefault = null) where T : class
     {
         services.Add(new(typeof(IEnumerable<T>), sp => sp.GetRequiredService<PluginProvider>().GetTypes<T>().AsEnumerable(), serviceLifetime));
-        services.Add(new(typeof(T), sp => 
+        services.Add(new(typeof(T), sp =>
         {
             var defaultPluginOptions = sp.GetDefaultPluginOptions<T>(configureDefault);
             var plugins = sp.GetRequiredService<PluginProvider>()

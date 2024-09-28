@@ -113,13 +113,14 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.Targets = new(options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
             .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, @params, translateModules, cacheModules)));
-        this.SelectedTarget = this.Targets.First();
 
-        if (!string.IsNullOrEmpty(target))
+        if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            this.SelectedTarget = this.Targets.FirstOrDefault(t => t.Name == target) ?? this.SelectedTarget;
             this.SelectedTab = 1;
+            selected = new TargetSettingsViewModel(target, sp, new(), @params, translateModules, cacheModules);
+            this.Targets.Add(selected);
         }
+        this.SelectedTarget = selected;
 
         this.updateChecker = updateChecker;
         this.dialogService = dialogService;

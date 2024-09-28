@@ -24,6 +24,7 @@ public partial class OverlayMainWindow : Window
     private readonly bool isEnableCapture;
     private readonly IProcessInfoStore processInfo;
     private readonly IPresentationService presentationService;
+    private readonly IVirtualDesktopManager desktopManager;
     private readonly DispatcherTimer timer = new();
     private readonly ILogger<OverlayMainWindow> logger;
     private IntPtr windowHandle;
@@ -49,13 +50,19 @@ public partial class OverlayMainWindow : Window
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayMainWindow), new PropertyMetadata(1.0));
 
-    public OverlayMainWindow(IOptionsSnapshot<CommonSettings> settings, IProcessInfoStore processInfo, IPresentationService presentationService, ILogger<OverlayMainWindow> logger)
+    public OverlayMainWindow(
+        IOptionsSnapshot<CommonSettings> settings,
+        IProcessInfoStore processInfo,
+        IPresentationService presentationService,
+        IVirtualDesktopManager desktopManager,
+        ILogger<OverlayMainWindow> logger)
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.processInfo = processInfo;
         this.presentationService = presentationService;
+        this.desktopManager = desktopManager;
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
@@ -70,6 +77,13 @@ public partial class OverlayMainWindow : Window
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
+
+        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+        {
+            var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.MainWindowHandle);
+            this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
+        }
+
         var extendedStyle = (SetWindowLongFlags)GetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE) | SetWindowLongFlags.WS_EX_TRANSPARENT;
         if (!this.isEnableCapture)
         {
@@ -110,6 +124,16 @@ public partial class OverlayMainWindow : Window
             this.timer.Stop();
             this.presentationService.CloseWindowAsync(this).Forget();
             return;
+        }
+
+        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+        {
+            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+            return;
+        }
+        else
+        {
+            this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         }
 
         var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
