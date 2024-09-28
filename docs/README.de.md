@@ -1,8 +1,9 @@
-# WindowTranslator
+# <img src="images/wt.png" width="32" > WindowTranslator
 
 [![App Build](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml)
-[![GitHub version](https://badge.fury.io/gh/Freeesia%2FWindowTranslator.svg)](https://badge.fury.io/gh/Freeesia%2FWindowTranslator)
-[![NuGet version](https://badge.fury.io/nu/WindowTranslator.Abstractions.svg)](https://badge.fury.io/nu/WindowTranslator.Abstractions)
+[![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 
 WindowTranslator ist ein Tool zum Übersetzen von Windows-Anwendungsfenstern.
 
@@ -49,46 +50,5 @@ Registrieren Sie sich als Benutzer auf der [DeepL-Website](https://www.deepl.com
   ![Fensterauswahl](images/select.png)
 3. Das Übersetzungsergebnis wird als Overlay angezeigt.   
   ![Übersetzungsergebnis](images/result.png)
-
-### Weitere Einstellungen
-
-#### Übersetzungsergebnisse in einem separaten Fenster anzeigen
-
-Sie können die Übersetzungsergebnisse in einem separaten Fenster anzeigen.  
-Öffnen Sie dazu den Einstellungsbildschirm und wählen Sie im Tab "Allgemeine Einstellungen" unter "Übersetzungsergebnisanzeigemodus" die Option "Capture Window" aus. Klicken Sie auf "OK", um den Einstellungsbildschirm zu schließen.
-![Anzeigemodus Einstellungen](images/settings_window.png)
-
-Wenn Sie die gewünschte Anwendung auswählen, werden die Übersetzungsergebnisse in einem separaten Fenster angezeigt.  
-![Fenstermodus](images/window_mode.png)
-
-#### Übersetzen von Fenstern bestimmter Anwendungen immer
-
-Sie können einstellen, dass WindowTranslator eine bestimmte Anwendung erkennt, wenn sie gestartet wird, und automatisch mit der Übersetzung beginnt.
-
-1. Starten Sie `WindowTranslator.exe` und öffnen Sie den Einstellungsbildschirm.  
-  ![Einstellungen](images/settings.png)
-2. Klicken Sie auf der Registerkarte "SettingsViewModel" auf die Schaltfläche "Ausführen" neben "Register to startup command", um die Anwendung beim Anmelden automatisch zu starten.   
-  ![Startup-Registrierung](images/startup.png)
-3. Geben Sie den Prozessnamen der Anwendung, die Sie übersetzen möchten, in das Feld "Automatische Übersetzung Ziel" auf der Registerkarte "Allgemeine Einstellungen" ein.  
-  ![Automatisches Übersetzungsziel](images/always_translate.png)
-  * Wenn Sie die Option "Automatisch übersetzen, wenn der ausgewählte Prozess gestartet wird" aktivieren, wird der Prozess automatisch als Übersetzungsziel registriert.
-4. Nach Abschluss der Einstellungen klicken Sie auf die Schaltfläche "OK", um den Einstellungsbildschirm zu schließen.
-5. Von nun an wird bei jedem Start des Zielprozesses eine Benachrichtigung angezeigt, die Sie fragt, ob Sie die Übersetzung starten möchten.  
-  ![Benachrichtigung](images/notify.png)
-
-##### Wenn die Benachrichtigung nicht angezeigt wird
-
-Wenn die Benachrichtigung nicht angezeigt wird, kann es sein, dass "Fokus-Assistent" aktiviert ist.   
-Folgen Sie diesen Schritten, um Benachrichtigungen zu aktivieren:
-
-1. Öffnen Sie die Einstellungen für "Benachrichtigungen" unter "System" in den Windows-Einstellungen.   
- ![Einstellungen](images/win_settings.png)
-2. Wählen Sie "Fokus-Assistent automatisch einschalten" und deaktivieren Sie das Kontrollkästchen "Wenn ich eine App im Vollbildmodus verwende".  
-  ![Fokus-Assistent](images/full.png)
-3. Klicken Sie unter "Prioritätsbenachrichtigungen einstellen" auf "App hinzufügen".  
- ![Benachrichtigungseinstellungen](images/notification.png)
- ![Prioritätsbenachrichtigungen](images/priority.png)
-4. Wählen Sie "WindowTranslator" aus.   
-  ![App auswählen](images/select_app.png)
 
 > Translated with ChatGPT

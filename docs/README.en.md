@@ -1,8 +1,9 @@
-# WindowTranslator
+# <img src="images/wt.png" width="32" > WindowTranslator
 
 [![App Build](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml)
-[![GitHub version](https://badge.fury.io/gh/Freeesia%2FWindowTranslator.svg)](https://badge.fury.io/gh/Freeesia%2FWindowTranslator)
-[![NuGet version](https://badge.fury.io/nu/WindowTranslator.Abstractions.svg)](https://badge.fury.io/nu/WindowTranslator.Abstractions)
+[![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 
 WindowTranslator is a tool for translating Windows application windows.
 
@@ -49,46 +50,5 @@ Register as a user on the [DeepL website](https://www.deepl.com/pro-api) and obt
   ![Window Selection](images/select.png)
 3. The translation result will be displayed as an overlay.  
   ![Translation Result](images/result.png)
-
-### Other Settings
-
-#### Display Translation Results in a Separate Window
-
-You can display the translation results in a separate window.  
-In the settings screen, select "Capture Window" in "Translation Result Display Mode" under the "General Settings" tab, then click the "OK" button to close the settings screen.   
-![Display Mode Settings](images/settings_window.png)
-
-When you select the application you want to translate, the translation result will be displayed in a separate window.   
-![Window Mode](images/window_mode.png)
-
-#### Always Translate a Specific Application Window
-
-You can set WindowTranslator to automatically detect and start translating a specific application when it is launched.
-
-1. Launch `WindowTranslator.exe` and open the settings screen.  
-  ![Settings](images/settings.png)
-2. Click the "Execute" button for the "Register to startup command" under the "SettingsViewModel" tab to set it to start automatically when you log on.   
-  ![Startup Registration](images/startup.png)
-3. Enter the process name of the application you want to translate in "Auto Translate Target" under the "General Settings" tab  
-  ![Auto Translate Target](images/always_translate.png)
-  * By checking the "Automatically translate selected process when it is launched" option, the process will be automatically registered as a translation target.
-4. Once the settings are complete, click the "OK" button to close the settings screen.
-5. From now on, when the target process is launched, a notification will appear asking if you want to start translation.  
-  ![Notification](images/notify.png)
-
-##### If the Notification is Not Displayed
-
-If the notification is not displayed, it is possible that "Focus Assist" is enabled.  
-Please follow the steps below to enable notifications.
-
-1. Open the "Notifications" settings under "System" in the Windows "Settings".  
- ![Settings](images/win_settings.png)
-2. Select "Automatically turn on Focus Assist" and uncheck "When I'm using an app in full screen mode".   
-  ![Focus Assist](images/full.png)
-3. Click "Add an app" under "Set priority notifications".  
- ![Notification Settings](images/notification.png)
- ![Priority Notifications](images/priority.png)
-4. Select "WindowTranslator".   
-  ![Select App](images/select_app.png)
 
 > Translated with ChatGPT
