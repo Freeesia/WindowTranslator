@@ -195,7 +195,7 @@ static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPluginType<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, Action<DefaultPluginOption>? configureDefault = null) where T : class
     {
-        services.Add(new(typeof(IEnumerable<T>), sp => sp.GetRequiredService<PluginProvider>().GetTypes<T>().AsEnumerable(), serviceLifetime));
+        services.Add(new(typeof(IEnumerable<T>), sp => sp.GetRequiredService<PluginProvider>().GetTypes<T>(), serviceLifetime));
         services.Add(new(typeof(T), sp =>
         {
             var defaultPluginOptions = sp.GetDefaultPluginOptions<T>(configureDefault);

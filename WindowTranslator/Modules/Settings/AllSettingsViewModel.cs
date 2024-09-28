@@ -9,6 +9,7 @@ using System.Text.Unicode;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
@@ -93,7 +94,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
-        [Inject] IEnumerable<IPluginParam> @params,
         [Inject] IServiceProvider sp,
         [Inject] IUpdateChecker updateChecker,
         [Inject] IContentDialogService dialogService,
@@ -114,11 +114,11 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         this.Targets = new(options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
-            .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, @params, translateModules, cacheModules)));
+            .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, translateModules, cacheModules)));
 
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            selected = new TargetSettingsViewModel(target, sp, new(), @params, translateModules, cacheModules);
+            selected = new TargetSettingsViewModel(target, sp, new(), translateModules, cacheModules);
             this.Targets.Add(selected);
         }
         if (!string.IsNullOrEmpty(target))
@@ -262,7 +262,6 @@ public partial class TargetSettingsViewModel(
     string name,
     IServiceProvider sp,
     TargetSettings settings,
-    IEnumerable<IPluginParam> @params,
     IReadOnlyList<ModuleItem> translateModules,
     IReadOnlyList<ModuleItem> cacheModules)
     : ObservableObject
@@ -332,7 +331,7 @@ public partial class TargetSettingsViewModel(
     [ObservableProperty]
     private double fontScale = settings.FontScale;
 
-    public IReadOnlyList<IPluginParam> Params { get; } = @params.Select(p =>
+    public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {
         var configureType = typeof(IConfigureNamedOptions<>).MakeGenericType(p.GetType());
         var configures = (IEnumerable<object>)sp.GetService(typeof(IEnumerable<>).MakeGenericType(configureType))!;
