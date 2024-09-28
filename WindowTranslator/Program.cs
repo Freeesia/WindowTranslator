@@ -80,6 +80,7 @@ builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOn
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
+builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
 
 var app = builder.Build();
@@ -123,7 +124,7 @@ public class NoTranslateModule : ITranslateModule
         => ValueTask.FromResult(srcTexts.Select(s => s.Text).ToArray());
 }
 
-public class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
+class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
     where TOptions : class, IPluginParam
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
@@ -156,7 +157,7 @@ public class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProce
     }
 }
 
-public class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
@@ -169,6 +170,23 @@ public class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoS
             section = this.configuration.GetSection(Options.DefaultName);
         }
         section.Bind(options);
+    }
+}
+
+
+class ConfigureLanguageOptions(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<LanguageOptions>
+{
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
+    private readonly IProcessInfoStore store = store;
+
+    public void Configure(LanguageOptions options)
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.GetSection(nameof(TargetSettings.Language)).Bind(options);
     }
 }
 
