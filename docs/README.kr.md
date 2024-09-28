@@ -20,11 +20,6 @@ WindowTranslator는 윈도우 애플리케이션의 창을 번역하는 도구�
 
 ### 사전 준비
 
-#### 언어 설정
-
-Windows의 언어 설정에 번역할 언어와 번역할 언어를 추가해 주세요.   
-[Windows 언어 추가 방법](https://support.microsoft.com/ja-jp/windows/windows-%E7%94%A8%E3%81%AE%E8%A8%80%E8%AA%9E%E3%83%91%E3%83%83%E3%82 %AF-a5094319-a92d-18de-5b53-1cfc697cfca8)   
-
 #### DeepL API 키 받기
 
 [DeepL 사이트](https://www.deepl.com/ja/pro-api)에서 사용자 등록을 하고 API 키를 발급받는다.  

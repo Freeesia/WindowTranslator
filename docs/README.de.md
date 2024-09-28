@@ -20,11 +20,6 @@ Laden Sie die ZIP-Datei von der [GitHub-Releases-Seite](https://github.com/Freee
 
 ### Voraussetzungen
 
-#### Spracheinstellungen
-
-Fügen Sie die Quell- und Zielsprachen für die Übersetzung in Ihre Windows-Spracheinstellungen hinzu.
-[So fügen Sie Sprachen zu Windows hinzu](https://support.microsoft.com/de-de/windows/language-packs-for-windows-a5094319-a92d-18de-5b53-1cfc697cfca8)
-
 #### DeepL API-Schlüssel erhalten
 
 Registrieren Sie sich als Benutzer auf der [DeepL-Website](https://www.deepl.com/pro-api) und erhalten Sie einen API-Schlüssel.   

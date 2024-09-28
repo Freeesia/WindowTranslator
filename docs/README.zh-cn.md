@@ -20,11 +20,6 @@ WindowTranslator是一个用于翻译Windows应用程序窗口的工具。
 
 ### 准备工作
 
-#### 语言设置
-
-请在Windows的语言设置中添加要作为翻译来源和翻译目标的语言。
-[为Windows添加语言的方法](https://support.microsoft.com/zh-cn/windows/windows-%E7%94%A8%E3%81%AE%E8%A8%80%E8%AA%9E%E3%83%91%E3%83%83%E3%82%AF-a5094319-a92d-18de-5b53-1cfc697cfca8)
-
 #### 获取DeepL API密钥
 
 请访问 [DeepL的网站](https://www.deepl.com/zh/pro-api) 注册用户，并获取API密钥。  

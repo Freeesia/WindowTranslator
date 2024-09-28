@@ -20,11 +20,6 @@ Download the zip file from the [GitHub Releases page](https://github.com/Freeesi
 
 ### Prerequisites
 
-#### Language Settings
-
-Add the source and target languages for translation to your Windows language settings.  
-[How to add languages to Windows](https://support.microsoft.com/en-us/windows/language-packs-for-windows-a5094319-a92d-18de-5b53-1cfc697cfca8)
-
 #### Obtain DeepL API Key
 
 Register as a user on the [DeepL website](https://www.deepl.com/pro-api) and obtain an API key.  
