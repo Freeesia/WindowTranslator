@@ -4,12 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PropertyTools.Wpf;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
@@ -24,9 +21,7 @@ using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
-using Wpf.Ui.Appearance;
-using Wpf.Ui.Controls;
-using Button = System.Windows.Controls.Button;
+using Wpf.Ui;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
@@ -70,7 +65,7 @@ builder.Configuration
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
-builder.Services.AddSingleton<ITargetStore, TargetStore>();
+builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
 builder.Services.AddHostedService<WindowMonitor>();
 builder.Services.AddSingleton<UpdateChecker>()
     .AddSingleton<IUpdateChecker>(sp => sp.GetRequiredService<UpdateChecker>())
@@ -80,37 +75,15 @@ builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
-ViewTypeCache.SetViewType<PropertyDialog, SettingsViewModel>();
-builder.Services.AddTransient(_ =>
-{
-    var dlg = new PropertyDialog();
-    dlg.ShowInTaskbar = true;
-    dlg.PropertyControl.SetCurrentValue(PropertyGrid.OperatorProperty, new SettingsPropertyGridOperator());
-    dlg.PropertyControl.SetCurrentValue(PropertyGrid.ControlFactoryProperty, new SettingsPropertyGridFactory());
-    dlg.SetResourceReference(FrameworkElement.StyleProperty, "DefaultWindowStyle");
-    dlg.Resources.Remove(typeof(Button));
-    dlg.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
-    dlg.SetCurrentValue(Window.TitleProperty, string.Empty);
-    dlg.SetCurrentValue(FrameworkElement.WidthProperty, 600d);
-    dlg.SetCurrentValue(Window.SizeToContentProperty, SizeToContent.Height);
-    var btnStyle = new Style(typeof(Button), (Style)Application.Current.FindResource(typeof(Button)));
-    btnStyle.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, 120d));
-    btnStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));
-    btnStyle.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(4)));
-    btnStyle.Seal();
-    dlg.Resources.Add(typeof(Button), btnStyle);
-    var panel = (DockPanel)dlg.Content;
-    var bar = new TitleBar() { ShowMinimize = false, ShowMaximize = false, Title = Resources.Settings };
-    DockPanel.SetDock(bar, Dock.Top);
-    panel.Children.Insert(0, bar);
-    SystemThemeWatcher.Watch(dlg);
-    dlg.Loaded += static (_, _) => ApplicationThemeManager.ApplySystemTheme(true);
-    return dlg;
-});
-builder.Services.AddTransient<SettingsViewModel>();
+builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
+builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
-builder.Services.Configure<LanguageOptions>(builder.Configuration.GetSection(nameof(UserSettings.Language)));
+builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
+builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
+builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
+builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
+builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
 
 var app = builder.Build();
 using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
@@ -119,7 +92,7 @@ if (!createdNew)
     new MessageDialog()
     {
         Caption = "WindowTranslator",
-        Icon = Kamishibai.MessageBoxImage.Error,
+        Icon = MessageBoxImage.Error,
         Text = Resources.MutexError,
     }.Show();
     return;
@@ -153,28 +126,85 @@ public class NoTranslateModule : ITranslateModule
         => ValueTask.FromResult(srcTexts.Select(s => s.Text).ToArray());
 }
 
-public class ConfigurePluginParam<TOptions>(IConfiguration config) : IConfigureOptions<TOptions>
+class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
     where TOptions : class, IPluginParam
 {
-    private readonly IConfiguration config = config.GetSection(nameof(UserSettings.PluginParams));
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
+    private readonly IProcessInfoStore store = store;
 
     public void Configure(TOptions options)
-        => this.config.GetSection(typeof(TOptions).Name).Bind(options);
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section
+            .GetSection(nameof(TargetSettings.PluginParams))
+            .GetSection(typeof(TOptions).Name)
+            .Bind(options);
+    }
+
+    public void Configure(string? name, TOptions options)
+    {
+        var section = this.configuration.GetSection(name ?? this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(name ?? Options.DefaultName);
+        }
+        section
+            .GetSection(nameof(TargetSettings.PluginParams))
+            .GetSection(typeof(TOptions).Name)
+            .Bind(options);
+    }
+}
+
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>
+{
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
+    private readonly IProcessInfoStore store = store;
+
+    public void Configure(TargetSettings options)
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.Bind(options);
+    }
+}
+
+
+class ConfigureLanguageOptions(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<LanguageOptions>
+{
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
+    private readonly IProcessInfoStore store = store;
+
+    public void Configure(LanguageOptions options)
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.GetSection(nameof(TargetSettings.Language)).Bind(options);
+    }
 }
 
 static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPluginType<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, Action<DefaultPluginOption>? configureDefault = null) where T : class
     {
-        var item = new ServiceDescriptor(typeof(IEnumerable<T>), (IServiceProvider sp) => sp.GetRequiredService<PluginProvider>().GetTypes<T>().AsEnumerable(), serviceLifetime);
-        var item2 = new ServiceDescriptor(typeof(T), delegate (IServiceProvider sp)
+        services.Add(new(typeof(IEnumerable<T>), sp => sp.GetRequiredService<PluginProvider>().GetTypes<T>(), serviceLifetime));
+        services.Add(new(typeof(T), sp =>
         {
             var defaultPluginOptions = sp.GetDefaultPluginOptions<T>(configureDefault);
             var plugins = sp.GetRequiredService<PluginProvider>()
                 .GetPlugins()
                 .Where(p => typeof(T).IsAssignableFrom(p))
                 .ToArray();
-            var settings = sp.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+            var settings = sp.GetRequiredService<IOptionsSnapshot<TargetSettings>>();
             var dic = settings.Value.SelectedPlugins;
             var plugin = dic.TryGetValue(typeof(T).Name, out var name)
                 ? plugins.FirstOrDefault(p => p.Type.Name == name)
@@ -185,9 +215,7 @@ static class ServiceCollectionExtensions
                 plugin = plugins.FirstOrDefault(p => p.Type == type);
             }
             return plugin.Create<T>(sp);
-        }, serviceLifetime);
-        services.Add(item);
-        services.Add(item2);
+        }, serviceLifetime));
         return services;
     }
 

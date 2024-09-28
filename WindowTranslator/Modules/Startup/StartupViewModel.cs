@@ -21,7 +21,7 @@ public partial class StartupViewModel
     private readonly IPresentationService presentationService;
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
-    private readonly ObservableCollection<MenuItemViewModel> detatchableMenues = new();
+    private readonly ObservableCollection<MenuItemViewModel> attachingWindows;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
@@ -30,38 +30,45 @@ public partial class StartupViewModel
         this.presentationService = presentationService;
         this.serviceProvider = serviceProvider;
         this.mainWindowModule = mainWindowModule;
+        this.attachingWindows = new(this.mainWindowModule.OpenedWindows.Select(CreateMenu));
         this.mainWindowModule.OpenedWindows.CollectionChanged += OpenedWindows_CollectionChanged;
-        this.TaskBarIconMenus = new[]
-        {
+        this.TaskBarIconMenus =
+        [
             new MenuItemViewModel(Resources.Attach, this.RunCommand, []),
-            new MenuItemViewModel(Resources.Detach, null, this.detatchableMenues),
+            new MenuItemViewModel("アタッチ中", null, this.attachingWindows),
             new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
             new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
-        };
+        ];
     }
 
     private void OpenedWindows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        switch(e.Action)
+        switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
                 foreach (var item in e.NewItems!.OfType<WindowInfo>())
                 {
-                    this.detatchableMenues.Add(new MenuItemViewModel(item.Name, new RelayCommand(item.Window.Close), []));
+                    this.attachingWindows.Add(CreateMenu(item));
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
                 foreach (var item in e.OldItems!.OfType<WindowInfo>())
                 {
-                    var menu = this.detatchableMenues.FirstOrDefault(x => x.Header == item.Name);
+                    var menu = this.attachingWindows.FirstOrDefault(x => x.Header == item.Name);
                     if (menu is not null)
                     {
-                        this.detatchableMenues.Remove(menu);
+                        this.attachingWindows.Remove(menu);
                     }
                 }
                 break;
         }
     }
+
+    private MenuItemViewModel CreateMenu(WindowInfo item)
+        => new(item.Name, null, [
+                new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
+                new(Resources.Detach, new RelayCommand(item.Window.Close), []),
+            ]);
 
     [RelayCommand]
     public async Task RunAsync()
@@ -123,13 +130,19 @@ public partial class StartupViewModel
     }
 
     [RelayCommand]
-    public async Task OpenSettingsDialogAsync()
+    public async Task OpenSettingsDialogAsync(string? target)
     {
         using var scope = this.serviceProvider.CreateScope();
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
-        var app = Application.Current;
-        var window = app.MainWindow;
-        await ps.OpenSettingsDialogAsync(window, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        var r = await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        if (r && !string.IsNullOrEmpty(target))
+        {
+            foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
+            {
+                w.Close();
+                await this.mainWindowModule.OpenTargetAsync(handle, target);
+            }
+        }
     }
 
     [RelayCommand]

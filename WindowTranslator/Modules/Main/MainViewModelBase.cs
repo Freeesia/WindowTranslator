@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
@@ -48,7 +47,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     public MainViewModelBase(
         IPresentationService presentationService,
-        IOptions<UserSettings> options,
+        IOptionsSnapshot<TargetSettings> options,
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
@@ -181,7 +180,7 @@ public abstract partial class MainViewModelBase : IDisposable
 [OpenWindow]
 public sealed class CaptureMainViewModel(
     [Inject] IPresentationService presentationService,
-    [Inject] IOptions<UserSettings> options,
+    [Inject] IOptionsSnapshot<TargetSettings> options,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
@@ -198,7 +197,7 @@ public sealed class CaptureMainViewModel(
 [OpenWindow]
 public sealed class OverlayMainViewModel(
     [Inject] IPresentationService presentationService,
-    [Inject] IOptions<UserSettings> options,
+    [Inject] IOptionsSnapshot<TargetSettings> options,
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
