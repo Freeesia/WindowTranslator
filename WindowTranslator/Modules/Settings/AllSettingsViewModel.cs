@@ -9,6 +9,7 @@ using System.Text.Unicode;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
@@ -38,6 +39,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
+    private readonly IConfigurationRoot? rootConfig;
     [ObservableProperty]
     private bool isBusy;
 
@@ -99,6 +101,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
+        [Inject] IConfiguration config,
         string target)
     {
         var items = provider.GetPlugins();
@@ -131,6 +134,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
+        this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
@@ -236,11 +240,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             }),
         };
         Directory.CreateDirectory(PathUtility.UserDir);
-        using var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None);
-        await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
+        using (var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None))
+            await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
         this.autoTargetStore.AutoTargets.Clear();
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
+        this.rootConfig?.Reload();
         await this.presentationService.CloseDialogAsync(true);
     }
 
