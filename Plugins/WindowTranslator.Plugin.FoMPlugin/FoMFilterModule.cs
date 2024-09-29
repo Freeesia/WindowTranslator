@@ -218,8 +218,8 @@ public partial class FoMFilterModule : IFilterModule
             this.exclude = options.Value.ExcludeUnspecifiedText;
             this.builtin = loc!.Eng
                 .Select(p => (
-                    en: ReplaceToPlain(p.Value, player, farm),
-                    ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) && s != "MISSING" ? ReplaceToPlain(s, player, farm) : string.Empty)))
+                    en: p.Value.ReplaceToPlain(player, farm),
+                    ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) ? s.CorrenctJpn().ReplaceToPlain(player, farm) : string.Empty)))
                 // OCRで段落ごとに分割されている場合があるので、それを考慮する
                 .SelectMany(p => SplitParagraph(p.en, p.ja))
                 // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
@@ -232,8 +232,8 @@ public partial class FoMFilterModule : IFilterModule
             var sample = loc.Jpn
                 .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
                 .Select(p => (p.Key,
-                    Ja: ReplaceToPlain(p.Value, player, farm).ReplaceLineEndings(string.Empty),
-                    En: ReplaceToPlain(loc.Eng[p.Key], player, farm).ReplaceLineEndings(string.Empty)))
+                    Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
+                    En: loc.Eng[p.Key].ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty)))
                 .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
                 .ToDictionary(
                     g => g.Key,
@@ -271,14 +271,6 @@ public partial class FoMFilterModule : IFilterModule
             this.context = FrozenDictionary<string, string>.Empty;
         }
     }
-
-    private static string ReplaceToPlain(string s, string player, string farm)
-        => s.Replace("[Ari]", player)
-            .Replace("[farm_name]", farm)
-            .Replace("$", string.Empty)
-            .Replace("=", string.Empty)
-            .Replace("^", string.Empty)
-            .Replace("{}", string.Empty);
 
     private static IEnumerable<(string en, LocInto ja)> SplitParagraph(string en, LocInto ja)
     {
@@ -445,4 +437,25 @@ public class FoMOptions : IPluginParam
         https://fieldsofmistria.wiki.gg/wiki/Characters
         Page content is under the Creative Commons Attribution-ShareAlike 4.0 License unless otherwise noted.
         """;
+}
+
+file static class Extentions
+{
+
+    public static string CorrenctJpn(this string s)
+        => s switch
+        {
+            "MISSING" => string.Empty,
+            "近い" => "閉じる",
+            "出口" => "終了",
+            _ => s,
+        };
+
+    public static string ReplaceToPlain(this string s, string player, string farm)
+        => s.Replace("[Ari]", player)
+            .Replace("[farm_name]", farm)
+            .Replace("$", string.Empty)
+            .Replace("=", string.Empty)
+            .Replace("^", string.Empty)
+            .Replace("{}", string.Empty);
 }
