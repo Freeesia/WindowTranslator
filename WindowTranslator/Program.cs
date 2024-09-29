@@ -150,7 +150,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         var section = this.configuration.GetSection(name ?? this.store.Name);
         if (!section.Exists())
         {
-            section = this.configuration.GetSection(name ?? Options.DefaultName);
+            section = this.configuration.GetSection(Options.DefaultName);
         }
         section
             .GetSection(nameof(TargetSettings.PluginParams))
