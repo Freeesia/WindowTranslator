@@ -48,7 +48,7 @@
     </PackageReference>
     <PackageReference Include="Octokit" Version="13.0.1" />
     <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
-    <PackageReference Include="Sentry.Extensions.Logging" Version="4.11.0" />
+    <PackageReference Include="Sentry.Extensions.Logging" Version="4.12.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
     <PackageReference Include="WPF-UI.Tray" Version="3.0.5" />
