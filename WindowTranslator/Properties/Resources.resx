@@ -222,4 +222,22 @@
   <data name="TargetProcesses" xml:space="preserve">
     <value>翻訳対象プロセス</value>
   </data>
+  <data name="WindowsMediaOcrParam" xml:space="preserve">
+    <value>WindowsOCRの設定</value>
+  </data>
+  <data name="PosThrethold" xml:space="preserve">
+    <value>位置ずれ閾値</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>行間閾値</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>文字間閾値</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>文字サイズずれ閾値</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>マージ閾値</value>
+  </data>
 </root>

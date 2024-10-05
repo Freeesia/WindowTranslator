@@ -147,7 +147,8 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
 
     public void Configure(string? name, TOptions options)
     {
-        var section = this.configuration.GetSection(name ?? this.store.Name);
+        name = (string.IsNullOrEmpty(name) ? this.store.Name : name) ?? string.Empty;
+        var section = this.configuration.GetSection(name);
         if (!section.Exists())
         {
             section = this.configuration.GetSection(Options.DefaultName);

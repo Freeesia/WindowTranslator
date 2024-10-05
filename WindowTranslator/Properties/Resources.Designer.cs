@@ -124,6 +124,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   文字サイズずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FontSizeThrethold {
+            get {
+                return ResourceManager.GetString("FontSizeThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アップデートがあります: {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string HasUpdate {
@@ -187,11 +196,29 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   行間閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LeadingThrethold {
+            get {
+                return ResourceManager.GetString("LeadingThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   ローカルファイルキャッシュ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string LocalCache {
             get {
                 return ResourceManager.GetString("LocalCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   マージ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MergeThrethold {
+            get {
+                return ResourceManager.GetString("MergeThrethold", resourceCulture);
             }
         }
         
@@ -259,6 +286,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string PosThrethold {
+            get {
+                return ResourceManager.GetString("PosThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アプリを自動的に起動する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RegisterToStartupCommand {
@@ -300,6 +336,15 @@ namespace WindowTranslator.Properties {
         public static string Source {
             get {
                 return ResourceManager.GetString("Source", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   文字間閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SpacingThreshold {
+            get {
+                return ResourceManager.GetString("SpacingThreshold", resourceCulture);
             }
         }
         
@@ -372,6 +417,15 @@ namespace WindowTranslator.Properties {
         public static string ViewMode {
             get {
                 return ResourceManager.GetString("ViewMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   WindowsOCRの設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WindowsMediaOcrParam {
+            get {
+                return ResourceManager.GetString("WindowsMediaOcrParam", resourceCulture);
             }
         }
     }
