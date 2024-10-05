@@ -23,6 +23,9 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 
 ## 使い方
 
+動画版はYouTubeから⬇️
+[![使い方動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)
+
 ### 事前準備
 
 #### DeepL APIキーの取得
