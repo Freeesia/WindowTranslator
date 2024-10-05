@@ -1,12 +1,19 @@
 ﻿using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using WinRT;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -14,20 +21,32 @@ namespace WindowTranslator.Modules.Ocr;
 [DisplayName("Windows標準文字認識")]
 public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<WindowsMediaOcrParam> ocrParam, ILogger<WindowsMediaOcr> logger) : IOcrModule
 {
+    private readonly string source = langOptions.Value.Source;
+    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(langOptions.Value.Source))
+            ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     private readonly double PosThrethold = ocrParam.Value.PosThrethold;
     private readonly double LeadingThrethold = ocrParam.Value.LeadingThrethold;
     private readonly double SpacingThreshold = ocrParam.Value.SpacingThreshold;
     private readonly double FontSizeThrethold = ocrParam.Value.FontSizeThrethold;
-    private readonly string source = langOptions.Value.Source;
-    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(langOptions.Value.Source))
-            ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
+    private readonly IReadOnlyList<Color> colors = ocrParam.Value.TargetColors;
     private readonly ILogger<WindowsMediaOcr> logger = logger;
+    private static readonly string ImagePath = Path.Combine(PathUtility.UserDir, "ocr");
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         // 認識前に縮小したら時間短くなるかと思ったけど、速くはなるけど精度が落ちるのでやめた
         var t = this.logger.LogDebugTime("OCR Recognize");
-        var rawResults = await ocr.RecognizeAsync(bitmap);
+        OcrResult rawResults;
+        if (this.colors.Any() || true)
+        {
+            using var extract = ExtractColor(bitmap, Color.FromArgb(0xf9, 0xf9, 0xf9));
+            rawResults = await ocr.RecognizeAsync(extract);
+            await WriteImageAsync(extract);
+        }
+        else
+        {
+            rawResults = await ocr.RecognizeAsync(bitmap);
+        }
         t.Dispose();
 
         // フィルター＆マージ処理について
@@ -320,4 +339,84 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         ReadOnlySpan<char> chars = text;
         return !chars[1..].ContainsAnyExcept(chars[0]);
     }
+
+    private static async ValueTask WriteImageAsync(SoftwareBitmap bitmap)
+    {
+        Directory.CreateDirectory(ImagePath);
+        // 書き込み用にファイルを開く
+        using var stream = new InMemoryRandomAccessStream();
+        // BitmapEncoderを作成し、出力形式を指定
+        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+        // SoftwareBitmapをエンコーダに設定
+        encoder.SetSoftwareBitmap(bitmap);
+        // エンコード処理を実行
+        await encoder.FlushAsync();
+
+        // ストリームの長さを取得
+        ulong size = stream.Size;
+        // メモリストリームを先頭にシーク
+        stream.Seek(0);
+
+        // バッファを作成し、ストリームからデータを読み込む
+        byte[] buffer = new byte[size];
+        using (var dataReader = new DataReader(stream.GetInputStreamAt(0)))
+        {
+            await dataReader.LoadAsync((uint)size);
+            dataReader.ReadBytes(buffer);
+        }
+
+        using var fs = new FileStream(Path.Combine(ImagePath, $"{DateTime.Now:yyyyMMddHHmmss}.png"), FileMode.Create);
+        // FileStream に書き出し
+        await fs.WriteAsync(buffer);
+    }
+
+    unsafe private static SoftwareBitmap ExtractColor(SoftwareBitmap originalBitmap, Color target, byte tolerance = 10)
+    {
+        // 画像をBGRA8に変換
+        var bitmap = SoftwareBitmap.Copy(originalBitmap);
+
+        // BitmapBufferを取得してピクセルデータにアクセス
+        using var buffer = bitmap.LockBuffer(BitmapBufferAccessMode.ReadWrite);
+        using var reference = buffer.CreateReference();
+        // ピクセルデータへのポインタを取得
+        reference.As<IMemoryBufferByteAccess>().GetBuffer(out var dataInBytes, out var capacity);
+        // ピクセルを4バイトずつ処理 (BGRA順)
+        for (int i = 0; i < capacity; i += 4)
+        {
+            byte b = dataInBytes[i];
+            byte g = dataInBytes[i + 1];
+            byte r = dataInBytes[i + 2];
+            byte a = dataInBytes[i + 3];
+
+            // 指定した色との比較 (許容範囲内であれば対象の色とみなす)
+            if (Math.Abs(r - target.R) <= tolerance &&
+                Math.Abs(g - target.G) <= tolerance &&
+                Math.Abs(b - target.B) <= tolerance)
+            {
+                // 色が一致する場合、黒にする
+                dataInBytes[i] = 0;
+                dataInBytes[i + 1] = 0;
+                dataInBytes[i + 2] = 0;
+                dataInBytes[i + 3] = 0xFF;
+            }
+            else
+            {
+                // 色が一致しない場合、白にする
+                dataInBytes[i] = 0xFF;
+                dataInBytes[i + 1] = 0xFF;
+                dataInBytes[i + 2] = 0xFF;
+                dataInBytes[i + 3] = 0xFF;
+            }
+        }
+        return bitmap;
+    }
+}
+
+// Using the COM interface IMemoryBufferByteAccess allows us to access the underlying byte array in an AudioFrame
+[ComImport]
+[Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+unsafe interface IMemoryBufferByteAccess
+{
+    void GetBuffer(out byte* buffer, out uint capacity);
 }

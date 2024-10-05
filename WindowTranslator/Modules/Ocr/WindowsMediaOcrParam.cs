@@ -1,5 +1,7 @@
 ﻿
+using System.Drawing;
 using PropertyTools.DataAnnotations;
+using WindowTranslator.ComponentModel;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -24,4 +26,11 @@ public class WindowsMediaOcrParam : IPluginParam
     [Slidable(0, 1, .01, .1, true, .01)]
     [FormatString("P2")]
     public double FontSizeThrethold { get; set; } = .25;
+
+    [Category("ColorThrethold")]
+    public bool IsOnlyTargetColor { get; set; }
+
+    [Category("ColorThrethold")]
+    [PropertyView(nameof(TargetColorsControl))]
+    public List<Color> TargetColors { get; set; } = [];
 }

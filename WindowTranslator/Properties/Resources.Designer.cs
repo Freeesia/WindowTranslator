@@ -106,6 +106,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   認識する色の閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ColorThrethold {
+            get {
+                return ResourceManager.GetString("ColorThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   デタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Detach {
@@ -183,6 +192,15 @@ namespace WindowTranslator.Properties {
         public static string IsLatest {
             get {
                 return ResourceManager.GetString("IsLatest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   指定した色のみOCRに利用する に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string IsOnlyTargetColor {
+            get {
+                return ResourceManager.GetString("IsOnlyTargetColor", resourceCulture);
             }
         }
         
@@ -354,6 +372,15 @@ namespace WindowTranslator.Properties {
         public static string Target {
             get {
                 return ResourceManager.GetString("Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRに利用する色 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TargetColors {
+            get {
+                return ResourceManager.GetString("TargetColors", resourceCulture);
             }
         }
         

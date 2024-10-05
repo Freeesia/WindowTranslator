@@ -7,13 +7,23 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using WindowTranslator.ComponentModel;
 
 namespace WindowTranslator.Modules.Settings;
-internal class SettingsPropertyGridFactory : PropertyGridControlFactory
+internal class SettingsPropertyGridFactory(IEnumerable<IPropertyView> views) : PropertyGridControlFactory
 {
+    private readonly IEnumerable<IPropertyView> views = views;
+
     public override FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options)
     {
-        if (property.Is(typeof(ICommand)))
+        if (property.Descriptor.GetAttributeValue<PropertyViewAttribute, IPropertyView?>(attr => views.FirstOrDefault(v => v.ViewName == attr.ViewName)) is { } view &&
+            view.ViewType.IsAssignableTo(typeof(FrameworkElement)))
+        {
+            var control = (FrameworkElement)Activator.CreateInstance(view.ViewType)!;
+            control.SetBinding(FrameworkElement.DataContextProperty, property.CreateOneWayBinding());
+            return control;
+        }
+        else if (property.Is(typeof(ICommand)))
         {
             var button = new Button();
             button.SetBinding(ButtonBase.CommandProperty, property.CreateOneWayBinding());

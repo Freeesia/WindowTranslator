@@ -240,4 +240,13 @@
   <data name="MergeThrethold" xml:space="preserve">
     <value>マージ閾値</value>
   </data>
+  <data name="IsOnlyTargetColor" xml:space="preserve">
+    <value>指定した色のみOCRに利用する</value>
+  </data>
+  <data name="TargetColors" xml:space="preserve">
+    <value>OCRに利用する色</value>
+  </data>
+  <data name="ColorThrethold" xml:space="preserve">
+    <value>認識する色の閾値</value>
+  </data>
 </root>

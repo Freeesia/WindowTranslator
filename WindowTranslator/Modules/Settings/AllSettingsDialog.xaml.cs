@@ -4,6 +4,7 @@ using Wpf.Ui.Controls;
 using System.Globalization;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
+using PropertyTools.Wpf;
 
 namespace WindowTranslator.Modules.Settings;
 
@@ -12,11 +13,14 @@ namespace WindowTranslator.Modules.Settings;
 /// </summary>
 public partial class AllSettingsDialog : FluentWindow
 {
-    public AllSettingsDialog(IContentDialogService contentDialogService)
+    public IPropertyGridControlFactory Factory { get; }
+
+    public AllSettingsDialog(IContentDialogService contentDialogService, IEnumerable<IPropertyView> views)
     {
         SystemThemeWatcher.Watch(this);
         InitializeComponent();
         contentDialogService.SetDialogHost(this.RootContentDialog);
+        this.Factory = new SettingsPropertyGridFactory(views);
     }
 }
 

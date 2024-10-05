@@ -5,7 +5,7 @@
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator",
-        "LOGGING__LOGLEVEL__WindowTranslator.Modules.OverlayColor": "Debug"
+        "LOGGING__LOGLEVEL__WindowTranslator.Modules.Ocr": "Debug"
       }
     },
     "StartupMode": {

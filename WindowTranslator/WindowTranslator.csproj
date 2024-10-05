@@ -27,6 +27,9 @@
     <SentryUploadSources>true</SentryUploadSources>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Modules\Settings\TargetColorsControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="$(ApplicationIcon)" />
     <None Include="appsettings.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
