@@ -12,14 +12,15 @@ namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
 [DisplayName("Windows標準文字認識")]
-public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, ILogger<WindowsMediaOcr> logger) : IOcrModule
+public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<WindowsMediaOcrParam> ocrParam, ILogger<WindowsMediaOcr> logger) : IOcrModule
 {
-    private const double PosThrethold = .005;
-    private const double LeadingThrethold = .80;
-    private const double FontSizeThrethold = .25;
-    private readonly string source = options.Value.Source;
-    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(options.Value.Source))
-            ?? throw new InvalidOperationException($"{options.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
+    private readonly double PosThrethold = ocrParam.Value.PosThrethold;
+    private readonly double LeadingThrethold = ocrParam.Value.LeadingThrethold;
+    private readonly double SpacingThreshold = ocrParam.Value.SpacingThreshold;
+    private readonly double FontSizeThrethold = ocrParam.Value.FontSizeThrethold;
+    private readonly string source = langOptions.Value.Source;
+    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(langOptions.Value.Source))
+            ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     private readonly ILogger<WindowsMediaOcr> logger = logger;
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
@@ -58,7 +59,8 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
             return lineResults;
         }
 
-        var pt = PosThrethold * bitmap.PixelWidth;
+        var xt = PosThrethold * bitmap.PixelWidth;
+        var yt = PosThrethold * bitmap.PixelHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
@@ -72,8 +74,9 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
                     merged = false;
                     foreach (var lineResult in queue.ToArray())
                     {
-                        if (temp.TryMerge(lineResult, pt))
+                        if (CanMerge(temp, lineResult, xt, yt))
                         {
+                            temp.Merge(lineResult);
                             queue.Remove(lineResult);
                             merged = true;
                         }
@@ -89,6 +92,53 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
             // 全部数字なら対象外
             .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
             .ToArray();
+    }
+
+    private bool CanMerge(TempMergeRect temp, TextRect rect, double xThreshold, double yThreshold)
+    {
+        // 重なっている場合はマージできる
+        if (temp.IntersectsWith(rect))
+        {
+            return true;
+        }
+
+        // フォントサイズが大きく異なる場合はマージできない
+        var fDiff = Math.Abs(temp.FontSize - rect.FontSize) / Math.Min(temp.FontSize, rect.FontSize);
+        if (fDiff > FontSizeThrethold)
+        {
+            return false;
+        }
+
+        var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
+
+
+        // x座標が近く、y間隔が近い場合にマージできる
+        var (_, x, y, w, _, _, _, _, _, _) = rect;
+        var xDiff = Math.Abs(temp.X - x); // X座標の差
+        var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
+        var lThre = fontSize * LeadingThrethold; // 行間の閾値
+        if (xDiff < xThreshold && yGap < lThre)
+        {
+            return true;
+        }
+
+        // x座標の中心が近く、y間隔が近い場合にマージできる
+        var xCenter2 = x + (w * .5);
+        var xCenterDiff = Math.Abs(temp.CenterX - xCenter2); // X座標の中心の差
+        if (xCenterDiff < xThreshold && yGap < lThre)
+        {
+            return true;
+        }
+
+        // y座標が近く、x間隔が近い場合にマージできる
+        var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
+        var yDiff = Math.Abs(temp.Y - y); // Y座標の差
+        var gThre = fontSize * SpacingThreshold;
+        if (xGap < gThre && yDiff < yThreshold)
+        {
+            return true;
+        }
+        return false;
     }
 
     private class TempMergeRect
@@ -112,13 +162,8 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
             Rects.Add(rect);
         }
 
-        public bool TryMerge(TextRect rect, double xThreshold)
+        public void Merge(TextRect rect)
         {
-            //return false;
-            if (!CanMerge(rect, xThreshold))
-            {
-                return false;
-            }
             var (_, x, y, width, height, _, _, _, _, _) = rect;
             Rects.Add(rect);
             var x1 = Math.Min(X, x);
@@ -127,57 +172,10 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
             var y2 = Math.Max(Y + Height, y + height);
             (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
             FontSize = Rects.Average(r => r.FontSize);
-            return true;
-        }
-
-        private bool CanMerge(TextRect rect, double posThreshold)
-        {
-            // 重なっている場合はマージできる
-            if (IntersectsWith(rect))
-            {
-                return true;
-            }
-
-            // フォントサイズが大きく異なる場合はマージできない
-            var fDiff = Math.Abs(1.0 - (FontSize / rect.FontSize)); // フォントサイズの差
-            if (fDiff > FontSizeThrethold)
-            {
-                return false;
-            }
-
-
-            // x座標が近く、y間隔が近い場合にマージできる
-            var (_, x, y, w, _, _, _, _, _, _) = rect;
-            var xDiff = Math.Abs(X - x); // X座標の差
-            var yGap = Math.Abs((Y + Height) - y); // Y座標の間隔
-            var lThre = (1.0 + (fDiff / 2)) * Math.Min(FontSize, rect.FontSize) * LeadingThrethold; // 行間の閾値
-            if (xDiff < posThreshold && yGap < lThre)
-            {
-                return true;
-            }
-
-            // x座標の中心が近く、y間隔が近い場合にマージできる
-            var xCenter2 = x + (w * .5);
-            var xCenterDiff = Math.Abs(CenterX - xCenter2); // X座標の中心の差
-            if (xCenterDiff < posThreshold && yGap < lThre)
-            {
-                return true;
-            }
-
-            // y座標が近く、x間隔が近い場合にマージできる
-            var xGap = Math.Min(Math.Abs((X + Width) - x), Math.Abs((x + w) - X)); // X座標の間隔
-            var yDiff = Math.Abs(Y - y); // Y座標の差
-            var gThre = (rect.FontSize + FontSize) * .5;
-            if (xGap < gThre && yDiff < posThreshold)
-            {
-                return true;
-            }
-            return false;
         }
 
         public bool IntersectsWith(TextRect rect)
-            => (rect.X < X + Width) && (X < rect.X + rect.Width) &&
-            (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
+            => (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
 
         public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out List<TextRect> rects)
         {
@@ -223,6 +221,10 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
 
     private TextRect CalcRect(OcrLine line)
     {
+        if (IsIgnoreLine().IsMatch(line.Text))
+        {
+            return TextRect.Empty;
+        }
         // ワードのフィルタリング
         var words = FilterWords(line.Words).ToArray();
         if (words.Length == 0)
@@ -263,13 +265,13 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
     private static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
     {
         // 先頭が@やOの場合は何かしらのアイコンの可能性が高いので無視
-        if (words.First().Text is "@" or "O" or "Ö" or "Ü")
+        while (words.FirstOrDefault()?.Text is "@" or "O" or "Ö" or "Ü")
         {
             words = words.Skip(1);
         }
-        // 2文字以上かつ同じ文字で構成されている場合は無視
+        // 3文字以上かつ同じ文字で構成されている場合は無視
         // `•`は大抵の場合は認識ミスなので無視
-        words = words.Where(w => w.Text.Length < 2 || !IsAllSameChar(w.Text.Replace("•", string.Empty)));
+        words = words.Where(w => w.Text.Length < 3 || !IsAllSameChar(w.Text.Replace("•", string.Empty)));
         return words;
     }
 
@@ -305,6 +307,13 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> options, 
 
     [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
     private static partial Regex IsAllSymbolOrSpace();
+
+    /// <summary>
+    /// 認識ミスとして無視する文字列
+    /// * 4文字以上aoeのみで構成されているかどうか
+    /// </summary>
+    [GeneratedRegex(@"^[aceo@]{3,}$")]
+    private static partial Regex IsIgnoreLine();
 
     private static bool IsAllSameChar(string text)
     {
