@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using static WindowTranslator.Modules.Ocr.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -273,51 +273,5 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         // `•`は大抵の場合は認識ミスなので無視
         words = words.Where(w => w.Text.Length < 3 || !IsAllSameChar(w.Text.Replace("•", string.Empty)));
         return words;
-    }
-
-    private static double CorrectHeight(double height, bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent)
-        => (isxHeight, hasAcent, hasHarfAcent, hasDecent) switch
-        {
-            (true, true, _, true) => height,
-            (true, true, _, false) => height * 1.2,
-            (true, false, true, true) => height * (1 + .1 + .0),
-            (true, false, false, true) => height * (1 + .2 + .0),
-            (true, false, true, false) => height * (1 + .1 + .2),
-            (true, false, false, false) => height * (1 + .2 + .2),
-            (false, _, _, _) => height,
-        };
-
-    private static (bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent) GetTextType(string text)
-    {
-        // abcdefghijklmnopqrstuvwxyz
-        // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-        var isxHeight = Contains(text, "acemnosuvwxz");
-        var hasAcent = Contains(text, "ABCDEFGHIJKLMNOPQRSTUVWXYZbdfhijkl");
-        var hasHarfAcent = text.Contains('t');
-        var hasDecent = Contains(text, "gjpqy");
-        return (isxHeight, hasAcent, hasHarfAcent, hasDecent);
-    }
-
-    private static bool Contains(string text, string target)
-    {
-        ReadOnlySpan<char> te = text;
-        ReadOnlySpan<char> ta = target;
-        return te.ContainsAny(ta);
-    }
-
-    [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
-    private static partial Regex IsAllSymbolOrSpace();
-
-    /// <summary>
-    /// 認識ミスとして無視する文字列
-    /// * 4文字以上aoeのみで構成されているかどうか
-    /// </summary>
-    [GeneratedRegex(@"^[aceo@]{3,}$")]
-    private static partial Regex IsIgnoreLine();
-
-    private static bool IsAllSameChar(string text)
-    {
-        ReadOnlySpan<char> chars = text;
-        return !chars[1..].ContainsAnyExcept(chars[0]);
     }
 }
