@@ -123,7 +123,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         }
 
         // マージ元の文字列が2単語未満の場合は縦にマージできない
-        if (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2) : (temp.Text.Length > 8))
+        if (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2) : (temp.Text.Length <= 8))
         {
             return false;
         }
@@ -222,8 +222,13 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
 
     private TextRect ToTextRect(TempMergeRect combinedRect)
     {
-        var (x, y, width, height, fontSize, rects) = combinedRect;
-        var lines = (int)(height / fontSize);
+        var (x, y, width, height, fontSize, _) = combinedRect;
+        var text = combinedRect.Text;
+        // 高さがフォントサイズの2倍以上の場合は複数行とみなす
+        // または、
+        // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
+        var lines = height / fontSize >= 2;
+            //|| (IsSpaceLang(this.source) ? (WordCount(text) > 2) : (text.Length > 8));
 
         // 若干太らせて完全に文字を覆う
         const double fat = .2;
@@ -279,7 +284,6 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(w.Text);
             return CorrectHeight(w.BoundingRect.Height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
         }).Average();
-        //fontSize = 10;
 
         var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(text);
 
@@ -294,7 +298,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         // 文字種類による高さ補正
         height = CorrectHeight(height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
 
-        return new(text, x, y, width, height, fontSize, 1);
+        return new(text, x, y, width, height, fontSize, false);
     }
 
     private static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
