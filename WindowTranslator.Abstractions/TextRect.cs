@@ -14,17 +14,17 @@ namespace WindowTranslator;
 /// <param name="Width">幅</param>
 /// <param name="Height">高さ</param>
 /// <param name="FontSize">フォントサイズ</param>
-/// <param name="Line">表示可能行数</param>
+/// <param name="MultiLine">複数行かどうか</param>
 /// <param name="Foreground">文字色</param>
 /// <param name="Background">背景色</param>
 /// <param name="IsTranslated"><paramref name="Text"/>が翻訳後のテキストかどうか</param>
-public record TextRect(string Text, double X, double Y, double Width, double Height, double FontSize, int Line, Color Foreground, Color Background, bool IsTranslated = false)
+public record TextRect(string Text, double X, double Y, double Width, double Height, double FontSize, bool MultiLine, Color Foreground, Color Background, bool IsTranslated = false)
     : TextInfo(Text, IsTranslated)
 {
     /// <summary>
     /// 空
     /// </summary>
-    public static TextRect Empty { get; } = new TextRect(string.Empty, 0, 0, 0, 0, 0, 0);
+    public static TextRect Empty { get; } = new TextRect(string.Empty, 0, 0, 0, 0, 0, false);
 
     /// <summary>
     /// コンストラクタ
@@ -35,9 +35,9 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     /// <param name="width">幅</param>
     /// <param name="height">高さ</param>
     /// <param name="fontSize">フォントサイズ</param>
-    /// <param name="line">表示可能行数</param>
-    public TextRect(string text, double x, double y, double width, double height, double fontSize, int line)
-        : this(text, x, y, width, height, fontSize, line, Color.Red, Color.WhiteSmoke)
+    /// <param name="multiLine">複数行かどうか</param>
+    public TextRect(string text, double x, double y, double width, double height, double fontSize, bool multiLine)
+        : this(text, x, y, width, height, fontSize, multiLine, Color.Red, Color.WhiteSmoke)
     {
     }
 };
