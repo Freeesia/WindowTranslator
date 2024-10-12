@@ -14,7 +14,8 @@ namespace WindowTranslator.Modules.Ocr;
 [DisplayName("Windows標準文字認識")]
 public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<WindowsMediaOcrParam> ocrParam, ILogger<WindowsMediaOcr> logger) : IOcrModule
 {
-    private readonly double PosThrethold = ocrParam.Value.PosThrethold;
+    private readonly double XPosThrethold = ocrParam.Value.XPosThrethold;
+    private readonly double YPosThrethold = ocrParam.Value.YPosThrethold;
     private readonly double LeadingThrethold = ocrParam.Value.LeadingThrethold;
     private readonly double SpacingThreshold = ocrParam.Value.SpacingThreshold;
     private readonly double FontSizeThrethold = ocrParam.Value.FontSizeThrethold;
@@ -59,15 +60,15 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             return lineResults;
         }
 
-        var xt = PosThrethold * bitmap.PixelWidth;
-        var yt = PosThrethold * bitmap.PixelHeight;
+        var xt = XPosThrethold * bitmap.PixelWidth;
+        var yt = YPosThrethold * bitmap.PixelHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
             var queue = new RemovableQueue<TextRect>(lineResults.OrderBy(r => r.Y));
             while (queue.TryDequeue(out var target))
             {
-                var temp = new TempMergeRect(target);
+                var temp = new TempMergeRect(this.source, target);
                 var merged = false;
                 do
                 {
@@ -110,10 +111,24 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         }
 
         var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
+        var (_, x, y, w, _, _, _, _, _, _) = rect;
 
+        // y座標が近く、x間隔が近い場合にマージできる
+        var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
+        var yDiff = Math.Abs(temp.Y - y); // Y座標の差
+        var gThre = fontSize * SpacingThreshold;
+        if (xGap < gThre && yDiff < yThreshold)
+        {
+            return true;
+        }
+
+        // マージ元の文字列が2単語未満の場合は縦にマージできない
+        if (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2) : (temp.Text.Length > 8))
+        {
+            return false;
+        }
 
         // x座標が近く、y間隔が近い場合にマージできる
-        var (_, x, y, w, _, _, _, _, _, _) = rect;
         var xDiff = Math.Abs(temp.X - x); // X座標の差
         var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
         var lThre = fontSize * LeadingThrethold; // 行間の閾値
@@ -129,55 +144,72 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         {
             return true;
         }
-
-        // y座標が近く、x間隔が近い場合にマージできる
-        var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
-        var yDiff = Math.Abs(temp.Y - y); // Y座標の差
-        var gThre = fontSize * SpacingThreshold;
-        if (xGap < gThre && yDiff < yThreshold)
-        {
-            return true;
-        }
         return false;
     }
 
     private class TempMergeRect
     {
+        private readonly string lang;
+        private readonly ResetableLazy<string> text;
+        private readonly List<TextRect> rects;
+
         public double X { get; private set; }
         public double Y { get; private set; }
         public double Width { get; private set; }
         public double Height { get; private set; }
         public double FontSize { get; private set; }
-        public List<TextRect> Rects { get; } = [];
 
         public double Left => X;
         public double Top => Y;
         public double Right => X + Width;
         public double Bottom => Y + Height;
         public double CenterX => X + (Width * .5);
+        public IReadOnlyList<TextRect> Rects => this.rects;
+        public string Text => text.Value;
 
-        public TempMergeRect(TextRect rect)
+        public TempMergeRect(string lang, TextRect rect)
         {
+            this.lang = lang;
+            this.text = new(CreateText, LazyThreadSafetyMode.None);
             (_, X, Y, Width, Height, FontSize, _, _, _, _) = rect;
-            Rects.Add(rect);
+            this.rects = [rect];
         }
 
         public void Merge(TextRect rect)
         {
             var (_, x, y, width, height, _, _, _, _, _) = rect;
-            Rects.Add(rect);
+            this.rects.Add(rect);
             var x1 = Math.Min(X, x);
             var y1 = Math.Min(Y, y);
             var x2 = Math.Max(X + Width, x + width);
             var y2 = Math.Max(Y + Height, y + height);
             (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
             FontSize = Rects.Average(r => r.FontSize);
+            this.text.Reset();
         }
 
         public bool IntersectsWith(TextRect rect)
             => (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
 
-        public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out List<TextRect> rects)
+        private string CreateText()
+        {
+            var builder = new StringBuilder(this.Rects.Sum(r => r.Text.Length + 1));
+            foreach (var rect in this.Rects.OrderBy(r => (int)((r.Y - this.Y) / this.FontSize)).ThenBy(r => r.X))
+            {
+                builder.Append(rect.Text);
+                if (IsSpaceLang(this.lang))
+                {
+                    builder.Append(' ');
+                }
+            }
+            if (IsSpaceLang(this.lang))
+            {
+                builder.Length--;
+            }
+            return builder.ToString();
+        }
+
+        public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out IReadOnlyList<TextRect> rects)
         {
             x = X;
             y = Y;
@@ -191,20 +223,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
     private TextRect ToTextRect(TempMergeRect combinedRect)
     {
         var (x, y, width, height, fontSize, rects) = combinedRect;
-        var builder = new StringBuilder(combinedRect.Rects.Sum(r => r.Text.Length + 1));
         var lines = (int)(height / fontSize);
-        foreach (var rect in combinedRect.Rects.OrderBy(r => (int)((r.Y - y) / fontSize)).ThenBy(r => r.X))
-        {
-            builder.Append(rect.Text);
-            if (IsSpaceLang())
-            {
-                builder.Append(' ');
-            }
-        }
-        if (IsSpaceLang())
-        {
-            builder.Length--;
-        }
 
         // 若干太らせて完全に文字を覆う
         const double fat = .2;
@@ -213,11 +232,28 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         height += fontSize * fat;
         y -= fontSize * fat * 1.5;
 
-        return new(builder.ToString(), x, y, width, height, fontSize, lines);
+        return new(combinedRect.Text, x, y, width, height, fontSize, lines);
     }
 
-    private bool IsSpaceLang()
-        => this.source[..2] is not "ja" or "zh";
+    private static bool IsSpaceLang(string lang)
+        => lang[..2] is not "ja" or "zh";
+
+    private static int WordCount(string text)
+    {
+        var span = text.AsSpan();
+        var count = 0;
+        while (!span.IsEmpty)
+        {
+            count++;
+            var index = span.IndexOf(' ');
+            if (index == -1)
+            {
+                break;
+            }
+            span = span[(index + 1)..];
+        }
+        return count;
+    }
 
     private TextRect CalcRect(OcrLine line)
     {
@@ -231,11 +267,9 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         {
             return TextRect.Empty;
         }
-        var text = this.source[..2] switch
-        {
-            "ja" or "zh" => string.Concat(words.Select(w => w.Text)),
-            _ => string.Join(" ", words.Select(w => w.Text)),
-        };
+        var text = IsSpaceLang(this.source)
+            ? string.Join(" ", words.Select(w => w.Text))
+            : string.Concat(words.Select(w => w.Text));
         var x = words.Select(w => w.BoundingRect.X).Min();
         var y = words.Select(w => w.BoundingRect.Y).Min();
         var width = words.Select(w => w.BoundingRect.Right).Max() - words.Select(w => w.BoundingRect.Left).Min();
@@ -245,6 +279,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(w.Text);
             return CorrectHeight(w.BoundingRect.Height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
         }).Average();
+        //fontSize = 10;
 
         var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(text);
 

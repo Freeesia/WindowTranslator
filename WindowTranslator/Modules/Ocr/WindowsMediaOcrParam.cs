@@ -8,7 +8,12 @@ public class WindowsMediaOcrParam : IPluginParam
     [Category("MergeThrethold")]
     [FormatString("P2")]
     [Slidable(0, 0.2, .001, .01, true, .001)]
-    public double PosThrethold { get; set; } = .005;
+    public double XPosThrethold { get; set; } = .005;
+
+    [Category("MergeThrethold")]
+    [FormatString("P2")]
+    [Slidable(0, 0.2, .001, .01, true, .001)]
+    public double YPosThrethold { get; set; } = .005;
 
     [Category("MergeThrethold")]
     [Slidable(0, 1, .01, .1, true, .01)]
