@@ -225,8 +225,6 @@ public partial class FoMFilterModule : IFilterModule
                 .SelectMany(p => SplitParagraph(p.en, p.ja))
                 // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
                 .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.ja))
-                // 置換系は対象外
-                .Where(p => !p.en.Contains('['))
                 .DistinctBy(p => p.en)
                 .ToFrozenDictionary(p => p.en, p => p.ja);
 
@@ -458,6 +456,16 @@ file static class Extentions
     public static string ReplaceToPlain(this string s, string player, string farm)
         => s.Replace("[Ari]", player)
             .Replace("[farm_name]", farm)
+            .Replace("[ANIMAL_NAME]", "it")
+            .Replace("[ANIMAL_PAIR]", "the other one")
+            .Replace("[BREEDING_PARTNER]", string.Empty)
+            .Replace("[TREAT_ITEM]", "Treat")
+            .Replace("[BATHHOUSE_COST]", string.Empty)
+            .Replace("[INN_SOUP_OF_THE_DAY]", string.Empty)
+            //.Replace("[statue_cost_low]", string.Empty)
+            //.Replace("[statue_cost_high]", string.Empty)
+            //.Replace("[offering_item_count]", string.Empty)
+            //.Replace("[offering_item_name]", string.Empty)
             .Replace("$", string.Empty)
             .Replace("=", string.Empty)
             .Replace("^", string.Empty)
