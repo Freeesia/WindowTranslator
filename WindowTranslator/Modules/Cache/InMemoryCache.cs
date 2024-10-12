@@ -5,6 +5,7 @@ using WindowTranslator.Properties;
 namespace WindowTranslator.Modules.Cache;
 
 [LocalizedDisplayName(typeof(Resources), nameof(InMemoryCache))]
+[DefaultModule]
 public class InMemoryCache : ICacheModule
 {
     private readonly ConcurrentDictionary<string, string> cache = new();
