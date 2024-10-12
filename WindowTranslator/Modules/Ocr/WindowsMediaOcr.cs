@@ -226,8 +226,9 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         var text = combinedRect.Text;
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         // または、
-        // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす
-        var lines = height / fontSize >= 2 || (IsSpaceLang(this.source) ? (WordCount(text) > 2) : (text.Length > 8));
+        // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
+        var lines = height / fontSize >= 2;
+            //|| (IsSpaceLang(this.source) ? (WordCount(text) > 2) : (text.Length > 8));
 
         // 若干太らせて完全に文字を覆う
         const double fat = .2;
@@ -283,7 +284,6 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(w.Text);
             return CorrectHeight(w.BoundingRect.Height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
         }).Average();
-        //fontSize = 10;
 
         var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(text);
 
