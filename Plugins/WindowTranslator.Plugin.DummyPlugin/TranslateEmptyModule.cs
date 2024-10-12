@@ -9,3 +9,11 @@ public class TranslateEmptyModule : ITranslateModule
     public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
 }
+
+
+[DisplayName("完了しない")]
+public class TranslateInfinityModule : ITranslateModule
+{
+    public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
+        => new(Task.Delay(-1).ContinueWith(_ => (string[])Array.CreateInstance(typeof(string), srcTexts.Length)));
+}
