@@ -225,6 +225,8 @@ public partial class FoMFilterModule : IFilterModule
                 .SelectMany(p => SplitParagraph(p.en, p.ja))
                 // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
                 .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.ja))
+                // 置換系は対象外
+                .Where(p => !p.en.Contains('['))
                 .DistinctBy(p => p.en)
                 .ToFrozenDictionary(p => p.en, p => p.ja);
 
