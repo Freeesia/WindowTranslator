@@ -473,3 +473,25 @@ file static class Extentions
             .Replace("^", string.Empty)
             .Replace("{}", string.Empty);
 }
+
+public class FoMValidator : ITargetSettingsValidator
+{
+    public ValueTask<ValidateResult> Validate(TargetSettings settings)
+    {
+        var op = settings.PluginParams.GetValueOrDefault(nameof(FoMOptions)) as FoMOptions ?? throw new InvalidOperationException();
+        if (op.IsEnabledCorrect && !settings.Language.Source.StartsWith("en-"))
+        {
+            return ValueTask.FromResult(ValidateResult.Invalid("""
+                Fields of Mistria専用の補正を利用する場合は、翻訳元言語を英語に設定してください。
+                """));
+        }
+        else if (op.UseJpn && settings.Language.Target != "ja-JP")
+        {
+            return ValueTask.FromResult(ValidateResult.Invalid("""
+                Fields of Mistria専用の日本語リソースを利用する場合は、翻訳先言語を日本語に設定してください。
+                """));
+        }
+
+        return ValueTask.FromResult(ValidateResult.Valid);
+    }
+}

@@ -14,20 +14,15 @@ public partial class LineBreakSplitPluginSetup : IPluginSetup
         public static LineBreakSplitParser Instance { get; } = new();
         public Regex FirstMatchPattern { get; } = LineBreakRegex();
 
-        [GeneratedRegex(@"\n", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(.*)\n", RegexOptions.Compiled)]
         private static partial Regex LineBreakRegex();
 
         public IEnumerable<Inline> Parse(string text, Match firstMatch, IMarkdown engine, out int parseTextBegin, out int parseTextEnd)
         {
-            parseTextBegin = 0;
-            parseTextEnd = text.Length;
+            parseTextBegin = firstMatch.Index;
+            parseTextEnd = firstMatch.Index + firstMatch.Length;
 
-            var lines = new List<Inline>();
-            foreach (var line in text.AsSpan().EnumerateLines())
-            {
-                lines.AddRange([new Run(line.ToString()), new LineBreak()]);
-            }
-            return lines[..^1];
+            return [new Run(firstMatch.Groups[1].Value), new LineBreak()];
         }
     }
 }
