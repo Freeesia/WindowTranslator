@@ -39,7 +39,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
+    private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IConfigurationRoot? rootConfig;
+    private readonly string target;
     [ObservableProperty]
     private bool isBusy;
 
@@ -102,6 +104,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
+        [Inject] IEnumerable<ITargetSettingsValidator> validators,
         string target)
     {
         var items = provider.GetPlugins();
@@ -134,6 +137,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
+        this.validators = validators;
+        this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
@@ -217,6 +222,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public async Task SaveAsync()
     {
+        using var b = EnterBusy();
         var settings = new UserSettings()
         {
             Common = new()
@@ -243,6 +249,23 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
             }),
         };
+
+        // 値の検証
+        var results = new List<ValidateResult>();
+        foreach (var target in string.IsNullOrEmpty(this.target) ? settings.Targets.Values.ToArray() : [settings.Targets[this.target]])
+        {
+            foreach (var validator in this.validators)
+            {
+                results.Add(await validator.Validate(target));
+            }
+        }
+        if (results.Any(r => !r.IsValid))
+        {
+            await this.dialogService.ShowAlertAsync("エラー", string.Join("\n", results.Where(r => !r.IsValid).Select(r => r.Message)), "OK");
+            return;
+        }
+
+        // 値の保存
         Directory.CreateDirectory(PathUtility.UserDir);
         using (var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None))
             await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
@@ -251,6 +274,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
         await this.presentationService.CloseDialogAsync(true);
+    }
+
+    private IDisposable EnterBusy()
+    {
+        this.IsBusy = true;
+        return new DisposeAction(() => this.IsBusy = false);
     }
 
     public void Dispose()

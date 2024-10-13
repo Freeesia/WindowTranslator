@@ -46,6 +46,7 @@ builder.Services.AddPluginFramework()
     .AddPluginType<ICaptureModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<ICaptureModule>)
     .AddPluginType<IColorModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<IColorModule>)
     .AddPluginType<IFilterModule>(ServiceLifetime.Scoped)
+    .AddPluginType<ITargetSettingsValidator>()
     .AddPluginType<IPluginParam>();
 
 var appPluginDir = @".\plugins";
