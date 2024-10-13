@@ -237,7 +237,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         height += fontSize * fat;
         y -= fontSize * fat * 1.5;
 
-        return new(combinedRect.Text, x, y, width, height, fontSize, lines);
+        return new(text, x, y, width, height, fontSize, lines);
     }
 
     private static bool IsSpaceLang(string lang)
