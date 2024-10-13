@@ -8,7 +8,6 @@
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <ApplicationIcon>$(MSBuildThisFileDirectory)..\docs\images\wt.ico</ApplicationIcon>
-    <NeutralLanguage>ja-JP</NeutralLanguage>
     <AnalysisMode>Recommended</AnalysisMode>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
