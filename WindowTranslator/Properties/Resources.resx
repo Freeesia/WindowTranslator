@@ -225,8 +225,8 @@
   <data name="WindowsMediaOcrParam" xml:space="preserve">
     <value>WindowsOCRの設定</value>
   </data>
-  <data name="PosThrethold" xml:space="preserve">
-    <value>位置ずれ閾値</value>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X位置ずれ閾値</value>
   </data>
   <data name="LeadingThrethold" xml:space="preserve">
     <value>行間閾値</value>
@@ -239,6 +239,9 @@
   </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>マージ閾値</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>Y位置ずれ閾値</value>
   </data>
   <data name="IsOnlyTargetColor" xml:space="preserve">
     <value>指定した色のみOCRに利用する</value>

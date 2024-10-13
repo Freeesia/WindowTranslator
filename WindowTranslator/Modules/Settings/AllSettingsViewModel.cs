@@ -164,12 +164,16 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    public static void OpenReleaseNotes()
-        => Process.Start(new ProcessStartInfo("https://github.com/Freeesia/WindowTranslator/releases/latest") { UseShellExecute = true });
+    public void OpenReleaseNotes()
+        => this.updateChecker.OpenChangelog();
 
     [RelayCommand]
     public Task CheckUpdateAsync(CancellationToken token)
         => this.updateChecker.CheckAsync(token);
+
+    [RelayCommand]
+    public void InstallUpdate()
+        => this.updateChecker.Update();
 
     async partial void OnIsStartupChanged(bool value)
     {
