@@ -2,12 +2,14 @@
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.Text.Json.Serialization;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Stores;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 
+[DefaultModule]
 [DisplayName("DeepL")]
 public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions) : ITranslateModule
 {
@@ -57,9 +59,33 @@ public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<Dee
 
 public class DeepLOptions : IPluginParam
 {
+    [DisplayName("APIキー")]
     public string AuthKey { get; set; } = string.Empty;
 
     [JsonIgnore]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
+}
+
+
+public class DeepLValidator : ITargetSettingsValidator
+{
+    public ValueTask<ValidateResult> Validate(TargetSettings settings)
+    {
+        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(DeepLTranslator))
+        {
+            return ValueTask.FromResult(ValidateResult.Valid);
+        }
+        else if (settings.PluginParams.TryGetValue(nameof(DeepLOptions), out var param) && param is DeepLOptions op && !string.IsNullOrEmpty(op.AuthKey))
+        {
+            return ValueTask.FromResult(ValidateResult.Valid);
+        }
+
+        return ValueTask.FromResult(ValidateResult.Invalid("""
+            DeepLの利用にはAPIキーが必要です。
+            DeepLOptionsタブのAPIキーを設定してください。
+
+            APIキーはDeepLの[アカウントページ](https://www.deepl.com/ja/your-account/keys)から取得できます。
+            """));
+    }
 }

@@ -318,14 +318,18 @@ public partial class TargetSettingsViewModel(
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string TranslateModule { get; set; }
-        = settings.SelectedPlugins.GetValueOrDefault(nameof(ITranslateModule), translateModules.OrderByDescending(i => i.IsDefault).First().Name);
+        = settings.SelectedPlugins.GetValueOrDefault(
+            nameof(ITranslateModule),
+            translateModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
     [Category("SettingsViewModel|Plugin")]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
-        = settings.SelectedPlugins.GetValueOrDefault(nameof(ICacheModule), cacheModules.OrderByDescending(i => i.IsDefault).First().Name);
+        = settings.SelectedPlugins.GetValueOrDefault(
+            nameof(ICacheModule),
+            cacheModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
     [Category("SettingsViewModel|Font")]
     [FontFamilySelector]

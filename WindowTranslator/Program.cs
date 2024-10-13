@@ -99,8 +99,9 @@ if (!createdNew)
 }
 await app.RunAsync();
 
-static Type GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
-    => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute))).First();
+static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
+    => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute)))
+        .FirstOrDefault();
 
 static string GetPluginName(PluginNameOptions options, Type type)
 {
@@ -116,14 +117,6 @@ static string GetPluginName(PluginNameOptions options, Type type)
     {
         return type.Name;
     }
-}
-
-[DefaultModule]
-[DisplayName("翻訳しない")]
-public class NoTranslateModule : ITranslateModule
-{
-    public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
-        => ValueTask.FromResult(srcTexts.Select(s => s.Text).ToArray());
 }
 
 class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
@@ -215,7 +208,9 @@ static class ServiceCollectionExtensions
                 var type = defaultPluginOptions.DefaultType(sp, plugins.Select(p => p.Type));
                 plugin = plugins.FirstOrDefault(p => p.Type == type);
             }
-            return plugin.Create<T>(sp);
+#pragma warning disable CS8603 // null返すことを許容する
+            return plugin?.Create<T>(sp);
+#pragma warning restore CS8603
         }, serviceLifetime));
         return services;
     }
