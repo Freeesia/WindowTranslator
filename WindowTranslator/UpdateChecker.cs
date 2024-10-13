@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
-using Microsoft.Win32;
 using Octokit;
 using System.Diagnostics;
 using System.IO;
