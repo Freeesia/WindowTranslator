@@ -1,5 +1,4 @@
-﻿
-using PropertyTools.DataAnnotations;
+﻿using PropertyTools.DataAnnotations;
 
 namespace WindowTranslator.Modules.Ocr;
 

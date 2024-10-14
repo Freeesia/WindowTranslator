@@ -17,3 +17,10 @@ public class TranslateInfinityModule : ITranslateModule
     public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => new(Task.Delay(-1).ContinueWith(_ => (string[])Array.CreateInstance(typeof(string), srcTexts.Length)));
 }
+
+[DisplayName("翻訳しない")]
+public class NoTranslateModule : ITranslateModule
+{
+    public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
+        => ValueTask.FromResult(srcTexts.Select(s => s.Text).ToArray());
+}

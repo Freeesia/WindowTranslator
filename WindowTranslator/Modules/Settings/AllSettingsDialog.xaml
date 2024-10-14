@@ -106,6 +106,7 @@
                     IsCancel="True" />
                 <ui:Button
                     Command="{Binding SaveCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
                     Content="OK"
                     DockPanel.Dock="Right"
                     IsDefault="True" />

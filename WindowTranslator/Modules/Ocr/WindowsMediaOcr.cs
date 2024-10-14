@@ -7,6 +7,7 @@ using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -20,7 +21,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
     private readonly double SpacingThreshold = ocrParam.Value.SpacingThreshold;
     private readonly double FontSizeThrethold = ocrParam.Value.FontSizeThrethold;
     private readonly string source = langOptions.Value.Source;
-    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(langOptions.Value.Source))
+    private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     private readonly ILogger<WindowsMediaOcr> logger = logger;
 
@@ -237,7 +238,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         height += fontSize * fat;
         y -= fontSize * fat * 1.5;
 
-        return new(combinedRect.Text, x, y, width, height, fontSize, lines);
+        return new(text, x, y, width, height, fontSize, lines);
     }
 
     private static bool IsSpaceLang(string lang)

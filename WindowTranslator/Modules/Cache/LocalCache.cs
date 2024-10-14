@@ -9,6 +9,7 @@ using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
 
+[DefaultModule]
 [LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
 public sealed class LocalCache : ICacheModule, IDisposable
 {
