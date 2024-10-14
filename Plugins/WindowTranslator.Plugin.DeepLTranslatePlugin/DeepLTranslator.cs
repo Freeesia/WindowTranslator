@@ -83,14 +83,14 @@ public class DeepLValidator : ITargetSettingsValidator
         // 翻訳言語が対応していないときは無効
         if (settings.Language.Target == "zh-HANT")
         {
-            return ValueTask.FromResult(ValidateResult.Invalid("Translation to zh-HANT is currently not supported."));
+            return ValueTask.FromResult(ValidateResult.Invalid("DeepL", "Translation to zh-HANT is currently not supported."));
         }
 
         // APIキーが設定されている場合は有効
         var op = settings.PluginParams.GetValueOrDefault(nameof(DeepLOptions)) as DeepLOptions;
         if (string.IsNullOrEmpty(op?.AuthKey))
         {
-            return ValueTask.FromResult(ValidateResult.Invalid("""
+            return ValueTask.FromResult(ValidateResult.Invalid("DeepL", """
             翻訳モジュールにDeepLが選択されています。
             DeepLの利用にはAPIキーが必要です。
 

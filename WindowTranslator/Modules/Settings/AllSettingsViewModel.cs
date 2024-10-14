@@ -256,14 +256,14 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         {
             if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
             {
-                results.Add(ValidateResult.Invalid("""
+                results.Add(ValidateResult.Invalid("翻訳モジュール", """
                     翻訳モジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
                     """));
             }
             if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
             {
-                results.Add(ValidateResult.Invalid("""
+                results.Add(ValidateResult.Invalid("翻訳モジュール", """
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
@@ -275,7 +275,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         }
         if (results.Any(r => !r.IsValid))
         {
-            await this.dialogService.ShowAlertAsync("エラー", string.Join("\n", results.Where(r => !r.IsValid).Select(r => r.Message)), "OK");
+            await this.dialogService.ShowAlertAsync("エラー", string.Join("\n\n", results.Where(r => !r.IsValid).Select(r => $"### {r.Title}\n{r.Message}")), "OK");
             return;
         }
 

@@ -63,7 +63,7 @@ public class GoogleAIValidator : ITargetSettingsValidator
             return ValueTask.FromResult(ValidateResult.Valid);
         }
 
-        return ValueTask.FromResult(ValidateResult.Invalid("""
+        return ValueTask.FromResult(ValidateResult.Invalid("GoogleAI", """
             翻訳モジュールにGoogleAIが選択もしくは認識補正が有効化されています。
             
             GoogleAIの利用にはAPIキーが必要です。
