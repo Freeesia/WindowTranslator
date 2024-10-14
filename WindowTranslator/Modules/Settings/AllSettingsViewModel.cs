@@ -220,7 +220,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    public async Task SaveAsync()
+    public async Task SaveAsync(object window)
     {
         using var b = EnterBusy();
         var settings = new UserSettings()
@@ -287,7 +287,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
-        await this.presentationService.CloseDialogAsync(true);
+        await this.presentationService.CloseDialogAsync(true, window);
     }
 
     private IDisposable EnterBusy()
