@@ -124,10 +124,10 @@
     <value>翻訳先(表示)言語</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール選択</value>
+    <value>翻訳モジュール</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール選択</value>
+    <value>キャッシュモジュール</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
     <value>翻訳結果表示モード</value>

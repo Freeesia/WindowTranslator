@@ -254,6 +254,20 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         var results = new List<ValidateResult>();
         foreach (var target in string.IsNullOrEmpty(this.target) ? settings.Targets.Values.ToArray() : [settings.Targets[this.target]])
         {
+            if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
+            {
+                results.Add(ValidateResult.Invalid("""
+                    翻訳モジュールが選択されていません。
+                    「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
+                    """));
+            }
+            if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
+            {
+                results.Add(ValidateResult.Invalid("""
+                    キャッシュモジュールが選択されていません。
+                    「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
+                    """));
+            }
             foreach (var validator in this.validators)
             {
                 results.Add(await validator.Validate(target));
