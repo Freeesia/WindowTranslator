@@ -33,7 +33,7 @@ public class LLMTranslator : ITranslateModule
         """);
         if (llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } key)
         {
-            this.client = new(model, key, llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
+            this.client = new(model, new(key), llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
         }
     }
 
@@ -43,7 +43,7 @@ public class LLMTranslator : ITranslateModule
         {
             throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         }
-        var completion = await this.client.CompleteChatAsync([
+        ChatCompletion completion = await this.client.CompleteChatAsync([
             this.system,
             ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcTexts.Select(s => s.Text))),
             assitant,
@@ -51,7 +51,7 @@ public class LLMTranslator : ITranslateModule
         {
             StopSequences = { "\"]" }
         }).ConfigureAwait(false);
-        var json = assitant.Content[0].Text + completion.Value.ToString().Trim() + "\"]";
+        var json = assitant.Content[0].Text + completion.Content[0].Text.Trim() + "\"]";
         return JsonSerializer.Deserialize<string[]>(json) ?? [];
     }
 }
