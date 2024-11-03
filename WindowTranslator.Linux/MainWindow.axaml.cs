@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace WindowTranslator.Linux;
+namespace WindowTranslator;
 
 public partial class MainWindow : Window
 {

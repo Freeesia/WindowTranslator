@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace WindowTranslator.Linux;
+namespace WindowTranslator;
 
 public partial class App : Application
 {
