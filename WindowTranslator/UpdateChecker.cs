@@ -15,7 +15,7 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
 {
     private const string owner = "Freeesia";
     private static readonly string updateInfoPath = Path.Combine(PathUtility.UserDir, "update.json");
-    private readonly GitHubClient client;
+    private readonly IGitHubClient client;
     private readonly string name;
     private readonly Version version;
     private readonly ILogger<UpdateChecker> logger;
@@ -40,13 +40,13 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
 
     public string? LatestVersion { get; private set; }
 
-    public UpdateChecker(ILogger<UpdateChecker> logger, App app)
+    public UpdateChecker(ILogger<UpdateChecker> logger, IGitHubClient client, App app)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var name = assembly.GetName();
         this.name = name.Name ?? throw new InvalidOperationException();
         this.version = name.Version ?? throw new InvalidOperationException();
-        this.client = new(new ProductHeaderValue(this.name, this.version.ToString()));
+        this.client = client;
         this.logger = logger;
         this.app = app;
     }

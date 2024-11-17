@@ -15,10 +15,10 @@ namespace WindowTranslator.Modules.Ocr;
 
 public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, ILogger<TesseractOcr> logger) : IOcrModule, IDisposable
 {
-    private readonly string source = langOptions.Value.Source;
+    public static string DataDir { get; } = Path.Combine(PathUtility.UserDir, "tessdata");
     private readonly ILogger<TesseractOcr> logger = logger;
-    private readonly Engine engine = new(Path.Combine(PathUtility.UserDir, "tessdata"), Language.English, EngineMode.Default, logger: logger);
-    private readonly IRandomAccessStream stream = new InMemoryRandomAccessStream();
+    private readonly Engine engine = new(DataDir, ConvertLanguage(langOptions.Value.Source), EngineMode.Default, logger: logger);
+    private readonly InMemoryRandomAccessStream stream = new();
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
@@ -40,11 +40,31 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
             ArrayPool<byte>.Shared.Return(bytes);
         }
     }
+
     public void Dispose()
     {
         this.stream.Dispose();
         this.engine.Dispose();
     }
+
+    public static Language ConvertLanguage(string lang) => lang switch
+    {
+        "ja-JP" => Language.Japanese,
+        "en-US" => Language.English, // EnglishMiddleなに？
+        "pt-BR" => Language.Portuguese,
+        "fr-CA" => Language.French,
+        "fr-FR" => Language.French,
+        "it-IT" => Language.Italian,
+        "de-DE" => Language.German,
+        "es-ES" => Language.SpanishCastilian,
+        "pt-PT" => Language.Portuguese,
+        "nl-NL" => Language.Dutch,
+        "ru-RU" => Language.Russian,
+        "ko-KR" => Language.Korean,
+        "zh-Hant" => Language.ChineseTraditional,
+        "zh-Hans" => Language.ChineseSimplified,
+        _ => Language.English,
+    };
 
     private async ValueTask<(byte[] buf, int size)> SoftwareToBytesAsync(SoftwareBitmap softwareBitmap)
     {
