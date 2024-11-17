@@ -53,7 +53,7 @@ public class OcrCorrectionFilter : IFilterModule
         {
             this.client = new(
                 model,
-                apiKey,
+                new(apiKey),
                 llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
             Task.Run(Correct);
         }
@@ -106,10 +106,10 @@ public class OcrCorrectionFilter : IFilterModule
             try
             {
                 var ums = ChatMessage.CreateUserMessage(JsonSerializer.Serialize(texts));
-                var completion = await this.client!.CompleteChatAsync([this.system, ums, assitant],
+                ChatCompletion completion = await this.client!.CompleteChatAsync([this.system, ums, assitant],
                     new() { StopSequences = { "\"]" } })
                     .ConfigureAwait(false);
-                var json = assitant.Content[0].Text + completion.Value.ToString().Trim() + "\"]";
+                var json = assitant.Content[0].Text + completion.Content[0].Text.Trim() + "\"]";
                 var corrected = JsonSerializer.Deserialize<string[]>(json) ?? [];
                 for (var i = 0; i < texts.Count; i++)
                 {

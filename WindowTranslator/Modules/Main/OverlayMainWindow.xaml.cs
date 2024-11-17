@@ -136,6 +136,10 @@ public partial class OverlayMainWindow : Window
             this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         }
 
+        // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
+        IntPtr hWndHiddenOwner = User32.GetWindow(this.windowHandle, GetWindowCommands.GW_OWNER);
+        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
+
         var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
         GetMonitorInfo(monitorHandle, out var monitorInfo);
         var mode = DEVMODE.Create();

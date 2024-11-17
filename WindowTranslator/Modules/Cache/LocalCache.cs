@@ -9,8 +9,8 @@ using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
 
-[LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
 [DefaultModule]
+[LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
 public sealed class LocalCache : ICacheModule, IDisposable
 {
     private static readonly JsonSerializerOptions serializerOptions = new()

@@ -117,130 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Source" xml:space="preserve">
-    <value>翻訳元(認識)言語</value>
-  </data>
-  <data name="Target" xml:space="preserve">
-    <value>翻訳先(表示)言語</value>
-  </data>
-  <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
-  </data>
-  <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
-  </data>
-  <data name="ViewMode" xml:space="preserve">
-    <value>翻訳結果表示モード</value>
-  </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>自動翻訳対象</value>
-  </data>
-  <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する</value>
-  </data>
-  <data name="SettingsViewModel" xml:space="preserve">
-    <value>全体設定</value>
-  </data>
-  <data name="Misc" xml:space="preserve">
-    <value>その他</value>
-  </data>
-  <data name="Plugin" xml:space="preserve">
-    <value>プラグイン設定</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>言語設定</value>
-  </data>
-  <data name="Overlay" xml:space="preserve">
-    <value>オーバレイ</value>
-  </data>
   <data name="Capture" xml:space="preserve">
     <value>キャプチャーウィンドウ</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>実行</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>アプリを自動的に起動する</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>アプリの自動起動を解除</value>
-  </data>
-  <data name="InMemoryCache" xml:space="preserve">
-    <value>メモリ内キャッシュ</value>
-  </data>
-  <data name="LocalCache" xml:space="preserve">
-    <value>ローカルファイルキャッシュ</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>設定</value>
-  </data>
-  <data name="Attach" xml:space="preserve">
-    <value>アタッチ</value>
-  </data>
-  <data name="Detach" xml:space="preserve">
-    <value>デタッチ</value>
-  </data>
-  <data name="Exit" xml:space="preserve">
-    <value>終了</value>
-  </data>
-  <data name="MutexError" xml:space="preserve">
-    <value>すでにWindowTranslatorが起動中です</value>
-  </data>
-  <data name="About" xml:space="preserve">
-    <value>このアプリについて</value>
-  </data>
-  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>サードパーティーライセンスの確認</value>
-  </data>
-  <data name="HasUpdate" xml:space="preserve">
-    <value>アップデートがあります: {0}</value>
-  </data>
-  <data name="IsLatest" xml:space="preserve">
-    <value>最新バージョンをご利用中です。</value>
-  </data>
-  <data name="UpdateInfo" xml:space="preserve">
-    <value>更新情報</value>
-  </data>
-  <data name="UpdateCommand" xml:space="preserve">
-    <value>最新バージョンに更新</value>
-  </data>
-  <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>詳細情報の確認</value>
+  <data name="Overlay" xml:space="preserve">
+    <value>オーバレイ</value>
   </data>
   <data name="Hold" xml:space="preserve">
     <value>押している間だけ</value>
   </data>
   <data name="Toggle" xml:space="preserve">
     <value>押してON/OFFを切り替える</value>
-  </data>
-  <data name="OverlaySwitch" xml:space="preserve">
-    <value>オーバーレイ表示の切り替え(Ctrl+Alt+O)</value>
-  </data>
-  <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>オーバーレイ表示をキャプチャー可能にする</value>
-  </data>
-  <data name="TargetProcesses" xml:space="preserve">
-    <value>翻訳対象プロセス</value>
-  </data>
-  <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>WindowsOCRの設定</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>X位置ずれ閾値</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>行間閾値</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>文字間閾値</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>文字サイズずれ閾値</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>マージ閾値</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>Y位置ずれ閾値</value>
   </data>
 </root>

@@ -88,7 +88,7 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   キャッシュモジュール選択 に類似しているローカライズされた文字列を検索します。
+        ///   キャッシュモジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CacheModule {
             get {
@@ -286,15 +286,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string PosThrethold {
-            get {
-                return ResourceManager.GetString("PosThrethold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   アプリを自動的に起動する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RegisterToStartupCommand {
@@ -376,7 +367,7 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   翻訳モジュール選択 に類似しているローカライズされた文字列を検索します。
+        ///   翻訳モジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string TranslateModule {
             get {
@@ -426,6 +417,24 @@ namespace WindowTranslator.Properties {
         public static string WindowsMediaOcrParam {
             get {
                 return ResourceManager.GetString("WindowsMediaOcrParam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   X位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string XPosThrethold {
+            get {
+                return ResourceManager.GetString("XPosThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Y位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string YPosThrethold {
+            get {
+                return ResourceManager.GetString("YPosThrethold", resourceCulture);
             }
         }
     }

@@ -1,13 +1,16 @@
 ﻿using DeepL;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Stores;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 
+[DefaultModule]
 [DisplayName("DeepL")]
 public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions) : ITranslateModule
 {
@@ -57,9 +60,47 @@ public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<Dee
 
 public class DeepLOptions : IPluginParam
 {
+    [DataType(DataType.Password)]
+    [DisplayName("APIキー")]
     public string AuthKey { get; set; } = string.Empty;
 
     [JsonIgnore]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
+}
+
+
+public class DeepLValidator : ITargetSettingsValidator
+{
+    public ValueTask<ValidateResult> Validate(TargetSettings settings)
+    {
+        // 翻訳モジュールで利用しない場合は無条件で有効
+        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(DeepLTranslator))
+        {
+            return ValueTask.FromResult(ValidateResult.Valid);
+        }
+
+        // 翻訳言語が対応していないときは無効
+        if (settings.Language.Target == "zh-HANT")
+        {
+            return ValueTask.FromResult(ValidateResult.Invalid("DeepL", "Translation to zh-HANT is currently not supported."));
+        }
+
+        // APIキーが設定されている場合は有効
+        var op = settings.PluginParams.GetValueOrDefault(nameof(DeepLOptions)) as DeepLOptions;
+        if (string.IsNullOrEmpty(op?.AuthKey))
+        {
+            return ValueTask.FromResult(ValidateResult.Invalid("DeepL", """
+            翻訳モジュールにDeepLが選択されています。
+            DeepLの利用にはAPIキーが必要です。
+
+            「対象ごとの設定」→「DeepLOptions」タブのAPIキーを設定してください。
+            APIキーはDeepLの[アカウントページ](https://www.deepl.com/ja/your-account/keys)から取得できます。
+
+            [こちら](https://youtu.be/D7Yb6rIVPI0)の動画でDeepLのアカウント登録からAPIキーの設定までの手順を解説しています。
+            """));
+        }
+
+        return ValueTask.FromResult(ValidateResult.Valid);
+    }
 }

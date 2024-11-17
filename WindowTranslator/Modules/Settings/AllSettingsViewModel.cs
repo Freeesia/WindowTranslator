@@ -40,7 +40,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
+    private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IConfigurationRoot? rootConfig;
+    private readonly string target;
     [ObservableProperty]
     private bool isBusy;
 
@@ -103,6 +105,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
+        [Inject] IEnumerable<ITargetSettingsValidator> validators,
         string target)
     {
         var items = provider.GetPlugins();
@@ -136,6 +139,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
+        this.validators = validators;
+        this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
@@ -166,12 +171,16 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    public static void OpenReleaseNotes()
-        => Process.Start(new ProcessStartInfo("https://github.com/Freeesia/WindowTranslator/releases/latest") { UseShellExecute = true });
+    public void OpenReleaseNotes()
+        => this.updateChecker.OpenChangelog();
 
     [RelayCommand]
     public Task CheckUpdateAsync(CancellationToken token)
         => this.updateChecker.CheckAsync(token);
+
+    [RelayCommand]
+    public void InstallUpdate()
+        => this.updateChecker.Update();
 
     async partial void OnIsStartupChanged(bool value)
     {
@@ -213,8 +222,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    public async Task SaveAsync()
+    public async Task SaveAsync(object window)
     {
+        using var b = EnterBusy();
         var settings = new UserSettings()
         {
             Common = new()
@@ -242,6 +252,37 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
             }),
         };
+
+        // 値の検証
+        var results = new List<ValidateResult>();
+        foreach (var target in string.IsNullOrEmpty(this.target) ? settings.Targets.Values.ToArray() : [settings.Targets[this.target]])
+        {
+            if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
+            {
+                results.Add(ValidateResult.Invalid("翻訳モジュール", """
+                    翻訳モジュールが選択されていません。
+                    「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
+                    """));
+            }
+            if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
+            {
+                results.Add(ValidateResult.Invalid("翻訳モジュール", """
+                    キャッシュモジュールが選択されていません。
+                    「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
+                    """));
+            }
+            foreach (var validator in this.validators)
+            {
+                results.Add(await validator.Validate(target));
+            }
+        }
+        if (results.Any(r => !r.IsValid))
+        {
+            await this.dialogService.ShowAlertAsync("エラー", string.Join("\n\n", results.Where(r => !r.IsValid).Select(r => $"### {r.Title}\n{r.Message}")), "OK");
+            return;
+        }
+
+        // 値の保存
         Directory.CreateDirectory(PathUtility.UserDir);
         using (var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None))
             await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
@@ -249,7 +290,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
-        await this.presentationService.CloseDialogAsync(true);
+        await this.presentationService.CloseDialogAsync(true, window);
+    }
+
+    private IDisposable EnterBusy()
+    {
+        this.IsBusy = true;
+        return new DisposeAction(() => this.IsBusy = false);
     }
 
     public void Dispose()
@@ -289,8 +336,8 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("nl-NL"),
         CultureInfo.GetCultureInfo("ru-RU"),
         CultureInfo.GetCultureInfo("ko-KR"),
-        CultureInfo.GetCultureInfo("zh-CN"),
-        CultureInfo.GetCultureInfo("zh-TW"),
+        CultureInfo.GetCultureInfo("zh-Hans"),
+        CultureInfo.GetCultureInfo("zh-Hant"),
     ];
 
     [Browsable(false)]
@@ -327,14 +374,18 @@ public partial class TargetSettingsViewModel(
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string TranslateModule { get; set; }
-        = settings.SelectedPlugins.GetValueOrDefault(nameof(ITranslateModule), translateModules.OrderByDescending(i => i.IsDefault).First().Name);
+        = settings.SelectedPlugins.GetValueOrDefault(
+            nameof(ITranslateModule),
+            translateModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
     [Category("SettingsViewModel|Plugin")]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
     public string CacheModule { get; set; }
-        = settings.SelectedPlugins.GetValueOrDefault(nameof(ICacheModule), cacheModules.OrderByDescending(i => i.IsDefault).First().Name);
+        = settings.SelectedPlugins.GetValueOrDefault(
+            nameof(ICacheModule),
+            cacheModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
     [Category("SettingsViewModel|Font")]
     [FontFamilySelector]

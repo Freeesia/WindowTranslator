@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Quickenshtein;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
-using System.ComponentModel;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
 using PropertyTools.DataAnnotations;
@@ -27,6 +26,7 @@ public partial class FoMFilterModule : IFilterModule
         PropertyNameCaseInsensitive = true,
     };
     private readonly bool isEnabled;
+    private readonly bool useJpn;
     private readonly bool exclude;
     private readonly FrozenDictionary<string, LocInto> builtin;
     private readonly FrozenDictionary<string, string> context;
@@ -196,7 +196,7 @@ public partial class FoMFilterModule : IFilterModule
 
     public double Priority => -1;
 
-    public FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptions<FoMOptions> options, ILogger<FoMFilterModule> logger)
+    public FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptionsSnapshot<FoMOptions> options, ILogger<FoMFilterModule> logger)
     {
         this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
         {
@@ -210,6 +210,7 @@ public partial class FoMFilterModule : IFilterModule
         if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
             this.isEnabled = true;
+            this.useJpn = options.Value.UseJpn;
             var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
             using var fs = File.OpenRead(path);
             var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions);
@@ -309,7 +310,7 @@ public partial class FoMFilterModule : IFilterModule
             if (this.builtin.TryGetValue(src.Text, out var dst))
             {
                 match.Add(src.Text);
-                var ret = string.IsNullOrEmpty(dst.Text) ? src with { Context = GetContext(dst.Key) } : src with { Text = dst.Text, IsTranslated = true };
+                var ret = (this.useJpn && !string.IsNullOrEmpty(dst.Text)) ? src with { Text = dst.Text, IsTranslated = true } : src with { Context = GetContext(dst.Key) };
                 if (ret.IsTranslated || !string.IsNullOrEmpty(ret.Context))
                 {
                     yield return ret;
@@ -322,7 +323,7 @@ public partial class FoMFilterModule : IFilterModule
             else if (this.cache.TryGetValue(src.Text, out var c))
             {
                 match.Add(c.en);
-                var ret = string.IsNullOrEmpty(c.ja) ? src with { Text = c.en, Context = c.context } : src with { Text = c.ja, IsTranslated = true };
+                var ret = (this.useJpn && !string.IsNullOrEmpty(c.ja)) ? src with { Text = c.ja, IsTranslated = true } : src with { Text = c.en, Context = c.context };
                 if (ret.IsTranslated || !string.IsNullOrEmpty(ret.Context))
                 {
                     yield return ret;
@@ -421,6 +422,9 @@ public class FoMOptions : IPluginParam
     [DisplayName("ゲームに含まれているリソースを利用した補正を利用する")]
     public bool IsEnabledCorrect { get; set; } = true;
 
+    [DisplayName("ゲームに含まれている日本語リソースを利用する")]
+    public bool UseJpn { get; set; } = true;
+
     [DisplayName("プレイヤー名")]
     public string PlayerName { get; set; } = string.Empty;
 
@@ -454,6 +458,16 @@ file static class Extentions
     public static string ReplaceToPlain(this string s, string player, string farm)
         => s.Replace("[Ari]", player)
             .Replace("[farm_name]", farm)
+            .Replace("[ANIMAL_NAME]", "it")
+            .Replace("[ANIMAL_PAIR]", "the other one")
+            .Replace("[BREEDING_PARTNER]", string.Empty)
+            .Replace("[TREAT_ITEM]", "Treat")
+            .Replace("[BATHHOUSE_COST]", string.Empty)
+            .Replace("[INN_SOUP_OF_THE_DAY]", string.Empty)
+            //.Replace("[statue_cost_low]", string.Empty)
+            //.Replace("[statue_cost_high]", string.Empty)
+            //.Replace("[offering_item_count]", string.Empty)
+            //.Replace("[offering_item_name]", string.Empty)
             .Replace("$", string.Empty)
             .Replace("=", string.Empty)
             .Replace("^", string.Empty)

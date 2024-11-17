@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
@@ -29,8 +30,6 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly ICaptureModule capture;
     private readonly double fontScale;
     private readonly ConcurrentDictionary<string, string> requesting = new();
-    [ObservableProperty]
-    private IEnumerable<TextRect> ocrTexts = [];
 
     [ObservableProperty]
     private double width = double.NaN;
@@ -40,10 +39,11 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private bool isFirstBusy = true;
 
-    public string Font { get; }
-
     private SoftwareBitmap? sbmp;
     private bool disposedValue;
+
+    public ObservableCollection<TextRect> OcrTexts { get; } = [];
+    public string Font { get; }
 
     public MainViewModelBase(
         IPresentationService presentationService,
@@ -126,7 +126,16 @@ public abstract partial class MainViewModelBase : IDisposable
             using var t = this.logger.LogDebugTime("PostTranslate");
             texts = await tmp.ToArrayAsync();
         }
-        this.OcrTexts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
+        var hash = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale }).ToHashSet();
+        foreach (var item in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
+        {
+            this.OcrTexts.Remove(item);
+        }
+        hash.ExceptWith(this.OcrTexts);
+        foreach (var item in hash)
+        {
+            this.OcrTexts.Add(item);
+        }
     }
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
@@ -147,7 +156,7 @@ public abstract partial class MainViewModelBase : IDisposable
             {
                 this.requesting.TryRemove(t.Text, out _);
             }
-            this.cache.AddRange(transTargets.Select(t => t.Text).Zip(translated).Where(p => p.First != p.Second));
+            this.cache.AddRange(transTargets.Select(t => t.Text).Zip(translated));
         }
         catch (Exception e)
         {

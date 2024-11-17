@@ -70,6 +70,6 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
         var width = block.BoundingBox.Value.Width;
         var height = block.BoundingBox.Value.Height;
         var fontSize = block.FontProperties.PointSize * 0.5;
-        return new(text, x, y, width, height, fontSize, block.Paragraphs.Sum(p => p.TextLines.Count()));
+        return new(text, x, y, width, height, fontSize, block.Paragraphs.Sum(p => p.TextLines.Count()) > 1);
     }
 }

@@ -17,7 +17,7 @@ public sealed class TextOverlayWidthConverter : IValueConverter
             return DependencyProperty.UnsetValue;
         }
         // 複数行の時は改行して収まるようにする
-        if (rect.Line > 1)
+        if (rect.MultiLine)
         {
             return rect.Width * 1.01;
         }
