@@ -14,6 +14,9 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)から`WindowTranslator-(バージョン).msi`をダウンロードおよび実行してインストールを行います。
 
+インストール手順の動画はこちらから⬇️
+[![インストール手順動画](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+
 ### ポータブル版
 
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からzipファイルをダウンロードして任意のフォルダに展開します
@@ -24,7 +27,11 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 ## 使い方
 
 動画版はYouTubeから⬇️
-[![使い方動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)
+|            |                                                              DeepL版                                                              |                                                              Google AI版                                                              |
+| :--------: | :-------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------: |
+| 動画リンク | [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) |
+|  メリット  |                                                    無料枠が多い<br/>翻訳が速い                                                    |                                                            翻訳精度が高い                                                             |
+| デメリット |                                                          翻訳精度が劣る                                                           |                                                    少額の課金が必要<br/>翻訳が遅い                                                    |
 
 ### 事前準備
 
