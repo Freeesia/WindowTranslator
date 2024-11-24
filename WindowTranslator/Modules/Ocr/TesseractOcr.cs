@@ -9,6 +9,7 @@ using TesseractOCR.Layout;
 using TesseractOCR.Pix;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using WindowTranslator.Extensions;
 using static WindowTranslator.Modules.Ocr.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
@@ -22,6 +23,7 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
+        using var t = this.logger.LogDebugTime("OCR Recognize");
         var (bytes, size) = await SoftwareToBytesAsync(bitmap);
         try
         {
@@ -29,6 +31,9 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
             using var page = engine.Process(img);
             var lineResults = page
                 .Layout
+                .SelectMany(l => l.Paragraphs)
+                .SelectMany(p => p.TextLines)
+                .SelectMany(t => t.Words)
                 .Select(CalcRect)
                 .Where(w => !string.IsNullOrEmpty(w.Text))
                 .ToArray();
@@ -69,8 +74,10 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
     private async ValueTask<(byte[] buf, int size)> SoftwareToBytesAsync(SoftwareBitmap softwareBitmap)
     {
         this.stream.Seek(0);
-        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.TiffEncoderId, this.stream);
-        encoder.SetSoftwareBitmap(softwareBitmap);
+        // グレースケールに変換
+        var grayBitmap = SoftwareBitmap.Convert(softwareBitmap, BitmapPixelFormat.Gray8, BitmapAlphaMode.Ignore);
+        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, this.stream);
+        encoder.SetSoftwareBitmap(grayBitmap);
         await encoder.FlushAsync();
         var size = (int)this.stream.Size;
         var bytes = ArrayPool<byte>.Shared.Rent(size);
@@ -78,7 +85,7 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
         return (bytes, size);
     }
 
-    private TextRect CalcRect(Block block)
+    private TextRect CalcRect(Word block)
     {
         var text = block.Text?.TrimEnd();
         if (string.IsNullOrEmpty(text) || IsIgnoreLine().IsMatch(text))
@@ -90,6 +97,6 @@ public sealed class TesseractOcr(IOptionsSnapshot<LanguageOptions> langOptions, 
         var width = block.BoundingBox.Value.Width;
         var height = block.BoundingBox.Value.Height;
         var fontSize = block.FontProperties.PointSize * 0.5;
-        return new(text, x, y, width, height, fontSize, block.Paragraphs.Sum(p => p.TextLines.Count()) > 1);
+        return new(text, x, y, width, height, fontSize, false);
     }
 }

@@ -17,8 +17,8 @@ public class TesseractOcrValidator(IGitHubClient client) : ITargetSettingsValida
             return ValidateResult.Valid;
         }
 
-        // IGitHubClient を利用して `tesseract-ocr/tessdata_fast` リポジトリからeng.traineddataをダウンロードする
-        var contents = await client.Repository.Content.GetRawContent("tesseract-ocr", "tessdata_fast", langData);
+        // IGitHubClient を利用して `tesseract-ocr/tessdata_best` リポジトリからeng.traineddataをダウンロードする
+        var contents = await client.Repository.Content.GetRawContent("tesseract-ocr", "tessdata_best", langData);
         await using var fs = File.Create(langDataPath);
         await fs.WriteAsync(contents).ConfigureAwait(false);
         return ValidateResult.Valid;
