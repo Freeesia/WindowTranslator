@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using OpenAI;
@@ -12,7 +13,10 @@ namespace WindowTranslator.Plugin.LLMPlugin;
 [DisplayName("LLM")]
 public class LLMTranslator : ITranslateModule
 {
-    private static readonly JsonSerializerOptions options = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
     private static readonly ChatCompletionOptions openAiOptions = new()
     {
         ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
@@ -121,37 +125,37 @@ public class LLMTranslator : ITranslateModule
         var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
         if (this.isOpenAi)
         {
-            return TranslateFromOpenAi(system, srcTexts.Select(s => s.Text));
+            return TranslateFromOpenAi(system, srcTexts);
         }
         else
         {
-            return TranslateFromOther(system, srcTexts.Select(s => s.Text));
+            return TranslateFromOther(system, srcTexts);
         }
     }
 
-    private async ValueTask<string[]> TranslateFromOpenAi(string system, IEnumerable<string> srcs)
+    private async ValueTask<string[]> TranslateFromOpenAi(string system, IEnumerable<TextInfo> srcs)
     {
         var client = this.client ?? throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         ChatCompletion completion = await client.CompleteChatAsync([
                 ChatMessage.CreateSystemMessage(system),
-                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs)),
+                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions)),
             ], openAiOptions)
             .ConfigureAwait(false);
-        var res = JsonSerializer.Deserialize<Response>(completion.Content[0].Text.Trim(), options);
+        var res = JsonSerializer.Deserialize<Response>(completion.Content[0].Text.Trim(), jsonOptions);
         return res?.Translated ?? [];
     }
 
-    private async ValueTask<string[]> TranslateFromOther(string system, IEnumerable<string> srcs)
+    private async ValueTask<string[]> TranslateFromOther(string system, IEnumerable<TextInfo> srcs)
     {
         var client = this.client ?? throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         ChatCompletion completion = await client.CompleteChatAsync([
                 ChatMessage.CreateSystemMessage(system),
-                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs)),
+                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions)),
                 assitant,
             ], otherOptions)
             .ConfigureAwait(false);
         var json = assitant.Content[0].Text + completion.Content[0].Text.Trim() + otherOptions.StopSequences[0];
-        var res = JsonSerializer.Deserialize<Response>(json, options);
+        var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
         return res?.Translated ?? [];
     }
 
