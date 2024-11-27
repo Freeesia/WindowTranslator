@@ -1,17 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using PropertyTools.DataAnnotations;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
 public class LLMOptions : IPluginParam
 {
+    [DisplayName("認識補正を利用するか")]
     public bool IsEnabledCorrect { get; set; }
-    public string? Model { get; set; }
+
+    [DisplayName("使用するモデル")]
+    public string? Model { get; set; } = "gpt-4o-mini";
+
+    [DisplayName("APIキー")]
+    [DataType(DataType.Password)]
     public string? ApiKey { get; set; }
+
+    [DisplayName("接続先")]
     public string? Endpoint { get; set; }
 
+    [Height(120)]
+    [DisplayName("補正サンプル")]
     [DataType(DataType.MultilineText)]
     public string? CorrectSample { get; set; }
 
+    [Height(120)]
+    [DisplayName("翻訳時に利用する文脈情報")]
     [DataType(DataType.MultilineText)]
-    public string? TranslateSample { get; set; }
+    public string? TranslateContext { get; set; }
 }
