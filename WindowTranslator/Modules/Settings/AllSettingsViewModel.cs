@@ -290,7 +290,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         await this.presentationService.CloseDialogAsync(true, window);
     }
 
-    private IDisposable EnterBusy()
+    private DisposeAction EnterBusy()
     {
         this.IsBusy = true;
         return new DisposeAction(() => this.IsBusy = false);
