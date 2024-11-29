@@ -113,6 +113,10 @@ public class GoogleAITranslator : ITranslateModule
                 var completion = await this.client.GenerateContentAsync(req).ConfigureAwait(false);
                 return completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion.Text() + "\"]", jsonOptions) ?? [];
             }
+            catch (GenerativeAIExException e) when (e.Error.Code == 400)
+            {
+                throw new GenerativeAIExException(e.Error with { Message = "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください" });
+            }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (GenerativeAIExException e) when (e.Error.Code == 503)
             {
