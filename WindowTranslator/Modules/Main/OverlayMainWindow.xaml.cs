@@ -5,13 +5,13 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Threading;
+using Microsoft.Extensions.Options;
 using PInvoke;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
 using static PInvoke.User32;
-using Microsoft.Extensions.Options;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -23,7 +23,6 @@ public partial class OverlayMainWindow : Window
     private readonly OverlaySwitch overlaySwitch;
     private readonly bool isEnableCapture;
     private readonly IProcessInfoStore processInfo;
-    private readonly IPresentationService presentationService;
     private readonly IVirtualDesktopManager desktopManager;
     private readonly DispatcherTimer timer = new();
     private readonly ILogger<OverlayMainWindow> logger;
@@ -53,7 +52,6 @@ public partial class OverlayMainWindow : Window
     public OverlayMainWindow(
         IOptionsSnapshot<CommonSettings> settings,
         IProcessInfoStore processInfo,
-        IPresentationService presentationService,
         IVirtualDesktopManager desktopManager,
         ILogger<OverlayMainWindow> logger)
     {
@@ -61,7 +59,6 @@ public partial class OverlayMainWindow : Window
         this.overlaySwitch = settings.Value.OverlaySwitch;
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.processInfo = processInfo;
-        this.presentationService = presentationService;
         this.desktopManager = desktopManager;
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
@@ -107,12 +104,24 @@ public partial class OverlayMainWindow : Window
         var source = HwndSource.FromHwnd(this.windowHandle);
         source.AddHook(WndProc);
 
+        StrongReferenceMessenger.Default.Register<OverlayMainWindow, CloseMessage>(this, CloseIfViewModel);
     }
+
+    private static void CloseIfViewModel(OverlayMainWindow w, CloseMessage m)
+        => _ = w.Dispatcher.BeginInvoke(static (OverlayMainWindow w, CloseMessage m) =>
+        {
+            if (w.DataContext == m.ViewModel)
+            {
+                w.Close();
+            }
+        }, w, m);
 
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
         this.timer.Stop();
+        UnregisterHotKey(new(this.windowHandle), 0);
+        StrongReferenceMessenger.Default.Unregister<CloseMessage>(this);
     }
 
     private unsafe void UpdateWindowPositionAndSize()
@@ -122,7 +131,7 @@ public partial class OverlayMainWindow : Window
         if (!GetWindowInfo(this.processInfo.MainWindowHandle, ref windowInfo))
         {
             this.timer.Stop();
-            this.presentationService.CloseWindowAsync(this).Forget();
+            this.Close();
             return;
         }
 
