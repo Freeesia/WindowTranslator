@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.Threading;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using System.Windows;
 using System.Windows.Threading;
 using WindowTranslator.Stores;
@@ -12,14 +12,12 @@ namespace WindowTranslator.Modules.Main;
 public partial class CaptureMainWindow
 {
     private readonly IProcessInfoStore processInfo;
-    private readonly IPresentationService presentationService;
     private readonly DispatcherTimer timer = new();
 
-    public CaptureMainWindow(IProcessInfoStore processInfo, IPresentationService presentationService)
+    public CaptureMainWindow(IProcessInfoStore processInfo)
     {
         InitializeComponent();
         this.processInfo = processInfo;
-        this.presentationService = presentationService;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => CheckTargetWindow();
     }
@@ -27,6 +25,7 @@ public partial class CaptureMainWindow
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         this.timer.Start();
+        StrongReferenceMessenger.Default.Register<CaptureMainWindow, CloseMessage>(this, CloseIfViewModel);
     }
 
     private void CheckTargetWindow()
@@ -34,9 +33,23 @@ public partial class CaptureMainWindow
         var windowInfo = WINDOWINFO.Create();
         if (!GetWindowInfo(this.processInfo.MainWindowHandle, ref windowInfo))
         {
-            this.timer.Stop();
-            this.presentationService.CloseWindowAsync(this).Forget();
+            this.Close();
             return;
+        }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        this.timer.Stop();
+        StrongReferenceMessenger.Default.Unregister<CloseMessage>(this);
+    }
+
+    private static void CloseIfViewModel(CaptureMainWindow w, CloseMessage m)
+    {
+        if (w.DataContext == m.ViewModel)
+        {
+            w.Close();
         }
     }
 }

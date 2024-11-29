@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -162,6 +163,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.presentationService.ShowMessage(e.Message, icon: MessageBoxImage.Error);
+            StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
     }
 
