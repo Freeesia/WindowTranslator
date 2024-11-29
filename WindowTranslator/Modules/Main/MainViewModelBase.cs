@@ -27,6 +27,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IEnumerable<IFilterModule> filters;
     private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
+    private readonly string name;
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
     private readonly double fontScale;
@@ -58,7 +59,7 @@ public abstract partial class MainViewModelBase : IDisposable
         IEnumerable<IFilterModule> filters,
         ILogger logger)
     {
-        var targetProcess = processInfoStore;
+        this.name = processInfoStore.Name;
         this.presentationService = presentationService;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
@@ -70,7 +71,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
-        this.capture.StartCapture(targetProcess.MainWindowHandle);
+        this.capture.StartCapture(processInfoStore.MainWindowHandle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
     }
 
@@ -162,7 +163,7 @@ public abstract partial class MainViewModelBase : IDisposable
         catch (Exception e)
         {
             this.timer.DisposeAsync().Forget();
-            this.presentationService.ShowMessage(e.Message, icon: MessageBoxImage.Error);
+            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
     }
