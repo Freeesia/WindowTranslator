@@ -47,7 +47,7 @@ public class GoogleAITranslator : ITranslateModule
         ["翻訳したテキスト1", "翻訳したテキスト2"]
         </出力テキストのJsonフォーマット>
         """;
-        if (!(googleAiOptions.Value.ApiKey is { Length: > 0 } apiKey))
+        if (googleAiOptions.Value.ApiKey is not { Length: > 0 } apiKey)
         {
             return;
         }
