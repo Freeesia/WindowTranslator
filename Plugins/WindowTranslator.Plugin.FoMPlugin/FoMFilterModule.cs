@@ -379,7 +379,7 @@ public partial class FoMFilterModule : IFilterModule
                 var p = 100.0 * l / Math.Max(text.Length, en.Length);
                 this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:f2}%) [{DateTime.UtcNow - t}]");
                 // 編集距離が短いほうの30%以下なら利用する
-                if (p >= 30)
+                if (p >= 32)
                 {
                     continue;
                 }
