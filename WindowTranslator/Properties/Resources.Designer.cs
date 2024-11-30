@@ -160,6 +160,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   リストのマージを避ける に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string IsAvoidMergeList {
+            get {
+                return ResourceManager.GetString("IsAvoidMergeList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string IsEnableAutoTarget {

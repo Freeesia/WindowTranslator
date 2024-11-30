@@ -243,4 +243,7 @@
   <data name="YPosThrethold" xml:space="preserve">
     <value>Y位置ずれ閾値</value>
   </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>リストのマージを避ける</value>
+  </data>
 </root>
