@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="host"
-    Title="OverlayMainWindow"
+    Title="{Binding Title}"
     d:DataContext="{d:DesignInstance local:OverlayMainViewModel}"
     d:Height="450"
     d:Width="800"

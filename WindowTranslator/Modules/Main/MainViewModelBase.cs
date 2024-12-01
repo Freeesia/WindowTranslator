@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Kamishibai;
@@ -32,6 +33,9 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly ICaptureModule capture;
     private readonly double fontScale;
     private readonly ConcurrentDictionary<string, string> requesting = new();
+
+    [ObservableProperty]
+    private string title;
 
     [ObservableProperty]
     private double width = double.NaN;
@@ -73,6 +77,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.logger = logger;
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
+        this.title = $"{this.name} - {this.translator.GetType().Name} ({Assembly.GetExecutingAssembly().GetName().Version})";
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)

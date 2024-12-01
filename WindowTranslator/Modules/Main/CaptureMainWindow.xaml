@@ -9,6 +9,7 @@
     xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="{Binding Title}"
     Width="800"
     Height="450"
     d:DataContext="{d:DesignInstance local:CaptureMainViewModel}"
