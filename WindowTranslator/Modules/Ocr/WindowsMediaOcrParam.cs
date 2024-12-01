@@ -28,4 +28,7 @@ public class WindowsMediaOcrParam : IPluginParam
     [Slidable(0, 1, .01, .1, true, .01)]
     [FormatString("P2")]
     public double FontSizeThrethold { get; set; } = .25;
+
+    [Category("MergeThrethold")]
+    public bool IsAvoidMergeList { get; set; } = false;
 }

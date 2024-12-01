@@ -19,6 +19,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
     private readonly IDirect3DDevice device;
     private readonly SemaphoreSlim processing = new(1, 1);
     private readonly ILogger<WindowsGraphicsCapture> logger;
+    private readonly CancellationTokenSource cts = new();
     private GraphicsCaptureSession? session;
     private SizeInt32 lastSize = new(1000, 1000);
 
@@ -34,6 +35,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public void Dispose()
     {
+        this.cts.Cancel();
         this.session?.Dispose();
         this.framePool?.Dispose();
     }
@@ -69,6 +71,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
         {
             await handler.InvokeAsync(this, new(frame));
         }
+        this.cts.Token.ThrowIfCancellationRequested();
         this.logger.LogDebug("イベント完了");
         if (lastSize.Width == frame.ContentSize.Width && lastSize.Height == frame.ContentSize.Height)
         {
@@ -76,6 +79,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
         }
         this.lastSize = frame.ContentSize;
         this.logger.LogDebug($"フレームプール再生成:({this.lastSize.Width}, {this.lastSize.Height})");
+        this.cts.Token.ThrowIfCancellationRequested();
         framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
         this.logger.LogDebug($"フレームプール再生成後:({this.lastSize.Width}, {this.lastSize.Height})");
     }

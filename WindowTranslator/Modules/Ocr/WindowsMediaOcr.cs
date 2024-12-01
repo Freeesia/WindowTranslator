@@ -15,11 +15,12 @@ namespace WindowTranslator.Modules.Ocr;
 [DisplayName("Windows標準文字認識")]
 public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<WindowsMediaOcrParam> ocrParam, ILogger<WindowsMediaOcr> logger) : IOcrModule
 {
-    private readonly double XPosThrethold = ocrParam.Value.XPosThrethold;
-    private readonly double YPosThrethold = ocrParam.Value.YPosThrethold;
-    private readonly double LeadingThrethold = ocrParam.Value.LeadingThrethold;
-    private readonly double SpacingThreshold = ocrParam.Value.SpacingThreshold;
-    private readonly double FontSizeThrethold = ocrParam.Value.FontSizeThrethold;
+    private readonly double xPosThrethold = ocrParam.Value.XPosThrethold;
+    private readonly double yPosThrethold = ocrParam.Value.YPosThrethold;
+    private readonly double leadingThrethold = ocrParam.Value.LeadingThrethold;
+    private readonly double spacingThreshold = ocrParam.Value.SpacingThreshold;
+    private readonly double fontSizeThrethold = ocrParam.Value.FontSizeThrethold;
+    private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
@@ -61,8 +62,8 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             return lineResults;
         }
 
-        var xt = XPosThrethold * bitmap.PixelWidth;
-        var yt = YPosThrethold * bitmap.PixelHeight;
+        var xt = xPosThrethold * bitmap.PixelWidth;
+        var yt = yPosThrethold * bitmap.PixelHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
@@ -106,25 +107,25 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
 
         // フォントサイズが大きく異なる場合はマージできない
         var fDiff = Math.Abs(temp.FontSize - rect.FontSize) / Math.Min(temp.FontSize, rect.FontSize);
-        if (fDiff > FontSizeThrethold)
+        if (fDiff > fontSizeThrethold)
         {
             return false;
         }
 
         var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
-        var (_, x, y, w, _, _, _, _, _, _) = rect;
+        var (text, x, y, w, _, _, _, _, _, _) = rect;
 
         // y座標が近く、x間隔が近い場合にマージできる
         var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
         var yDiff = Math.Abs(temp.Y - y); // Y座標の差
-        var gThre = fontSize * SpacingThreshold;
+        var gThre = fontSize * spacingThreshold;
         if (xGap < gThre && yDiff < yThreshold)
         {
             return true;
         }
 
-        // マージ元の文字列が2単語未満の場合は縦にマージできない
-        if (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2) : (temp.Text.Length <= 8))
+        // マージ元先の文字列が両方2単語未満の場合は縦にマージできない
+        if (this.isAvoidMergeList && (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2 && WordCount(text) <= 2) : (temp.Text.Length <= 8 && text.Length <= 8)))
         {
             return false;
         }
@@ -132,7 +133,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         // x座標が近く、y間隔が近い場合にマージできる
         var xDiff = Math.Abs(temp.X - x); // X座標の差
         var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
-        var lThre = fontSize * LeadingThrethold; // 行間の閾値
+        var lThre = fontSize * leadingThrethold; // 行間の閾値
         if (xDiff < xThreshold && yGap < lThre)
         {
             return true;
@@ -229,7 +230,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         // または、
         // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
         var lines = height / fontSize >= 2;
-            //|| (IsSpaceLang(this.source) ? (WordCount(text) > 2) : (text.Length > 8));
+        //|| (IsSpaceLang(this.source) ? (WordCount(text) > 2) : (text.Length > 8));
 
         // 若干太らせて完全に文字を覆う
         const double fat = .2;
