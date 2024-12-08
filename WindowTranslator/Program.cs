@@ -87,7 +87,11 @@ builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLangu
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
 
 var app = builder.Build();
+#if DEBUG
+var createdNew = true;
+#else
 using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+#endif
 if (!createdNew)
 {
     new MessageDialog()
