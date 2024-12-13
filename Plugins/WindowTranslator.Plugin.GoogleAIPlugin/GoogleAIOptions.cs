@@ -13,6 +13,10 @@ public class GoogleAIOptions : IPluginParam
     [DisplayName("使用するモデル")]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
 
+    [DisplayName("使用するプレビューモデル")]
+    [Description("モデル名を入力すると「使用するモデル」より優先されます")]
+    public string? PreviewModel { get; set; }
+
     [DisplayName("APIキー")]
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }

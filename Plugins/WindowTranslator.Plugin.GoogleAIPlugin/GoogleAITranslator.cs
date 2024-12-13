@@ -30,12 +30,13 @@ public class GoogleAITranslator : ITranslateModule
         this.logger = logger;
         var src = CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName;
         var target = CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName;
+        var options = googleAiOptions.Value;
         this.preSystem = $$"""
         あなたは{{src}}から{{target}}へ翻訳するの専門家です。
         入力テキストは{{src}}のテキストであり、翻訳が必要です。
         渡されたテキストを{{target}}へ翻訳して出力してください。
         """;
-        this.userContext = googleAiOptions.Value.TranslateContext;
+        this.userContext = options.TranslateContext;
         this.postSystem = """
         入力テキストは以下のJsonフォーマットになっています。
         各textの内容はペアとなるcontextの文脈を考慮して翻訳してください。
@@ -50,7 +51,7 @@ public class GoogleAITranslator : ITranslateModule
         ["翻訳したテキスト1", "翻訳したテキスト2"]
         </出力テキストのJsonフォーマット>
         """;
-        if (googleAiOptions.Value.ApiKey is not { Length: > 0 } apiKey)
+        if (options.ApiKey is not { Length: > 0 } apiKey)
         {
             return;
         }
@@ -58,7 +59,7 @@ public class GoogleAITranslator : ITranslateModule
             apiKey,
             new()
             {
-                Model = googleAiOptions.Value.Model.GetName(),
+                Model = string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
                 GenerationConfig = new GenerationConfigEx()
                 {
                     Temperature = 2.0,

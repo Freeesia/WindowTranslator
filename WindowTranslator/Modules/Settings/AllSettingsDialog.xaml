@@ -218,7 +218,11 @@
                             Margin="8"
                             ControlFactory="{StaticResource factory}"
                             Operator="{StaticResource operator}"
-                            SelectedObject="{Binding SelectedTarget}" />
+                            SelectedObject="{Binding SelectedTarget}">
+                            <pt:PropertyGrid.Resources>
+                                <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
+                            </pt:PropertyGrid.Resources>
+                        </pt:PropertyGrid>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Abount">
