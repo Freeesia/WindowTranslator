@@ -25,6 +25,8 @@ public class GoogleAITranslator : ITranslateModule
     private IReadOnlyList<string> common = [];
     private string? context;
 
+    public string Name => $"{nameof(GoogleAITranslator)}: {this.client?.Model ?? "Invalid"}";
+
     public GoogleAITranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<GoogleAITranslator> logger)
     {
         this.logger = logger;
