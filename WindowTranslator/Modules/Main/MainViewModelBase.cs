@@ -77,7 +77,8 @@ public abstract partial class MainViewModelBase : IDisposable
         this.logger = logger;
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
         this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
-        this.title = $"{this.name} - {this.translator.GetType().Name} ({Assembly.GetExecutingAssembly().GetName().Version})";
+        var transAsm = this.translator.GetType().Assembly;
+        this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)

@@ -55,6 +55,58 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         return comboBox;
     }
 
+    protected override FrameworkElement CreateDefaultControl(PropertyItem property)
+    {
+        var textBoxEx = new Wpf.Ui.Controls.TextBox
+        {
+            AcceptsReturn = property.AcceptsReturn,
+            MaxLength = property.MaxLength,
+            IsReadOnly = property.IsReadOnly,
+            TextWrapping = property.TextWrapping,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalContentAlignment = property.AcceptsReturn ? VerticalAlignment.Top : VerticalAlignment.Center,
+            PlaceholderText = property.Description,
+        };
+        if (property.FontFamily != null)
+        {
+            textBoxEx.FontFamily = new FontFamily(property.FontFamily);
+        }
+
+        if (!double.IsNaN(property.FontSize))
+        {
+            textBoxEx.FontSize = property.FontSize;
+        }
+
+        if (property.IsReadOnly)
+        {
+            textBoxEx.Foreground = Brushes.RoyalBlue;
+        }
+
+        var binding = property.CreateBinding(property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default);
+        if (property.ActualPropertyType != typeof(string) && IsNullable(property.ActualPropertyType))
+        {
+            binding.TargetNullValue = string.Empty;
+        }
+
+        textBoxEx.SetBinding(TextBox.TextProperty, binding);
+        return textBoxEx;
+    }
+
+    private static bool IsNullable(Type type)
+    {
+        if (!type.IsValueType)
+        {
+            return true;
+        }
+
+        if (Nullable.GetUnderlyingType(type) != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     [ValueConversion(typeof(FontFamily), typeof(string))]
     private class FontFamilyDisplayNameConverter : IValueConverter
     {

@@ -6,6 +6,11 @@
 public interface ITranslateModule
 {
     /// <summary>
+    /// モジュール名
+    /// </summary>
+    public string Name => GetType().Name;
+
+    /// <summary>
     /// 渡されたテキストを翻訳します。
     /// </summary>
     /// <param name="srcTexts">翻訳するテキストの配列。</param>
