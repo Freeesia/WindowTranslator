@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://github.com/Freeesia/WindowTranslator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Freeesia/WindowTranslator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>WindowTranslator;OCR;Translation</PackageTags>    
+    <PackageTags>WindowTranslator;OCR;Translation</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DebugType>embedded</DebugType>
@@ -27,4 +27,5 @@
       <_Parameter2>$([System.DateTime]::UtcNow.ToString("o"))</_Parameter2>
     </AssemblyAttribute>
   </ItemGroup>
+
 </Project>

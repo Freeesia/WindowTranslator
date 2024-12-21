@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solutio
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Composition.WindowsRuntimeHelpers", "Composition.WindowsRuntimeHelpers\Composition.WindowsRuntimeHelpers.csproj", "{F1A4F2BD-B093-44B4-9133-DA9F197CD052}"
@@ -134,9 +135,9 @@ Global
 		{A7E6289F-9FF6-43E9-904F-AEC929248BC2} = {0B1130E1-2666-4D0F-B69E-4C0A849C56E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_AutoCreateNewLanguageFiles = True
-		RESX_ConfirmAddLanguageFile = True
-		RESX_NeutralResourcesLanguage = ja-JP
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
+		RESX_NeutralResourcesLanguage = ja-JP
+		RESX_ConfirmAddLanguageFile = True
+		RESX_AutoCreateNewLanguageFiles = True
 	EndGlobalSection
 EndGlobal

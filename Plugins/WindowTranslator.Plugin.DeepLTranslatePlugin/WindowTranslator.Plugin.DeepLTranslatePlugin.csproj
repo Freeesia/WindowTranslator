@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="DeepL.net" Version="1.11.0" />
+    <PackageReference Include="DeepL.net" />
   </ItemGroup>
 
 </Project>
