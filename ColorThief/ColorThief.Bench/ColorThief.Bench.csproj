@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
-    <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="ksemenenko.ColorThief" />
   </ItemGroup>
 
   <ItemGroup>

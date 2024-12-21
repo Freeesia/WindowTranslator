@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Google_GenerativeAI" Version="1.0.2" />
+    <PackageReference Include="Google_GenerativeAI" />
   </ItemGroup>
 
 </Project>
