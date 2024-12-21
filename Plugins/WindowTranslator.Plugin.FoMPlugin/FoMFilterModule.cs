@@ -12,8 +12,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
-using PropertyTools.DataAnnotations;
-using System.Text.Json.Serialization;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
@@ -29,8 +27,9 @@ public partial class FoMFilterModule : IFilterModule
     private readonly bool useJpn;
     private readonly bool exclude;
     private readonly FrozenDictionary<string, LocInto> builtin;
+    private readonly FrozenDictionary<string, string> scenes;
     private readonly FrozenDictionary<string, string> context;
-    private readonly ConcurrentDictionary<string, (string en, string ja, string context)> cache = [];
+    private readonly ConcurrentDictionary<string, CacheInfo> cache = [];
     private readonly Channel<IReadOnlyList<string>> queue;
     private readonly ILogger<FoMFilterModule> logger;
     private static readonly Dictionary<string, string> charContext = new()
@@ -264,6 +263,50 @@ public partial class FoMFilterModule : IFilterModule
                 .DistinctBy(p => p.en)
                 .ToFrozenDictionary(p => p.en, p => p.ja);
 
+            // 会話文全体を抜き出しておく
+            static double ParseOrder(string n) => n switch
+            {
+                "init" => -2,
+                "init$_sequence_entry_1$" => -1,
+                _ => int.TryParse(n, out var i) ? i : 99,
+            };
+            this.scenes = loc.Eng
+                .Select(p => (key: p.Key.Split('/'), p.Value))
+                .Where(p => p.key[0] is "Conversations" or "Cutscenes" or "letters")
+                .GroupBy(
+                    p => p.key switch
+                        {
+                        ["Conversations", .., "prompts", _] => string.Join('/', p.key[..^3]),
+                        ["Conversations", .., not "prompts", _] => string.Join('/', p.key[..^1]),
+                        ["Cutscenes", .., "prompts", _] => string.Join('/', p.key[..^3]),
+                        ["Cutscenes", .., not "prompts", _] => string.Join('/', p.key[..^1]),
+                        ["letters", ..] => string.Join('/', p.key[..^1]),
+                            _ => throw new InvalidOperationException(),
+                        },
+                    (group, items) => (group, value: items
+                        .OrderBy(p => p.key switch
+                        {
+                        ["Conversations", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
+                        ["Conversations", .., not "prompts", var n] => ParseOrder(n),
+                        ["Cutscenes", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
+                        ["Cutscenes", .., not "prompts", var n] => ParseOrder(n),
+                        ["letters", _, var key] => key is "local" ? 1.0 : 0.0,
+                            _ => throw new InvalidOperationException(),
+                        })
+                        .Join(group)))
+                .Where(p => p.value.Lines() > 1)
+                .ToFrozenDictionary(
+                    p => p.group,
+                    p => $"""
+
+                    
+                    以下は翻訳対象の文章が含まれるシーン全体の会話です。
+                    シーン全体内の翻訳対象の文章の前後の会話を考慮して、翻訳する際の文脈として利用してください。
+                    <シーン全体>
+                    {p.value.ReplaceToPlain(player, farm)}
+                    </シーン全体>
+                    """);
+
             var sample = loc.Jpn
                 .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
                 .Select(p => (p.Key,
@@ -297,12 +340,16 @@ public partial class FoMFilterModule : IFilterModule
             translateModule.RegisterContext("""
                 牧場物語のようなノスタルジックな農場シミュレーションRPGです。
                 魔法が存在する中世ヨーロッパ風の世界観です。
+
+                地震により混乱が生じ人口が減ってしまったミストリアという村に、プレイヤーは新しく移り住むことになります。
+                プレイヤーは農場を経営し、村の人々と交流を深めながら、ミストリアの復興を目指します。
                 """);
             Task.Run(Correct);
         }
         else
         {
             this.builtin = FrozenDictionary<string, LocInto>.Empty;
+            this.scenes = FrozenDictionary<string, string>.Empty;
             this.context = FrozenDictionary<string, string>.Empty;
         }
     }
@@ -337,34 +384,41 @@ public partial class FoMFilterModule : IFilterModule
             yield break;
         }
         var match = new List<string>();
-        var notContexts = new List<TextRect>();
+        var notContexts = new List<(TextRect text, CacheInfo cache)>();
         var targets = new List<string>();
         await foreach (var src in texts.ConfigureAwait(false))
         {
             if (this.builtin.TryGetValue(src.Text, out var dst))
             {
                 match.Add(src.Text);
-                var ret = (this.useJpn && !string.IsNullOrEmpty(dst.Text)) ? src with { Text = dst.Text, IsTranslated = true } : src with { Context = GetContext(dst.Key) };
-                if (ret.IsTranslated || !string.IsNullOrEmpty(ret.Context))
+                var keys = dst.Key.Split('/');
+                if (this.useJpn && !string.IsNullOrEmpty(dst.Text))
                 {
-                    yield return ret;
+                    yield return src with { Text = dst.Text, IsTranslated = true };
+                }
+                else if (GetCharContext(keys) is { Length: > 0 } charContext)
+                {
+                    yield return src with { Context = charContext + GetSceneContext(keys) };
                 }
                 else
                 {
-                    notContexts.Add(ret);
+                    notContexts.Add((src, new(src.Text, dst.Text, string.Empty, GetSceneContext(keys))));
                 }
             }
             else if (this.cache.TryGetValue(src.Text, out var c))
             {
-                match.Add(c.en);
-                var ret = (this.useJpn && !string.IsNullOrEmpty(c.ja)) ? src with { Text = c.ja, IsTranslated = true } : src with { Text = c.en, Context = c.context };
-                if (ret.IsTranslated || !string.IsNullOrEmpty(ret.Context))
+                match.Add(c.En);
+                if (this.useJpn && !string.IsNullOrEmpty(c.Ja))
                 {
-                    yield return ret;
+                    yield return src with { Text = c.Ja, IsTranslated = true };
+                }
+                else if (!string.IsNullOrEmpty(c.CharContext))
+                {
+                    yield return src with { Text = c.En, Context = c.CharContext + c.SceneContext };
                 }
                 else
                 {
-                    notContexts.Add(ret);
+                    notContexts.Add((src, c));
                 }
             }
             else
@@ -381,11 +435,11 @@ public partial class FoMFilterModule : IFilterModule
             var contexts = match.Select(GetCharContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
             if (contexts is [var context])
             {
-                notContexts = notContexts.Select(r => r with { Context = context }).ToList();
+                notContexts = notContexts.Select(p => p with { text = p.text with { Text = p.cache.En, Context = context + p.cache.SceneContext } }).ToList();
             }
-            foreach (var item in notContexts)
+            foreach (var (text, _) in notContexts)
             {
-                yield return item;
+                yield return text;
             }
         }
 
@@ -417,7 +471,8 @@ public partial class FoMFilterModule : IFilterModule
                 {
                     continue;
                 }
-                this.cache.TryAdd(text, (en, near, GetContext(key)));
+                var keys = key.Split('/');
+                this.cache.TryAdd(text, new(en, near, GetCharContext(keys), GetSceneContext(keys)));
             }
         }
     }
@@ -443,15 +498,31 @@ public partial class FoMFilterModule : IFilterModule
     [GeneratedRegex("^misc_local/.*_name$")]
     private static partial Regex Glossary2Regex();
 
-    private string GetContext(string key)
-        => key.Split('/') is ["Conversations" or "Cutscenes", _, var c, ..] ? GetCharContext(c) : string.Empty;
+    private string GetSceneContext(string[] keys)
+    {
+        var scene = keys switch
+        {
+        ["Conversations", .., "prompts", _] => string.Join('/', keys[..^3]),
+        ["Conversations", .., not "prompts", _] => string.Join('/', keys[..^1]),
+        ["Cutscenes", .., "prompts", _] => string.Join('/', keys[..^3]),
+        ["Cutscenes", .., not "prompts", _] => string.Join('/', keys[..^1]),
+        ["letters", ..] => string.Join('/', keys[..^1]),
+            _ => string.Empty,
+        };
+        return this.scenes.TryGetValue(scene, out var s) ? s : string.Empty;
+    }
 
     private string GetCharContext(string charName)
         => this.context.TryGetValue(charName, out var context) ? context : string.Empty;
+
+    private string GetCharContext(string[] keys)
+        => keys is ["Conversations" or "Cutscenes", _, var c, ..] ? GetCharContext(c) : string.Empty;
 }
 
 record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
 record LocInto(string Key, string Text);
+
+record CacheInfo(string En, string Ja, string CharContext, string SceneContext);
 
 [DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
@@ -501,4 +572,24 @@ file static class Extentions
             .Replace("=", string.Empty)
             .Replace("^", string.Empty)
             .Replace("{}", string.Empty);
+
+    public static string Join(this IEnumerable<(string[] key, string Value)> values, string group)
+        => group.Split('/')[0] switch
+        {
+            "Conversations" => string.Join(Environment.NewLine, values.Select(p => p.key[^2] is "prompts" ? $"選択肢 {p.key[^1]} : \"{p.Value}\"" : $"\"{p.Value}\"")),
+            "Cutscenes" => string.Join(Environment.NewLine, values.Select(p => p.key[^2] is "prompts" ? $"選択肢 {p.key[^1]} : \"{p.Value}\"" : $"\"{p.Value}\"")),
+            "letters" => string.Join(Environment.NewLine, values.Select(p => (p.key[^1] is "local" ? "本文: \r\n" : "件名: ") + p.Value)),
+            _ => throw new InvalidOperationException(),
+        };
+
+    public static int Lines(this string s)
+    {
+        var count = 0;
+        var span = s.AsSpan();
+        foreach (var _ in span.EnumerateLines())
+        {
+            count++;
+        }
+        return count;
+    }
 }
