@@ -225,6 +225,11 @@ public partial class FoMFilterModule : IFilterModule
                 彼女はカタコトな言葉で話し、神秘的な雰囲気を持っています。
                 彼女の一人称は漢字で「私」です。
                 """,
+        ["Ari"] = """
+                この文章は主人公が会話相手の質問に対して返答するセリフです。
+                主人公はプレイヤーが操作するキャラクターです。
+                性別はプレイヤーが選択できるので、中性的な言葉遣いをします。
+                """,
     };
 
     public double Priority => -1;
@@ -400,9 +405,13 @@ public partial class FoMFilterModule : IFilterModule
                 {
                     yield return src with { Context = charContext + GetSceneContext(keys) };
                 }
+                else if (keys is [.., "prompts", _])
+                {
+                    yield return src with { Context = GetCharContext("Ari") + GetSceneContext(keys) };
+                }
                 else
                 {
-                    notContexts.Add((src, new(src.Text, dst.Text, string.Empty, GetSceneContext(keys))));
+                    notContexts.Add((src, new(keys, src.Text, dst.Text, string.Empty, GetSceneContext(keys))));
                 }
             }
             else if (this.cache.TryGetValue(src.Text, out var c))
@@ -415,6 +424,10 @@ public partial class FoMFilterModule : IFilterModule
                 else if (!string.IsNullOrEmpty(c.CharContext))
                 {
                     yield return src with { Text = c.En, Context = c.CharContext + c.SceneContext };
+                }
+                else if (c.Keys is [.., "prompts", _])
+                {
+                    yield return src with { Text = c.En, Context = GetCharContext("Ari") + c.SceneContext };
                 }
                 else
                 {
@@ -462,7 +475,7 @@ public partial class FoMFilterModule : IFilterModule
             foreach (var text in texts)
             {
                 var t = DateTime.UtcNow;
-                var (key, en, near, l) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
+                var (key, en, ja, l) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
                 // 編集距離のパーセンテージ
                 var p = 100.0 * l / Math.Max(text.Length, en.Length);
                 this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:f2}%) [{DateTime.UtcNow - t}]");
@@ -472,7 +485,7 @@ public partial class FoMFilterModule : IFilterModule
                     continue;
                 }
                 var keys = key.Split('/');
-                this.cache.TryAdd(text, new(en, near, GetCharContext(keys), GetSceneContext(keys)));
+                this.cache.TryAdd(text, new(keys, en, ja, GetCharContext(keys), GetSceneContext(keys)));
             }
         }
     }
@@ -522,7 +535,7 @@ public partial class FoMFilterModule : IFilterModule
 record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
 record LocInto(string Key, string Text);
 
-record CacheInfo(string En, string Ja, string CharContext, string SceneContext);
+record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
 
 [DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
