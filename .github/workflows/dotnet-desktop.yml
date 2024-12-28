@@ -66,8 +66,8 @@ jobs:
           name: docs
           path: pdfs/
   license:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    runs-on: ubuntu-latest
+    # if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -83,7 +83,7 @@ jobs:
             -ignore ignore-packages.json `
             -override package-information.json `
             -exclude-projects exclude-projects.json `
-            -i WindowTranslator.sln `
+            -ji include-projects.json `
             -d licenses `
             -fo licenses/third-party-licenses.txt
       - uses: actions/upload-artifact@v4

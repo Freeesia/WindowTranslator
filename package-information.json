@@ -54,5 +54,21 @@
     "Copyright": "Copyright (c) 2019 Weik.io",
     "Authors": "Weik.io",
     "ProjectUrl": "https://github.com/weikio/PluginFramework"
+  },
+  {
+    "Id": "OpenAI",
+    "Version": "2.1.0",
+    "License": "MIT",
+    "Copyright": "Copyright (c) 2024 OpenAI (https://openai.com)",
+    "Authors": "OpenAI",
+    "ProjectUrl": "https://github.com/openai/openai-dotnet"
+  },
+  {
+    "Id": "Quickenshtein",
+    "Version": "1.5.1",
+    "License": "MIT",
+    "Copyright": "Copyright (c) 2020 James Turner",
+    "Authors": "James Turner",
+    "ProjectUrl": "https://github.com/Turnerj/Quickenshtein"
   }
 ]
