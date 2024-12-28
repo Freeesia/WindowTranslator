@@ -2,23 +2,32 @@
   {
     "Id": "SharpDX",
     "Version": "4.2.0",
-    "License": "MIT"
+    "License": "MIT",
+    "Copyright": "Copyright (c) 2010-2014 SharpDX - Alexandre Mutel",
+    "Authors": "Alexandre Mutel",
+    "ProjectUrl": "https://github.com/sharpdx/SharpDX"
   },
   {
     "Id": "SharpDX.Direct3D11",
     "Version": "4.2.0",
-    "License": "MIT"
+    "License": "MIT",
+    "Copyright": "Copyright (c) 2010-2014 SharpDX - Alexandre Mutel",
+    "Authors": "Alexandre Mutel",
+    "ProjectUrl": "https://github.com/sharpdx/SharpDX"
   },
   {
     "Id": "SharpDX.DXGI",
     "Version": "4.2.0",
-    "License": "MIT"
+    "License": "MIT",
+    "Copyright": "Copyright (c) 2010-2014 SharpDX - Alexandre Mutel",
+    "Authors": "Alexandre Mutel",
+    "ProjectUrl": "https://github.com/sharpdx/SharpDX"
   },
   {
     "Id": "Weikio.PluginFramework",
     "Version": "1.5.1",
     "License": "MIT",
-    "CopyRight": "Copyright (c) 2019 Weik.io",
+    "Copyright": "Copyright (c) 2019 Weik.io",
     "Authors": "Weik.io",
     "ProjectUrl": "https://github.com/weikio/PluginFramework"
   },
@@ -26,7 +35,7 @@
     "Id": "Weikio.PluginFramework.Abstractions",
     "Version": "1.5.1",
     "License": "MIT",
-    "CopyRight": "Copyright (c) 2019 Weik.io",
+    "Copyright": "Copyright (c) 2019 Weik.io",
     "Authors": "Weik.io",
     "ProjectUrl": "https://github.com/weikio/PluginFramework"
   },
@@ -34,7 +43,7 @@
     "Id": "Weikio.PluginFramework.AspNetCore",
     "Version": "1.5.1",
     "License": "MIT",
-    "CopyRight": "Copyright (c) 2019 Weik.io",
+    "Copyright": "Copyright (c) 2019 Weik.io",
     "Authors": "Weik.io",
     "ProjectUrl": "https://github.com/weikio/PluginFramework"
   },
@@ -42,7 +51,7 @@
     "Id": "Weikio.PluginFramework.Configuration",
     "Version": "1.5.1",
     "License": "MIT",
-    "CopyRight": "Copyright (c) 2019 Weik.io",
+    "Copyright": "Copyright (c) 2019 Weik.io",
     "Authors": "Weik.io",
     "ProjectUrl": "https://github.com/weikio/PluginFramework"
   }
