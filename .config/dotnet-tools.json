@@ -2,17 +2,19 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "dotnet-project-licenses": {
-      "version": "2.7.1",
-      "commands": [
-        "dotnet-project-licenses"
-      ]
-    },
     "wix": {
       "version": "5.0.2",
       "commands": [
         "wix"
-      ]
+      ],
+      "rollForward": false
+    },
+    "nuget-license": {
+      "version": "3.0.15",
+      "commands": [
+        "nuget-license"
+      ],
+      "rollForward": false
     }
   }
 }
