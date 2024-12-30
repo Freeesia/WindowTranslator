@@ -66,13 +66,10 @@ jobs:
           name: docs
           path: pdfs/
   license:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    runs-on: ubuntu-latest
+    # if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 7.x
       - uses: actions/cache@v4
         with:
           path: licenses
@@ -81,12 +78,14 @@ jobs:
             ${{ runner.os }}-licenses-
       - run: |
           dotnet tool restore
-          dotnet project-licenses -t -u -m -e \
-            --packages-filter /Analyzers$/ \
-            --include-project-file \
-            --manual-package-information manual-package-information.json \
-            -i WindowTranslator \
-            -f licenses
+          dotnet restore
+          dotnet nuget-license -t `
+            -ignore ignore-packages.json `
+            -override package-information.json `
+            -exclude-projects exclude-projects.json `
+            -ji include-projects.json `
+            -d licenses `
+            -fo licenses/third-party-licenses.txt
       - uses: actions/upload-artifact@v4
         with:
           name: licenses
