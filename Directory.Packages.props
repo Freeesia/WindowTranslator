@@ -26,7 +26,7 @@
     <PackageVersion Include="Microsoft.VisualStudio.Threading" Version="17.12.19" />
     <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.106" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-    <PackageVersion Include="Octokit" Version="13.0.1" />
+    <PackageVersion Include="Octokit" Version="14.0.0" />
     <PackageVersion Include="PInvoke.User32" Version="0.7.124" />
     <PackageVersion Include="PropertyTools" Version="3.1.0" />
     <PackageVersion Include="PropertyTools.Wpf" Version="3.1.0" />
