@@ -41,7 +41,7 @@
     <PackageVersion Include="WPF-UI" Version="3.0.5" />
     <PackageVersion Include="WPF-UI.Tray" Version="3.0.5" />
     <PackageVersion Include="WpfAnalyzers" Version="4.1.1" />
-    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
     <PackageVersion Include="OpenAI" Version="2.1.0" />
   </ItemGroup>
