@@ -57,31 +57,38 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     private async void FramePool_FrameArrived(Direct3D11CaptureFramePool sender, object args)
     {
-        this.logger.LogDebug("FramePool_FrameArrived");
-        await this.processing.WaitAsync();
-        using var rel = new DisposeAction(() => this.processing.Release());
-        this.logger.LogDebug("TryGetNextFrame");
-        using var frame = framePool.TryGetNextFrame();
-        if (frame is null)
+        try
         {
-            return;
+            this.logger.LogDebug("FramePool_FrameArrived");
+            await this.processing.WaitAsync();
+            using var rel = new DisposeAction(() => this.processing.Release());
+            this.logger.LogDebug("TryGetNextFrame");
+            using var frame = framePool.TryGetNextFrame();
+            if (frame is null)
+            {
+                return;
+            }
+            this.logger.LogDebug($"フレーム取得完了:({frame.ContentSize.Width}, {frame.ContentSize.Height})");
+            if (this.Captured is { } handler)
+            {
+                await handler.InvokeAsync(this, new(frame));
+            }
+            this.cts.Token.ThrowIfCancellationRequested();
+            this.logger.LogDebug("イベント完了");
+            if (lastSize.Width == frame.ContentSize.Width && lastSize.Height == frame.ContentSize.Height)
+            {
+                return;
+            }
+            this.lastSize = frame.ContentSize;
+            this.logger.LogDebug($"フレームプール再生成:({this.lastSize.Width}, {this.lastSize.Height})");
+            this.cts.Token.ThrowIfCancellationRequested();
+            framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
+            this.logger.LogDebug($"フレームプール再生成後:({this.lastSize.Width}, {this.lastSize.Height})");
         }
-        this.logger.LogDebug($"フレーム取得完了:({frame.ContentSize.Width}, {frame.ContentSize.Height})");
-        if (this.Captured is { } handler)
+        catch (OperationCanceledException)
         {
-            await handler.InvokeAsync(this, new(frame));
+            this.logger.LogDebug($"キャンセル処理");
         }
-        this.cts.Token.ThrowIfCancellationRequested();
-        this.logger.LogDebug("イベント完了");
-        if (lastSize.Width == frame.ContentSize.Width && lastSize.Height == frame.ContentSize.Height)
-        {
-            return;
-        }
-        this.lastSize = frame.ContentSize;
-        this.logger.LogDebug($"フレームプール再生成:({this.lastSize.Width}, {this.lastSize.Height})");
-        this.cts.Token.ThrowIfCancellationRequested();
-        framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
-        this.logger.LogDebug($"フレームプール再生成後:({this.lastSize.Width}, {this.lastSize.Height})");
     }
 
     public void StopCapture()

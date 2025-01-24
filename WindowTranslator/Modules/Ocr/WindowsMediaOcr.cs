@@ -269,7 +269,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             return TextRect.Empty;
         }
         // ワードのフィルタリング
-        var words = FilterWords(line.Words).ToArray();
+        var words = FilterWords(line.Words).Select(CorrectWord).ToArray();
         if (words.Length == 0)
         {
             return TextRect.Empty;
@@ -277,18 +277,26 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         var text = IsSpaceLang(this.source)
             ? string.Join(" ", words.Select(w => w.Text))
             : string.Concat(words.Select(w => w.Text));
-        var x = words.Select(w => w.BoundingRect.X).Min();
-        var y = words.Select(w => w.BoundingRect.Y).Min();
-        var width = words.Select(w => w.BoundingRect.Right).Max() - words.Select(w => w.BoundingRect.Left).Min();
-        var height = words.Select(w => w.BoundingRect.Bottom).Max() - words.Select(w => w.BoundingRect.Top).Min();
-        var fontSize = words.Select(w =>
-        {
-            var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(w.Text);
-            return CorrectHeight(w.BoundingRect.Height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
-        }).Average();
+        var x = words.Select(w => w.X).Min();
+        var y = words.Select(w => w.Y).Average();
+        var width = words.Select(w => w.Right).Max() - words.Select(w => w.Left).Min();
+        var height = words.Select(w => w.Bottom).Average() - words.Select(w => w.Top).Average();
+        return new(text, x, y, width, height, height, false);
+    }
 
-        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(text);
+    private record WordRect(string Text, double X, double Y, double Width, double Height)
+    {
+        public double Left => X;
+        public double Top => Y;
+        public double Right => X + Width;
+        public double Bottom => Y + Height;
+    }
 
+    private static WordRect CorrectWord(OcrWord word)
+    {
+        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(word.Text);
+        var y = word.BoundingRect.Y;
+        var height = word.BoundingRect.Height;
         // 文字種類による位置補正
         y -= (hasAcent, hasHarfAcent) switch
         {
@@ -299,8 +307,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
 
         // 文字種類による高さ補正
         height = CorrectHeight(height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
-
-        return new(text, x, y, width, height, fontSize, false);
+        return new(word.Text, word.BoundingRect.X, y, word.BoundingRect.Width, height);
     }
 
     private static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
