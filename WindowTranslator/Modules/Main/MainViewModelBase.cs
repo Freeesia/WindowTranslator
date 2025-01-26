@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
-using System.Reflection;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Kamishibai;
@@ -28,11 +26,12 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IEnumerable<IFilterModule> filters;
     private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
+    private readonly SemaphoreSlim translating = new(1, 1);
     private readonly string name;
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
     private readonly double fontScale;
-    private readonly ConcurrentDictionary<string, string> requesting = new();
+    private TextRect[]? lastRequested;
 
     [ObservableProperty]
     private string title;
@@ -148,29 +147,41 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
     {
+        if (Interlocked.Exchange(ref this.lastRequested, texts.ToArray()) is not null)
+        {
+            this.logger.LogDebug("以前の翻訳キューを削除");
+            return;
+        }
+        await this.translating.WaitAsync().ConfigureAwait(false);
         try
         {
-            var transTargets = texts
-                .Where(t => !t.IsTranslated)
-                .Where(t => this.requesting.TryAdd(t.Text, t.Text) && !this.cache.Contains(t.Text))
-                .ToArray();
-            if (!transTargets.Any())
+            if (Interlocked.Exchange(ref this.lastRequested, null) is not { } requests)
             {
+                this.logger.LogDebug("翻訳キューがないので翻訳処理終了");
+                return;
+            }
+            requests = requests
+                .Where(t => !t.IsTranslated)
+                .Where(t => !this.cache.Contains(t.Text))
+                .ToArray();
+            if (!requests.Any())
+            {
+                this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳処理終了");
                 return;
             }
             this.logger.LogDebug("Translate");
-            var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
-            foreach (var t in transTargets)
-            {
-                this.requesting.TryRemove(t.Text, out _);
-            }
-            this.cache.AddRange(transTargets.Select(t => t.Text).Zip(translated));
+            var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
+            this.cache.AddRange(requests.Select(t => t.Text).Zip(translated));
         }
         catch (Exception e)
         {
             this.timer.DisposeAsync().Forget();
             this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+        }
+        finally
+        {
+            this.translating.Release();
         }
     }
 
