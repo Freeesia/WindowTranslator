@@ -93,6 +93,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public void StopCapture()
     {
-        throw new NotImplementedException();
+        this.session?.Dispose();
+        this.framePool?.Dispose();
     }
 }

@@ -169,6 +169,11 @@ public abstract partial class MainViewModelBase : IDisposable
                 this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳処理終了");
                 return;
             }
+            if (this.disposedValue)
+            {
+                this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
+                return;
+            }
             this.logger.LogDebug("Translate");
             var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
             this.cache.AddRange(requests.Select(t => t.Text).Zip(translated));
@@ -176,6 +181,7 @@ public abstract partial class MainViewModelBase : IDisposable
         catch (Exception e)
         {
             this.timer.DisposeAsync().Forget();
+            this.capture.StopCapture();
             this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
@@ -193,6 +199,10 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         if (disposing)
         {
+            if (this.capture is IDisposable captureDisposable)
+            {
+                captureDisposable.Dispose();
+            }
             this.timer?.Dispose();
         }
         disposedValue = true;
