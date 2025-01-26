@@ -1,7 +1,9 @@
 ﻿using DeepL;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PropertyTools.DataAnnotations;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
@@ -12,7 +14,11 @@ namespace WindowTranslator.Plugin.DeepLTranslatePlugin;
 
 [DefaultModule]
 [DisplayName("DeepL")]
-public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<DeepLOptions> deeplOptions, IOptionsSnapshot<LanguageOptions> langOptions) : ITranslateModule
+public class DeepLTranslator(
+    IProcessInfoStore processInfo,
+    IOptionsSnapshot<DeepLOptions> deeplOptions,
+    IOptionsSnapshot<LanguageOptions> langOptions,
+    ILogger<DeepLTranslator> logger) : ITranslateModule
 {
     private readonly Translator translator = new(deeplOptions.Value.AuthKey);
     private readonly string sourceLang = langOptions.Value.Source[..2];
@@ -22,12 +28,15 @@ public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<Dee
         var t => t[..2],
     };
     private readonly IProcessInfoStore processInfo = processInfo;
+    private readonly ILogger<DeepLTranslator> logger = logger;
     private string? glossaryId = null;
     private string? context = null;
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
         var translated = srcTexts.Select(t => t.Text).ToArray();
+        this.logger.LogDebug($"Translating {srcTexts.Length} texts.");
+        var sw = Stopwatch.StartNew();
         await Parallel.ForEachAsync(srcTexts.GroupBy(t => t.Context).ToAsyncEnumerable(), async (g, ct) =>
         {
             var context = string.Join('\n', this.context, g.Key);
@@ -40,6 +49,7 @@ public class DeepLTranslator(IProcessInfoStore processInfo, IOptionsSnapshot<Dee
                 translated[i] = t.Text;
             }
         }).ConfigureAwait(false);
+        this.logger.LogDebug($"Translated {srcTexts.Length} texts in {sw.Elapsed}");
         return translated;
     }
 

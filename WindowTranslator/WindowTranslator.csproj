@@ -59,6 +59,7 @@
     <PackageReference Include="Kamishibai.Hosting" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" />
+    <PackageReference Include="Quickenshtein" />
   </ItemGroup>
 
   <ItemGroup>
