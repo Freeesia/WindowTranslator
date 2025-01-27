@@ -20,11 +20,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - uses: gittools/actions/gitversion/setup@v3.1.3
+      - uses: gittools/actions/gitversion/setup@v3.1.11
         with:
           versionSpec: "5.x"
       - id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.1.3
+        uses: gittools/actions/gitversion/execute@v3.1.11
       - run: |
           dotnet pack WindowTranslator.Abstractions -c Release -o pack \
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} \
