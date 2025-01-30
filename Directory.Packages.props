@@ -8,7 +8,7 @@
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.3.4" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="DeepL.net" Version="1.12.0" />
+    <PackageVersion Include="DeepL.net" Version="1.13.0" />
     <PackageVersion Include="Google_GenerativeAI" Version="1.0.2" />
     <PackageVersion Include="Kamishibai.Hosting" Version="3.0.1" />
     <PackageVersion Include="ksemenenko.ColorThief" Version="1.1.1.4" />
