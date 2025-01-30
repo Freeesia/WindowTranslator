@@ -1,0 +1,15 @@
+{
+  "name": "tw_gas_translate",
+  "version": "1.0.0",
+  "main": "translate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Freeesia",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.92"
+  }
+}

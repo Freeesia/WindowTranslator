@@ -39,3 +39,8 @@ https://github.com/microsoft/Windows.UI.Composition-Win32-Samples
 dotnet restore
 dotnet project-licenses -t -u --packages-filter /Analyzers$/ -m -i . --include-project-file --use-project-assets-json --manual-package-information .\manual-package-information.json -f licenses -e
 ```
+
+## GAS
+
+* `clasp push`でpush
+* 
