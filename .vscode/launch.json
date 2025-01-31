@@ -5,15 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
-            "type": "coreclr",
+            "name": "C#: WindowTranslator Debug",
+            "type": "dotnet",
             "request": "launch",
+            "projectPath": "${workspaceFolder}/WindowTranslator/WindowTranslator.csproj",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/WindowTranslator/bin/Debug/WindowTranslator.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/WindowTranslator",
-            "console": "internalConsole",
-            "stopAtEntry": false
         },
         {
             "name": ".NET Core Attach",
