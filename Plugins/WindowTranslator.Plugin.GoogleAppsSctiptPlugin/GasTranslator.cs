@@ -18,7 +18,6 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
     private readonly HttpClient client = new()
     {
         BaseAddress = new($"https://script.google.com/macros/s/{DeployId}/exec"),
-        DefaultRequestHeaders = { { "Accept", "application/json" } },
     };
 
     public GasTranslator(IOptions<LanguageOptions> langOptions)
