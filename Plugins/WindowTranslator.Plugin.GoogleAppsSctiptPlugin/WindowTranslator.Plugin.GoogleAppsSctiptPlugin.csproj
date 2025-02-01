@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" />
-    <PackageReference Include="Google.Apis.Script.v1" />
+    <PackageReference Include="ValueTaskSupplement" />
   </ItemGroup>
 </Project>
