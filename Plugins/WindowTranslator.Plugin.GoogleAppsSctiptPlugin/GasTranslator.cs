@@ -1,57 +1,59 @@
 ﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Script.v1;
-using Google.Apis.Script.v1.Data;
-using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Json;
 using System.Text.Json;
+using ValueTaskSupplement;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
-public class GasTranslator : ITranslateModule
+public sealed class GasTranslator : ITranslateModule, IDisposable
 {
-    private static readonly string[] Scopes = ["https://www.googleapis.com/auth/script.projects"];
-    private static readonly string ScriptId = "AKfycbymXadPzkNnpd92ovwULR6gult0W9Vh94ZUgT5-2Ol87He78rWstxknlsAjVOgWRsCtPw";
-    private readonly ScriptService scriptService;
+    private static readonly string[] Scopes = ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/script.scriptapp"];
+    private static readonly string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web);
+    private readonly AsyncLazy<UserCredential> credential;
     private readonly LanguageOptions langOptions;
+    private readonly HttpClient client = new()
+    {
+        BaseAddress = new($"https://script.google.com/macros/s/{DeployId}/exec"),
+        DefaultRequestHeaders = { { "Accept", "application/json" } },
+    };
 
     public GasTranslator(IOptions<LanguageOptions> langOptions)
     {
         this.langOptions = langOptions.Value;
-
-        this.scriptService = new ScriptService(new BaseClientService.Initializer
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = "WindowTranslator",
-        });
+        this.credential = new(GetCredential);
     }
+
+    public void Dispose()
+        => this.client.Dispose();
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
-        var request = new ExecutionRequest
+        var credential = await this.credential.AsValueTask().ConfigureAwait(false);
+        if (credential.Token.IsStale)
         {
-            Function = "doPost",
-            Parameters =
-            [
-                new
-                {
-                    texts = srcTexts.Select(t => t.Text).ToArray(),
-                    sourceLanguage = this.langOptions.Source,
-                    targetLanguage = this.langOptions.Target,
-                }
-            ]
-        };
-
-        var scriptRequest = scriptService.Scripts.Run(request, ScriptId);
-        var response = await scriptRequest.ExecuteAsync();
-
-        if (response.Error is { } error)
-        {
-            throw new Exception($"Script error: {error.Message}");
+            await credential.RefreshTokenAsync(CancellationToken.None).ConfigureAwait(false);
         }
-
-        var translatedTexts = JsonSerializer.Deserialize<string[]>(response.Response["result"].ToString());
+        this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
+        var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source, this.langOptions.Target);
+        var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
+        var translatedTexts = await res.Content.ReadFromJsonAsync<string[]>(JsonSerializerOptions).ConfigureAwait(false);
         return translatedTexts ?? [];
     }
+
+    private record TranslateRequest(string[] Texts, string SourceLanguage, string TargetLanguage);
+
+    private async ValueTask<UserCredential> GetCredential()
+        => await GoogleWebAuthorizationBroker.AuthorizeAsync(
+            new ClientSecrets
+            {
+            },
+            Scopes,
+            "user",
+            CancellationToken.None,
+            new FileDataStore(@"StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin")
+        ).ConfigureAwait(false);
 }
