@@ -2,6 +2,9 @@
 using Google.Apis.Util.Store;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using ValueTaskSupplement;
 using WindowTranslator.Modules;
@@ -50,10 +53,45 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         => await GoogleWebAuthorizationBroker.AuthorizeAsync(
             new ClientSecrets
             {
+                ClientId = "156744888502-89gavii6pir2u26r1mb4lmomrsksmut9.apps.googleusercontent.com",
+                ClientSecret = Decrypt("PgYVCapRv9Jd/ReWKysH9bjx6M5oWXQaOW3QuxC/KmPVS9ReIMHnHg2fls/KdQZP"),
             },
             Scopes,
             "user",
             CancellationToken.None,
             new FileDataStore(@"StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin")
         ).ConfigureAwait(false);
+
+    private static string Decrypt(string cipherTextBase64)
+    {
+        var password = Assembly.GetExecutingAssembly()
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .Single(a => a.Key == "DecryptKey")
+            .Value;
+        if (string.IsNullOrEmpty(password))
+        {
+            password = Environment.GetEnvironmentVariable("WindowTranslator_DecryptKey") ?? throw new("DecryptKey is not found.");
+        }
+        // 暗号文をバイト配列に変換
+        byte[] cipherBytes = Convert.FromBase64String(cipherTextBase64);
+
+        // 固定または属性等で管理する salt
+        byte[] salt = Encoding.UTF8.GetBytes("wX9&7QjrkK%@");
+
+        // PBKDF2 を使って、パスワードから鍵と IV を生成
+        using var pdb = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256);
+        byte[] key = pdb.GetBytes(32); // 256 ビット（AES-256 用）
+        byte[] iv = pdb.GetBytes(16);  // 128 ビット（IV のサイズ）
+
+        using var aes = Aes.Create();
+        aes.Key = key;
+        aes.IV = iv;
+        aes.Padding = PaddingMode.PKCS7;
+
+        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        using var ms = new MemoryStream(cipherBytes);
+        using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
+        using var reader = new StreamReader(cs);
+        return reader.ReadToEnd();
+    }
 }
