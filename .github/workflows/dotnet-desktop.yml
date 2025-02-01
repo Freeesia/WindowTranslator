@@ -137,7 +137,7 @@ jobs:
               -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
               -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
               -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
-              -p:DecryptKey=${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}
+              -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
           }
       - uses: actions/download-artifact@v4
         if: ${{ needs.docs.result == 'success' }}
