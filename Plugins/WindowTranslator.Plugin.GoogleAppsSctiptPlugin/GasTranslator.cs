@@ -114,28 +114,3 @@ public class GasOptions : IPluginParam
     [DisplayName("スクリプトのデプロイID")]
     public string DeployId { get; set; } = string.Empty;
 }
-
-public class GasValidator : ITargetSettingsValidator
-{
-    public ValueTask<ValidateResult> Validate(TargetSettings settings)
-    {
-        // 翻訳モジュールで利用しない場合は無条件で有効
-        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GasTranslator))
-        {
-            return ValueTask.FromResult(ValidateResult.Valid);
-        }
-
-        // APIキーが設定されている場合は有効
-        var op = settings.PluginParams.GetValueOrDefault(nameof(GasOptions)) as GasOptions;
-        if (string.IsNullOrEmpty(op?.DeployId))
-        {
-            return ValueTask.FromResult(ValidateResult.Invalid("Google Apps Script", """
-            現在、Google Apps Scriptの翻訳モジュールを利用するには、個々にデプロイしてスクリプトを公開する必要があります。
-
-            「対象ごとの設定」→「Google Apps Script」タブでデプロイIDを設定してください。
-            """));
-        }
-
-        return ValueTask.FromResult(ValidateResult.Valid);
-    }
-}
