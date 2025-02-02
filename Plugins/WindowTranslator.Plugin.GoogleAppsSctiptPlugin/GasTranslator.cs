@@ -1,6 +1,8 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
 using Microsoft.Extensions.Options;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -11,22 +13,27 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
+[DisplayName("Google Apps Script")]
 public sealed class GasTranslator : ITranslateModule, IDisposable
 {
+    private const string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
     private static readonly string[] Scopes = ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/script.scriptapp"];
-    private static readonly string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
     private static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web);
-    private readonly AsyncLazy<UserCredential> credential;
     private readonly LanguageOptions langOptions;
-    private readonly HttpClient client = new()
-    {
-        BaseAddress = new($"https://script.google.com/macros/s/{DeployId}/exec"),
-    };
+    private readonly bool isPublicScript;
+    private readonly AsyncLazy<UserCredential> credential;
+    private readonly HttpClient client;
 
-    public GasTranslator(IOptions<LanguageOptions> langOptions)
+    public GasTranslator(IOptions<LanguageOptions> langOptions, IOptions<GasOptions> gasOptions)
     {
         this.langOptions = langOptions.Value;
+        this.isPublicScript = string.IsNullOrEmpty(gasOptions.Value.DeployId);
         this.credential = new(GetCredential);
+        var deployId = this.isPublicScript ? DeployId : gasOptions.Value.DeployId;
+        this.client = new()
+        {
+            BaseAddress = new($"https://script.google.com/macros/s/{deployId}/exec"),
+        };
     }
 
     public void Dispose()
@@ -34,12 +41,15 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
-        var credential = await this.credential.AsValueTask().ConfigureAwait(false);
-        if (credential.Token.IsStale)
+        if (this.isPublicScript)
         {
-            await credential.RefreshTokenAsync(CancellationToken.None).ConfigureAwait(false);
+            var credential = await this.credential.AsValueTask().ConfigureAwait(false);
+            if (credential.Token.IsStale)
+            {
+                await credential.RefreshTokenAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
         }
-        this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
         var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source, this.langOptions.Target);
         var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
         res.EnsureSuccessStatusCode();
@@ -93,5 +103,39 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
         using var reader = new StreamReader(cs);
         return reader.ReadToEnd();
+    }
+}
+
+[DisplayName("Google Apps Script")]
+public class GasOptions : IPluginParam
+{
+
+    [DataType(DataType.Password)]
+    [DisplayName("スクリプトのデプロイID")]
+    public string DeployId { get; set; } = string.Empty;
+}
+
+public class GasValidator : ITargetSettingsValidator
+{
+    public ValueTask<ValidateResult> Validate(TargetSettings settings)
+    {
+        // 翻訳モジュールで利用しない場合は無条件で有効
+        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GasTranslator))
+        {
+            return ValueTask.FromResult(ValidateResult.Valid);
+        }
+
+        // APIキーが設定されている場合は有効
+        var op = settings.PluginParams.GetValueOrDefault(nameof(GasOptions)) as GasOptions;
+        if (string.IsNullOrEmpty(op?.DeployId))
+        {
+            return ValueTask.FromResult(ValidateResult.Invalid("Google Apps Script", """
+            現在、Google Apps Scriptの翻訳モジュールを利用するには、個々にデプロイしてスクリプトを公開する必要があります。
+
+            「対象ごとの設定」→「Google Apps Script」タブでデプロイIDを設定してください。
+            """));
+        }
+
+        return ValueTask.FromResult(ValidateResult.Valid);
     }
 }
