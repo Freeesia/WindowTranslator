@@ -170,13 +170,17 @@ public partial class OverlayMainWindow : Window
         var x = (nativePos.x - left) / eDpiScale;
         var y = (nativePos.y - top) / eDpiScale;
 
+        this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
+        this.SetCurrentValue(MousePosProperty, new Point(x, y));
+        if (this.isEnableCapture && p.showCmd == WindowShowStyle.SW_SHOWMINIMIZED)
+        {
+            return;
+        }
         this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
         this.SetCurrentValue(LeftProperty, left / eDpiScale);
         this.SetCurrentValue(TopProperty, top / eDpiScale);
         this.SetCurrentValue(WidthProperty, width / eDpiScale);
         this.SetCurrentValue(HeightProperty, height / eDpiScale);
-        this.SetCurrentValue(MousePosProperty, new Point(x, y));
-        this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
     }
 
     private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)

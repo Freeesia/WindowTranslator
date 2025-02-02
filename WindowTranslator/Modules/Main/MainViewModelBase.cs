@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Kamishibai;
@@ -12,6 +13,7 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Stores;
+using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -44,7 +46,8 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private bool isFirstBusy = true;
 
-    private SoftwareBitmap? sbmp;
+    private SoftwareBitmap? capturedBmp;
+    private SoftwareBitmap? analyzingBmp;
     private bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -75,7 +78,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.filters = filters.ToArray();
         this.logger = logger;
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
-        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
+        this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
     }
@@ -87,7 +90,7 @@ public abstract partial class MainViewModelBase : IDisposable
             return;
         }
         var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
-        var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
+        var sbmp = Interlocked.Exchange(ref this.capturedBmp, newBmp);
         this.Width = newBmp.PixelWidth;
         this.Height = newBmp.PixelHeight;
         CreateTextOverlayAsync().Forget();
@@ -106,7 +109,16 @@ public abstract partial class MainViewModelBase : IDisposable
             this.analyzing.Release();
             this.IsFirstBusy = false;
         });
-        using var sbmp = Interlocked.Exchange(ref this.sbmp, null);
+        var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
+        if (sbmp is null)
+        {
+            sbmp = this.analyzingBmp;
+        }
+        else
+        {
+            this.analyzingBmp?.Dispose();
+            this.analyzingBmp = sbmp;
+        }
         if (sbmp is null)
         {
             return;
