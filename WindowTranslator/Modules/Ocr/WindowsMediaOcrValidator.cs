@@ -10,7 +10,6 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
 {
     private static readonly ValidateResult Invalid = ValidateResult.Invalid("文字認識機能", "文字認識に必要な機能がインストールされていません");
     private readonly IContentDialogService dialogService = dialogService;
-    private bool isInstallJudgedFailed;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -24,11 +23,6 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
         }
         catch (Exception ex)
         {
-            if (this.isInstallJudgedFailed)
-            {
-                return ValidateResult.Valid;
-            }
-            this.isInstallJudgedFailed = true;
             return ValidateResult.Invalid("文字認識機能",
                 $"""
                 ORC機能のインストール状態の取得に失敗しました。  
