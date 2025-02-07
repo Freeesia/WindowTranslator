@@ -3,11 +3,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
+using static WindowTranslator.Modules.Ocr.Utility;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -33,6 +35,11 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         var rawResults = await ocr.RecognizeAsync(bitmap);
         t.Dispose();
 
+        // 角度と中心座標を取得
+        var angle = rawResults.TextAngle ?? 0;
+        var centerX = bitmap.PixelWidth / 2.0;
+        var centerY = bitmap.PixelHeight / 2.0;
+
         // フィルター＆マージ処理について
         // 1. 認識直後にワード単位のフィルター
         //     * おかしい先頭文字(@,O,Ö)
@@ -52,7 +59,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
 
         var lineResults = rawResults
             .Lines
-            .Select(CalcRect)
+            .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
             .Where(w => w.Height < bitmap.PixelHeight * 0.1)
             .ToArray();
@@ -262,14 +269,17 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         return count;
     }
 
-    private TextRect CalcRect(OcrLine line)
+    private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
     {
         if (IsIgnoreLine().IsMatch(line.Text))
         {
             return TextRect.Empty;
         }
         // ワードのフィルタリング
-        var words = FilterWords(line.Words).Select(CorrectWord).ToArray();
+        var words = FilterWords(line.Words)
+            .Select(word => CorrectWord(word, angle, centerX, centerY))
+            .ToArray();
+
         if (words.Length == 0)
         {
             return TextRect.Empty;
@@ -284,19 +294,64 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         return new(text, x, y, width, height, height, false);
     }
 
-    private record WordRect(string Text, double X, double Y, double Width, double Height)
+    [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
+    private static partial Regex IsAllSymbolOrSpace();
+
+    /// <summary>
+    /// 認識ミスとして無視する文字列
+    /// * 4文字以上aoeのみで構成されているかどうか
+    /// </summary>
+    [GeneratedRegex(@"^[aceo@]{3,}$")]
+    private static partial Regex IsIgnoreLine();
+}
+
+file record WordRect(string Text, double X, double Y, double Width, double Height)
+{
+    public double Left => X;
+    public double Top => Y;
+    public double Right => X + Width;
+    public double Bottom => Y + Height;
+}
+
+file static class Utility
+{
+    private static (double x, double y) RotatePoint(double x, double y, double angleInDegrees, double centerX, double centerY)
     {
-        public double Left => X;
-        public double Top => Y;
-        public double Right => X + Width;
-        public double Bottom => Y + Height;
+        double angleInRadians = angleInDegrees * Math.PI / 180.0;
+        double cos = Math.Cos(angleInRadians);
+        double sin = Math.Sin(angleInRadians);
+
+        double dx = x - centerX;
+        double dy = y - centerY;
+
+        double xNew = dx * cos - dy * sin + centerX;
+        double yNew = dx * sin + dy * cos + centerY;
+
+        return new(xNew, yNew);
     }
 
-    private static WordRect CorrectWord(OcrWord word)
+    public static (double x, double y, double width, double height) RotateRect(Rect rect, double angleInDegrees, double centerX, double centerY)
     {
+        var topLeft = RotatePoint(rect.Left, rect.Top, angleInDegrees, centerX, centerY);
+        var topRight = RotatePoint(rect.Right, rect.Top, angleInDegrees, centerX, centerY);
+        var bottomLeft = RotatePoint(rect.Left, rect.Bottom, angleInDegrees, centerX, centerY);
+        var bottomRight = RotatePoint(rect.Right, rect.Bottom, angleInDegrees, centerX, centerY);
+
+        double x = Math.Min(Math.Min(topLeft.x, topRight.x), Math.Min(bottomLeft.x, bottomRight.x));
+        double y = Math.Min(Math.Min(topLeft.y, topRight.y), Math.Min(bottomLeft.y, bottomRight.y));
+        double width = Math.Max(Math.Max(topLeft.x, topRight.x), Math.Max(bottomLeft.x, bottomRight.x)) - x;
+        double height = Math.Max(Math.Max(topLeft.y, topRight.y), Math.Max(bottomLeft.y, bottomRight.y)) - y;
+
+        return (x, y, width, height);
+    }
+    public static WordRect CorrectWord(OcrWord word, double angle, double centerX, double centerY)
+    {
+        // 文字種類の取得
         var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(word.Text);
-        var y = word.BoundingRect.Y;
-        var height = word.BoundingRect.Height;
+
+        // 矩形の回転補正
+        var (x, y, width, height) = RotateRect(word.BoundingRect, angle, centerX, centerY);
+
         // 文字種類による位置補正
         y -= (hasAcent, hasHarfAcent) switch
         {
@@ -307,10 +362,10 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
 
         // 文字種類による高さ補正
         height = CorrectHeight(height, isxHeight, hasAcent, hasHarfAcent, hasDecent);
-        return new(word.Text, word.BoundingRect.X, y, word.BoundingRect.Width, height);
+        return new(word.Text, x, y, width, height);
     }
 
-    private static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
+    public static IEnumerable<OcrWord> FilterWords(IEnumerable<OcrWord> words)
     {
         // 先頭が@やOの場合は何かしらのアイコンの可能性が高いので無視
         while (words.FirstOrDefault()?.Text is "@" or "O" or "Ö" or "Ü")
@@ -352,16 +407,6 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         ReadOnlySpan<char> ta = target;
         return te.ContainsAny(ta);
     }
-
-    [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
-    private static partial Regex IsAllSymbolOrSpace();
-
-    /// <summary>
-    /// 認識ミスとして無視する文字列
-    /// * 4文字以上aoeのみで構成されているかどうか
-    /// </summary>
-    [GeneratedRegex(@"^[aceo@]{3,}$")]
-    private static partial Regex IsIgnoreLine();
 
     private static bool IsAllSameChar(string text)
     {
