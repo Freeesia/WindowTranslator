@@ -19,6 +19,7 @@ using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Stores;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Modules.Settings;
@@ -251,32 +252,46 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         };
 
         // 値の検証
-        var results = new List<ValidateResult>();
-        foreach (var target in string.IsNullOrEmpty(this.target) ? settings.Targets.Values.ToArray() : [settings.Targets[this.target]])
+        var results = new Dictionary<string, IReadOnlyList<ValidateResult>>();
+        foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
+            var r = new List<ValidateResult>();
             if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
             {
-                results.Add(ValidateResult.Invalid("翻訳モジュール", """
+                r.Add(ValidateResult.Invalid("翻訳モジュール", """
                     翻訳モジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
                     """));
             }
             if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
             {
-                results.Add(ValidateResult.Invalid("翻訳モジュール", """
+                r.Add(ValidateResult.Invalid("翻訳モジュール", """
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
             }
             foreach (var validator in this.validators)
             {
-                results.Add(await validator.Validate(target));
+                r.Add(await validator.Validate(target));
+            }
+            if (r.Any(r => !r.IsValid))
+            {
+                results.Add(name, r.Where(r => !r.IsValid).ToArray());
             }
         }
-        if (results.Any(r => !r.IsValid))
+        if (results.Any())
         {
-            await this.dialogService.ShowAlertAsync("エラー", string.Join("\n\n", results.Where(r => !r.IsValid).Select(r => $"### {r.Title}\n{r.Message}")), "OK");
-            return;
+            var r = await this.dialogService.ShowSimpleDialogAsync(new()
+            {
+                Title = "設定検証エラー",
+                Content = string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : "デフォルト設定")}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
+                PrimaryButtonText = "保存して閉じる",
+                CloseButtonText = "キャンセル",
+            });
+            if (r != ContentDialogResult.Primary)
+            {
+                return;
+            }
         }
 
         // 値の保存
