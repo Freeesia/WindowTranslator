@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Text.Unicode;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace WindowTranslator.Modules.Cache;
 
 [DefaultModule]
 [LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
-public sealed class LocalCache : ICacheModule, IDisposable
+public sealed partial class LocalCache : ICacheModule, IDisposable
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
@@ -85,6 +86,12 @@ public sealed class LocalCache : ICacheModule, IDisposable
         {
             return false;
         }
+        // src,cacheSrcの中にある全ての数字が一致しない場合はキャッシュを使わない
+        if (!NumberPattern().Matches(src).Select(m => m.Value).SequenceEqual(NumberPattern().Matches(cacheSrc).Select(m => m.Value)))
+        {
+            return false;
+        }
+
         this.nearCache.TryAdd(src, dst);
         return true;
     }
@@ -93,4 +100,7 @@ public sealed class LocalCache : ICacheModule, IDisposable
         => this.cache.TryGetValue(src, out var dst) ? dst
             : this.nearCache.TryGetValue(src, out dst) ? dst
             : string.Empty;
+
+    [GeneratedRegex(@"[\d,\.]+")]
+    private static partial Regex NumberPattern();
 }
