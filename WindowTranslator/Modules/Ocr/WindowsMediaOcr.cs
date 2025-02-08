@@ -337,10 +337,10 @@ file static class Utility
         var bottomLeft = RotatePoint(rect.Left, rect.Bottom, angleInDegrees, centerX, centerY);
         var bottomRight = RotatePoint(rect.Right, rect.Bottom, angleInDegrees, centerX, centerY);
 
-        double x = Math.Min(Math.Min(topLeft.x, topRight.x), Math.Min(bottomLeft.x, bottomRight.x));
-        double y = Math.Min(Math.Min(topLeft.y, topRight.y), Math.Min(bottomLeft.y, bottomRight.y));
-        double width = Math.Max(Math.Max(topLeft.x, topRight.x), Math.Max(bottomLeft.x, bottomRight.x)) - x;
-        double height = Math.Max(Math.Max(topLeft.y, topRight.y), Math.Max(bottomLeft.y, bottomRight.y)) - y;
+        double x = Math.Min(topLeft.x, bottomLeft.x);
+        double y = (topLeft.y + topRight.y) / 2;
+        double width = Math.Max(topRight.x, bottomRight.x) - x;
+        double height = (bottomLeft.y + bottomRight.y) / 2 - y;
 
         return (x, y, width, height);
     }
