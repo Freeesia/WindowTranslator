@@ -259,4 +259,7 @@
   <data name="Scale" xml:space="preserve">
     <value>확대율</value>
   </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>버퍼 크기</value>
+  </data>
 </root>
