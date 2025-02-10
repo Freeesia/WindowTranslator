@@ -117,15 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>自動翻譯目標</value>
-  </data>
-  <data name="CacheModule" xml:space="preserve">
-    <value>緩存模塊選擇</value>
-  </data>
-  <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一旦一個進程被選中進行翻譯，它將在啟動時自動進行翻譯</value>
-  </data>
   <data name="Source" xml:space="preserve">
     <value>來源（認可）語言</value>
   </data>
@@ -135,8 +126,17 @@
   <data name="TranslateModule" xml:space="preserve">
     <value>翻譯模塊的選擇</value>
   </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>緩存模塊選擇</value>
+  </data>
   <data name="ViewMode" xml:space="preserve">
     <value>翻譯結果顯示模式</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>自動翻譯目標</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>一旦一個進程被選中進行翻譯，它將在啟動時自動進行翻譯</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>全域設定</value>
@@ -165,23 +165,23 @@
   <data name="UnregisterFromStartupCommand" xml:space="preserve">
     <value>自動解鎖應用程式</value>
   </data>
-  <data name="LocalCache" xml:space="preserve">
-    <value>本機檔案快取</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>記憶體中快取</value>
   </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>本機檔案快取</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>設置</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>附加</value>
   </data>
   <data name="Detach" xml:space="preserve">
     <value>分離</value>
   </data>
   <data name="Exit" xml:space="preserve">
     <value>已完成</value>
-  </data>
-  <data name="Attach" xml:space="preserve">
-    <value>附加</value>
   </data>
   <data name="MutexError" xml:space="preserve">
     <value>WindowTranslator 已在執行中。</value>
@@ -192,19 +192,71 @@
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
     <value>檢查第三方授權</value>
   </data>
-  <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>檢查詳細資料</value>
-  </data>
-  <data name="UpdateCommand" xml:space="preserve">
-    <value>更新至最新版本</value>
-  </data>
-  <data name="UpdateInfo" xml:space="preserve">
-    <value>更新資訊</value>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>可用的更新： {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
     <value>您使用的是最新版本。</value>
   </data>
-  <data name="HasUpdate" xml:space="preserve">
-    <value>可用的更新： {0}</value>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>更新資訊</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>更新至最新版本</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>檢查詳細資料</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Recognize" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Scale" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>僅在按下</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>按打開/關閉</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>切換覆蓋顯示（CTRL+ALT+O）</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>使疊加顯示可捕獲</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>翻譯過程</value>
+  </data>
+  <data name="WindowsMediaOcrParam" xml:space="preserve">
+    <value>Windows OCR設置</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X位置移位閾值</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>線Interline閾值</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>互段閾值</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>字體尺寸偏差閾值</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>合併閾值</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>y位置輪班閾值</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>避免合併列表</value>
+  </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>識別設置</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>擴大率</value>
   </data>
 </root>
