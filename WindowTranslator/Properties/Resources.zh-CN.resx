@@ -138,6 +138,9 @@
   <data name="IsEnableAutoTarget" xml:space="preserve">
     <value>一旦一个进程被选中进行翻译，它将在启动时自动进行翻译</value>
   </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>总体设置</value>
+  </data>
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
   </data>
@@ -156,32 +159,29 @@
   <data name="Run" xml:space="preserve">
     <value>执行</value>
   </data>
-  <data name="SettingsViewModel" xml:space="preserve">
-    <value>总体设置</value>
-  </data>
   <data name="RegisterToStartupCommand" xml:space="preserve">
     <value>自动启动应用</value>
   </data>
   <data name="UnregisterFromStartupCommand" xml:space="preserve">
     <value>自动解锁应用</value>
   </data>
-  <data name="LocalCache" xml:space="preserve">
-    <value>本地文件缓存</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>内存缓存</value>
   </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>本地文件缓存</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>设定</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>附加</value>
   </data>
   <data name="Detach" xml:space="preserve">
     <value>分离</value>
   </data>
   <data name="Exit" xml:space="preserve">
     <value>结束</value>
-  </data>
-  <data name="Attach" xml:space="preserve">
-    <value>附加</value>
   </data>
   <data name="MutexError" xml:space="preserve">
     <value>WindowTranslator 已在运行。</value>
@@ -192,19 +192,71 @@
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
     <value>检查第三方许可证</value>
   </data>
-  <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>查看详细信息</value>
-  </data>
-  <data name="UpdateCommand" xml:space="preserve">
-    <value>更新至最新版本</value>
-  </data>
-  <data name="UpdateInfo" xml:space="preserve">
-    <value>更新信息</value>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>可用更新： {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
     <value>您使用的是最新版本。</value>
   </data>
-  <data name="HasUpdate" xml:space="preserve">
-    <value>可用更新： {0}</value>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>更新信息</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>更新至最新版本</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>查看详细信息</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Recognize" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Scale" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>仅在按下</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>按打开/关闭</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>切换覆盖显示（CTRL+ALT+O）</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>使叠加显示可捕获</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>翻译过程</value>
+  </data>
+  <data name="WindowsMediaOcrParam" xml:space="preserve">
+    <value>Windows OCR设置</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X位置移位阈值</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>线Interline阈值</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>互段阈值</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>字体尺寸偏差阈值</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>合并阈值</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>y位置轮班阈值</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>避免合并列表</value>
+  </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>识别设置</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>扩大率</value>
   </data>
 </root>

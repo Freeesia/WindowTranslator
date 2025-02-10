@@ -4,6 +4,11 @@ namespace WindowTranslator.Modules.Ocr;
 
 public class WindowsMediaOcrParam : IPluginParam
 {
+    [Category("Recognize")]
+    [Slidable(0.5, 4, 0.1, 0.5, true, 0.1)]
+    [FormatString("F2")]
+    public double Scale { get; set; } = 1.0;
+
     [Category("MergeThrethold")]
     [FormatString("P2")]
     [Slidable(0, 0.2, .001, .01, true, .001)]

@@ -138,6 +138,9 @@
   <data name="IsEnableAutoTarget" xml:space="preserve">
     <value>Sobald ein Prozess zur Übersetzung ausgewählt wurde, wird er automatisch übersetzt, wenn er gestartet wird</value>
   </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Allgemeine Einstellung</value>
+  </data>
   <data name="Misc" xml:space="preserve">
     <value>Sonstiges</value>
   </data>
@@ -156,32 +159,29 @@
   <data name="Run" xml:space="preserve">
     <value>Ausführung</value>
   </data>
-  <data name="SettingsViewModel" xml:space="preserve">
-    <value>Allgemeine Einstellung</value>
-  </data>
   <data name="RegisterToStartupCommand" xml:space="preserve">
     <value>Starten Sie die App automatisch</value>
   </data>
   <data name="UnregisterFromStartupCommand" xml:space="preserve">
     <value>Entsperren Sie die App automatisch</value>
   </data>
-  <data name="LocalCache" xml:space="preserve">
-    <value>Lokaler Datei-Cache</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>In-Memory-Cache</value>
   </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Lokaler Datei-Cache</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Einstellungen</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>Anfügen</value>
   </data>
   <data name="Detach" xml:space="preserve">
     <value>Lösen</value>
   </data>
   <data name="Exit" xml:space="preserve">
     <value>Ende</value>
-  </data>
-  <data name="Attach" xml:space="preserve">
-    <value>Anfügen</value>
   </data>
   <data name="MutexError" xml:space="preserve">
     <value>Der WindowTranslator läuft bereits.</value>
@@ -192,19 +192,71 @@
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
     <value>Lizenzen von Drittanbietern prüfen</value>
   </data>
-  <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Details prüfen</value>
-  </data>
-  <data name="UpdateCommand" xml:space="preserve">
-    <value>Update auf die neueste Version</value>
-  </data>
-  <data name="UpdateInfo" xml:space="preserve">
-    <value>Aktualisierte Informationen</value>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>Updates verfügbar: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
     <value>Sie verwenden die neueste Version.</value>
   </data>
-  <data name="HasUpdate" xml:space="preserve">
-    <value>Updates verfügbar: {0}</value>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>Aktualisierte Informationen</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>Update auf die neueste Version</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>Details prüfen</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Recognize" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Scale" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Nur während Sie drücken</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Drücken Sie, um ein-/auszuschalten</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>Überlagerungsanzeige (Strg+Alt+O) umschalten</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>Machen Sie Overlay -Anzeigen faszinierbar</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>Übersetzter Prozess</value>
+  </data>
+  <data name="WindowsMediaOcrParam" xml:space="preserve">
+    <value>Windows OCR -Einstellungen</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X Positionsverschiebungschwelle</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>Linien -Interline -Schwelle</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>Intercharakteristische Schwelle</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>Schriftgröße Schwelle der Schriftgröße</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>Schwelle verschmelzen</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>Y Positionsverschiebungsschwelle</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>Vermeiden Sie das Zusammenführen von Listen</value>
+  </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>Erkennungseinstellungen</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Erweiterungsrate</value>
   </data>
 </root>

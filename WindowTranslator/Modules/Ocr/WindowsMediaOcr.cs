@@ -6,16 +6,21 @@ using Microsoft.Extensions.Options;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
+using Windows.Storage.Streams;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
-using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
 using static WindowTranslator.Modules.Ocr.Utility;
+using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
 [DisplayName("Windows標準文字認識")]
-public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<WindowsMediaOcrParam> ocrParam, ILogger<WindowsMediaOcr> logger) : IOcrModule
+public sealed partial class WindowsMediaOcr(
+    IOptionsSnapshot<LanguageOptions> langOptions,
+    IOptionsSnapshot<WindowsMediaOcrParam> ocrParam,
+    ILogger<WindowsMediaOcr> logger)
+    : IOcrModule, IDisposable
 {
     private readonly double xPosThrethold = ocrParam.Value.XPosThrethold;
     private readonly double yPosThrethold = ocrParam.Value.YPosThrethold;
@@ -24,21 +29,31 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
     private readonly double fontSizeThrethold = ocrParam.Value.FontSizeThrethold;
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
+    private readonly double scale = ocrParam.Value.Scale;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     private readonly ILogger<WindowsMediaOcr> logger = logger;
+    private readonly InMemoryRandomAccessStream resizeStream = new();
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
-        // 認識前に縮小したら時間短くなるかと思ったけど、速くはなるけど精度が落ちるのでやめた
+        // リサイズが必要かどうか
+        // 画像の幅または高さがリサイズ後の幅または高さを超える場合はリサイズが必要
+        var needScale = ((int)(this.scale * bitmap.PixelWidth) > bitmap.PixelWidth)
+            || ((int)(this.scale * bitmap.PixelHeight) > bitmap.PixelHeight);
+        // 拡大率に基づくリサイズ処理
+        var tResize = this.logger.LogDebugTime("Resizing Bitmap");
+        var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale) : bitmap;
+        tResize.Dispose();
+
         var t = this.logger.LogDebugTime("OCR Recognize");
-        var rawResults = await ocr.RecognizeAsync(bitmap);
+        var rawResults = await ocr.RecognizeAsync(workingBitmap);
         t.Dispose();
 
         // 角度と中心座標を取得
         var angle = rawResults.TextAngle ?? 0;
-        var centerX = bitmap.PixelWidth / 2.0;
-        var centerY = bitmap.PixelHeight / 2.0;
+        var centerX = workingBitmap.PixelWidth / 2.0;
+        var centerY = workingBitmap.PixelHeight / 2.0;
 
         // フィルター＆マージ処理について
         // 1. 認識直後にワード単位のフィルター
@@ -61,7 +76,7 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             .Lines
             .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < bitmap.PixelHeight * 0.1)
+            .Where(w => w.Height < workingBitmap.PixelHeight * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -69,8 +84,8 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             return lineResults;
         }
 
-        var xt = xPosThrethold * bitmap.PixelWidth;
-        var yt = yPosThrethold * bitmap.PixelHeight;
+        var xt = xPosThrethold * workingBitmap.PixelWidth;
+        var yt = yPosThrethold * workingBitmap.PixelHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
@@ -96,12 +111,34 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
             }
         }
 
-        return results.Select(ToTextRect)
+        if (needScale)
+        {
+            workingBitmap.Dispose();
+        }
+
+        return results.Select(r => ToTextRect(r, needScale))
             // マージ後に少なすぎる文字も認識ミス扱い
             .Where(w => w.Text.Length > 2)
             // 全部数字なら対象外
             .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
             .ToArray();
+    }
+
+    private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale)
+    {
+        var newWidth = (uint)(source.PixelWidth * scale);
+        var newHeight = (uint)(source.PixelHeight * scale);
+
+        this.resizeStream.Seek(0);
+        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, resizeStream);
+        encoder.SetSoftwareBitmap(source);
+        encoder.BitmapTransform.ScaledWidth = newWidth;
+        encoder.BitmapTransform.ScaledHeight = newHeight;
+        await encoder.FlushAsync();
+        this.resizeStream.Seek(0);
+
+        var decoder = await BitmapDecoder.CreateAsync(resizeStream);
+        return await decoder.GetSoftwareBitmapAsync(source.BitmapPixelFormat, source.BitmapAlphaMode);
     }
 
     private bool CanMerge(TempMergeRect temp, TextRect rect, double xThreshold, double yThreshold)
@@ -229,10 +266,19 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
         }
     }
 
-    private TextRect ToTextRect(TempMergeRect combinedRect)
+    private TextRect ToTextRect(TempMergeRect combinedRect, bool needScale)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
+        // 元の画像座標に変換（リサイズ時のみ）
+        if (needScale)
+        {
+            x /= this.scale;
+            y /= this.scale;
+            width /= this.scale;
+            height /= this.scale;
+            fontSize /= this.scale;
+        }
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         // または、
         // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
@@ -303,6 +349,9 @@ public partial class WindowsMediaOcr(IOptionsSnapshot<LanguageOptions> langOptio
     /// </summary>
     [GeneratedRegex(@"^[aceo@]{3,}$")]
     private static partial Regex IsIgnoreLine();
+
+    public void Dispose()
+        => this.resizeStream.Dispose();
 }
 
 file record WordRect(string Text, double X, double Y, double Width, double Height)
