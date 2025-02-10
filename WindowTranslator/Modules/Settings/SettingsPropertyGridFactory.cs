@@ -7,6 +7,10 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Wpf.Ui.Controls;
+using Button = System.Windows.Controls.Button;
+using TextBlock = System.Windows.Controls.TextBlock;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
@@ -37,6 +41,33 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         grid.ColumnDefinitions[1].SetCurrentValue(System.Windows.Controls.ColumnDefinition.WidthProperty, new GridLength(1, GridUnitType.Auto));
         grid.ColumnDefinitions[1].SetCurrentValue(System.Windows.Controls.ColumnDefinition.MinWidthProperty, 80d);
         return grid;
+    }
+
+    protected override FrameworkElement CreateSpinControl(PropertyItem property)
+    {
+        if (property.Is(typeof(byte)) ||
+            property.Is(typeof(sbyte)) ||
+            property.Is(typeof(ushort)) ||
+            property.Is(typeof(short)) ||
+            property.Is(typeof(uint)) ||
+            property.Is(typeof(int)) ||
+            property.Is(typeof(ulong)) ||
+            property.Is(typeof(long)) ||
+            property.Is(typeof(float)) ||
+            property.Is(typeof(double)))
+        {
+            var numberBox = new NumberBox();
+            numberBox.Maximum = Convert.ToDouble(property.SpinMaximum, CultureInfo.CurrentCulture);
+            numberBox.Minimum = Convert.ToDouble(property.SpinMinimum, CultureInfo.CurrentCulture);
+            numberBox.SmallChange = Convert.ToDouble(property.SpinSmallChange, CultureInfo.CurrentCulture);
+            numberBox.LargeChange = Convert.ToDouble(property.SpinLargeChange, CultureInfo.CurrentCulture);
+            numberBox.SetBinding(NumberBox.ValueProperty, property.CreateBinding(UpdateSourceTrigger.PropertyChanged));
+            return numberBox;
+        }
+        else
+        {
+            return base.CreateSpinControl(property);
+        }
     }
 
     protected override FrameworkElement CreateFontFamilyControl(PropertyItem property)

@@ -259,4 +259,7 @@
   <data name="Scale" xml:space="preserve">
     <value>Erweiterungsrate</value>
   </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>Puffergröße</value>
+  </data>
 </root>

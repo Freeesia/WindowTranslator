@@ -36,4 +36,8 @@ public class WindowsMediaOcrParam : IPluginParam
 
     [Category("MergeThrethold")]
     public bool IsAvoidMergeList { get; set; } = false;
+
+    [Category("Misc")]
+    [Spinnable]
+    public int BufferSize { get; set; } = 3;
 }

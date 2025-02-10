@@ -259,4 +259,7 @@
   <data name="Scale" xml:space="preserve">
     <value>扩大率</value>
   </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>缓冲区大小</value>
+  </data>
 </root>

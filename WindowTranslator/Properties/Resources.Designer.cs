@@ -88,6 +88,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   バッファサイズ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string BufferSize {
+            get {
+                return ResourceManager.GetString("BufferSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   キャッシュモジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CacheModule {
