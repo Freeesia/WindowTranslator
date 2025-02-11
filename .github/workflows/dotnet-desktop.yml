@@ -94,6 +94,7 @@ jobs:
     needs:
       - docs
       - license
+    if: always()
     strategy:
       matrix:
         self: [true, false]
