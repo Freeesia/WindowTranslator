@@ -112,14 +112,14 @@ public class DeepLOptions : IPluginParam
     [DisplayName("APIキー")]
     public string AuthKey { get; set; } = string.Empty;
 
-    [JsonIgnore]
-    [Comment]
-    public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
-
     [DisplayName("用語集パス")]
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
+
+    [JsonIgnore]
+    [Comment]
+    public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
 }
 
 
