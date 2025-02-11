@@ -259,6 +259,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   認識モジュール に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OcrModule {
+            get {
+                return ResourceManager.GetString("OcrModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   詳細情報の確認 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OpenChangelogCommand {
