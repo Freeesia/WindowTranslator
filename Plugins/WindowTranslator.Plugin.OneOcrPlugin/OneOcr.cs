@@ -1,6 +1,12 @@
-﻿namespace WindowTranslator.Plugin.OneOcrPlugin;
+﻿using Windows.Graphics.Imaging;
+using WindowTranslator.Modules;
 
-public class OneOcr
+namespace WindowTranslator.Plugin.OneOcrPlugin;
+
+public class OneOcr : IOcrModule
 {
-
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    {
+        throw new NotImplementedException();
+    }
 }
