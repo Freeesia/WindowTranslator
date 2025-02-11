@@ -262,4 +262,7 @@
   <data name="BufferSize" xml:space="preserve">
     <value>버퍼 크기</value>
   </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>인식 모듈</value>
+  </data>
 </root>

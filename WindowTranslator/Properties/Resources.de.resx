@@ -262,4 +262,7 @@
   <data name="BufferSize" xml:space="preserve">
     <value>Puffergröße</value>
   </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>Erkennungsmodul</value>
+  </data>
 </root>

@@ -262,4 +262,7 @@
   <data name="BufferSize" xml:space="preserve">
     <value>缓冲区大小</value>
   </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>识别模块</value>
+  </data>
 </root>

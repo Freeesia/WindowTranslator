@@ -255,4 +255,7 @@
   <data name="BufferSize" xml:space="preserve">
     <value>バッファサイズ</value>
   </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>認識モジュール</value>
+  </data>
 </root>
