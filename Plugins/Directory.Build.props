@@ -2,7 +2,7 @@
   <!-- 上位階層の Directory.Build.props をインクルード -->
   <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.props" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.props')" />
   <PropertyGroup>
-    <TargetFramework>net8.0-windows10.0.20348.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
