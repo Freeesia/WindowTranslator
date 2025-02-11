@@ -70,5 +70,13 @@
     "Copyright": "Copyright (c) 2020 James Turner",
     "Authors": "James Turner",
     "ProjectUrl": "https://github.com/Turnerj/Quickenshtein"
+  },
+  {
+    "Id": "CsvHelper",
+    "Version": "33.0.1",
+    "License": "MS-PL",
+    "Copyright": "Copyright © 2009-2024 Josh Close",
+    "Authors": "Josh Close",
+    "ProjectUrl": "https://joshclose.github.io/CsvHelper/"
   }
 ]
