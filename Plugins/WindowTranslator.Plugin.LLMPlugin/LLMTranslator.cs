@@ -155,7 +155,15 @@ public class LLMTranslator : ITranslateModule
                 assitant,
             ], otherOptions)
             .ConfigureAwait(false);
-        var json = assitant.Content[0].Text + completion.Content[0].Text.Trim() + otherOptions.StopSequences[0];
+        var json = completion.Content[0].Text.Trim();
+        if (!json.StartsWith('{'))
+        {
+            json = assitant.Content[0].Text + json;
+        }
+        if (!json.EndsWith('}'))
+        {
+            json += otherOptions.StopSequences[0];
+        }
         var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
         return res?.Translated ?? [];
     }
