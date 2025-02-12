@@ -30,6 +30,11 @@ public class GoogleAIOptions : IPluginParam
     [DataType(DataType.MultilineText)]
     [DisplayName("翻訳時に利用する文脈情報")]
     public string? TranslateContext { get; set; }
+    
+    [DisplayName("用語集パス")]
+    [FileExtensions(Extensions = ".csv")]
+    [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
+    public string? GlossaryPath { get; set; }
 }
 
 public enum GoogleAIModel

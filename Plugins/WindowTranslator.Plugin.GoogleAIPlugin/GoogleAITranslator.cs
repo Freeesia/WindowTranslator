@@ -2,6 +2,8 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using CsvHelper;
+using CsvHelper.Configuration;
 using GenerativeAI.Helpers;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
@@ -21,7 +23,7 @@ public class GoogleAITranslator : ITranslateModule
     private readonly string postSystem;
     private readonly GenerativeModelEx? client;
     private readonly ILogger<GoogleAITranslator> logger;
-    private IReadOnlyDictionary<string, string> glossary = new Dictionary<string, string>();
+    private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
     private IReadOnlyList<string> common = [];
     private string? context;
 
@@ -30,13 +32,13 @@ public class GoogleAITranslator : ITranslateModule
     public GoogleAITranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<GoogleAITranslator> logger)
     {
         this.logger = logger;
-        var src = CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName;
-        var target = CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName;
+        var srcLang = CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName;
+        var targetLang = CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName;
         var options = googleAiOptions.Value;
         this.preSystem = $$"""
-        あなたは{{src}}から{{target}}へ翻訳するの専門家です。
-        入力テキストは{{src}}のテキストであり、翻訳が必要です。
-        渡されたテキストを{{target}}へ翻訳して出力してください。
+        あなたは{{srcLang}}から{{targetLang}}へ翻訳するの専門家です。
+        入力テキストは{{srcLang}}のテキストであり、翻訳が必要です。
+        渡されたテキストを{{targetLang}}へ翻訳して出力してください。
         """;
         this.userContext = options.TranslateContext;
         this.postSystem = """
@@ -76,7 +78,19 @@ public class GoogleAITranslator : ITranslateModule
                     new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 ]
             });
+
+        if (File.Exists(googleAiOptions.Value.GlossaryPath))
+        {
+            using var reader = new StreamReader(googleAiOptions.Value.GlossaryPath);
+            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
+            foreach (var (src, dst) in csv.GetRecords<Glossary>())
+            {
+                this.glossary[src] = dst;
+            }
+        }
     }
+
+    private record Glossary(string Source, string Target);
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
@@ -156,8 +170,11 @@ public class GoogleAITranslator : ITranslateModule
 
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
     {
-        this.glossary = glossary.Where(kv => kv.Key != kv.Value).ToDictionary(kv => kv.Key, kv => kv.Value);
         this.common = glossary.Where(kv => kv.Key == kv.Value).Select(kv => kv.Key).ToArray();
+        foreach (var (key, value) in glossary.Where(kv => kv.Key != kv.Value))
+        {
+            this.glossary.TryAdd(key, value);
+        }
         return default;
     }
 
