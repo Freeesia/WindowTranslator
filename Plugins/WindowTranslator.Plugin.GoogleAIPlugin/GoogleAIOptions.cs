@@ -11,6 +11,7 @@ public class GoogleAIOptions : IPluginParam
     public bool IsEnabledCorrect { get; set; }
 
     [DisplayName("使用するモデル")]
+    [SelectorStyle(SelectorStyle.ComboBox)]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
 
     [DisplayName("使用するプレビューモデル")]
@@ -44,6 +45,12 @@ public enum GoogleAIModel
 
     [Display(Name = "Gemini 1.5 Pro")]
     Gemini15Pro,
+
+    [Display(Name = "Gemini 2.0 Flash Lite")]
+    Gemini20FlashLite,
+
+    [Display(Name = "Gemini 2.0 Flash")]
+    Gemini20Flash,
 }
 
 public static class GoogleAIModelExtensions
@@ -52,6 +59,8 @@ public static class GoogleAIModelExtensions
     {
         GoogleAIModel.Gemini15Flash => GoogleAIModels.Gemini15Flash,
         GoogleAIModel.Gemini15Pro => GoogleAIModels.GeminiPro,
+        GoogleAIModel.Gemini20FlashLite => "gemini-2.0-flash",
+        GoogleAIModel.Gemini20Flash => "gemini-2.0-flash-lite-preview-02-05",
         _ => throw new ArgumentOutOfRangeException(nameof(model)),
     };
 }
