@@ -70,5 +70,13 @@
     "Copyright": "Copyright (c) 2020 James Turner",
     "Authors": "James Turner",
     "ProjectUrl": "https://github.com/Turnerj/Quickenshtein"
+  },
+  {
+    "Id": "ValueTaskSupplement",
+    "Version": "1.1.0",
+    "License": "MIT",
+    "Copyright": "Cysharp",
+    "Authors": "Cysharp",
+    "ProjectUrl": "https://github.com/Cysharp/ValueTaskSupplement"
   }
 ]
