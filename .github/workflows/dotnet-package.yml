@@ -31,4 +31,4 @@ jobs:
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-          dotnet nuget push pack/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+          dotnet nuget push pack\*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
