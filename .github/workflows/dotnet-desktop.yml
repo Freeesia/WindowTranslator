@@ -85,7 +85,8 @@ jobs:
             -exclude-projects exclude-projects.json `
             -ji include-projects.json `
             -d licenses `
-            -fo licenses\third-party-licenses.txt
+            -fo licenses\third-party-licenses.txt `
+            -f net8.0
       - uses: actions/upload-artifact@v4
         with:
           name: licenses
