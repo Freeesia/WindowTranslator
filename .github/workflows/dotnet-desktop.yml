@@ -66,7 +66,7 @@ jobs:
           name: docs
           path: pdfs/
   license:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    # if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,9 +78,7 @@ jobs:
             ${{ runner.os }}-licenses-
       - run: |
           dotnet tool restore
-          echo "end tool restore"
           dotnet restore
-          echo "end restore"
           dotnet nuget-license -t `
             -ignore ignore-packages.json `
             -override package-information.json `
