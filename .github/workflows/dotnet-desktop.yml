@@ -176,7 +176,7 @@ jobs:
           merge-multiple: true
       - run: |
           dotnet tool restore
-          dotnet wix extension -g add WixToolset.Util.wixext WixToolset.UI.wixext
+          dotnet wix extension -g add WixToolset.Util.wixext/5.0.2 WixToolset.UI.wixext/5.0.2
           dotnet run -c Release
         working-directory: WindowTranslator.Wix
       - uses: actions/upload-artifact@v4
