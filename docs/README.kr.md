@@ -14,6 +14,8 @@ WindowTranslator는 윈도우 애플리케이션의 창을 번역하는 도구�
 ### 설치판 ![추천](https://img.shields.io/badge/추천-brightgreen)
 [GitHub 릴리즈 페이지](https://github.com/Freeesia/WindowTranslator/releases/latest)에서 MSI 파일을 다운로드 받아 실행하여 WindowTranslator를 설치합니다.
 
+[![다운로드](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+
 ### 포터블 판
 [GitHub 릴리즈 페이지](https://github.com/Freeesia/WindowTranslator/releases/latest)에서 ZIP 파일을 다운로드 받아 원하는 폴더에 압축을 풉니다.
 

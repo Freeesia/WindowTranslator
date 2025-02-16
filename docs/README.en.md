@@ -14,6 +14,8 @@ WindowTranslator is a tool for translating Windows application windows.
 ### Installation Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
 Download the MSI file from the [GitHub Releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install WindowTranslator.
 
+[![Installation](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+
 ### Portable Version
 Download the zip file from the [GitHub Releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.
 

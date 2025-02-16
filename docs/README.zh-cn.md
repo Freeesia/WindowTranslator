@@ -11,10 +11,11 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 
 ## 下载
 
-### 安装版 ![推荐]
+### 安装版 ![推荐](https://img.shields.io/badge/推荐-brightgreen)
 从 [GitHub 发布页面](https://github.com/Freeesia/WindowTranslator/releases/latest)下载 `WindowTranslator-(版本).msi` 并运行进行安装。  
+
 安装步骤演示视频：  
-[![安装视频](https://github.com/user-attachments/assets/视频链接)](https://youtu.be/视频ID)
+[![安装视频](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### 便携版
 从 [GitHub 发布页面](https://github.com/Freeesia/WindowTranslator/releases/latest)下载 zip 文件，并解压到任意文件夹。  
@@ -26,7 +27,7 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 ### 视频版
 |            | DeepL 版本             | Google AI 版本            |
 | :--------: | ---------------------- | ------------------------- |
-| 视频链接   | [![DeepL 设置视频](https://github.com/user-attachments/assets/视频链接1)](https://youtu.be/视频ID1) | [![Google AI 设置视频](https://github.com/user-attachments/assets/视频链接2)](https://youtu.be/视频ID2) |
+| 视频链接   | [![DeepL 设置视频](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | [![Google AI 设置视频](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) |
 | 优点       | 翻译迅速，免费额度充足   | 翻译准确性较高             |
 | 缺点       | 翻译准确性略低         | 需少量付费，翻译稍慢       |
 
