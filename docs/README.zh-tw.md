@@ -11,39 +11,56 @@ WindowTranslator是一個用於翻譯Windows應用程序窗口的工具。
 
 ## 下載
 
-從 [GitHub的發布頁面](https://github.com/Freeesia/WindowTranslator/releases/latest)下載zip文件，然後解壓到任意文件夾。
+### 安裝版 ![推薦]
+從 [GitHub 的發布頁面](https://github.com/Freeesia/WindowTranslator/releases/latest)下載 `WindowTranslator-(版本).msi` 並執行安裝。  
+安裝步驟示範影片：  
+[![安裝影片](https://github.com/user-attachments/assets/影片連結)](https://youtu.be/影片ID)
 
-* `WindowTranslator-(版本).zip`可以在已安裝.NET的環境中運行。
-* `WindowTranslator-full-(版本).zip`可在未安裝.NET的環境中運行。
+### 便攜版
+從 [GitHub 的發布頁面](https://github.com/Freeesia/WindowTranslator/releases/latest)下載 zip 文件並解壓至任意資料夾。  
+* `WindowTranslator-(版本).zip`：適用於已安裝 .NET 環境的系統。  
+* `WindowTranslator-full-(版本).zip`：適用於未安裝 .NET 環境的系統。
 
-## 使用方法
+## 使い方
 
-### 預備工作
+### 影片版
+|            | DeepL 版本             | Google AI 版本            |
+| :--------: | ---------------------- | ------------------------- |
+| 影片連結   | [![DeepL 設定影片](https://github.com/user-attachments/assets/影片連結1)](https://youtu.be/影片ID1) | [![Google AI 設定影片](https://github.com/user-attachments/assets/影片連結2)](https://youtu.be/影片ID2) |
+| 優點       | 翻譯快速、免費額度充足   | 翻譯精度較高               |
+| 缺點       | 翻譯精度稍低           | 需少額付費，翻譯較慢       |
 
-#### 獲取DeepL API密鑰
+### 事前準備
 
-請訪問 [DeepL的網站](https://www.deepl.com/zh/pro-api) 註冊用戶，並獲取API密鑰。  
-(我們使用免費計劃的API密鑰進行了測試，但認為付費計劃的API密鑰也可以使用)
+#### 取得 DeepL API 金鑰
+請前往 [DeepL 網站](https://www.deepl.com/ja/pro-api) 註冊並取得您的 API 金鑰。
 
-### 啟動
+> 本工具以 DeepL 作為翻譯引擎，若需使用生成型 AI 翻譯，請參照 [LLM Plugin](https://github.com/Freeesia/WindowTranslator/wiki/LLMPlugin) 進行設定。
 
-#### 首次設置
+### 起動
 
-1. 啟動`WindowTranslator.exe`，打開設置界面。   
-  ![設置](images/settings.png)
-2. 在“全局設置”標籤頁的“語言設置”中選擇翻譯來源和翻譯目標語言。   
-  ![語言設置](images/language.png)
-3. 在“DeepLOptions”標籤頁輸入DeepL的API密鑰。   
-  ![DeepL設置](images/deepl.png)
-4. 完成設置後，點擊“確定”按鈕關閉設置界面。
+#### 初次設定
+
+1. 執行 `WindowTranslator.exe` 開啟設定畫面。  
+   ![設定](images/settings.png)
+2. 在「全體設定」標籤的「語言設定」中選擇翻譯原語及目標語。  
+   ![語言設定](images/language.png)
+3. 於「插件設定」中，選擇翻譯模組為「DeepL」。  
+   ![插件設定](images/translate_module.png)
+4. 在「DeepLOptions」標籤中輸入您的 DeepL API 金鑰。  
+   ![DeepL 設定](images/deepl.png)
+5. 設定完成後，點擊「確定」關閉設定畫面。
 
 #### 開始翻譯
 
-1. 啟動`WindowTranslator.exe`，點擊翻譯按鈕。   
-  ![翻譯按鈕](images/translate.png)
-2. 選擇要翻譯的應用程序窗口，然後點擊“確定”按鈕。   
-  ![窗口選擇](images/select.png)
-3. 翻譯結果將以覆蓋層的形式顯示。   
-  ![翻譯結果](images/result.png)
+1. 執行 `WindowTranslator.exe`，點擊「翻譯」按鈕。  
+   ![翻譯按鈕](images/translate.png)
+2. 選擇欲翻譯的應用程式窗口，然後點選「確定」。  
+   ![窗口選擇](images/select.png)
+3. 翻譯結果將以覆蓋層形式顯示。  
+   ![翻譯結果](images/result.png)
 
-> Translated with ChatGPT
+---
+隱私政策: [隱私政策](PrivacyPolicy.md)
+
+> ※ 本文件為機器翻譯。
