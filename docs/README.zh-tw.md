@@ -60,7 +60,7 @@ WindowTranslator是一個用於翻譯Windows應用程序窗口的工具。
 3. 翻譯結果將以覆蓋層形式顯示。  
    ![翻譯結果](images/result.png)
 
----
-隱私政策: [隱私政策](PrivacyPolicy.md)
+---  
+隱私政策: [隱私政策](PrivacyPolicy.zh-tw.md)
 
 > ※ 本文件為機器翻譯。

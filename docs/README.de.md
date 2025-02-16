@@ -64,7 +64,7 @@ Registrieren Sie sich auf der [DeepL-Website](https://www.deepl.com/pro-api) und
 
 Weitere Informationen finden Sie im [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
 
----
-Datenschutzerklärung: [Datenschutzerklärung](PrivacyPolicy.md)
+---  
+Datenschutzerklärung: [Datenschutzerklärung](PrivacyPolicy.de.md)
 
 > ※ Dieses Dokument wurde maschinell übersetzt.

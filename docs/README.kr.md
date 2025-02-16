@@ -64,7 +64,7 @@ WindowTranslator는 윈도우 애플리케이션의 창을 번역하는 도구�
 
 자세한 사항은 [Wiki](https://github.com/Freeesia/WindowTranslator/wiki)를 참조하세요.
 
----
-개인정보 처리방침: [개인정보 처리방침](PrivacyPolicy.md)
+---  
+개인정보 처리방침: [개인정보 처리방침](PrivacyPolicy.kr.md)
 
 > ※ 이 문서는 기계 번역되었습니다.

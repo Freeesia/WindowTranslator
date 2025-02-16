@@ -63,7 +63,7 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 
 [Wiki](https://github.com/Freeesia/WindowTranslator/wiki)
 
----
-隐私政策: [隐私政策](PrivacyPolicy.md)
+---  
+隐私政策: [隐私政策](PrivacyPolicy.zh-cn.md)
 
 > ※ 本文档为机器翻译。
