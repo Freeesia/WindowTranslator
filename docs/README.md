@@ -74,3 +74,6 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 ### その他の機能
 
 [Wiki](https://github.com/Freeesia/WindowTranslator/wiki)を参照してください。
+
+---
+[プライバシーポリシー](PrivacyPolicy.md)
