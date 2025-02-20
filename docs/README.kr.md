@@ -22,7 +22,7 @@ WindowTranslator는 윈도우 애플리케이션의 창을 번역하는 도구�
 
 #### DeepL API 키 받기
 
-[DeepL 사이트](https://www.deepl.com/ja/pro-api)에서 사용자 등록을 하고 API 키를 발급받는다.  
+[DeepL 사이���](https://www.deepl.com/ja/pro-api)에서 사용자 등록을 하고 API 키를 발급받는다.  
 (필자는 무료 플랜의 API 키로 동작을 확인했지만, 유료 플랜의 API 키로도 동작할 것으로 예상합니다)
 
 ### 실행
@@ -46,5 +46,27 @@ WindowTranslator는 윈도우 애플리케이션의 창을 번역하는 도구�
 3. 번역 결과가 오버레이로 표시됩니다.  
   ![번역 결과](images/result.png)
 
+## 무엇을 할 수 있나요?
 
-> Translated with www.DeepL.com/Translator (free version)
+WindowTranslator는 윈도우 애플리케이션 창을 번역하는 도구입니다. 다음과 같은 기능을 제공합니다:
+
+- 윈도우 애플리케이션 창 번역
+- 여러 언어 지원
+- 다양한 번역 모듈 사용
+
+### DeepL API 키를 얻고 사용하는 방법
+
+1. [DeepL 웹사이트](https://www.deepl.com/pro-api)에서 사용자로 등록하고 API 키를 얻습니다.
+2. `WindowTranslator.exe`를 실행하고 설정 화면을 엽니다.
+3. 'DeepLOptions' 탭의 'API Key' 필드에 DeepL API 키를 입력합니다.
+4. 설정이 완료되면 'OK' 버튼을 눌러 설정 화면을 닫습니다.
+
+### 다른 번역 모듈
+
+WindowTranslator는 다른 번역 모듈도 지원합니다. 다음은 각 모듈의 장점입니다:
+
+- Google 번역: 설정이 간단하고 완전히 무료이지만, 번역 한도가 낮고 번역 정확도가 떨어질 수 있습니다.
+- DeepL: 큰 무료 할당량과 빠른 번역을 제공하지만, 번역 정확도가 떨어질 수 있습니다.
+- GoogleAI: 높은 번역 정확도를 제공하지만, 소액의 요금이 필요합니다.
+- LLM (클라우드): 높은 번역 정확도를 제공하지만, 소액의 요금이 필요합니다.
+- LLM (로컬): 서비스 자체는 무료이지만, 고사양 PC가 필요합니다.

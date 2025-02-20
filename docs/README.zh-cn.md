@@ -46,4 +46,27 @@ WindowTranslator是一个用于翻译Windows应用程序窗口的工具。
 3. 翻译结果将以覆盖层的形式显示。   
   ![翻译结果](images/result.png)
 
-> Translated with ChatGPT
+## 它能做什么？
+
+WindowTranslator是一个用于翻译Windows应用程序窗口的工具。它提供以下功能：
+
+- 翻译Windows应用程序窗口
+- 支持多种语言
+- 使用各种翻译模块
+
+### 如何获取和使用DeepL API密钥
+
+1. 请访问 [DeepL的网站](https://www.deepl.com/pro-api) 注册用户，并获取API密钥。
+2. 启动`WindowTranslator.exe`，打开设置界面。
+3. 在“DeepLOptions”标签页的“API Key”字段中输入您的DeepL API密钥。
+4. 完成设置后，点击“确定”按钮关闭设置界面。
+
+### 其他翻译模块
+
+WindowTranslator还支持其他翻译模块。以下是它们的一些优点：
+
+- Google翻译：设置简单且完全免费，但翻译限制较低，翻译准确性可能较低。
+- DeepL：提供大量免费配额和快速翻译，但翻译准确性可能较低。
+- GoogleAI：翻译准确性高，但需要支付少量费用。
+- LLM（云端）：翻译准确性高，但需要支付少量费用。
+- LLM（本地）：服务本身免费，但需要高规格的PC。

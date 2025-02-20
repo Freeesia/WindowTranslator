@@ -46,4 +46,27 @@ Registrieren Sie sich als Benutzer auf der [DeepL-Website](https://www.deepl.com
 3. Das Übersetzungsergebnis wird als Overlay angezeigt.   
   ![Übersetzungsergebnis](images/result.png)
 
-> Translated with ChatGPT
+## Was kann es tun?
+
+WindowTranslator ist ein Tool zum Übersetzen von Windows-Anwendungsfenstern. Es bietet die folgenden Funktionen:
+
+- Übersetzung von Windows-Anwendungsfenstern
+- Unterstützung für mehrere Sprachen
+- Verwendung verschiedener Übersetzungsmodule
+
+### Wie man den DeepL API-Schlüssel erhält und verwendet
+
+1. Registrieren Sie sich als Benutzer auf der [DeepL-Website](https://www.deepl.com/pro-api) und erhalten Sie einen API-Schlüssel.
+2. Starten Sie `WindowTranslator.exe` und öffnen Sie den Einstellungsbildschirm.
+3. Geben Sie Ihren DeepL-API-Schlüssel im Feld "API Key" auf der Registerkarte "DeepLOptions" ein.
+4. Nach Abschluss der Einstellungen klicken Sie auf die Schaltfläche "OK", um den Einstellungsbildschirm zu schließen.
+
+### Andere Übersetzungsmodule
+
+WindowTranslator unterstützt auch andere Übersetzungsmodule. Hier sind einige ihrer Vorteile:
+
+- Google Translate: Einfach einzurichten und völlig kostenlos, aber hat ein niedriges Übersetzungslimit und möglicherweise geringere Übersetzungsgenauigkeit.
+- DeepL: Bietet ein großes kostenloses Kontingent und schnelle Übersetzungen, aber möglicherweise geringere Übersetzungsgenauigkeit.
+- GoogleAI: Hohe Übersetzungsgenauigkeit, aber erfordert eine kleine Gebühr.
+- LLM (Cloud): Hohe Übersetzungsgenauigkeit, aber erfordert eine kleine Gebühr.
+- LLM (Lokal): Der Dienst selbst ist kostenlos, erfordert jedoch einen hochspezifizierten PC.
