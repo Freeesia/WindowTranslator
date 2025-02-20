@@ -36,7 +36,7 @@
                 <ui:TitleBar.Icon>
                     <ui:ImageIcon Source="/wt.ico" />
                 </ui:TitleBar.Icon>
-                <ui:TitleBar.Header>
+                <ui:TitleBar.TrailingContent>
                     <StackPanel Orientation="Horizontal">
                         <ui:DropDownButton
                             Width="44"
@@ -86,7 +86,7 @@
                             ToolTip="新しいバージョンのチェック"
                             Visibility="{Binding HasUpdate, Mode=OneWay, Converter={x:Static local:FalseToVisibilityConverter.Default}}" />
                     </StackPanel>
-                </ui:TitleBar.Header>
+                </ui:TitleBar.TrailingContent>
             </ui:TitleBar>
             <ProgressBar
                 Height="4"

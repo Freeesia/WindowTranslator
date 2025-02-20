@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" />
     <PackageReference Include="Google_GenerativeAI" />
   </ItemGroup>
 

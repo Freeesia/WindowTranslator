@@ -88,6 +88,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   バッファサイズ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string BufferSize {
+            get {
+                return ResourceManager.GetString("BufferSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   キャッシュモジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CacheModule {
@@ -250,6 +259,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   認識モジュール に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OcrModule {
+            get {
+                return ResourceManager.GetString("OcrModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   詳細情報の確認 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OpenChangelogCommand {
@@ -295,6 +313,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   認識設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Recognize {
+            get {
+                return ResourceManager.GetString("Recognize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アプリを自動的に起動する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RegisterToStartupCommand {
@@ -309,6 +336,15 @@ namespace WindowTranslator.Properties {
         public static string Run {
             get {
                 return ResourceManager.GetString("Run", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   拡大率 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Scale {
+            get {
+                return ResourceManager.GetString("Scale", resourceCulture);
             }
         }
         

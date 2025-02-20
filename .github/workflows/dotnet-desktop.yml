@@ -66,7 +66,6 @@ jobs:
           name: docs
           path: pdfs/
   license:
-    # if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -85,7 +84,9 @@ jobs:
             -exclude-projects exclude-projects.json `
             -ji include-projects.json `
             -d licenses `
-            -fo licenses/third-party-licenses.txt
+            -fo licenses\third-party-licenses.txt `
+            -f net8.0 `
+            -err
       - uses: actions/upload-artifact@v4
         with:
           name: licenses
@@ -175,7 +176,7 @@ jobs:
           merge-multiple: true
       - run: |
           dotnet tool restore
-          dotnet wix extension -g add WixToolset.Util.wixext WixToolset.UI.wixext
+          dotnet wix extension -g add WixToolset.Util.wixext/5.0.2 WixToolset.UI.wixext/5.0.2
           dotnet run -c Release
         working-directory: WindowTranslator.Wix
       - uses: actions/upload-artifact@v4

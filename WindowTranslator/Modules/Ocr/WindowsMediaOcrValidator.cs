@@ -13,12 +13,30 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
-        if (await WindowsMediaOcrUtility.IsInstalledLanguageAsync(settings.Language.Source))
-        {
-            return ValidateResult.Valid;
-        }
-
         var culture = new CultureInfo(settings.Language.Source);
+        try
+        {
+            if (await WindowsMediaOcrUtility.IsInstalledLanguageAsync(settings.Language.Source))
+            {
+                return ValidateResult.Valid;
+            }
+        }
+        catch (Exception ex)
+        {
+            return ValidateResult.Invalid("文字認識機能",
+                $"""
+                ORC機能のインストール状態の取得に失敗しました。  
+                    
+                [こちら](ms-settings:regionlanguage?activationSource=SMC-Article-14236)から翻訳元言語「{culture.DisplayName}」がインストールされているか確認してください。
+                インストールされていない場合は手動でインストールを行ってください。
+                ([インストール手順](https://github.com/Freeesia/WindowTranslator/wiki/%E6%89%8B%E5%8B%95%E3%81%A7%E8%A8%80%E8%AA%9E%E3%83%91%E3%83%83%E3%82%AF%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B))
+                
+                #### エラー内容
+                ```
+                {ex.Message}
+                ```
+                """);
+        }
 
         var r = await this.dialogService.ShowSimpleDialogAsync(new()
         {
