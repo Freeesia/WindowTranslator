@@ -10,9 +10,14 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 [JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
 
 ## 目次
-- [ダウンロード](#ダウンロード)
-- [使い方](#使い方)
-- [その他の機能](#その他の機能)
+- [ WindowTranslator](#-windowtranslator)
+  - [目次](#目次)
+  - [ダウンロード](#ダウンロード)
+    - [インストール版 ](#インストール版-)
+    - [ポータブル版](#ポータブル版)
+  - [使い方](#使い方)
+    - [Google翻訳 ](#google翻訳-)
+  - [その他の機能](#その他の機能)
 
 ## ダウンロード
 ### インストール版 ![オススメ](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
@@ -44,7 +49,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 | LLM (クラウド) |                                  TBD                                  | 翻訳精度が高い                  | 少額の課金が必要                   |
 | LLM (ローカル) |                                  TBD                                  | サービス自体は無料              | 高スペックなPCが必要               |
 
-### Google翻訳 (デフォルト)
+### Google翻訳 ![デフォルト](https://img.shields.io/badge/デフォルト-brightgreen)
 
 1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
    ![翻訳ボタン](images/translate.png)
