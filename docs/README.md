@@ -38,13 +38,14 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 > WindowTranslatorでは各種翻訳モジュールが利用可能です。ここではデフォルトのGoogle翻訳を用いた方法を示します。  
 > Google翻訳は翻訳可能なテキスト量が少なく、利用頻度が高い場合は他のモジュールの利用を検討してください。  
 > 利用可能な翻訳モジュール一覧は下記の動画もしくは[Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳)でご確認いただけます。
-> |                |                                 使い方動画                                  | メリット                        | デメリット                         |
-> | :------------: | :---------------------------------------------------------------------: | :------------------------------ | :--------------------------------- |
-> |   Google翻訳   |                                  TBD                                  | 導入が容易<br/>完全無料         | 翻訳上限が低い<br/>翻訳精度が劣る    |
-> |     DeepL      | [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | 無料枠が多い<br/>翻訳が速い     | 翻訳精度が劣る                     |
-> |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い                  | 少額の課金が必要                   |
-> | LLM (クラウド) |                                  TBD                                  | 翻訳精度が高い                  | 少額の課金が必要                   |
-> | LLM (ローカル) |                                  TBD                                  | サービス自体は無料              | 高スペックなPCが必要               |
+> 
+> |                |                                                              使い方動画                                                               | メリット                    | デメリット                        |
+> | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
+> |   Google翻訳   |                                                                  TBD                                                                  | 導入が容易<br/>完全無料     | 翻訳上限が低い<br/>翻訳精度が劣る |
+> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | 翻訳精度が劣る                    |
+> |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い              | 少額の課金が必要                  |
+> | LLM (クラウド) |                                                                  TBD                                                                  | 翻訳精度が高い              | 少額の課金が必要                  |
+> | LLM (ローカル) |                                                                  TBD                                                                  | サービス自体は無料          | 高スペックなPCが必要              |
 
 ### Google翻訳 ![デフォルト](https://img.shields.io/badge/デフォルト-brightgreen)
 
