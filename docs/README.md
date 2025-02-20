@@ -41,7 +41,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 > 
 > |                |                                                              使い方動画                                                               | メリット                    | デメリット                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
-> |   Google翻訳   |                                                                  TBD                                                                  | 導入が容易<br/>完全無料     | 翻訳上限が低い<br/>翻訳精度が劣る |
+> |   Google翻訳   | [![Goole翻訳設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 導入が容易<br/>完全無料     | 翻訳上限が低い<br/>翻訳精度が劣る |
 > |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | 翻訳精度が劣る                    |
 > |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い              | 少額の課金が必要                  |
 > | LLM (クラウド) |                                                                  TBD                                                                  | 翻訳精度が高い              | 少額の課金が必要                  |
