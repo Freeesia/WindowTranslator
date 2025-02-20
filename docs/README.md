@@ -38,7 +38,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 |Google翻訳|
 |DeepL|
 |GoogleAI|
-|LLM|
+|LLM||OpenAIの高精度な翻訳が利用可能<br/>ローカルで実行可能||
 
 
 > [!NOTE]
