@@ -42,9 +42,7 @@ public sealed partial class WindowsMediaOcr(
         var needScale = ((int)(this.scale * bitmap.PixelWidth) > bitmap.PixelWidth)
             || ((int)(this.scale * bitmap.PixelHeight) > bitmap.PixelHeight);
         // 拡大率に基づくリサイズ処理
-        var tResize = this.logger.LogDebugTime("Resizing Bitmap");
         var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale) : bitmap;
-        tResize.Dispose();
 
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
@@ -126,12 +124,14 @@ public sealed partial class WindowsMediaOcr(
 
     private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale)
     {
+        using var l = this.logger.LogDebugTime("Resizing Bitmap");
         var newWidth = (uint)(source.PixelWidth * scale);
         var newHeight = (uint)(source.PixelHeight * scale);
 
         this.resizeStream.Seek(0);
         var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, resizeStream);
         encoder.SetSoftwareBitmap(source);
+        encoder.BitmapTransform.InterpolationMode = scale > 1 ? BitmapInterpolationMode.Cubic : BitmapInterpolationMode.Fant;
         encoder.BitmapTransform.ScaledWidth = newWidth;
         encoder.BitmapTransform.ScaledHeight = newHeight;
         await encoder.FlushAsync();
@@ -436,7 +436,8 @@ file static class Utility
             (true, false, false, true) => height * (1 + .2 + .0),
             (true, false, true, false) => height * (1 + .1 + .2),
             (true, false, false, false) => height * (1 + .2 + .2),
-            (false, _, _, _) => height,
+            (false, _, _, true) => height,
+            (false, _, _, false) => height * 1.2,
         };
 
     private static (bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent) GetTextType(string text)
