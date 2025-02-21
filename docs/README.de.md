@@ -32,19 +32,6 @@ Laden Sie die Zip-Datei von der [GitHub Releases Seite](https://github.com/Freee
 
 ## Bedienung
 
-> [!NOTE]
-> WindowTranslator unterstützt verschiedene Übersetzungsmodule. Hier wird die Standardmethode mit Google Übersetzer gezeigt.  
-> Google Übersetzer hat ein geringeres Übersetzungsvolumen. Bei hoher Nutzung sollten Sie andere Module in Betracht ziehen.  
-> Eine vollständige Liste der verfügbaren Übersetzungsmodule finden Sie im Video oder im [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation).
-> 
-> |                |                                Anleitungsvideo                                | Vorteile                      | Nachteile                             |
-> | :------------: | :-------------------------------------------------------------------------: | :---------------------------- | :------------------------------------ |
-> | Google Übersetzer |                                  TBD                                     | Einfache Einrichtung<br/>Kostenlos | Geringes Übersetzungsvolumen<br/>Niedrigere Genauigkeit |
-> | DeepL         | [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | Großzügige Gratisstufe<br/>Schnelle Übersetzung | Geringere Genauigkeit                |
-> | GoogleAI      | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Hohe Genauigkeit              | Kleine Gebühren erforderlich          |
-> | LLM (Cloud)   |                                  TBD                                     | Hohe Genauigkeit              | Kleine Gebühren erforderlich          |
-> | LLM (Local)   |                                  TBD                                     | Kostenloser Service           | Leistungsstarker PC erforderlich       |
-
 ### Google Übersetzer ![Standard](https://img.shields.io/badge/Default-brightgreen)
 
 1. Starten Sie `WindowTranslator.exe` und klicken Sie auf den Übersetzen-Button.  
@@ -61,6 +48,19 @@ Laden Sie die Zip-Datei von der [GitHub Releases Seite](https://github.com/Freee
    ![Autorisierungsbildschirm](images/auth.png)
 7. Nach kurzer Zeit wird das Übersetzungsergebnis als Overlay angezeigt.  
    ![Übersetzungsergebnis](images/result.png)
+
+> [!NOTE]
+> WindowTranslator unterstützt verschiedene Übersetzungsmodule. Hier wird die Standardmethode mit Google Übersetzer gezeigt.  
+> Google Übersetzer hat ein geringeres Übersetzungsvolumen. Bei hoher Nutzung sollten Sie andere Module in Betracht ziehen.  
+> Eine vollständige Liste der verfügbaren Übersetzungsmodule finden Sie im Video oder im [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation).
+> 
+> |                |                                Anleitungsvideo                                | Vorteile                      | Nachteile                             |
+> | :------------: | :-------------------------------------------------------------------------: | :---------------------------- | :------------------------------------ |
+> | Google Übersetzer |                                  TBD                                     | Einfache Einrichtung<br/>Kostenlos | Geringes Übersetzungsvolumen<br/>Niedrigere Genauigkeit |
+> | DeepL         | [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | Großzügige Gratisstufe<br/>Schnelle Übersetzung | Geringere Genauigkeit                |
+> | GoogleAI      | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Hohe Genauigkeit              | Kleine Gebühren erforderlich          |
+> | LLM (Cloud)   |                                  TBD                                     | Hohe Genauigkeit              | Kleine Gebühren erforderlich          |
+> | LLM (Local)   |                                  TBD                                     | Kostenloser Service           | Leistungsstarker PC erforderlich       |
 
 ## Weitere Funktionen
 

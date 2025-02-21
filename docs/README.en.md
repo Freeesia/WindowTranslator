@@ -32,19 +32,6 @@ Download the zip file from the [GitHub Releases page](https://github.com/Freeesi
 
 ## Usage
 
-> [!NOTE]
-> WindowTranslator supports various translation modules. The default method shown here uses Google Translate.  
-> Google Translate has a lower character limit so for heavy usage you might consider other modules.  
-> For a full list of available translation modules, please refer to the video below or [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation).
-> 
-> |         |                                Usage Video                                 | Advantages                    | Disadvantages                        |
-> | ------- | :------------------------------------------------------------------------: | ----------------------------- | ------------------------------------ |
-> | Google  |                                  TBD                                       | Easy to set up<br/>Free       | Low translation limit<br/>Lower accuracy |
-> | DeepL   | [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | Generous free tier<br/>Fast translation | Lower accuracy                    |
-> | GoogleAI| [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High accuracy                | Requires a small fee                 |
-> | LLM (Cloud)|                                TBD                                     | High accuracy                | Requires a small fee                 |
-> | LLM (Local)|                                TBD                                     | Free service                 | High-end PC required                 |
-
 ### Google Translate ![Default](https://img.shields.io/badge/Default-brightgreen)
 
 1. Launch `WindowTranslator.exe` and click the Translate button.  
@@ -61,6 +48,19 @@ Download the zip file from the [GitHub Releases page](https://github.com/Freeesi
    ![Authorization Screen](images/auth.png)
 7. Shortly thereafter, the translation result will appear as an overlay.  
    ![Translation Result](images/result.png)
+
+> [!NOTE]
+> WindowTranslator supports various translation modules. The default method shown here uses Google Translate.  
+> Google Translate has a lower character limit so for heavy usage you might consider other modules.  
+> For a full list of available translation modules, please refer to the video below or [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation).
+> 
+> |         |                                Usage Video                                 | Advantages                    | Disadvantages                        |
+> | ------- | :------------------------------------------------------------------------: | ----------------------------- | ------------------------------------ |
+> | Google  |                                  TBD                                       | Easy to set up<br/>Free       | Low translation limit<br/>Lower accuracy |
+> | DeepL   | [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | Generous free tier<br/>Fast translation | Lower accuracy                    |
+> | GoogleAI| [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High accuracy                | Requires a small fee                 |
+> | LLM (Cloud)|                                TBD                                     | High accuracy                | Requires a small fee                 |
+> | LLM (Local)|                                TBD                                     | Free service                 | High-end PC required                 |
 
 ## Other Features
 

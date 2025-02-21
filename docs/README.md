@@ -23,7 +23,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 ### インストール版 ![オススメ](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
 
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)から`WindowTranslator-(バージョン).msi`をダウンロードして実行しインストールします。  
-インストール手順動画はこちら:  
+インストール手順動画はこちら⬇️  
 [![インストール手順動画](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### ポータブル版
@@ -33,19 +33,6 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 - `WindowTranslator-full-(バージョン).zip` : .NET非依存
 
 ## 使い方
-
-> [!NOTE]
-> WindowTranslatorでは各種翻訳モジュールが利用可能です。ここではデフォルトのGoogle翻訳を用いた方法を示します。  
-> Google翻訳は翻訳可能なテキスト量が少なく、利用頻度が高い場合は他のモジュールの利用を検討してください。  
-> 利用可能な翻訳モジュール一覧は下記の動画もしくは[Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳)でご確認いただけます。
-> 
-> |                |                                                              使い方動画                                                               | メリット                    | デメリット                        |
-> | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
-> |   Google翻訳   | [![Goole翻訳設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 導入が容易<br/>完全無料     | 翻訳上限が低い<br/>翻訳精度が劣る |
-> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | 翻訳精度が劣る                    |
-> |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い              | 少額の課金が必要                  |
-> | LLM (クラウド) |                                                                  TBD                                                                  | 翻訳精度が高い              | 少額の課金が必要                  |
-> | LLM (ローカル) |                                                                  TBD                                                                  | サービス自体は無料          | 高スペックなPCが必要              |
 
 ### Google翻訳 ![デフォルト](https://img.shields.io/badge/デフォルト-brightgreen)
 
@@ -65,9 +52,23 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 7. しばらくすると翻訳結果がオーバーレイで表示されます。  
    ![翻訳結果](images/result.png)
 
+> [!NOTE]
+> WindowTranslatorでは各種翻訳モジュールが利用可能です。  
+> Google翻訳は翻訳可能なテキスト量が少なく、利用頻度が高い場合は他のモジュールの利用を検討してください。  
+> 利用可能な翻訳モジュール一覧は下記の動画もしくは[Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳)でご確認いただけます。
+> 
+> |                |                                                              使い方動画                                                               | メリット                    | デメリット                        |
+> | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
+> |   Google翻訳   | [![Goole翻訳設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 導入が容易<br/>完全無料     | 翻訳上限が低い<br/>翻訳精度が劣る |
+> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | 翻訳精度が劣る                    |
+> |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い              | 少額の課金が必要                  |
+> | LLM (クラウド) |                                                                  TBD                                                                  | 翻訳精度が高い              | 少額の課金が必要                  |
+> | LLM (ローカル) |                                                                  TBD                                                                  | サービス自体は無料          | 高スペックなPCが必要              |
+
 ## その他の機能
 
-[Wiki](https://github.com/Freeesia/WindowTranslator/wiki) をご確認ください。
+翻訳モジュール以外にも、WindowTranslatorには様々な機能が搭載されています。  
+もっと使いこなしたい方は、[Wiki](https://github.com/Freeesia/WindowTranslator/wiki) をご確認ください。
 
 ---
 [プライバシーポリシー](PrivacyPolicy.md)

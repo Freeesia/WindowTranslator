@@ -32,19 +32,6 @@ WindowTranslator 是一个用于翻译 Windows 应用程序窗口内容的工具
 
 ## 使用方法
 
-> [!NOTE]
-> WindowTranslator 支持多种翻译模块，这里展示的是默认的 Google 翻译方法。  
-> 由于 Google 翻译限制翻译文本量，若使用频率较高请考虑使用其他翻译模块。  
-> 更多可用的翻译模块请参见下方视频或 [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation)。
-> 
-> |             |                                    使用视频                                    | 优势                        | 劣势                               |
-> | ----------- | :---------------------------------------------------------------------------: | --------------------------- | ---------------------------------- |
-> | Google 翻译 |                                    TBD                                      | 设置简单<br/>完全免费         | 翻译上限低<br/>准确度较低             |
-> | DeepL       | [![DeepL 设置视频](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | 免费额度较高<br/>翻译速度快     | 准确度较低                         |
-> | GoogleAI    | [![Google AI 设置视频](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 高准确度                    | 需要少量付费                        |
-> | LLM (云端)   |                                    TBD                                      | 高准确度                    | 需要少量付费                        |
-> | LLM (本地)   |                                    TBD                                      | 免费服务                    | 需要高配置电脑                      |
-
 ### Google 翻译 ![默认](https://img.shields.io/badge/Default-brightgreen)
 
 1. 启动 `WindowTranslator.exe` 并点击翻译按钮。  
@@ -61,6 +48,19 @@ WindowTranslator 是一个用于翻译 Windows 应用程序窗口内容的工具
    ![授权页面](images/auth.png)
 7. 稍后翻译结果将以浮层形式显示。  
    ![翻译结果](images/result.png)
+
+> [!NOTE]
+> WindowTranslator 支持多种翻译模块，这里展示的是默认的 Google 翻译方法。  
+> 由于 Google 翻译限制翻译文本量，若使用频率较高请考虑使用其他翻译模块。  
+> 更多可用的翻译模块请参见下方视频或 [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation)。
+> 
+> |             |                                    使用视频                                    | 优势                        | 劣势                               |
+> | ----------- | :---------------------------------------------------------------------------: | --------------------------- | ---------------------------------- |
+> | Google 翻译 |                                    TBD                                      | 设置简单<br/>完全免费         | 翻译上限低<br/>准确度较低             |
+> | DeepL       | [![DeepL 设置视频](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | 免费额度较高<br/>翻译速度快     | 准确度较低                         |
+> | GoogleAI    | [![Google AI 设置视频](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 高准确度                    | 需要少量付费                        |
+> | LLM (云端)   |                                    TBD                                      | 高准确度                    | 需要少量付费                        |
+> | LLM (本地)   |                                    TBD                                      | 免费服务                    | 需要高配置电脑                      |
 
 ## 其他功能
 
