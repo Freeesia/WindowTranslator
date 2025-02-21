@@ -444,10 +444,10 @@ file static class Utility
     {
         // abcdefghijklmnopqrstuvwxyz
         // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-        var isxHeight = Contains(text, "acemnosuvwxz");
-        var hasAcent = Contains(text, "ABCDEFGHIJKLMNOPQRSTUVWXYZbdfhijkl");
-        var hasHarfAcent = text.Contains('t');
-        var hasDecent = Contains(text, "gjpqy");
+        var isxHeight = Contains(text, "acemnosuvwxz<>+=");
+        var hasAcent = Contains(text, "ABCDEFGHIJKLMNOPQRSTUVWXYZbdfhijkl!\"#$%&'()|/[]{}@");
+        var hasHarfAcent = Contains(text, "t^");
+        var hasDecent = Contains(text, "gjpqy()|[]{}@");
         return (isxHeight, hasAcent, hasHarfAcent, hasDecent);
     }
 
