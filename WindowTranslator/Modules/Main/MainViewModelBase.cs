@@ -190,7 +190,7 @@ public abstract partial class MainViewModelBase : IDisposable
             var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
             this.cache.AddRange(requests.Select(t => t.Text).Zip(translated));
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
