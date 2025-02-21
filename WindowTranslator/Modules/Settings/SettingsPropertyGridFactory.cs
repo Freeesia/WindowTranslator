@@ -7,6 +7,10 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Wpf.Ui.Controls;
+using Button = System.Windows.Controls.Button;
+using TextBlock = System.Windows.Controls.TextBlock;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
@@ -39,6 +43,33 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         return grid;
     }
 
+    protected override FrameworkElement CreateSpinControl(PropertyItem property)
+    {
+        if (property.Is(typeof(byte)) ||
+            property.Is(typeof(sbyte)) ||
+            property.Is(typeof(ushort)) ||
+            property.Is(typeof(short)) ||
+            property.Is(typeof(uint)) ||
+            property.Is(typeof(int)) ||
+            property.Is(typeof(ulong)) ||
+            property.Is(typeof(long)) ||
+            property.Is(typeof(float)) ||
+            property.Is(typeof(double)))
+        {
+            var numberBox = new NumberBox();
+            numberBox.Maximum = Convert.ToDouble(property.SpinMaximum, CultureInfo.CurrentCulture);
+            numberBox.Minimum = Convert.ToDouble(property.SpinMinimum, CultureInfo.CurrentCulture);
+            numberBox.SmallChange = Convert.ToDouble(property.SpinSmallChange, CultureInfo.CurrentCulture);
+            numberBox.LargeChange = Convert.ToDouble(property.SpinLargeChange, CultureInfo.CurrentCulture);
+            numberBox.SetBinding(NumberBox.ValueProperty, property.CreateBinding(UpdateSourceTrigger.PropertyChanged));
+            return numberBox;
+        }
+        else
+        {
+            return base.CreateSpinControl(property);
+        }
+    }
+
     protected override FrameworkElement CreateFontFamilyControl(PropertyItem property)
     {
         var comboBox = (ComboBox)base.CreateFontFamilyControl(property);
@@ -53,6 +84,58 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         comboBox.SetBinding(Selector.SelectedValueProperty, binding);
 
         return comboBox;
+    }
+
+    protected override FrameworkElement CreateDefaultControl(PropertyItem property)
+    {
+        var textBoxEx = new Wpf.Ui.Controls.TextBox
+        {
+            AcceptsReturn = property.AcceptsReturn,
+            MaxLength = property.MaxLength,
+            IsReadOnly = property.IsReadOnly,
+            TextWrapping = property.TextWrapping,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalContentAlignment = property.AcceptsReturn ? VerticalAlignment.Top : VerticalAlignment.Center,
+            PlaceholderText = property.Description,
+        };
+        if (property.FontFamily != null)
+        {
+            textBoxEx.FontFamily = new FontFamily(property.FontFamily);
+        }
+
+        if (!double.IsNaN(property.FontSize))
+        {
+            textBoxEx.FontSize = property.FontSize;
+        }
+
+        if (property.IsReadOnly)
+        {
+            textBoxEx.Foreground = Brushes.RoyalBlue;
+        }
+
+        var binding = property.CreateBinding(property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default);
+        if (property.ActualPropertyType != typeof(string) && IsNullable(property.ActualPropertyType))
+        {
+            binding.TargetNullValue = string.Empty;
+        }
+
+        textBoxEx.SetBinding(TextBox.TextProperty, binding);
+        return textBoxEx;
+    }
+
+    private static bool IsNullable(Type type)
+    {
+        if (!type.IsValueType)
+        {
+            return true;
+        }
+
+        if (Nullable.GetUnderlyingType(type) != null)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     [ValueConversion(typeof(FontFamily), typeof(string))]

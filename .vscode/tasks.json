@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/WindowTranslator/WindowTranslator.csproj",
+                "${workspaceFolder}/WindowTranslator.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -36,6 +36,22 @@
                 "${workspaceFolder}/WindowTranslator/WindowTranslator.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "docs",
+            "command": "bundle",
+            "isBackground": true,
+            "type": "process",
+            "args": [
+                "exec",
+                "jekyll",
+                "serve",
+                "--incremental",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/docs"
+            },
+            "problemMatcher": []
         }
     ]
 }

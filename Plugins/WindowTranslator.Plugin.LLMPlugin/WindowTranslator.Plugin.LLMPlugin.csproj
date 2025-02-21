@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="OpenAI" Version="2.0.0" />
+    <PackageReference Include="CsvHelper" />
+    <PackageReference Include="OpenAI" />
   </ItemGroup>
 </Project>

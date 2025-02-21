@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,15 +20,15 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - uses: gittools/actions/gitversion/setup@v3.0.0
+      - uses: gittools/actions/gitversion/setup@v3.1.11
         with:
           versionSpec: "5.x"
       - id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.0.0
+        uses: gittools/actions/gitversion/execute@v3.1.11
       - run: |
-          dotnet pack WindowTranslator.Abstractions -c Release -o pack \
-            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} \
-            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} \
-            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} \
+          dotnet pack WindowTranslator.Abstractions -c Release -o pack `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-          dotnet nuget push pack/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+          dotnet nuget push pack\*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

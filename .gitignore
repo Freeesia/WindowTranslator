@@ -363,3 +363,13 @@ MigrationBackup/
 FodyWeavers.xsd
 
 .env
+
+*.local.*
+
+
+# jekyll
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor

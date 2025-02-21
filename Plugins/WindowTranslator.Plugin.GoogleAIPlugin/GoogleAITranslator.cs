@@ -2,8 +2,11 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using CsvHelper;
+using CsvHelper.Configuration;
 using GenerativeAI.Helpers;
 using GenerativeAI.Types;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
 
@@ -19,24 +22,30 @@ public class GoogleAITranslator : ITranslateModule
     private readonly string? userContext;
     private readonly string postSystem;
     private readonly GenerativeModelEx? client;
-    private IReadOnlyDictionary<string, string> glossary = new Dictionary<string, string>();
+    private readonly ILogger<GoogleAITranslator> logger;
+    private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
     private IReadOnlyList<string> common = [];
     private string? context;
 
-    public GoogleAITranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions)
+    public string Name => $"{nameof(GoogleAITranslator)}: {this.client?.Model ?? "Invalid"}";
+
+    public GoogleAITranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<GoogleAITranslator> logger)
     {
-        var src = CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName;
-        var target = CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName;
+        this.logger = logger;
+        var srcLang = CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName;
+        var targetLang = CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName;
+        var options = googleAiOptions.Value;
         this.preSystem = $$"""
-        あなたは{{src}}から{{target}}へ翻訳するの専門家です。
-        入力テキストは{{src}}のテキストであり、翻訳が必要です。
-        渡されたテキストを{{target}}へ翻訳して出力してください。
+        あなたは{{srcLang}}から{{targetLang}}へ翻訳するの専門家です。
+        入力テキストは{{srcLang}}のテキストであり、翻訳が必要です。
+        渡されたテキストを{{targetLang}}へ翻訳して出力してください。
         """;
-        this.userContext = googleAiOptions.Value.TranslateContext;
+        this.userContext = options.TranslateContext;
         this.postSystem = """
         入力テキストは以下のJsonフォーマットになっています。
         各textの内容はペアとなるcontextの文脈を考慮して翻訳してください。
         contextに一人称が指定されている場合は、漢字、ひらがな、カタカナの表記を変更せずに一人称をそのまま使ってください。
+        翻訳対象のテキストが判別できない場合は、翻訳を行わずにそのままの表記を利用してください。
         <入力テキストのJsonフォーマット>
         [{"text":"翻訳対象のテキスト1", "context": "翻訳対象のテキスト1の文脈"}, {"text":"翻訳対象のテキスト2", "context": "翻訳対象のテキスト2の文脈"}]
         </入力テキストのJsonフォーマット>
@@ -47,7 +56,7 @@ public class GoogleAITranslator : ITranslateModule
         ["翻訳したテキスト1", "翻訳したテキスト2"]
         </出力テキストのJsonフォーマット>
         """;
-        if (!(googleAiOptions.Value.ApiKey is { Length: > 0 } apiKey))
+        if (options.ApiKey is not { Length: > 0 } apiKey)
         {
             return;
         }
@@ -55,7 +64,7 @@ public class GoogleAITranslator : ITranslateModule
             apiKey,
             new()
             {
-                Model = googleAiOptions.Value.Model.GetName(),
+                Model = string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
                 GenerationConfig = new GenerationConfigEx()
                 {
                     Temperature = 2.0,
@@ -69,7 +78,19 @@ public class GoogleAITranslator : ITranslateModule
                     new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 ]
             });
+
+        if (File.Exists(googleAiOptions.Value.GlossaryPath))
+        {
+            using var reader = new StreamReader(googleAiOptions.Value.GlossaryPath);
+            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
+            foreach (var (src, dst) in csv.GetRecords<Glossary>())
+            {
+                this.glossary[src] = dst;
+            }
+        }
     }
+
+    private record Glossary(string Source, string Target);
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
@@ -101,10 +122,18 @@ public class GoogleAITranslator : ITranslateModule
             """);
         }
 
+        var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
+        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions);
+        this.logger.LogDebug($"""
+                    System:
+                    {system}
+                    Contents:
+                    {content}
+                    """);
         var req = new GenerateContentRequest()
         {
-            Contents = [RequestExtensions.FormatGenerateContentInput(JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions))],
-            SystemInstruction = RequestExtensions.FormatSystemInstruction(string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem])),
+            SystemInstruction = RequestExtensions.FormatSystemInstruction(system),
+            Contents = [RequestExtensions.FormatGenerateContentInput(content)],
         };
         while (true)
         {
@@ -113,15 +142,21 @@ public class GoogleAITranslator : ITranslateModule
                 var completion = await this.client.GenerateContentAsync(req).ConfigureAwait(false);
                 return completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion.Text() + "\"]", jsonOptions) ?? [];
             }
+            catch (GenerativeAIExException e) when (e.Error.Code == 400)
+            {
+                throw new GenerativeAIExException(e.Error with { Message = "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください" });
+            }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (GenerativeAIExException e) when (e.Error.Code == 503)
             {
+                this.logger.LogWarning("GoogleAIのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
                 await Task.Delay(500).ConfigureAwait(false);
                 continue;
             }
             // レート制限を超えました。
             catch (GenerativeAIExException e) when (e.Error.Code == 429)
             {
+                this.logger.LogWarning("GoogleAIのレート制限を超えました。10秒待機して再試行します。");
                 await Task.Delay(10000).ConfigureAwait(false);
                 continue;
             }
@@ -135,8 +170,11 @@ public class GoogleAITranslator : ITranslateModule
 
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
     {
-        this.glossary = glossary.Where(kv => kv.Key != kv.Value).ToDictionary(kv => kv.Key, kv => kv.Value);
         this.common = glossary.Where(kv => kv.Key == kv.Value).Select(kv => kv.Key).ToArray();
+        foreach (var (key, value) in glossary.Where(kv => kv.Key != kv.Value))
+        {
+            this.glossary.TryAdd(key, value);
+        }
         return default;
     }
 

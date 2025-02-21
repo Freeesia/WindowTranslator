@@ -1,0 +1,7 @@
+[
+  "WindowTranslator\\WindowTranslator.csproj",
+  "Plugins\\WindowTranslator.Plugin.DeepLTranslatePlugin\\WindowTranslator.Plugin.DeepLTranslatePlugin.csproj",
+  "Plugins\\WindowTranslator.Plugin.FoMPlugin\\WindowTranslator.Plugin.FoMPlugin.csproj",
+  "Plugins\\WindowTranslator.Plugin.GoogleAIPlugin\\WindowTranslator.Plugin.GoogleAIPlugin.csproj",
+  "Plugins\\WindowTranslator.Plugin.LLMPlugin\\WindowTranslator.Plugin.LLMPlugin.csproj"
+]

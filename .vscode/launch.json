@@ -5,15 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": ".NET Launch",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/WindowTranslator/bin/Debug/WindowTranslator.dll",
+            "program": "${workspaceFolder}/WindowTranslator/bin/Debug/WindowTranslator.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/WindowTranslator",
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
             "console": "internalConsole",
-            "stopAtEntry": false
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "name": "C#: WindowTranslator Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/WindowTranslator/WindowTranslator.csproj",
+            "preLaunchTask": "build",
         },
         {
             "name": ".NET Core Attach",

@@ -1,6 +1,7 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Stores;
+using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -26,10 +28,15 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IEnumerable<IFilterModule> filters;
     private readonly ILogger logger;
     private readonly SemaphoreSlim analyzing = new(1, 1);
+    private readonly SemaphoreSlim translating = new(1, 1);
+    private readonly string name;
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
     private readonly double fontScale;
-    private readonly ConcurrentDictionary<string, string> requesting = new();
+    private TextRect[]? lastRequested;
+
+    [ObservableProperty]
+    private string title;
 
     [ObservableProperty]
     private double width = double.NaN;
@@ -39,7 +46,8 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private bool isFirstBusy = true;
 
-    private SoftwareBitmap? sbmp;
+    private SoftwareBitmap? capturedBmp;
+    private SoftwareBitmap? analyzingBmp;
     private bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -57,7 +65,7 @@ public abstract partial class MainViewModelBase : IDisposable
         IEnumerable<IFilterModule> filters,
         ILogger logger)
     {
-        var targetProcess = processInfoStore;
+        this.name = processInfoStore.Name;
         this.presentationService = presentationService;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
@@ -69,8 +77,10 @@ public abstract partial class MainViewModelBase : IDisposable
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
-        this.capture.StartCapture(targetProcess.MainWindowHandle);
-        this.timer = new(_ => CreateTextOverlayAsync().Forget(), null, 0, 500);
+        this.capture.StartCapture(processInfoStore.MainWindowHandle);
+        this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
+        var transAsm = this.translator.GetType().Assembly;
+        this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -80,7 +90,7 @@ public abstract partial class MainViewModelBase : IDisposable
             return;
         }
         var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
-        var sbmp = Interlocked.Exchange(ref this.sbmp, newBmp);
+        var sbmp = Interlocked.Exchange(ref this.capturedBmp, newBmp);
         this.Width = newBmp.PixelWidth;
         this.Height = newBmp.PixelHeight;
         CreateTextOverlayAsync().Forget();
@@ -99,7 +109,16 @@ public abstract partial class MainViewModelBase : IDisposable
             this.analyzing.Release();
             this.IsFirstBusy = false;
         });
-        using var sbmp = Interlocked.Exchange(ref this.sbmp, null);
+        var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
+        if (sbmp is null)
+        {
+            sbmp = this.analyzingBmp;
+        }
+        else
+        {
+            this.analyzingBmp?.Dispose();
+            this.analyzingBmp = sbmp;
+        }
         if (sbmp is null)
         {
             return;
@@ -140,28 +159,47 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
     {
+        if (Interlocked.Exchange(ref this.lastRequested, texts.ToArray()) is not null)
+        {
+            this.logger.LogDebug("以前の翻訳キューを削除");
+            return;
+        }
+        await this.translating.WaitAsync().ConfigureAwait(false);
         try
         {
-            var transTargets = texts
-                .Where(t => !t.IsTranslated)
-                .Where(t => this.requesting.TryAdd(t.Text, t.Text) && !this.cache.Contains(t.Text))
-                .ToArray();
-            if (!transTargets.Any())
+            if (Interlocked.Exchange(ref this.lastRequested, null) is not { } requests)
             {
+                this.logger.LogDebug("翻訳キューがないので翻訳処理終了");
+                return;
+            }
+            requests = requests
+                .Where(t => !t.IsTranslated)
+                .Where(t => !this.cache.Contains(t.Text))
+                .ToArray();
+            if (!requests.Any())
+            {
+                this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳処理終了");
+                return;
+            }
+            if (this.disposedValue)
+            {
+                this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
                 return;
             }
             this.logger.LogDebug("Translate");
-            var translated = await this.translator.TranslateAsync(transTargets).ConfigureAwait(false);
-            foreach (var t in transTargets)
-            {
-                this.requesting.TryRemove(t.Text, out _);
-            }
-            this.cache.AddRange(transTargets.Select(t => t.Text).Zip(translated));
+            var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
+            this.cache.AddRange(requests.Select(t => t.Text).Zip(translated));
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             this.timer.DisposeAsync().Forget();
-            this.presentationService.ShowMessage(e.Message, icon: MessageBoxImage.Error);
+            this.capture.StopCapture();
+            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+        }
+        finally
+        {
+            this.translating.Release();
         }
     }
 
@@ -173,6 +211,10 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         if (disposing)
         {
+            if (this.capture is IDisposable captureDisposable)
+            {
+                captureDisposable.Dispose();
+            }
             this.timer?.Dispose();
         }
         disposedValue = true;

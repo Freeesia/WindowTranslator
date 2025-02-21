@@ -96,7 +96,11 @@ builder.Services.AddSingleton<IGitHubClient>(_ =>
 });
 
 var app = builder.Build();
+#if DEBUG
+var createdNew = true;
+#else
 using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+#endif
 if (!createdNew)
 {
     new MessageDialog()

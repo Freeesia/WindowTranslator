@@ -243,4 +243,19 @@
   <data name="YPosThrethold" xml:space="preserve">
     <value>Y位置ずれ閾値</value>
   </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>リストのマージを避ける</value>
+  </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>認識設定</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>拡大率</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>バッファサイズ</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>認識モジュール</value>
+  </data>
 </root>

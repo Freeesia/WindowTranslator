@@ -17,6 +17,7 @@ public class OcrCorrectionFilter : IFilterModule
 
     public OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<OcrCorrectionFilter> logger)
     {
+        var options = googleAiOptions.Value;
         var system = $"""
         あなたは{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}の専門家です。
         これから渡される文字列はOCRによって認識されたものであり、誤字や脱字が含まれています。
@@ -29,7 +30,7 @@ public class OcrCorrectionFilter : IFilterModule
         5. 単語や文章として認識できない場合は、空文字を出力してください。
 
         <誤字修正の例>
-        {googleAiOptions.Value.CorrectSample}
+        {options.CorrectSample}
         </誤字修正の例>
 
         修正する文字列は以下のJsonフォーマットになっています。出力文字列も同じJsonフォーマットで、入力文字列の順序を維持してください。
@@ -45,13 +46,13 @@ public class OcrCorrectionFilter : IFilterModule
             SingleReader = true,
             SingleWriter = true,
         }, Dropped);
-        if (googleAiOptions.Value.IsEnabledCorrect && googleAiOptions.Value.ApiKey is { Length: > 0 } apiKey)
+        if (options.IsEnabledCorrect && options.ApiKey is { Length: > 0 } apiKey)
         {
             this.client = new(
                 apiKey,
                 new()
                 {
-                    Model = googleAiOptions.Value.Model.GetName(),
+                    Model = string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
                     GenerationConfig = new GenerationConfigEx()
                     {
                         Temperature = 2.0,
