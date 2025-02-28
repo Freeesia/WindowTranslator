@@ -116,7 +116,8 @@ public sealed partial class WindowsMediaOcr(
 
         return results.Select(r => ToTextRect(r, needScale))
             // マージ後に少なすぎる文字も認識ミス扱い
-            .Where(w => w.Text.Length > 2)
+            // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
+            .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
             // 全部数字なら対象外
             .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
             .ToArray();
@@ -297,6 +298,9 @@ public sealed partial class WindowsMediaOcr(
 
     private static bool IsSpaceLang(string lang)
         => lang[..2] is not "ja" or "zh";
+
+    private static bool IsSpecialLang(string lang)
+        => lang[..2] is "ja" or "zh" or "ko" or "ru";
 
     private static int WordCount(string text)
     {
