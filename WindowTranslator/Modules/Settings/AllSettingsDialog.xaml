@@ -247,6 +247,9 @@
                             Operator="{StaticResource operator}"
                             SelectedObject="{Binding SelectedTarget}">
                             <pt:PropertyGrid.Resources>
+                                <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                    <Setter Property="Padding" Value="4,8" />
+                                </Style>
                                 <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
                             </pt:PropertyGrid.Resources>
                         </pt:PropertyGrid>
