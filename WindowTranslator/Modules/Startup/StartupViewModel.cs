@@ -103,7 +103,7 @@ public partial class StartupViewModel
                 モニターはサポート対象外です。
                 """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
             }
-            else if (p.WindowHandle == handle)
+            else if (p.PID == Environment.ProcessId)
             {
                 this.presentationService.ShowMessage($"""
                 WindowTranslator以外のウィンドウを選択してください
