@@ -215,6 +215,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public void DeleteAutoTarget(string item)
         => this.AutoTargets.Remove(item);
 
+    [RelayCommand(CanExecute = nameof(CanDeleteTargetSetting))]
+    public void DeleteTargetSetting(TargetSettingsViewModel item)
+        => this.Targets.Remove(item);
+
+    public static bool CanDeleteTargetSetting(TargetSettingsViewModel item)
+        => !string.IsNullOrEmpty(item?.Name);
+
     [RelayCommand]
     public static void OpenThirdPartyLicenses()
     {
