@@ -198,28 +198,58 @@
                             <local:SettingsPropertyGridOperator x:Key="operator" />
                         </Grid.Resources>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="200" MinWidth="120" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ui:ListView
                             Grid.Column="0"
                             Margin="4"
                             ItemsSource="{Binding Targets}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                             SelectedItem="{Binding SelectedTarget}">
                             <ui:ListView.ItemContainerStyle>
                                 <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
-                                    <Setter Property="Content" Value="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}" />
-                                    <Setter Property="Padding" Value="8" />
+                                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </ui:ListView.ItemContainerStyle>
+                            <ui:ListView.ItemTemplate>
+                                <DataTemplate DataType="local:TargetSettingsViewModel">
+                                    <DockPanel LastChildFill="True">
+                                        <ui:Button
+                                            Command="{Binding DataContext.DeleteTargetSettingCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
+                                            CommandParameter="{Binding}"
+                                            Content="{ui:SymbolIcon Delete24}"
+                                            DockPanel.Dock="Right"
+                                            Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Self}, Converter={StaticResource b2vConv}}" />
+                                        <TextBlock
+                                            Margin="8,4"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextWrapping="NoWrap" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ui:ListView.ItemTemplate>
                         </ui:ListView>
-                        <pt:PropertyGrid
+                        <GridSplitter
                             Grid.Column="1"
+                            Width="4"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Stretch"
+                            Background="{DynamicResource SeparatorBorderBrush}"
+                            ResizeBehavior="PreviousAndNext" />
+                        <pt:PropertyGrid
+                            Grid.Column="2"
                             Margin="8"
                             ControlFactory="{StaticResource factory}"
                             Operator="{StaticResource operator}"
                             SelectedObject="{Binding SelectedTarget}">
                             <pt:PropertyGrid.Resources>
+                                <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                    <Setter Property="Padding" Value="4,8" />
+                                </Style>
                                 <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
                             </pt:PropertyGrid.Resources>
                         </pt:PropertyGrid>
