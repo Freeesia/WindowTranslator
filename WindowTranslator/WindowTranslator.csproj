@@ -32,17 +32,15 @@
   <ItemGroup>
     <PackageReference Include="ColorHelper" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
-    <PackageReference Include="ksemenenko.ColorThief" />
     <PackageReference Include="MdXaml" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" >
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" >
+    <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -52,7 +50,7 @@
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="WPF-UI" />
     <PackageReference Include="WPF-UI.Tray" />
-    <PackageReference Include="WpfAnalyzers" >
+    <PackageReference Include="WpfAnalyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
