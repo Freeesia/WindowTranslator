@@ -209,7 +209,7 @@
                             ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                             SelectedItem="{Binding SelectedTarget}">
                             <ui:ListView.ItemContainerStyle>
-                                <Style TargetType="ui:ListViewItem">
+                                <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
                                     <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}" />
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
