@@ -41,6 +41,14 @@ public sealed partial class WindowsMediaOcr(
         // 画像の幅または高さがリサイズ後の幅または高さを超える場合はリサイズが必要
         var needScale = ((int)(this.scale * bitmap.PixelWidth) > bitmap.PixelWidth)
             || ((int)(this.scale * bitmap.PixelHeight) > bitmap.PixelHeight);
+
+        var newWidth = (uint)(bitmap.PixelWidth * scale);
+        var newHeight = (uint)(bitmap.PixelHeight * scale);
+        if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
+        {
+            throw new InvalidOperationException("ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。");
+        }
+
         // 拡大率に基づくリサイズ処理
         var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale) : bitmap;
 

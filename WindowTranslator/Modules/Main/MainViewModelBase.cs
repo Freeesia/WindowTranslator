@@ -123,7 +123,19 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
-        var texts = await this.ocr.RecognizeAsync(sbmp);
+        IEnumerable<TextRect> texts = [];
+        try
+        {
+            texts = await this.ocr.RecognizeAsync(sbmp);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            this.timer.DisposeAsync().Forget();
+            this.capture.StopCapture();
+            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+            return;
+        }
         {
             var tmp = texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
