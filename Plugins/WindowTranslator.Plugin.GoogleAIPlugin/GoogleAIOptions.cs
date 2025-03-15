@@ -40,10 +40,10 @@ public class GoogleAIOptions : IPluginParam
 
 public enum GoogleAIModel
 {
-    [Display(Name = "Gemini 1.5 Flash")]
+    [Display(Name = "Gemini 1.5 Flash (～2025年9月24日)")]
     Gemini15Flash,
 
-    [Display(Name = "Gemini 1.5 Pro")]
+    [Display(Name = "Gemini 1.5 Pro (～2025年9月24日)")]
     Gemini15Pro,
 
     [Display(Name = "Gemini 2.0 Flash Lite")]
@@ -59,8 +59,8 @@ public static class GoogleAIModelExtensions
     {
         GoogleAIModel.Gemini15Flash => GoogleAIModels.Gemini15Flash,
         GoogleAIModel.Gemini15Pro => GoogleAIModels.GeminiPro,
-        GoogleAIModel.Gemini20FlashLite => "gemini-2.0-flash",
-        GoogleAIModel.Gemini20Flash => "gemini-2.0-flash-lite-preview-02-05",
+        GoogleAIModel.Gemini20FlashLite => "gemini-2.0-flash-lite",
+        GoogleAIModel.Gemini20Flash => "gemini-2.0-flash",
         _ => throw new ArgumentOutOfRangeException(nameof(model)),
     };
 }
