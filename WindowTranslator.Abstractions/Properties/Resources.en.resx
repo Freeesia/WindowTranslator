@@ -123,4 +123,10 @@
   <data name="Overlay" xml:space="preserve">
     <value>overlay</value>
   </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Only while you're pressing</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Press to turn ON/OFF</value>
+  </data>
 </root>

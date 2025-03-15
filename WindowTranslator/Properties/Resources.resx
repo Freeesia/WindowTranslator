@@ -258,4 +258,10 @@
   <data name="OcrModule" xml:space="preserve">
     <value>認識モジュール</value>
   </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>ショートカット</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>オーバーレイ切り替え</value>
+  </data>
 </root>

@@ -123,4 +123,10 @@
   <data name="Overlay" xml:space="preserve">
     <value>überlagern</value>
   </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Nur während Sie drücken</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Drücken Sie, um ein-/auszuschalten</value>
+  </data>
 </root>

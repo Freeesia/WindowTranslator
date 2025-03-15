@@ -7,6 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using WindowTranslator.Controls;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
 using TextBlock = System.Windows.Controls.TextBlock;
@@ -24,6 +25,14 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             button.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
             button.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
             return button;
+        }
+
+        // MEMO: 本当は属性とか介して判定した方がいい
+        if (property.PropertyName == nameof(TargetSettingsViewModel.OverlayShortcut))
+        {
+            var shortcutBox = new ShortcutBox();
+            shortcutBox.SetBinding(TextBox.TextProperty, property.CreateBinding());
+            return shortcutBox;
         }
         return base.CreateControl(property, options);
     }
