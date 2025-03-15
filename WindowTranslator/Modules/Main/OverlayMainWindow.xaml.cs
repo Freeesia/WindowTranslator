@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
@@ -12,6 +11,7 @@ using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
 using static PInvoke.User32;
 using CommunityToolkit.Mvvm.Messaging;
+using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -26,6 +26,8 @@ public partial class OverlayMainWindow : Window
     private readonly IVirtualDesktopManager desktopManager;
     private readonly DispatcherTimer timer = new();
     private readonly ILogger<OverlayMainWindow> logger;
+    private readonly HOT_KEY_MODIFIERS shortcutModifiers;
+    private readonly int shortcutKey;
     private IntPtr windowHandle;
     private int overlayHiddenCount;
 
@@ -51,6 +53,7 @@ public partial class OverlayMainWindow : Window
 
     public OverlayMainWindow(
         IOptionsSnapshot<CommonSettings> settings,
+        IOptionsSnapshot<TargetSettings> targetSettings,
         IProcessInfoStore processInfo,
         IVirtualDesktopManager desktopManager,
         ILogger<OverlayMainWindow> logger)
@@ -63,6 +66,9 @@ public partial class OverlayMainWindow : Window
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => UpdateWindowPositionAndSize();
+
+        // Configure the shortcut modifiers based on settings
+        (this.shortcutModifiers, this.shortcutKey) = targetSettings.Value.OverlayShortcut.ToHotKey();
 #if false
         var brush = System.Windows.Media.Brushes.Red.Clone();
         brush.Opacity = 0.2;
@@ -100,7 +106,7 @@ public partial class OverlayMainWindow : Window
         SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
         this.timer.Start();
 
-        RegisterHotKey(new(this.windowHandle), 0, HOT_KEY_MODIFIERS.MOD_CONTROL | HOT_KEY_MODIFIERS.MOD_ALT, (uint)KeyInterop.VirtualKeyFromKey(Key.O));
+        RegisterHotKey(new(this.windowHandle), 0, this.shortcutModifiers, (uint)this.shortcutKey);
         var source = HwndSource.FromHwnd(this.windowHandle);
         source.AddHook(WndProc);
 

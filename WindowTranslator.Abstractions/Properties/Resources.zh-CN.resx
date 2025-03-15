@@ -123,4 +123,10 @@
   <data name="Overlay" xml:space="preserve">
     <value>覆盖物</value>
   </data>
+  <data name="Hold" xml:space="preserve">
+    <value>仅在按下</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>按打开/关闭</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -207,13 +207,6 @@
   <data name="OpenChangelogCommand" xml:space="preserve">
     <value>Details prüfen</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Recognize" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Scale" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="Hold" xml:space="preserve">
     <value>Nur während Sie drücken</value>
   </data>
@@ -264,5 +257,11 @@
   </data>
   <data name="OcrModule" xml:space="preserve">
     <value>Erkennungsmodul</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>Verknüpfungen</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>Overlay -Schalter</value>
   </data>
 </root>

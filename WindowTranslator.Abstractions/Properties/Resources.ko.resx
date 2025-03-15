@@ -123,4 +123,10 @@
   <data name="Overlay" xml:space="preserve">
     <value>오버레이</value>
   </data>
+  <data name="Hold" xml:space="preserve">
+    <value>당신이 압박하는 동안에 만</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>켜지거나 끄려면 누릅니다</value>
+  </data>
 </root>

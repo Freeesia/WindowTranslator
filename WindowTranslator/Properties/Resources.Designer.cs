@@ -295,6 +295,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   オーバーレイ切り替え に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OverlayShortcut {
+            get {
+                return ResourceManager.GetString("OverlayShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   オーバーレイ表示の切り替え(Ctrl+Alt+O) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OverlaySwitch {
@@ -363,6 +372,15 @@ namespace WindowTranslator.Properties {
         public static string SettingsViewModel {
             get {
                 return ResourceManager.GetString("SettingsViewModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ショートカット に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Shortcut {
+            get {
+                return ResourceManager.GetString("Shortcut", resourceCulture);
             }
         }
         
