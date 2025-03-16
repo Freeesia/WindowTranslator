@@ -16,7 +16,8 @@ public class GoogleAITranslator : ITranslateModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        AllowTrailingCommas = true,
     };
     private readonly string preSystem;
     private readonly string? userContext;

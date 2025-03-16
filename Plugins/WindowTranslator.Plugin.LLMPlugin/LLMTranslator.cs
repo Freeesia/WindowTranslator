@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -19,7 +17,8 @@ public class LLMTranslator : ITranslateModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        AllowTrailingCommas = true,
     };
     private static readonly ChatCompletionOptions openAiOptions = new()
     {
