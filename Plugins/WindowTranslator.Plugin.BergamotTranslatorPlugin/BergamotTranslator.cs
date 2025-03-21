@@ -1,6 +1,11 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
+using System.IO.Compression;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
+using Octokit;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.BergamotTranslatorPlugin;
@@ -34,6 +39,17 @@ public class BergamotTranslator : ITranslateModule
 
 public class BergamotValidator : ITargetSettingsValidator
 {
+    private static readonly GitHubClient GitHubClient = new(CreateHeader());
+    private const string RepoOwner = "mozilla";
+    private const string RepoName = "firefox-translations-models";
+
+    private static ProductHeaderValue CreateHeader()
+    {
+        var asm = Assembly.GetExecutingAssembly();
+        var name = asm.GetName();
+        return new(name.Name, name.Version?.ToString());
+    }
+
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
         // 翻訳モジュールで利用しない場合は無条件で有効
@@ -44,20 +60,82 @@ public class BergamotValidator : ITargetSettingsValidator
 
         var src = settings.Language.Source[..2];
         var dst = settings.Language.Target[..2];
-        var path = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}{dst}", "config.yml");
-        if (File.Exists(path))
+        var langPair = $"{src}{dst}";
+        var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
+        var configPath = Path.Combine(modelDir, "config.yml");
+
+        if (File.Exists(configPath))
         {
             return ValidateResult.Valid;
         }
 
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        Directory.CreateDirectory(modelDir);
 
-        // TODO: モデルのダウンロード
+        try
+        {
+            using var client = new HttpClient();
+            var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tmpDir);
+            var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"models/prod/{langPair}").ConfigureAwait(false);
 
-        var config = CreateConfig(string.Empty, string.Empty, string.Empty, string.Empty, "float32");
-        await File.WriteAllTextAsync(path, config).ConfigureAwait(false);
+            var files = new List<string>();
+            foreach (var content in contents)
+            {
+                var path = Path.Combine(tmpDir, content.Name);
+                using (var st = await client.GetStreamAsync(content.DownloadUrl).ConfigureAwait(false))
+                {
+                    await using var fs = File.Create(path);
+                    await st.CopyToAsync(fs).ConfigureAwait(false);
+                }
+                if (Path.GetExtension(path) == ".gz")
+                {
+                    var dstPath = Path.Combine(modelDir, Path.GetFileNameWithoutExtension(content.Name));
+                    using var st = File.OpenRead(path);
+                    using var gz = new GZipStream(st, CompressionMode.Decompress);
+                    using var fs = File.Create(dstPath);
+                    await gz.CopyToAsync(fs).ConfigureAwait(false);
+                    files.Add(Path.GetFileNameWithoutExtension(content.Name));
+                }
+                else
+                {
+                    var dstPath = Path.Combine(modelDir, content.Name);
+                    File.Move(path, dstPath, true);
+                    files.Add(content.Name);
+                }
+            }
 
-        return ValidateResult.Valid;
+            var modelPath = files.FirstOrDefault(f => f.StartsWith("model"));
+            var vocabPath = files.FirstOrDefault(f => f.StartsWith("vocab"));
+            var srcVocabPath = files.FirstOrDefault(f => f.Contains("srcvocab"));
+            var trgVocabPath = files.FirstOrDefault(f => f.Contains("trgvocab"));
+            var shortListPath = files.FirstOrDefault(f => f.StartsWith("lex"));
+
+            var config = CreateConfig(
+                modelPath ?? throw new InvalidOperationException("modelデータが存在しません"),
+                srcVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
+                trgVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
+                shortListPath ?? throw new InvalidOperationException("shortListデータが存在しません"),
+                modelPath.Split('.') switch
+                {
+                    [.., "intgemm", "alphas", "bin"] => "int8shiftAlphaAll",
+                    [.., "intgemm8", "bin"] => "int8shiftAll",
+                    _ => throw new InvalidOperationException($"Unknown model name pattern: ${modelPath}")
+                });
+            await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
+
+            return ValidateResult.Valid;
+        }
+        catch (NotFoundException)
+        {
+            var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
+            var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
+            return ValidateResult.Invalid("Bergamot モデル", $"{srcLang}、{dstLang}の言語ペアのモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+        }
+        catch (Exception ex)
+        {
+            return ValidateResult.Invalid("Bergamot モデル",
+                $"モデルファイルのダウンロードに失敗しました。\n{ex.Message}");
+        }
     }
 
     private static string CreateConfig(string modelPath, string srcVocabPath, string trgVocabPath, string shortListPath, string precision) => $"""
