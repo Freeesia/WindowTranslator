@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
 using Octokit;
@@ -73,7 +73,6 @@ public class BergamotValidator : ITargetSettingsValidator
 
         try
         {
-            using var client = new HttpClient();
             var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tmpDir);
             var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"models/prod/{langPair}").ConfigureAwait(false);
@@ -82,11 +81,8 @@ public class BergamotValidator : ITargetSettingsValidator
             foreach (var content in contents)
             {
                 var path = Path.Combine(tmpDir, content.Name);
-                using (var st = await client.GetStreamAsync(content.DownloadUrl).ConfigureAwait(false))
-                {
-                    await using var fs = File.Create(path);
-                    await st.CopyToAsync(fs).ConfigureAwait(false);
-                }
+                var url = $"https://media.githubusercontent.com/media/{RepoOwner}/{RepoName}/refs/heads/main/{content.Path}";
+                await GitHubClient.DownloadFileAsync(new(url), path).ConfigureAwait(false);
                 if (Path.GetExtension(path) == ".gz")
                 {
                     var dstPath = Path.Combine(modelDir, Path.GetFileNameWithoutExtension(content.Name));
@@ -166,4 +162,16 @@ public class BergamotValidator : ITargetSettingsValidator
         gemm-precision: {precision}
         alignment: soft
         """;
+}
+
+file static class Extensions
+{
+    public static async ValueTask DownloadFileAsync(this GitHubClient client, Uri url, string path)
+    {
+        var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
+        res.HttpResponse.IsSuccessStatusCode();
+        using var st = res.Body;
+        await using var fs = File.Create(path);
+        await st.CopyToAsync(fs).ConfigureAwait(false);
+    }
 }
