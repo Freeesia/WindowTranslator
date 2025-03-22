@@ -13,7 +13,7 @@ namespace WindowTranslator.Plugin.BergamotTranslatorPlugin;
 
 [DefaultModule]
 [DisplayName("Bergamot")]
-public class BergamotTranslator : ITranslateModule
+public sealed class BergamotTranslator : ITranslateModule, IDisposable
 {
     private readonly BlockingService service;
 
@@ -24,6 +24,9 @@ public class BergamotTranslator : ITranslateModule
         var path = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}{dst}", "config.yml");
         this.service = new BlockingService(path);
     }
+
+    public void Dispose()
+        => this.service.Dispose();
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => await Task.Run(() => Translate(srcTexts)).ConfigureAwait(false);
