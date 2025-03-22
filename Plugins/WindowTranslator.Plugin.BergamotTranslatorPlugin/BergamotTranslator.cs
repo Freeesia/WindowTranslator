@@ -6,10 +6,12 @@ using System.Reflection;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
 using Octokit;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.BergamotTranslatorPlugin;
 
+[DefaultModule]
 [DisplayName("Bergamot")]
 public class BergamotTranslator : ITranslateModule
 {
