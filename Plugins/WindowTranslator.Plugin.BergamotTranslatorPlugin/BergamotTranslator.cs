@@ -22,7 +22,20 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
         var path = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}{dst}", "config.yml");
-        this.service = new BlockingService(path);
+        if (File.Exists(path))
+        {
+            this.service = new BlockingService(path);
+        }
+        var path1 = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}en", "config.yml");
+        var path2 = Path.Combine(PathUtility.UserDir, "bergamot", $"en{dst}", "config.yml");
+        if (File.Exists(path1) && File.Exists(path2))
+        {
+            this.service = new BlockingService(path1, path2);
+        }
+        else
+        {
+            throw new Exception("Bergamot モデルが存在しないため、翻訳できません。");
+        }
     }
 
     public void Dispose()
@@ -65,21 +78,52 @@ public class BergamotValidator : ITargetSettingsValidator
 
         var src = settings.Language.Source[..2];
         var dst = settings.Language.Target[..2];
+
+        try
+        {
+            if (await DownloadIfNotExists(src, dst).ConfigureAwait(false))
+            {
+                return ValidateResult.Valid;
+            }
+
+            if (!await DownloadIfNotExists(src, "en").ConfigureAwait(false))
+            {
+                var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"{srcLang}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+            }
+            if (!await DownloadIfNotExists("en", dst).ConfigureAwait(false))
+            {
+                var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"{dstLang}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+            }
+
+            return ValidateResult.Valid;
+        }
+        catch (Exception ex)
+        {
+            return ValidateResult.Invalid("Bergamot モデル",
+                $"モデルファイルのダウンロードに失敗しました。\n{ex.Message}");
+        }
+    }
+
+    private static async ValueTask<bool> DownloadIfNotExists(string src, string dst)
+    {
         var langPair = $"{src}{dst}";
         var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
         var configPath = Path.Combine(modelDir, "config.yml");
 
         if (File.Exists(configPath))
         {
-            return ValidateResult.Valid;
+            return true;
         }
 
         Directory.CreateDirectory(modelDir);
 
+        var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(tmpDir);
+
         try
         {
-            var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tmpDir);
             var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"models/prod/{langPair}").ConfigureAwait(false);
 
             var files = new List<string>();
@@ -123,20 +167,12 @@ public class BergamotValidator : ITargetSettingsValidator
                     _ => throw new InvalidOperationException($"Unknown model name pattern: ${modelPath}")
                 });
             await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
-
-            return ValidateResult.Valid;
         }
         catch (NotFoundException)
         {
-            var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
-            var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
-            return ValidateResult.Invalid("Bergamot モデル", $"{srcLang}、{dstLang}の言語ペアのモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+            return false;
         }
-        catch (Exception ex)
-        {
-            return ValidateResult.Invalid("Bergamot モデル",
-                $"モデルファイルのダウンロードに失敗しました。\n{ex.Message}");
-        }
+        return true;
     }
 
     private static string CreateConfig(string modelPath, string srcVocabPath, string trgVocabPath, string shortListPath, string precision) => $"""
