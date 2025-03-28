@@ -25,17 +25,16 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         if (File.Exists(path))
         {
             this.service = new BlockingService(path);
+            return;
         }
         var path1 = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}en", "config.yml");
         var path2 = Path.Combine(PathUtility.UserDir, "bergamot", $"en{dst}", "config.yml");
         if (File.Exists(path1) && File.Exists(path2))
         {
             this.service = new BlockingService(path1, path2);
+            return;
         }
-        else
-        {
-            throw new Exception("Bergamot モデルが存在しないため、翻訳できません。");
-        }
+        throw new Exception("Bergamot モデルが存在しないため、翻訳できません。");
     }
 
     public void Dispose()
