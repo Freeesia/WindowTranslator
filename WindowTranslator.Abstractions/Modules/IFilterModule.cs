@@ -17,13 +17,28 @@ public interface IFilterModule
     /// 翻訳前に行うフィルター処理
     /// </summary>
     /// <param name="texts">処理対象のテキスト</param>
+    /// <param name="context">コンテキスト</param>
     /// <returns>フィンルター後のテキスト</returns>
-    IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts);
+    IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context);
 
     /// <summary>
     /// 翻訳後に行うフィルター処理
     /// </summary>
     /// <param name="texts">処理対象のテキスト</param>
+    /// <param name="context">コンテキスト</param>
     /// <returns>フィンルター後のテキスト</returns>
-    IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts);
+    IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context);
+}
+
+/// <summary>
+/// フィルター処理の文脈
+/// </summary>
+public record FilterContext
+{
+#if WINDOWS
+    /// <summary>
+    /// 認識した画像
+    /// </summary>
+    public required Windows.Graphics.Imaging.SoftwareBitmap SoftwareBitmap { get; init; }
+#endif
 }
