@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Quickenshtein;
@@ -17,7 +17,7 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
     {
         if (this.bufferSize <= 0)
         {
-            await foreach (var text in texts)
+            await foreach (var text in texts.ConfigureAwait(false))
             {
                 yield return text;
             }
@@ -48,8 +48,14 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
         }
 
         // 現在のテキストを列挙しながら処理
-        await foreach (var text in texts)
+        await foreach (var text in texts.ConfigureAwait(false))
         {
+            // 過去のバッファ内に類似するテキストがあるか確認
+            if (bufferedTexts.FirstOrDefault(bufferedText => AreSimilar(bufferedText, text)) is { } similarPastText)
+            {
+                // 過去のバッファのテキストサイズを使用して新しい TextRect を作成
+                text = text with { FontSize = similarPastText.FontSize };
+            }
             currentTextsList.Add(text);
             yield return text;
         }
@@ -103,7 +109,6 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
 
         return xDiff < 10 && yDiff < 10 && widthDiff < 10 && heightDiff < 10;
     }
-
 }
 
 file class ListPolicy : IPooledObjectPolicy<List<TextRect>>
