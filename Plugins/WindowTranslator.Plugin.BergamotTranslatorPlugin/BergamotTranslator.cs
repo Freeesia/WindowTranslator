@@ -42,7 +42,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     }
 
     public void Dispose()
-        => this.service.Dispose();
+        => this.service?.Dispose();
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => await Task.Run(() => Translate(srcTexts)).ConfigureAwait(false);
