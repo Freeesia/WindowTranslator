@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
 using Octokit;
@@ -19,6 +20,10 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
 
     public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions)
     {
+        if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+        {
+            throw new Exception($"ご利用のPCではBergamotを利用できません");
+        }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
         var path = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}{dst}", "config.yml");
@@ -73,6 +78,11 @@ public class BergamotValidator : ITargetSettingsValidator
         if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(BergamotTranslator))
         {
             return ValidateResult.Valid;
+        }
+
+        if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+        {
+            return ValidateResult.Invalid("対象外のPC", $"ご利用のPCではBergamotを利用できません");
         }
 
         var src = settings.Language.Source[..2];
