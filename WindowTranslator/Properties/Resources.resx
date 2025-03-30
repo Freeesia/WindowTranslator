@@ -214,7 +214,7 @@
     <value>押してON/OFFを切り替える</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>オーバーレイ表示の切り替え(Ctrl+Alt+O)</value>
+    <value>オーバーレイ表示の切り替え</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>オーバーレイ表示をキャプチャー可能にする</value>

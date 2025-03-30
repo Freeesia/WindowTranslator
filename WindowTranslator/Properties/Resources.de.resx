@@ -214,7 +214,7 @@
     <value>Drücken Sie, um ein-/auszuschalten</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Überlagerungsanzeige (Strg+Alt+O) umschalten</value>
+    <value>Überlagerungsanzeige umschalten</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>Machen Sie Overlay -Anzeigen faszinierbar</value>
