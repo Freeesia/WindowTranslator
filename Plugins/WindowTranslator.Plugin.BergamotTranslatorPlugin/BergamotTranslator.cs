@@ -93,6 +93,12 @@ public class BergamotValidator : ITargetSettingsValidator
             {
                 return ValidateResult.Valid;
             }
+            else if (src == "en" || dst == "en")
+            {
+                var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
+                var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"No model data was found that can be translated from {srcLang} to {dstLang}. Translation is not available for this language pair.");
+            }
 
             if (!await DownloadIfNotExists(src, "en").ConfigureAwait(false))
             {
