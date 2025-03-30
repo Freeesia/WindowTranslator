@@ -214,7 +214,7 @@
     <value>按打開/關閉</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>切換覆蓋顯示（CTRL+ALT+O）</value>
+    <value>切換覆蓋顯示</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>使疊加顯示可捕獲</value>

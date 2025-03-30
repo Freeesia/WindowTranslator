@@ -304,7 +304,7 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   オーバーレイ表示の切り替え(Ctrl+Alt+O) に類似しているローカライズされた文字列を検索します。
+        ///   オーバーレイ表示の切り替え に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OverlaySwitch {
             get {
