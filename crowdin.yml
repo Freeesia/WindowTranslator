@@ -1,3 +1,7 @@
 files:
   - source: /**/Properties/Resources.resx
     translation: /**/Properties/Resources.%two_letters_code%.resx
+  - source: /docs/README.md
+    translation: /docs/README.%two_letters_code%.md
+  - source: /docs/PrivacyPolicy.md
+    translation: /docs/PrivacyPolicy.%two_letters_code%.md
