@@ -20,8 +20,4 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\Plugins\WindowTranslator.Plugin.GoogleAIPlugin\GenerativeModelEx.cs" />
-  </ItemGroup>
-
 </Project>
