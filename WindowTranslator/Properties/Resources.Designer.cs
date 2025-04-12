@@ -500,5 +500,140 @@ namespace WindowTranslator.Properties {
                 return ResourceManager.GetString("YPosThrethold", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   新しいバージョン: {0} がリリースされました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NewVersionAvailable {
+            get {
+                return ResourceManager.GetString("NewVersionAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   新しいバージョン: {0} のインストール に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InstallNewVersion {
+            get {
+                return ResourceManager.GetString("InstallNewVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   更新内容の確認 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CheckUpdateNotes {
+            get {
+                return ResourceManager.GetString("CheckUpdateNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   新しいバージョンのチェック に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CheckNewVersion {
+            get {
+                return ResourceManager.GetString("CheckNewVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   キャンセル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   PC起動時に自動起動 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AutoStartWithPC {
+            get {
+                return ResourceManager.GetString("AutoStartWithPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   全般設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string GeneralSettings {
+            get {
+                return ResourceManager.GetString("GeneralSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   表示方法 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DisplayMethod {
+            get {
+                return ResourceManager.GetString("DisplayMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   対象ごとの設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TargetSpecificSettings {
+            get {
+                return ResourceManager.GetString("TargetSpecificSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   バージョン に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ビルド日時 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string BuildDate {
+            get {
+                return ResourceManager.GetString("BuildDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   開発者 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DevelopedBy {
+            get {
+                return ResourceManager.GetString("DevelopedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   公開ページ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string PublishPage {
+            get {
+                return ResourceManager.GetString("PublishPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ライセンス に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string License {
+            get {
+                return ResourceManager.GetString("License", resourceCulture);
+            }
+        }
     }
 }
