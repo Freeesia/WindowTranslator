@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Capture" xml:space="preserve">
-    <value>キャプチャーウィンドウ</value>
+    <value>Chụp cửa sổ</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>オーバレイ</value>
+    <value>Lớp phủ</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>押している間だけ</value>
+    <value>Chỉ khi bạn đang nhấn</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>押してON/OFFを切り替える</value>
+    <value>Nhấn để bật/tắt</value>
   </data>
 </root>
