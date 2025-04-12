@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>capture window</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>execute</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>Start the app automatically</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>Unlock the app automatically</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>In-memory cache</value>
   </data>
