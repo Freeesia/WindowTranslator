@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>擷取視窗</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>執行</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>自動啟動應用程式</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>自動解鎖應用程式</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>記憶體中快取</value>
   </data>
