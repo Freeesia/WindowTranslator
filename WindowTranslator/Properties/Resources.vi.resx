@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>Chụp cửa sổ</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>thực thi</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>Tự động khởi động ứng dụng</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>Tự động không hỗ trợ ứng dụng</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>Bộ nhớ cache trong bộ nhớ</value>
   </data>
