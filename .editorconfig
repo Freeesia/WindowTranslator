@@ -160,3 +160,8 @@ indent_size = 2
 charset = utf-8-bom
 end_of_line = crlf
 indent_size = 2
+
+[*.bat]
+charset = latin1
+end_of_line = crlf
+indent_size = 2
