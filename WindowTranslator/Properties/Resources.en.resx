@@ -264,4 +264,49 @@
   <data name="OverlayShortcut" xml:space="preserve">
     <value>Overlay switch</value>
   </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>新しいバージョン: {0} がリリースされました</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>新しいバージョン: {0} のインストール</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>更新内容の確認</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>新しいバージョンのチェック</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>PC起動時に自動起動</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>全般設定</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>表示方法</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>対象ごとの設定</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>バージョン</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>ビルド日時</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>開発者</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>公開ページ</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>ライセンス</value>
+  </data>
 </root>
