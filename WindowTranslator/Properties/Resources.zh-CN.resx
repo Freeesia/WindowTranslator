@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>捕获窗口</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>执行</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>自动启动应用</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>自动解锁应用</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>内存缓存</value>
   </data>

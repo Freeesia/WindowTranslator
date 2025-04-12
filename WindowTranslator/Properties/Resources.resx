@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>キャプチャーウィンドウ</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>実行</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>アプリを自動的に起動する</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>アプリの自動起動を解除</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>メモリ内キャッシュ</value>
   </data>

@@ -147,30 +147,6 @@
   <data name="Plugin" xml:space="preserve">
     <value>Cài đặt plugin</value>
   </data>
-  <data name="Language" xml:space="preserve">
-    <value>Cài đặt ngôn ngữ</value>
-  </data>
-  <data name="Overlay" xml:space="preserve">
-    <value>Lớp phủ</value>
-  </data>
-  <data name="Capture" xml:space="preserve">
-    <value>Chụp cửa sổ</value>
-  </data>
-  <data name="Run" xml:space="preserve">
-    <value>thực thi</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>Tự động khởi động ứng dụng</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>Tự động không hỗ trợ ứng dụng</value>
-  </data>
-  <data name="InMemoryCache" xml:space="preserve">
-    <value>Bộ nhớ cache trong bộ nhớ</value>
-  </data>
-  <data name="LocalCache" xml:space="preserve">
-    <value>Bộ đệm tệp cục bộ</value>
-  </data>
   <data name="Settings" xml:space="preserve">
     <value>cài đặt</value>
   </data>

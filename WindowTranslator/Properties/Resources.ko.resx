@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>캡처 창</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>실행</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>앱을 자동으로 시작하세요</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>앱을 자동으로 잠금 해제하세요</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>인메모리 캐시</value>
   </data>

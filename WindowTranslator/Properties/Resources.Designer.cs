@@ -331,24 +331,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   アプリを自動的に起動する に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string RegisterToStartupCommand {
-            get {
-                return ResourceManager.GetString("RegisterToStartupCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   実行 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string Run {
-            get {
-                return ResourceManager.GetString("Run", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   拡大率 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Scale {
@@ -435,15 +417,6 @@ namespace WindowTranslator.Properties {
         public static string TranslateModule {
             get {
                 return ResourceManager.GetString("TranslateModule", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   アプリの自動起動を解除 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string UnregisterFromStartupCommand {
-            get {
-                return ResourceManager.GetString("UnregisterFromStartupCommand", resourceCulture);
             }
         }
         
