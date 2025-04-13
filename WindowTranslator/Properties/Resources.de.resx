@@ -256,48 +256,48 @@
     <value>Overlay -Schalter</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>新しいバージョン: {0} がリリースされました</value>
+    <value>neue Version: {0} ist erschienen</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>新しいバージョン: {0} のインストール</value>
+    <value>Neue Version: {0} installieren</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>更新内容の確認</value>
+    <value>Aktualisierungsübersicht</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>新しいバージョンのチェック</value>
+    <value>neue Version prüfen</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>キャンセル</value>
+    <value>Stornierung</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>PC起動時に自動起動</value>
+    <value>PC-Startvorgang beim Hochfahren automatisch starten</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>全般設定</value>
+    <value>Allgemeine Einstellungen</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>表示方法</value>
+    <value>Anzeigemethode</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>対象ごとの設定</value>
+    <value>objektspezifische Einstellungen</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>バージョン</value>
+    <value>Version</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>ビルド日時</value>
+    <value>Builddatum</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>開発者</value>
+    <value>Entwickler</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>公開ページ</value>
+    <value>öffentliche Seite</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>ライセンス</value>
+    <value>Lizenz</value>
   </data>
 </root>
