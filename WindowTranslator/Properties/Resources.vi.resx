@@ -256,48 +256,48 @@
     <value>Công tắc lớp phủ</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>新しいバージョン: {0} がリリースされました</value>
+    <value>Phiên bản mới {0} đã được phát hành.</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>新しいバージョン: {0} のインストール</value>
+    <value>Phiên bản mới: {0} đã được cài đặt</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>更新内容の確認</value>
+    <value>Kiểm tra các thay đổi</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>新しいバージョンのチェック</value>
+    <value>Phiên bản mới được kiểm tra</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>キャンセル</value>
+    <value>hủy bỏ</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>PC起動時に自動起動</value>
+    <value>Khởi động tự động khi khởi động máy tính</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>全般設定</value>
+    <value>Cài đặt chung</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>表示方法</value>
+    <value>hiển thị</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>対象ごとの設定</value>
+    <value>Đối với từng đối tượng</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>バージョン</value>
+    <value>phiên bản</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>ビルド日時</value>
+    <value>Thời gian xây dựng</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>開発者</value>
+    <value>nhà phát triển</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>公開ページ</value>
+    <value>trang công khai</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>ライセンス</value>
+    <value>giấy phép</value>
   </data>
 </root>
