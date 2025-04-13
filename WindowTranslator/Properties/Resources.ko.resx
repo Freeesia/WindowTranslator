@@ -60,45 +60,45 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string"/>
-              <xsd:attribute name="type" type="xsd:string"/>
-              <xsd:attribute name="mimetype" type="xsd:string"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string"/>
-              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -256,48 +256,48 @@
     <value>오버레이 스위치</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>新しいバージョン: {0} がリリースされました</value>
+    <value>새 버전 {0}이 출시되었습니다.</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>新しいバージョン: {0} のインストール</value>
+    <value>새 버전 {0} 설치</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>更新内容の確認</value>
+    <value>업데이트 내용 확인</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>新しいバージョンのチェック</value>
+    <value>새 버전 확인</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>キャンセル</value>
+    <value>취소</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>알았어요</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>PC起動時に自動起動</value>
+    <value>PC 부팅 시 자동 시작</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>全般設定</value>
+    <value>전체 설정</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>表示方法</value>
+    <value>표시 방법</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>対象ごとの設定</value>
+    <value>対象별 설정</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>バージョン</value>
+    <value>버전</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>ビルド日時</value>
+    <value>빌드 날짜</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>開発者</value>
+    <value>개발자</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>公開ページ</value>
+    <value>공개 페이지</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>ライセンス</value>
+    <value>라이선스</value>
   </data>
 </root>
