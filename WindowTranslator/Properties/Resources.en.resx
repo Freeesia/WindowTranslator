@@ -256,7 +256,7 @@
     <value>Overlay switch</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>A new version, {0}, has been released.</value>
+    <value>A new version, {0}, has been released</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
     <value>New version {0} installation</value>
@@ -274,7 +274,7 @@
     <value>OK</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>Automatically start at system boot.</value>
+    <value>Automatically start at system boot</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>General settings</value>
