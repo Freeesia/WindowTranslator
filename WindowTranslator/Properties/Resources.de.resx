@@ -289,7 +289,7 @@
     <value>Version</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Builddatum</value>
+    <value>Erstellungsdatum</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
     <value>Entwickler</value>
