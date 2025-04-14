@@ -256,7 +256,7 @@
     <value>오버레이 스위치</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>새 버전 {0}이 출시되었습니다.</value>
+    <value>새 버전 {0}이 출시되었습니다</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
     <value>새 버전 {0} 설치</value>
