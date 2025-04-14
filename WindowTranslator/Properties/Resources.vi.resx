@@ -256,7 +256,7 @@
     <value>Công tắc lớp phủ</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>Phiên bản mới {0} đã được phát hành.</value>
+    <value>Phiên bản mới {0} đã được phát hành</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
     <value>Phiên bản mới: {0} đã được cài đặt</value>
