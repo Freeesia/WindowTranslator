@@ -277,7 +277,7 @@
     <value>電腦開機時自動啟動</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>全般設定</value>
+    <value>一般設定</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
     <value>顯示方式</value>
