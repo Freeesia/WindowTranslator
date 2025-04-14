@@ -256,7 +256,7 @@
     <value>覆蓋開關</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>新的版本：{0} 已發布。</value>
+    <value>新的版本：{0} 已發布</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
     <value>新的版本：{0} 的安裝</value>
