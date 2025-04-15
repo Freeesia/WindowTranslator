@@ -283,7 +283,7 @@
     <value>표시 방법</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>対象별 설정</value>
+    <value>대상별 설정</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>버전</value>
