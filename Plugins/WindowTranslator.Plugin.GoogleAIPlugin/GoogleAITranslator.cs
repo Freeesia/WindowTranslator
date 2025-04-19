@@ -4,7 +4,8 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using CsvHelper;
 using CsvHelper.Configuration;
-using GenerativeAI.Helpers;
+using GenerativeAI;
+using GenerativeAI.Exceptions;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,15 +15,10 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 public class GoogleAITranslator : ITranslateModule
 {
-    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        AllowTrailingCommas = true,
-    };
     private readonly string preSystem;
     private readonly string? userContext;
     private readonly string postSystem;
-    private readonly GenerativeModelEx? client;
+    private readonly GenerativeModel? client;
     private readonly ILogger<GoogleAITranslator> logger;
     private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
     private IReadOnlyList<string> common = [];
@@ -61,24 +57,15 @@ public class GoogleAITranslator : ITranslateModule
         {
             return;
         }
-        this.client = new(
-            apiKey,
-            new()
-            {
-                Model = string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
-                GenerationConfig = new GenerationConfigEx()
-                {
-                    Temperature = 2.0,
-                    StopSequences = ["\"]"],
-                    ResponseMimeType = "application/json",
-                },
-                SafetySettings = [
-                    new(){ Category = HarmCategory.HARM_CATEGORY_HARASSMENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
-                    new(){ Category = HarmCategory.HARM_CATEGORY_HATE_SPEECH, Threshold =HarmBlockThreshold.BLOCK_NONE},
-                    new(){ Category = HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, Threshold =HarmBlockThreshold.BLOCK_NONE},
-                    new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
-                ]
-            });
+        var googleAI = new GoogleAi(apiKey, logger: logger);
+        this.client = googleAI.CreateGenerativeModel(
+            string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
+            safetyRatings: [
+                new(){ Category = HarmCategory.HARM_CATEGORY_HARASSMENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                new(){ Category = HarmCategory.HARM_CATEGORY_HATE_SPEECH, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                new(){ Category = HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
+            ]);
 
         if (File.Exists(googleAiOptions.Value.GlossaryPath))
         {
@@ -124,13 +111,13 @@ public class GoogleAITranslator : ITranslateModule
         }
 
         var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
-        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions);
+        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), DefaultSerializerOptions.GenerateObjectJsonOptions);
         this.logger.LogDebug($"""
-                    System:
-                    {system}
-                    Contents:
-                    {content}
-                    """);
+            System:
+            {system}
+            Contents:
+            {content}
+            """);
         var req = new GenerateContentRequest()
         {
             SystemInstruction = RequestExtensions.FormatSystemInstruction(system),
@@ -140,22 +127,23 @@ public class GoogleAITranslator : ITranslateModule
         {
             try
             {
-                var completion = await this.client.GenerateContentAsync(req).ConfigureAwait(false);
-                return completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion.Text() + "\"]", jsonOptions) ?? [];
+                //return await this.client.GenerateObjectAsync<string[]>(req).ConfigureAwait(false) ?? [];
+                var res = await this.client.GenerateContentAsync<string[]>(req).ConfigureAwait(false);
+                return res.ToObject<string[]>() ?? [];
             }
-            catch (GenerativeAIExException e) when (e.Error.Code == 400)
+            catch (ApiException e) when (e.ErrorCode == 400)
             {
-                throw new GenerativeAIExException(e.Error with { Message = "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください" });
+                throw new ApiException(e.ErrorCode, "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
             }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
-            catch (GenerativeAIExException e) when (e.Error.Code == 503)
+            catch (ApiException e) when (e.ErrorCode == 503)
             {
                 this.logger.LogWarning("GoogleAIのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
                 await Task.Delay(500).ConfigureAwait(false);
                 continue;
             }
             // レート制限を超えました。
-            catch (GenerativeAIExException e) when (e.Error.Code == 429)
+            catch (ApiException e) when (e.ErrorCode == 429)
             {
                 this.logger.LogWarning("GoogleAIのレート制限を超えました。10秒待機して再試行します。");
                 await Task.Delay(10000).ConfigureAwait(false);

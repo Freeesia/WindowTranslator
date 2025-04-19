@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
 using Octokit;
@@ -20,7 +19,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
 
     public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions)
     {
-        if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+        if (!SystemUtility.IsX64Machine())
         {
             throw new Exception($"ご利用のPCではBergamotを利用できません");
         }
@@ -43,7 +42,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     }
 
     public void Dispose()
-        => this.service.Dispose();
+        => this.service?.Dispose();
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => await Task.Run(() => Translate(srcTexts)).ConfigureAwait(false);
@@ -80,7 +79,7 @@ public class BergamotValidator : ITargetSettingsValidator
             return ValidateResult.Valid;
         }
 
-        if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+        if (!SystemUtility.IsX64Machine())
         {
             return ValidateResult.Invalid("対象外のPC", $"ご利用のPCではBergamotを利用できません");
         }
@@ -93,6 +92,12 @@ public class BergamotValidator : ITargetSettingsValidator
             if (await DownloadIfNotExists(src, dst).ConfigureAwait(false))
             {
                 return ValidateResult.Valid;
+            }
+            else if (src == "en" || dst == "en")
+            {
+                var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
+                var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"No model data was found that can be translated from {srcLang} to {dstLang}. Translation is not available for this language pair.");
             }
 
             if (!await DownloadIfNotExists(src, "en").ConfigureAwait(false))

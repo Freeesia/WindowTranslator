@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Capture" xml:space="preserve">
-    <value>擷取視窗</value>
+    <value>Chụp cửa sổ</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>重疊</value>
+    <value>Lớp phủ</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>僅在按下</value>
+    <value>Chỉ khi bạn đang nhấn</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>按打開/關閉</value>
+    <value>Nhấn để bật/tắt</value>
   </data>
 </root>

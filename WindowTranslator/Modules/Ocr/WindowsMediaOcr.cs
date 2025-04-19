@@ -34,6 +34,7 @@ public sealed partial class WindowsMediaOcr(
             ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     private readonly ILogger<WindowsMediaOcr> logger = logger;
     private readonly InMemoryRandomAccessStream resizeStream = new();
+    private readonly CancellationTokenSource cts = new();
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
@@ -50,10 +51,12 @@ public sealed partial class WindowsMediaOcr(
         }
 
         // 拡大率に基づくリサイズ処理
-        var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale) : bitmap;
+        var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale, this.cts.Token) : bitmap;
+        this.cts.Token.ThrowIfCancellationRequested();
 
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
+        this.cts.Token.ThrowIfCancellationRequested();
         t.Dispose();
 
         // 角度と中心座標を取得
@@ -131,7 +134,7 @@ public sealed partial class WindowsMediaOcr(
             .ToArray();
     }
 
-    private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale)
+    private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale, CancellationToken token)
     {
         using var l = this.logger.LogDebugTime("Resizing Bitmap");
         var newWidth = (uint)(source.PixelWidth * scale);
@@ -139,14 +142,17 @@ public sealed partial class WindowsMediaOcr(
 
         this.resizeStream.Seek(0);
         var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, resizeStream);
+        token.ThrowIfCancellationRequested();
         encoder.SetSoftwareBitmap(source);
         encoder.BitmapTransform.InterpolationMode = scale > 1 ? BitmapInterpolationMode.Cubic : BitmapInterpolationMode.Fant;
         encoder.BitmapTransform.ScaledWidth = newWidth;
         encoder.BitmapTransform.ScaledHeight = newHeight;
         await encoder.FlushAsync();
+        token.ThrowIfCancellationRequested();
         this.resizeStream.Seek(0);
 
         var decoder = await BitmapDecoder.CreateAsync(resizeStream);
+        token.ThrowIfCancellationRequested();
         return await decoder.GetSoftwareBitmapAsync(source.BitmapPixelFormat, source.BitmapAlphaMode);
     }
 
@@ -363,7 +369,10 @@ public sealed partial class WindowsMediaOcr(
     private static partial Regex IsIgnoreLine();
 
     public void Dispose()
-        => this.resizeStream.Dispose();
+    {
+        this.cts.Cancel();
+        this.resizeStream.Dispose();
+    }
 }
 
 file record WordRect(string Text, double X, double Y, double Width, double Height)

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using GenerativeAI.Models;
+using GenerativeAI;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.Modules;
 
@@ -31,7 +31,7 @@ public class GoogleAIOptions : IPluginParam
     [DataType(DataType.MultilineText)]
     [DisplayName("翻訳時に利用する文脈情報")]
     public string? TranslateContext { get; set; }
-    
+
     [DisplayName("用語集パス")]
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
@@ -58,9 +58,9 @@ public static class GoogleAIModelExtensions
     public static string GetName(this GoogleAIModel model) => model switch
     {
         GoogleAIModel.Gemini15Flash => GoogleAIModels.Gemini15Flash,
-        GoogleAIModel.Gemini15Pro => GoogleAIModels.GeminiPro,
-        GoogleAIModel.Gemini20FlashLite => "gemini-2.0-flash-lite",
-        GoogleAIModel.Gemini20Flash => "gemini-2.0-flash",
+        GoogleAIModel.Gemini15Pro => GoogleAIModels.Gemini15Pro,
+        GoogleAIModel.Gemini20FlashLite => "models/gemini-2.0-flash-lite",
+        GoogleAIModel.Gemini20Flash => "models/gemini-2.0-flash",
         _ => throw new ArgumentOutOfRangeException(nameof(model)),
     };
 }

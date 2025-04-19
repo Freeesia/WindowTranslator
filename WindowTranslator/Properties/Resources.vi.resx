@@ -118,189 +118,189 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Source" xml:space="preserve">
-    <value>Ursprüngliche (anerkannte) Sprache</value>
+    <value>Dịch (công nhận) ngôn ngữ</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>Zielsprache (Anzeige)</value>
+    <value>Ngôn ngữ dịch</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>Auswahl der Übersetzungsmodule</value>
+    <value>Mô -đun dịch</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>Auswahl des Cache-Moduls</value>
+    <value>Mô -đun bộ đệm</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
-    <value>Anzeigemodus für das Übersetzungsergebnis</value>
+    <value>Chế độ hiển thị kết quả dịch</value>
   </data>
   <data name="AutoTargets" xml:space="preserve">
-    <value>Ziel der automatischen Übersetzung</value>
+    <value>Mục tiêu dịch tự động</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Sobald ein Prozess zur Übersetzung ausgewählt wurde, wird er automatisch übersetzt, wenn er gestartet wird</value>
+    <value>Dịch tự động khi quá trình đã chọn được bắt đầu sau khi nó được chọn để dịch.</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
-    <value>Allgemeine Einstellung</value>
+    <value>Cài đặt tổng thể</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>Sonstiges</value>
+    <value>người khác</value>
   </data>
   <data name="Plugin" xml:space="preserve">
-    <value>Plug-in-Einstellungen</value>
+    <value>Cài đặt plugin</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Spracheinstellungen</value>
+    <value>Cài đặt ngôn ngữ</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>überlagern</value>
+    <value>Lớp phủ</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>Aufnahmefenster</value>
+    <value>Chụp cửa sổ</value>
   </data>
   <data name="InMemoryCache" xml:space="preserve">
-    <value>In-Memory-Cache</value>
+    <value>Bộ nhớ cache trong bộ nhớ</value>
   </data>
   <data name="LocalCache" xml:space="preserve">
-    <value>Lokaler Datei-Cache</value>
+    <value>Bộ đệm tệp cục bộ</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>cài đặt</value>
   </data>
   <data name="Attach" xml:space="preserve">
-    <value>Anfügen</value>
+    <value>gắn</value>
   </data>
   <data name="Detach" xml:space="preserve">
-    <value>Lösen</value>
+    <value>Tách rời</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>Ende</value>
+    <value>kết thúc</value>
   </data>
   <data name="MutexError" xml:space="preserve">
-    <value>Der WindowTranslator läuft bereits.</value>
+    <value>Windowtranslator đã chạy</value>
   </data>
   <data name="About" xml:space="preserve">
-    <value>Über</value>
+    <value>Về ứng dụng này</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>Lizenzen von Drittanbietern prüfen</value>
+    <value>Kiểm tra giấy phép của bên thứ ba</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>Updates verfügbar: {0}</value>
+    <value>Có một bản cập nhật: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
-    <value>Sie verwenden die neueste Version.</value>
+    <value>Bạn hiện đang sử dụng phiên bản mới nhất.</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>Aktualisierte Informationen</value>
+    <value>Cập nhật thông tin</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
-    <value>Update auf die neueste Version</value>
+    <value>Được cập nhật lên phiên bản mới nhất</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Details prüfen</value>
+    <value>Tìm thêm thông tin</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>Nur während Sie drücken</value>
+    <value>Chỉ khi bạn đang nhấn</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Drücken Sie, um ein-/auszuschalten</value>
+    <value>Nhấn để bật/tắt</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Überlagerungsanzeige umschalten</value>
+    <value>Chuyển đổi màn hình Lớp phủ</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>Machen Sie Overlay -Anzeigen faszinierbar</value>
+    <value>Làm cho màn hình lớp phủ trở nên dễ bị bắt giữ</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>Übersetzter Prozess</value>
+    <value>Quá trình dịch</value>
   </data>
   <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>Windows OCR -Einstellungen</value>
+    <value>Cài đặt OCR Windows</value>
   </data>
   <data name="XPosThrethold" xml:space="preserve">
-    <value>X Positionsverschiebungschwelle</value>
+    <value>X ngưỡng thay đổi vị trí</value>
   </data>
   <data name="LeadingThrethold" xml:space="preserve">
-    <value>Linien -Interline -Schwelle</value>
+    <value>Ngưỡng xen kẽ dòng</value>
   </data>
   <data name="SpacingThreshold" xml:space="preserve">
-    <value>Intercharakteristische Schwelle</value>
+    <value>Ngưỡng Intercharacter</value>
   </data>
   <data name="FontSizeThrethold" xml:space="preserve">
-    <value>Schriftgröße Schwelle der Schriftgröße</value>
+    <value>Ngưỡng độ lệch kích thước phông chữ</value>
   </data>
   <data name="MergeThrethold" xml:space="preserve">
-    <value>Schwelle verschmelzen</value>
+    <value>Hợp nhất ngưỡng</value>
   </data>
   <data name="YPosThrethold" xml:space="preserve">
-    <value>Y Positionsverschiebungsschwelle</value>
+    <value>Y Ngưỡng dịch chuyển vị trí</value>
   </data>
   <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>Vermeiden Sie das Zusammenführen von Listen</value>
+    <value>Tránh danh sách hợp nhất</value>
   </data>
   <data name="Recognize" xml:space="preserve">
-    <value>Erkennungseinstellungen</value>
+    <value>Cài đặt nhận dạng</value>
   </data>
   <data name="Scale" xml:space="preserve">
-    <value>Erweiterungsrate</value>
+    <value>Tỷ lệ mở rộng</value>
   </data>
   <data name="BufferSize" xml:space="preserve">
-    <value>Puffergröße</value>
+    <value>Kích thước bộ đệm</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>Erkennungsmodul</value>
+    <value>Mô -đun nhận dạng</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>Verknüpfungen</value>
+    <value>Phím tắt</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>Overlay -Schalter</value>
+    <value>Công tắc lớp phủ</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>neue Version: {0} ist erschienen</value>
+    <value>Phiên bản mới {0} đã được phát hành</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>Neue Version: {0} installieren</value>
+    <value>Phiên bản mới: {0} đã được cài đặt</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>Aktualisierungsübersicht</value>
+    <value>Kiểm tra các thay đổi</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>neue Version prüfen</value>
+    <value>Phiên bản mới được kiểm tra</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Stornierung</value>
+    <value>hủy bỏ</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>PC-Startvorgang beim Hochfahren automatisch starten</value>
+    <value>Khởi động tự động khi khởi động máy tính</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>Allgemeine Einstellungen</value>
+    <value>Cài đặt chung</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Anzeigemethode</value>
+    <value>hiển thị</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>objektspezifische Einstellungen</value>
+    <value>Đối với từng đối tượng</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>phiên bản</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Erstellungsdatum</value>
+    <value>Thời gian xây dựng</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>Entwickler</value>
+    <value>nhà phát triển</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>öffentliche Seite</value>
+    <value>trang công khai</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>Lizenz</value>
+    <value>giấy phép</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Übersetze nicht</value>
+    <value>Không dịch</value>
   </data>
 </root>
