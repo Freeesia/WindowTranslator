@@ -2,18 +2,21 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Threading.Channels;
+using GenerativeAI;
+using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
-public class OcrCorrectionFilter : IFilterModule
+public sealed class OcrCorrectionFilter : IFilterModule, IDisposable
 {
     private readonly ConcurrentDictionary<string, string?> cache = new();
     private readonly Channel<IReadOnlyList<string>> queue;
-    private readonly GenerativeModelEx? client;
+    private readonly GenerativeModel? client;
     private readonly ILogger<OcrCorrectionFilter> logger;
+    private readonly CancellationTokenSource cts = new();
 
     public OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<OcrCorrectionFilter> logger)
     {
@@ -48,21 +51,24 @@ public class OcrCorrectionFilter : IFilterModule
         }, Dropped);
         if (options.IsEnabledCorrect && options.ApiKey is { Length: > 0 } apiKey)
         {
-            this.client = new(
-                apiKey,
-                new()
-                {
-                    Model = string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
-                    GenerationConfig = new GenerationConfigEx()
-                    {
-                        Temperature = 2.0,
-                        StopSequences = ["\"]"],
-                        ResponseMimeType = "application/json",
-                    },
-                },
-                system);
-            Task.Run(Correct);
+            var googleAI = new GoogleAi(apiKey, logger: logger);
+            this.client = googleAI.CreateGenerativeModel(
+                string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
+                safetyRatings: [
+                    new(){ Category = HarmCategory.HARM_CATEGORY_HARASSMENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                    new(){ Category = HarmCategory.HARM_CATEGORY_HATE_SPEECH, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                    new(){ Category = HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                    new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
+                ],
+                systemInstruction: system);
+            Task.Run(Correct, this.cts.Token);
         }
+    }
+
+    public void Dispose()
+    {
+        this.queue.Writer.Complete();
+        this.cts.Cancel();
     }
 
     public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts)
@@ -97,13 +103,13 @@ public class OcrCorrectionFilter : IFilterModule
 
         if (targets.Count > 0)
         {
-            await this.queue.Writer.WriteAsync(targets).ConfigureAwait(false);
+            await this.queue.Writer.WriteAsync(targets, this.cts.Token).ConfigureAwait(false);
         }
     }
 
     private async Task Correct()
     {
-        await foreach (var texts in this.queue.Reader.ReadAllAsync())
+        await foreach (var texts in this.queue.Reader.ReadAllAsync(this.cts.Token))
         {
             foreach (var text in texts)
             {
@@ -111,9 +117,9 @@ public class OcrCorrectionFilter : IFilterModule
             }
             try
             {
-                var completion = await this.client!.GenerateContentAsync(JsonSerializer.Serialize(texts))
-                    .ConfigureAwait(false);
-                var corrected = completion is null ? [] : JsonSerializer.Deserialize<string[]>(completion + "\"]") ?? [];
+                var corrected = await this.client!.GenerateObjectAsync<string[]>(JsonSerializer.Serialize(texts, DefaultSerializerOptions.GenerateObjectJsonOptions))
+                    .ConfigureAwait(false) ?? [];
+                this.cts.Token.ThrowIfCancellationRequested();
                 for (var i = 0; i < texts.Count; i++)
                 {
                     this.cache[texts[i]] = corrected[i];
