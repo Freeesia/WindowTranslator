@@ -358,6 +358,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   翻訳しない に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NoTranslateModule {
+            get {
+                return ResourceManager.GetString("NoTranslateModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   認識モジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OcrModule {

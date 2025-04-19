@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using WindowTranslator.ComponentModel;
+using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.Translate;
 
-[DisplayName("翻訳しない")]
+[LocalizedDisplayName(typeof(Resources), nameof(NoTranslateModule))]
 public class NoTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
