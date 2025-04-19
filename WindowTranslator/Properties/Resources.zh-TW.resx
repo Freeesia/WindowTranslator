@@ -300,4 +300,7 @@
   <data name="License" xml:space="preserve">
     <value>授權執照</value>
   </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>請勿翻譯</value>
+  </data>
 </root>

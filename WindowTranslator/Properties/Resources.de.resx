@@ -300,4 +300,7 @@
   <data name="License" xml:space="preserve">
     <value>Lizenz</value>
   </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>Übersetze nicht</value>
+  </data>
 </root>
