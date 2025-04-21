@@ -31,12 +31,12 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
         1. テキストには改行を含めないでください。
         2. 複数行のテキストは1行ごとに分割してください。
         3. 表形式のテキストは行ごと、列ごとに分割してください。
-
+        4. 座標値は画像ごとに0～1000に正規化してください。
 
         <出力フォーマット>
         [
-          {"box_2d": [left, top, right, bottom], "text": "認識したテキスト1"},
-          {"box_2d": [left, top, right, bottom], "text": "認識したテキスト2"}
+          {"box_2d": [y_min, x_min, y_max, x_max], "text": "認識したテキスト1"},
+          {"box_2d": [y_min, x_min, y_max, x_max], "text": "認識したテキスト2"}
         ]
         </出力フォーマット>
         """;
@@ -71,6 +71,9 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
         req.AddInlineData(base64, "image/jpeg");
         var res = await this.client.GenerateObjectAsync<Recct[]>(req).ConfigureAwait(false) ?? Array.Empty<Recct>();
         var results = new List<TextRect>();
+        // 画像のピクセルサイズ
+        var imageWidth = (double)bitmap.PixelWidth;
+        var imageHeight = (double)bitmap.PixelHeight;
         foreach (var rect in res)
         {
             if (rect.Box2d.Length != 4)
@@ -78,12 +81,23 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
                 this.logger.LogWarning("Invalid box2d length: {Box2d}", string.Join(", ", rect.Box2d));
                 continue;
             }
+            // 正規化値 [0..1000] をピクセル値に変換
+            var yMinNorm = rect.Box2d[0];
+            var xMinNorm = rect.Box2d[1];
+            var yMaxNorm = rect.Box2d[2];
+            var xMaxNorm = rect.Box2d[3];
+            var xMinPx = xMinNorm / 1000.0 * imageWidth;
+            var yMinPx = yMinNorm / 1000.0 * imageHeight;
+            var xMaxPx = xMaxNorm / 1000.0 * imageWidth;
+            var yMaxPx = yMaxNorm / 1000.0 * imageHeight;
+            var widthPx = xMaxPx - xMinPx;
+            var heightPx = yMaxPx - yMinPx;
             results.Add(new TextRect(rect.Text,
-                rect.Box2d[0],
-                rect.Box2d[1],
-                rect.Box2d[2] - rect.Box2d[0],
-                rect.Box2d[3] - rect.Box2d[1],
-                rect.Box2d[3] - rect.Box2d[1],
+                xMinPx,
+                yMinPx,
+                widthPx,
+                heightPx,
+                heightPx,
                 false));
         }
         return results;
