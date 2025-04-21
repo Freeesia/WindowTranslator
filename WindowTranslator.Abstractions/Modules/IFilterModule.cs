@@ -1,4 +1,6 @@
-﻿namespace WindowTranslator.Modules;
+﻿using System.Drawing;
+
+namespace WindowTranslator.Modules;
 
 /// <summary>
 /// 翻訳前後のテキストに対してフィルター処理を行うモジュールのインターフェース
@@ -41,4 +43,9 @@ public record FilterContext
     /// </summary>
     public required Windows.Graphics.Imaging.SoftwareBitmap SoftwareBitmap { get; init; }
 #endif
+
+    /// <summary>
+    /// 認識した画像のサイズ
+    /// </summary>
+    public Size ImageSize { get; init; }
 }
