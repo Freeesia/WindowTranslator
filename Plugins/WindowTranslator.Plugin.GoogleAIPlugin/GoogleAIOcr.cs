@@ -59,38 +59,21 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
         var req = new GenerateContentRequest();
         req.AddInlineData(base64, "image/jpeg");
         var res = await this.client.GenerateObjectAsync<Recct[]>(req).ConfigureAwait(false) ?? [];
-        var results = new List<TextRect>();
         // 画像のピクセルサイズ
-        var imageWidth = (double)bitmap.PixelWidth;
-        var imageHeight = (double)bitmap.PixelHeight;
-        foreach (var rect in res)
-        {
-            if (rect.Box2d.Length != 4 || rect.Box2d.Any(x => x < 0 || x > 1000))
+        var imageWidth = bitmap.PixelWidth;
+        var imageHeight = bitmap.PixelHeight;
+        return res
+            .Where(rect => rect.Box2d.Length == 4 && rect.Box2d.All(v => v >= 0 && v <= 1000))
+            .Select(rect =>
             {
-                // Box2dの長さが4でない、または値が[0..1000]でない場合は無視する
-                this.logger.LogWarning("Invalid box2d length: {Box2d}", string.Join(", ", rect.Box2d));
-                continue;
-            }
-            // 正規化値 [0..1000] をピクセル値に変換
-            var yMinNorm = rect.Box2d[0];
-            var xMinNorm = rect.Box2d[1];
-            var yMaxNorm = rect.Box2d[2];
-            var xMaxNorm = rect.Box2d[3];
-            var xMinPx = xMinNorm / 1000.0 * imageWidth;
-            var yMinPx = yMinNorm / 1000.0 * imageHeight;
-            var xMaxPx = xMaxNorm / 1000.0 * imageWidth;
-            var yMaxPx = yMaxNorm / 1000.0 * imageHeight;
-            var widthPx = xMaxPx - xMinPx;
-            var heightPx = yMaxPx - yMinPx;
-            results.Add(new TextRect(rect.Text,
-                xMinPx,
-                yMinPx,
-                widthPx,
-                heightPx,
-                heightPx,
-                false));
-        }
-        return results;
+                var yMinPx = (int)(rect.Box2d[0] / 1000.0 * imageHeight);
+                var xMinPx = (int)(rect.Box2d[1] / 1000.0 * imageWidth);
+                var yMaxPx = (int)(rect.Box2d[2] / 1000.0 * imageHeight);
+                var xMaxPx = (int)(rect.Box2d[3] / 1000.0 * imageWidth);
+                var widthPx = xMaxPx - xMinPx;
+                var heightPx = yMaxPx - yMinPx;
+                return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
+            });
     }
 
     private async Task<string> EncodeToJpegBase64(SoftwareBitmap bitmap)
