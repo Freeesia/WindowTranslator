@@ -1,9 +1,6 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
+﻿using System.Buffers;
+using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
 using GenerativeAI;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
@@ -58,26 +55,19 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
-        this.stream.Seek(0);
-        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, this.stream);
-        encoder.SetSoftwareBitmap(bitmap);
-        await encoder.FlushAsync();
-        this.stream.Seek(0);
-        var mem = MemoryPool<byte>.Shared.Rent((int)this.stream.Size);
-        var buffer = mem.Memory[..(int)this.stream.Size];
-        await this.stream.AsStreamForRead().ReadExactlyAsync(buffer).ConfigureAwait(false);
-        var base64 = Convert.ToBase64String(buffer.Span);
+        var base64 = await EncodeToJpegBase64(bitmap).ConfigureAwait(false);
         var req = new GenerateContentRequest();
         req.AddInlineData(base64, "image/jpeg");
-        var res = await this.client.GenerateObjectAsync<Recct[]>(req).ConfigureAwait(false) ?? Array.Empty<Recct>();
+        var res = await this.client.GenerateObjectAsync<Recct[]>(req).ConfigureAwait(false) ?? [];
         var results = new List<TextRect>();
         // 画像のピクセルサイズ
         var imageWidth = (double)bitmap.PixelWidth;
         var imageHeight = (double)bitmap.PixelHeight;
         foreach (var rect in res)
         {
-            if (rect.Box2d.Length != 4)
+            if (rect.Box2d.Length != 4 || rect.Box2d.Any(x => x < 0 || x > 1000))
             {
+                // Box2dの長さが4でない、または値が[0..1000]でない場合は無視する
                 this.logger.LogWarning("Invalid box2d length: {Box2d}", string.Join(", ", rect.Box2d));
                 continue;
             }
@@ -101,6 +91,19 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
                 false));
         }
         return results;
+    }
+
+    private async Task<string> EncodeToJpegBase64(SoftwareBitmap bitmap)
+    {
+        this.stream.Seek(0);
+        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, this.stream);
+        encoder.SetSoftwareBitmap(bitmap);
+        await encoder.FlushAsync();
+        this.stream.Seek(0);
+        using var mem = MemoryPool<byte>.Shared.Rent((int)this.stream.Size);
+        var buffer = mem.Memory[..(int)this.stream.Size];
+        await this.stream.AsStreamForRead().ReadExactlyAsync(buffer).ConfigureAwait(false);
+        return Convert.ToBase64String(buffer.Span);
     }
 
     private record Recct(int[] Box2d, string Text);
