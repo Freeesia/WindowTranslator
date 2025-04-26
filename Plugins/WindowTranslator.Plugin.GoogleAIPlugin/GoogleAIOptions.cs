@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using GenerativeAI;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
-public class GoogleAIOptions : IPluginParam
+public partial class GoogleAIOptions : IPluginParam
 {
-    [DisplayName("認識補正を利用するか")]
-    public bool IsEnabledCorrect { get; set; }
+    [DisplayName("認識補正")]
+    [SelectorStyle(SelectorStyle.ComboBox)]
+    public CorrectMode CorrectMode { get; set; }
 
     [DisplayName("使用するモデル")]
     [SelectorStyle(SelectorStyle.ComboBox)]
@@ -53,6 +55,13 @@ public enum GoogleAIModel
     Gemini20Flash,
 }
 
+public enum CorrectMode
+{
+    None,
+    Text,
+    Image,
+}
+
 public static class GoogleAIModelExtensions
 {
     public static string GetName(this GoogleAIModel model) => model switch
@@ -70,13 +79,14 @@ public class GoogleAIValidator : ITargetSettingsValidator
     public ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
         var op = settings.PluginParams.GetValueOrDefault(nameof(GoogleAIOptions)) as GoogleAIOptions;
-        // 翻訳モジュールでも補正も利用しない場合は無条件で有効
-        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GoogleAITranslator) && !(op?.IsEnabledCorrect ?? false))
+        // APIキーが設定されている場合は有効
+        if (!string.IsNullOrEmpty(op?.ApiKey))
         {
             return ValueTask.FromResult(ValidateResult.Valid);
         }
-        // APIキーが設定されている場合は有効
-        if (!string.IsNullOrEmpty(op?.ApiKey))
+
+        // 翻訳モジュールでも補正も利用しない場合は無条件で有効
+        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GoogleAITranslator) && (op?.CorrectMode ?? CorrectMode.None) != CorrectMode.None)
         {
             return ValueTask.FromResult(ValidateResult.Valid);
         }

@@ -2,10 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using Weikio.PluginFramework.Abstractions;
@@ -40,6 +38,7 @@ builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddS
 
 var typeCriteria = new TypeFinderCriteria()
 {
+    IsAbstract = false,
 #if !DEBUG
     Query = (ctx,t) => !CustomAttributeData.GetCustomAttributes(t).Any(a => a.AttributeType == typeof(ExperimentalAttribute)),
 #endif

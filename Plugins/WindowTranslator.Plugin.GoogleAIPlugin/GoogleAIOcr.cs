@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using GenerativeAI;
@@ -7,18 +6,16 @@ using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 [Experimental("WT0001")]
 [DisplayName("Google AI")]
-public sealed class GoogleAIOcr : IOcrModule, IDisposable
+public sealed class GoogleAIOcr : IOcrModule
 {
     private readonly ILogger<GoogleAIOcr> logger;
     private readonly GenerativeModel client;
-    private readonly InMemoryRandomAccessStream stream = new();
 
     public GoogleAIOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<GoogleAIOcr> logger)
     {
@@ -53,12 +50,9 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
             systemInstruction: system);
     }
 
-    public void Dispose()
-        => this.stream.Dispose();
-
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
-        var base64 = await EncodeToJpegBase64(bitmap).ConfigureAwait(false);
+        var base64 = await bitmap.EncodeToJpegBase64().ConfigureAwait(false);
         var req = new GenerateContentRequest();
         req.AddInlineData(base64, "image/jpeg");
         var res = await this.client.GenerateObjectAsync<Recct[]>(req).ConfigureAwait(false) ?? [];
@@ -77,19 +71,6 @@ public sealed class GoogleAIOcr : IOcrModule, IDisposable
                 var heightPx = yMaxPx - yMinPx;
                 return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
             });
-    }
-
-    private async Task<string> EncodeToJpegBase64(SoftwareBitmap bitmap)
-    {
-        this.stream.Seek(0);
-        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, this.stream);
-        encoder.SetSoftwareBitmap(bitmap);
-        await encoder.FlushAsync();
-        this.stream.Seek(0);
-        using var mem = MemoryPool<byte>.Shared.Rent((int)this.stream.Size);
-        var buffer = mem.Memory[..(int)this.stream.Size];
-        await this.stream.AsStreamForRead().ReadExactlyAsync(buffer).ConfigureAwait(false);
-        return Convert.ToBase64String(buffer.Span);
     }
 
     private record Recct(int[] Box2d, string Text);
