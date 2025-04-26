@@ -1,5 +1,5 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Globalization;
 using GenerativeAI;
 using GenerativeAI.Types;
@@ -11,6 +11,7 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
+[DisplayName("Google AI")]
 public sealed class GoogleAIOcr : IOcrModule, IDisposable
 {
     private readonly ILogger<GoogleAIOcr> logger;
