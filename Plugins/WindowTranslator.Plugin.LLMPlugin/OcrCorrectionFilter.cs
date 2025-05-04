@@ -1,27 +1,40 @@
-﻿using System.Collections.Concurrent;
-using System.Globalization;
+﻿using System.Globalization;
+using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenAI;
 using OpenAI.Chat;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
-public class OcrCorrectionFilter : IFilterModule
+public class OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionFilter> logger)
+    : OcrCorrectFilterBase<string>(llmOptions, logger)
 {
-    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[\"");
-    private readonly ConcurrentDictionary<string, string?> cache = new();
-    private readonly Channel<IReadOnlyList<string>> queue;
-    private readonly ChatClient? client;
-    private readonly ChatMessage system;
-    private readonly ILogger<OcrCorrectionFilter> logger;
-
-    public OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionFilter> logger)
+    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[");
+    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
-        this.system = ChatMessage.CreateSystemMessage($"""
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        AllowTrailingCommas = true,
+    };
+    private static readonly ChatCompletionOptions openAiOptions = new()
+    {
+        ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+            "corrected_array",
+            BinaryData.FromBytes("""
+                {
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+                """u8.ToArray()),
+            "補正後のテキストの配列",
+            true),
+        StopSequences = { "\"]" },
+    };
+
+    protected override CorrectMode TargetMode => CorrectMode.Text;
+
+    private readonly ChatMessage system = ChatMessage.CreateSystemMessage($"""
         あなたは{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}の専門家です。
         これから渡される文字列はOCRによって認識されたものであり、誤字や脱字が含まれています。
         次の指示に従って、渡された文字列を修正してください。
@@ -41,88 +54,43 @@ public class OcrCorrectionFilter : IFilterModule
         ["誤字修正するテキスト1","誤字修正するテキスト2"]
         </入力テキストのJsonフォーマット>
         """);
-        this.logger = logger;
-        this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
-        {
-            AllowSynchronousContinuations = true,
-            FullMode = BoundedChannelFullMode.DropOldest,
-            SingleReader = true,
-            SingleWriter = true,
-        }, Dropped);
-        if (llmOptions.Value.IsEnabledCorrect && llmOptions.Value.Model is { Length: > 0 } model && llmOptions.Value.ApiKey is { Length: > 0 } apiKey)
-        {
-            this.client = new(
-                model,
-                new(apiKey),
-                llmOptions.Value.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
-            Task.Run(Correct);
-        }
-    }
 
-    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
-        => texts;
 
-    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
+    protected override ValueTask<IReadOnlyList<string>> GetQueueData(IEnumerable<TextRect> targets, FilterContext context)
+        => new([.. targets.Select(t => t.Text)]);
+
+    protected override async Task CorrectCore(IReadOnlyList<string> texts, CancellationToken cancellationToken)
     {
-        if (this.client is null)
+        foreach (var text in texts)
         {
-            await foreach (var text in texts.ConfigureAwait(false))
-            {
-                yield return text;
-            }
-            yield break;
+            this.Cache.TryAdd(text, null);
         }
-        var targets = new List<string>();
-        await foreach (var text in texts.ConfigureAwait(false))
+        try
         {
-            if (!this.cache.TryGetValue(text.Text, out var corrected))
+            var ums = ChatMessage.CreateUserMessage(JsonSerializer.Serialize(texts, jsonOptions));
+            ChatCompletion completion = await this.Client.CompleteChatAsync([this.system, ums, assitant], openAiOptions, cancellationToken)
+                .ConfigureAwait(false);
+            var json = completion.Content[0].Text.Trim();
+            if (!json.StartsWith('['))
             {
-                targets.Add(text.Text);
+                json = "[" + json;
             }
-            if (corrected is not null)
+            if (!json.EndsWith(']'))
             {
-                yield return text.Text != corrected ? text with { Text = corrected } : text;
+                json += "]";
             }
-            else
+            var corrected = JsonSerializer.Deserialize<string[]>(json) ?? [];
+            for (var i = 0; i < texts.Count; i++)
             {
-                yield return text;
+                this.Cache[texts[i]] = corrected[i];
             }
         }
-
-        if (targets.Count > 0)
+        catch (Exception e)
         {
-            await this.queue.Writer.WriteAsync(targets).ConfigureAwait(false);
-        }
-    }
-
-    private async Task Correct()
-    {
-        await foreach (var texts in this.queue.Reader.ReadAllAsync())
-        {
-            foreach (var text in texts)
-            {
-                this.cache.TryAdd(text, null);
-            }
-            try
-            {
-                var ums = ChatMessage.CreateUserMessage(JsonSerializer.Serialize(texts));
-                ChatCompletion completion = await this.client!.CompleteChatAsync([this.system, ums, assitant],
-                    new() { StopSequences = { "\"]" } })
-                    .ConfigureAwait(false);
-                var json = assitant.Content[0].Text + completion.Content[0].Text.Trim() + "\"]";
-                var corrected = JsonSerializer.Deserialize<string[]>(json) ?? [];
-                for (var i = 0; i < texts.Count; i++)
-                {
-                    this.cache[texts[i]] = corrected[i];
-                }
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError(e, $"Failed to correct `{texts}`");
-            }
+            this.Logger.LogError(e, $"Failed to correct `{texts}`");
         }
     }
 
-    private void Dropped(IReadOnlyList<string> texts)
-        => this.logger.LogDebug($"Dropped texts: {string.Join(", ", texts)}");
+    protected override void Dropped(IReadOnlyList<string> texts)
+        => this.Logger.LogDebug($"Dropped texts: {string.Join(", ", texts)}");
 }

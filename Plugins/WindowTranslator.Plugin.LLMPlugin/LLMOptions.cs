@@ -5,8 +5,9 @@ namespace WindowTranslator.Plugin.LLMPlugin;
 
 public class LLMOptions : IPluginParam
 {
-    [DisplayName("認識補正を利用するか")]
-    public bool IsEnabledCorrect { get; set; }
+    [DisplayName("認識補正")]
+    [SelectorStyle(SelectorStyle.ComboBox)]
+    public CorrectMode CorrectMode { get; set; }
 
     [DisplayName("使用するモデル")]
     public string? Model { get; set; } = "gpt-4o-mini";
@@ -32,4 +33,11 @@ public class LLMOptions : IPluginParam
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
+}
+
+public enum CorrectMode
+{
+    None,
+    Text,
+    Image,
 }
