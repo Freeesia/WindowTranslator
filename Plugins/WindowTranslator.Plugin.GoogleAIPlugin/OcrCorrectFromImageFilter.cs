@@ -5,6 +5,7 @@ using GenerativeAI;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
