@@ -1,6 +1,8 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using System.Threading.Channels;
 using GenerativeAI;
+using GenerativeAI.Exceptions;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -97,7 +99,37 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
     {
         await foreach (var texts in this.queue.Reader.ReadAllAsync(this.cts.Token))
         {
-            await CorrectCore(texts, this.cts.Token).ConfigureAwait(false);
+            while (true)
+            {
+                try
+                {
+                    await CorrectCore(texts, this.cts.Token).ConfigureAwait(false);
+                    break;
+                }
+                catch (ApiException e) when (e.ErrorCode == 400)
+                {
+                    throw new ApiException(e.ErrorCode, "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+                }
+                // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
+                catch (ApiException e) when (e.ErrorCode == 503)
+                {
+                    this.Logger.LogWarning("GoogleAIのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
+                    await Task.Delay(500).ConfigureAwait(false);
+                    continue;
+                }
+                // レート制限を超えました。
+                catch (ApiException e) when (e.ErrorCode == 429)
+                {
+                    this.Logger.LogWarning("GoogleAIのレート制限を超えました。10秒待機して再試行します。");
+                    await Task.Delay(10000).ConfigureAwait(false);
+                    continue;
+                }
+                // Jsonエラーということは指定した以外のレスポンスが返ってきたのでもう一度
+                catch (JsonException)
+                {
+                    continue;
+                }
+            }
         }
     }
 

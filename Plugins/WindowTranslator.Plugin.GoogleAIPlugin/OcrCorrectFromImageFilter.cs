@@ -12,22 +12,37 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 public sealed class OcrCorrectFromImageFilter(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<GoogleAIOptions> googleAiOptions,
-    ILogger<OcrCorrectFromTextFilter> logger)
+    ILogger<OcrCorrectFromImageFilter> logger)
     : OcrCorrectFilterBase<TextTarget>(langOptions, googleAiOptions, logger)
 {
     protected override CorrectMode TargetMode => CorrectMode.Image;
 
     protected override string GetSystem(LanguageOptions languageOptions, GoogleAIOptions googleAIOptions)
-        => $"""
-        あなたは{CultureInfo.GetCultureInfo(languageOptions.Source).DisplayName}の専門家です。
-        これから渡される複数の画像のテキストを認識して、渡された画像の順番にテキストをJson配列として出力してください。
+        => $$"""
+        あなたは{{CultureInfo.GetCultureInfo(languageOptions.Source).DisplayName}}のテキストを認識可能なOCR（光学文字認識）を実行するAIです。
+        入力された複数の画像を、送信された順番（1番目、2番目、3番目...）に従って処理してください。
+        各画像からテキストを抽出し、以下の**厳密なJSON形式**で結果のみを出力してください。
 
-        <出力フォーマット>
+        ```json
         [
-            "1枚目の画像から認識したテキスト",
-            "2枚目の画像から認識したテキスト",
+          {
+            "image_index": 1,
+            "ocr_text": "[画像1から認識されたテキスト または 認識不可の場合は空文字]"
+          },
+          {
+            "image_index": 2,
+            "ocr_text": "[画像2から認識されたテキスト または 認識不可の場合は空文字]"
+          },
+          {
+            "image_index": 3,
+            "ocr_text": "[画像3から認識されたテキスト または 認識不可の場合は空文字]"
+          },
+          // ... 入力された画像の数だけオブジェクトが続く
         ]
-        </出力フォーマット>
+        ```
+        `image_index` キーには、入力画像の順番（1から始まる整数）を出力してください。
+        `ocr_text` キーには、認識されたテキストを出力してください。もしテキストが認識できなかった場合は、 空文字列を出力してください。
+        JSON配列の要素数は、入力された画像の枚数と必ず一致しなければならないことに注意してください。
         """;
 
     protected override async ValueTask<IReadOnlyList<TextTarget>> GetQueueData(IEnumerable<TextRect> targets, FilterContext context)
@@ -46,29 +61,37 @@ public sealed class OcrCorrectFromImageFilter(
         return list;
     }
 
+    private record RecognizedText(int ImageIndex, string OcrText);
+
     protected override async Task CorrectCore(IReadOnlyList<TextTarget> texts, CancellationToken cancellationToken)
     {
-        var req = new GenerateContentRequest();
-        foreach (var (text, base64) in texts)
+        foreach (var chunk in texts.Chunk(5))
         {
-            this.Cache.TryAdd(text, null);
-            req.AddInlineData(base64, "image/jpeg");
-        }
-        try
-        {
-            var sw = Stopwatch.StartNew();
-            var corrected = await this.Client.GenerateObjectAsync<string[]>(req, cancellationToken)
-                .ConfigureAwait(false) ?? [];
-            cancellationToken.ThrowIfCancellationRequested();
-            for (var i = 0; i < texts.Count; i++)
+            var req = new GenerateContentRequest();
+            foreach (var (text, base64) in chunk)
             {
-                this.Cache[texts[i].Original] = corrected[i];
+                this.Cache.TryAdd(text, null);
+                req.AddInlineData(base64, "image/jpeg");
             }
-            this.Logger.LogDebug($"Correct: {sw.Elapsed}");
-        }
-        catch (Exception e)
-        {
-            this.Logger.LogError(e, $"Failed to correct");
+            RecognizedText[] corrected;
+            try
+            {
+                var sw = Stopwatch.StartNew();
+                corrected = await this.Client.GenerateObjectAsync<RecognizedText[]>(req, cancellationToken)
+                    .ConfigureAwait(false) ?? [];
+                cancellationToken.ThrowIfCancellationRequested();
+                Array.Sort(corrected, (x, y) => x.ImageIndex - y.ImageIndex);
+                var original = chunk.Select(t => t.Original).ToArray();
+                for (var i = 0; i < original.Length; i++)
+                {
+                    this.Cache[original[i]] = corrected[i].OcrText;
+                }
+                this.Logger.LogDebug($"Correct: {sw.Elapsed}");
+            }
+            catch (Exception e)
+            {
+                this.Logger.LogError(e, $"Failed to correct");
+            }
         }
     }
 
