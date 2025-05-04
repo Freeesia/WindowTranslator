@@ -8,7 +8,7 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
-public class OcrCorrectionFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionFilter> logger)
+public class OcrCorrectionTextFilter(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<OcrCorrectionTextFilter> logger)
     : OcrCorrectFilterBase<string>(llmOptions, logger)
 {
     private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[");
