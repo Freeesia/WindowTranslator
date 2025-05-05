@@ -124,6 +124,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   キャッシュ設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CacheParam {
+            get {
+                return ResourceManager.GetString("CacheParam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   キャンセル に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Cancel {
@@ -192,6 +201,15 @@ namespace WindowTranslator.Properties {
         public static string Exit {
             get {
                 return ResourceManager.GetString("Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   近いテキストの閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FazzyMatchThreshold {
+            get {
+                return ResourceManager.GetString("FazzyMatchThreshold", resourceCulture);
             }
         }
         

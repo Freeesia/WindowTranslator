@@ -1,14 +1,11 @@
-{
+﻿{
   "profiles": {
     "WindowTranslator": {
       "commandName": "Project",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator",
-        "LOGGING__LOGLEVEL__WindowTranslator.Plugin.GoogleAIPlugin.GoogleAITranslator": "Debug",
-        "LOGGING__LOGLEVEL__WindowTranslator.Plugin.DeepLTranslatePlugin.DeepLTranslator": "Debug",
-        "LOGGING__LOGLEVEL__WindowTranslator.Modules.Main.OverlayMainViewModel": "Debug",
-        "LOGGING__LOGLEVEL__WindowTranslator.Modules.Cache": "Debug"
+        "LOGGING__LOGLEVEL__WindowTranslator.Plugin.LLMPlugin": "Debug"
       }
     },
     "StartupMode": {
