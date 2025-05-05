@@ -14,6 +14,6 @@ public class CacheParam : IPluginParam
     /// </summary>
     [Slidable(0, 1, .01, .1, true, .01)]
     [FormatString("P2")]
-    [LocalizedDisplayName(typeof(Resources), nameof(FazzyMatchThreshold))]
-    public double FazzyMatchThreshold { get; set; } = 0.8;
+    [LocalizedDisplayName(typeof(Resources), nameof(FuzzyMatchThreshold))]
+    public double FuzzyMatchThreshold { get; set; } = 0.8;
 }

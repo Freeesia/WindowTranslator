@@ -56,7 +56,7 @@ public sealed class GoogleAIOcr : IOcrModule
         var base64 = await bitmap.EncodeToJpegBase64().ConfigureAwait(false);
         var req = new GenerateContentRequest();
         req.AddInlineData(base64, "image/jpeg");
-        var res = await this.client.GenerateObjectAsync<Recct[]>(req).ConfigureAwait(false) ?? [];
+        var res = await this.client.GenerateObjectAsync<Rect[]>(req).ConfigureAwait(false) ?? [];
         // 画像のピクセルサイズ
         var imageWidth = bitmap.PixelWidth;
         var imageHeight = bitmap.PixelHeight;
@@ -74,5 +74,5 @@ public sealed class GoogleAIOcr : IOcrModule
             });
     }
 
-    private record Recct(int[] Box2d, string Text);
+    private record Rect(int[] Box2d, string Text);
 }

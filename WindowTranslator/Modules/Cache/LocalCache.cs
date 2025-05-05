@@ -74,7 +74,7 @@ public sealed partial class LocalCache : ICacheModule, IDisposable
         {
             return true;
         }
-        if (this.cache.IsEmpty || Math.Abs(this.options.FazzyMatchThreshold - 1.0) < double.Epsilon)
+        if (this.cache.IsEmpty || Math.Abs(this.options.FuzzyMatchThreshold - 1.0) < double.Epsilon)
         {
             return false;
         }
@@ -85,7 +85,7 @@ public sealed partial class LocalCache : ICacheModule, IDisposable
         // 編集距離のパーセンテージ
         var p = (float)distance / Math.Max(src.Length, cacheSrc.Length);
         this.logger.LogDebug($"LevenshteinDistance: {src} -> {cacheSrc} ({p:p2}%) [{DateTime.UtcNow - t}]");
-        if (p < this.options.FazzyMatchThreshold)
+        if (p < this.options.FuzzyMatchThreshold)
         {
             return false;
         }

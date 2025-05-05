@@ -306,7 +306,7 @@
   <data name="CacheParam" xml:space="preserve">
     <value>キャッシュ設定</value>
   </data>
-  <data name="FazzyMatchThreshold" xml:space="preserve">
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
     <value>近いテキストの閾値</value>
   </data>
   <data name="NoCache" xml:space="preserve">

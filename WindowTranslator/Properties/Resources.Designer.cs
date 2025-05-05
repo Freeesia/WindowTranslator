@@ -205,20 +205,20 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   近いテキストの閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string FazzyMatchThreshold {
-            get {
-                return ResourceManager.GetString("FazzyMatchThreshold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   文字サイズずれ閾値 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string FontSizeThrethold {
             get {
                 return ResourceManager.GetString("FontSizeThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   近いテキストの閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FuzzyMatchThreshold {
+            get {
+                return ResourceManager.GetString("FuzzyMatchThreshold", resourceCulture);
             }
         }
         
