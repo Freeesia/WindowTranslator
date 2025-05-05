@@ -17,11 +17,11 @@ public sealed class OcrCorrectFromImageFilter(
     ILogger<OcrCorrectFromImageFilter> logger)
     : OcrCorrectFilterBase<TextTarget>(llmOptions, logger)
 {
-    private static readonly ChatMessage assitant = ChatMessage.CreateAssistantMessage("[");
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
     };
     private static readonly ChatCompletionOptions openAiOptions = new()
@@ -29,21 +29,28 @@ public sealed class OcrCorrectFromImageFilter(
         ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
             "recognized_texts",
             BinaryData.FromBytes("""
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "image_index": { "type": "integer" },
-                            "ocr_text": { "type": "string" }
-                        },
-                        "required": ["image_index", "ocr_text"]
+            {
+                "type": "object",
+                "properties": {
+                    "texts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "image_index": { "type": "integer" },
+                                "ocr_text": { "type": "string" }
+                            },
+                            "additionalProperties": false,
+                            "required": ["image_index", "ocr_text"]
+                        }
                     }
-                }
-                """u8.ToArray()),
+                },
+                "additionalProperties": false,
+                "required": ["texts"]
+            }
+            """u8.ToArray()),
             "画像から認識されたテキストの配列",
             true),
-        StopSequences = { "\"]" },
     };
 
     protected override CorrectMode TargetMode => CorrectMode.Image;
@@ -54,25 +61,28 @@ public sealed class OcrCorrectFromImageFilter(
         各画像からテキストを抽出し、以下の**厳密なJSON形式**で結果のみを出力してください。
 
         ```json
-        [
-          {
-            "image_index": 1,
-            "ocr_text": "[画像1から認識されたテキスト または 認識不可の場合は空文字]"
-          },
-          {
-            "image_index": 2,
-            "ocr_text": "[画像2から認識されたテキスト または 認識不可の場合は空文字]"
-          },
-          {
-            "image_index": 3,
-            "ocr_text": "[画像3から認識されたテキスト または 認識不可の場合は空文字]"
-          }
-          // ... 入力された画像の数だけオブジェクトが続く
-        ]
+        {
+          "texts": [
+            {
+              "image_index": 1,
+              "ocr_text": "[画像1から認識されたテキスト または 認識不可の場合は空文字]"
+            },
+            {
+              "image_index": 2,
+              "ocr_text": "[画像2から認識されたテキスト または 認識不可の場合は空文字]"
+            },
+            {
+              "image_index": 3,
+              "ocr_text": "[画像3から認識されたテキスト または 認識不可の場合は空文字]"
+            }
+            // ... 入力された画像の数だけオブジェクトが続く
+          ]
+        }
         ```
+        ただし、出力テキストは必ず1行で出力してください。
+        `texts`プロパティ内のJSON配列の要素数は、入力された画像の枚数と必ず一致しなければならないことに注意してください。
         `image_index` キーには、入力画像の順番（1から始まる整数）を出力してください。
         `ocr_text` キーには、認識されたテキストを出力してください。もしテキストが認識できなかった場合は、空文字列を出力してください。
-        JSON配列の要素数は、入力された画像の枚数と必ず一致しなければならないことに注意してください。
         """);
 
     protected override async ValueTask<IReadOnlyList<TextTarget>> GetQueueData(IEnumerable<TextRect> targets, FilterContext context)
@@ -92,6 +102,7 @@ public sealed class OcrCorrectFromImageFilter(
     }
 
     private record RecognizedText(int ImageIndex, string OcrText);
+    private record RecognizedTexts(RecognizedText[] Texts);
 
     protected override async Task CorrectCore(IReadOnlyList<TextTarget> texts, CancellationToken cancellationToken)
     {
@@ -116,21 +127,12 @@ public sealed class OcrCorrectFromImageFilter(
                 }
 
                 messages.Add(ChatMessage.CreateUserMessage(images));
-                messages.Add(assitant);
 
                 ChatCompletion completion = await this.Client.CompleteChatAsync(messages, openAiOptions, cancellationToken)
                     .ConfigureAwait(false);
 
                 var json = completion.Content[0].Text.Trim();
-                if (!json.StartsWith('['))
-                {
-                    json = "[" + json;
-                }
-                if (!json.EndsWith(']'))
-                {
-                    json += "]";
-                }
-                var corrected = JsonSerializer.Deserialize<RecognizedText[]>(json, jsonOptions) ?? [];
+                var corrected = JsonSerializer.Deserialize<RecognizedTexts>(json, jsonOptions)?.Texts ?? [];
 
                 Array.Sort(corrected, (x, y) => x.ImageIndex - y.ImageIndex);
                 var original = chunk.Select(t => t.Original).ToArray();
