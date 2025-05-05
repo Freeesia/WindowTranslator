@@ -1,15 +1,12 @@
 ﻿using System.Reflection;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using ConsoleAppFramework;
 using DeepL;
-using GenerativeAI.Helpers;
-using GenerativeAI.Models;
+using GenerativeAI;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using WindowTranslator.Plugin.GoogleAIPlugin;
 
 var configuration = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
@@ -46,29 +43,17 @@ static async Task DeepLTest([FromServices] IOptions<Secret> secret)
 
 static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
 {
-    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
-    {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-    };
-    var client = new GenerativeModelEx(
-        secret.Value.GoogleAIAuthKey,
-        new()
-        {
-            Model = GoogleAIModels.Gemini15Flash,
-            GenerationConfig = new GenerationConfigEx()
-            {
-                Temperature = 1.0,
-                StopSequences = ["\"]"],
-                ResponseMimeType = "application/json",
-            },
-            SafetySettings = [
+    var googleAI = new GoogleAi(secret.Value.GoogleAIAuthKey);
+    var client = googleAI.CreateGenerativeModel(
+            GoogleAIModels.Gemini2Flash,
+            safetyRatings: [
                 new(){ Category = HarmCategory.HARM_CATEGORY_HARASSMENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 new(){ Category = HarmCategory.HARM_CATEGORY_HATE_SPEECH, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 new(){ Category = HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
             ]
-        });
-        var systemInstruction = """
+        );
+    var systemInstruction = """
         あなたは英語(アメリカ)から日本語(日本)へ翻訳する専門家です。
         翻訳にあたって以下の点を考慮してください。
 
@@ -95,7 +80,7 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
         """;
     var input = new[] {
         new {
-            Text = "Bath? Me too.", 
+            Text = "Bath? Me too.",
             Context = """
             This line is said by the male character.
             Like his Uncle Landen, he is a woodworker and runs the Carpenter's Shop in The Eastern Road.
@@ -104,11 +89,11 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
             """ } };
     var req = new GenerateContentRequest()
     {
-        Contents = [RequestExtensions.FormatGenerateContentInput(JsonSerializer.Serialize(input, jsonOptions))],
+        Contents = [RequestExtensions.FormatGenerateContentInput(JsonSerializer.Serialize(input, client.GenerateObjectJsonSerializerOptions))],
         SystemInstruction = RequestExtensions.FormatSystemInstruction(systemInstruction),
     };
-    var completion = await client.GenerateContentAsync(req).ConfigureAwait(false);
-    Console.WriteLine(completion.Text());
+    var translated = await client.GenerateObjectAsync<string[]>(req).ConfigureAwait(false) ?? [];
+    Console.WriteLine(translated[0]);
 }
 
 

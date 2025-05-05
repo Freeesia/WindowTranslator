@@ -79,6 +79,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   PC起動時に自動起動 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AutoStartWithPC {
+            get {
+                return ResourceManager.GetString("AutoStartWithPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   自動翻訳対象 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AutoTargets {
@@ -97,11 +106,29 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   ビルド日時 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string BuildDate {
+            get {
+                return ResourceManager.GetString("BuildDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   キャッシュモジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CacheModule {
             get {
                 return ResourceManager.GetString("CacheModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   キャンセル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
         
@@ -115,11 +142,47 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   新しいバージョンのチェック に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CheckNewVersion {
+            get {
+                return ResourceManager.GetString("CheckNewVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   更新内容の確認 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CheckUpdateNotes {
+            get {
+                return ResourceManager.GetString("CheckUpdateNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   デタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Detach {
             get {
                 return ResourceManager.GetString("Detach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   開発者 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DevelopedBy {
+            get {
+                return ResourceManager.GetString("DevelopedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   表示方法 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DisplayMethod {
+            get {
+                return ResourceManager.GetString("DisplayMethod", resourceCulture);
             }
         }
         
@@ -138,6 +201,15 @@ namespace WindowTranslator.Properties {
         public static string FontSizeThrethold {
             get {
                 return ResourceManager.GetString("FontSizeThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   全般設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string GeneralSettings {
+            get {
+                return ResourceManager.GetString("GeneralSettings", resourceCulture);
             }
         }
         
@@ -165,6 +237,15 @@ namespace WindowTranslator.Properties {
         public static string InMemoryCache {
             get {
                 return ResourceManager.GetString("InMemoryCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   新しいバージョン: {0} のインストール に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InstallNewVersion {
+            get {
+                return ResourceManager.GetString("InstallNewVersion", resourceCulture);
             }
         }
         
@@ -223,6 +304,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   ライセンス に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string License {
+            get {
+                return ResourceManager.GetString("License", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   ローカルファイルキャッシュ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string LocalCache {
@@ -259,11 +349,38 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   新しいバージョン: {0} がリリースされました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NewVersionAvailable {
+            get {
+                return ResourceManager.GetString("NewVersionAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   翻訳しない に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NoTranslateModule {
+            get {
+                return ResourceManager.GetString("NoTranslateModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   認識モジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OcrModule {
             get {
                 return ResourceManager.GetString("OcrModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
             }
         }
         
@@ -295,7 +412,16 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   オーバーレイ表示の切り替え(Ctrl+Alt+O) に類似しているローカライズされた文字列を検索します。
+        ///   オーバーレイ切り替え に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OverlayShortcut {
+            get {
+                return ResourceManager.GetString("OverlayShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   オーバーレイ表示の切り替え に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OverlaySwitch {
             get {
@@ -313,29 +439,20 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   公開ページ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string PublishPage {
+            get {
+                return ResourceManager.GetString("PublishPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   認識設定 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Recognize {
             get {
                 return ResourceManager.GetString("Recognize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   アプリを自動的に起動する に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string RegisterToStartupCommand {
-            get {
-                return ResourceManager.GetString("RegisterToStartupCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   実行 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string Run {
-            get {
-                return ResourceManager.GetString("Run", resourceCulture);
             }
         }
         
@@ -363,6 +480,15 @@ namespace WindowTranslator.Properties {
         public static string SettingsViewModel {
             get {
                 return ResourceManager.GetString("SettingsViewModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ショートカット に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Shortcut {
+            get {
+                return ResourceManager.GetString("Shortcut", resourceCulture);
             }
         }
         
@@ -403,6 +529,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   対象ごとの設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TargetSpecificSettings {
+            get {
+                return ResourceManager.GetString("TargetSpecificSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   押してON/OFFを切り替える に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Toggle {
@@ -421,15 +556,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   アプリの自動起動を解除 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string UnregisterFromStartupCommand {
-            get {
-                return ResourceManager.GetString("UnregisterFromStartupCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   最新バージョンに更新 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string UpdateCommand {
@@ -444,6 +570,15 @@ namespace WindowTranslator.Properties {
         public static string UpdateInfo {
             get {
                 return ResourceManager.GetString("UpdateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   バージョン に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
         

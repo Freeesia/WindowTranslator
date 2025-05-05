@@ -1,5 +1,8 @@
-﻿using PropertyTools.Wpf;
+﻿using PropertyTools.DataAnnotations;
+using PropertyTools.Wpf;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -7,6 +10,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Controls;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
 using TextBlock = System.Windows.Controls.TextBlock;
@@ -22,8 +27,16 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             var button = new Button();
             button.SetBinding(ButtonBase.CommandProperty, property.CreateOneWayBinding());
             button.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
-            button.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
+            button.SetValue(FrameworkElement.HorizontalAlignmentProperty, System.Windows.HorizontalAlignment.Stretch);
             return button;
+        }
+
+        // MEMO: 本当は属性とか介して判定した方がいい
+        if (property.PropertyName == nameof(TargetSettingsViewModel.OverlayShortcut))
+        {
+            var shortcutBox = new ShortcutBox();
+            shortcutBox.SetBinding(TextBox.TextProperty, property.CreateBinding());
+            return shortcutBox;
         }
         return base.CreateControl(property, options);
     }
@@ -123,6 +136,58 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         return textBoxEx;
     }
 
+    private static List<EnumItem> GetEnumValues2(Type enumType)
+    {
+        var underlyingType = Nullable.GetUnderlyingType(enumType);
+        if (underlyingType != null)
+        {
+            enumType = underlyingType;
+        }
+
+        var list = EnumItem.GetEnumItems(enumType).ToList();
+        if (underlyingType != null)
+        {
+            list.Add(new EnumItem(enumType, null));
+        }
+
+        return list;
+    }
+
+    protected override FrameworkElement CreateEnumControl(PropertyItem property, PropertyControlFactoryOptions options)
+    {
+        var array = GetEnumValues2(property.Descriptor.PropertyType);
+        var selectorStyle = property.SelectorStyle;
+        if (selectorStyle == SelectorStyle.Auto)
+        {
+            selectorStyle = (array.Count <= options.EnumAsRadioButtonsLimit) ? SelectorStyle.RadioButtons : SelectorStyle.ComboBox;
+        }
+
+        switch (selectorStyle)
+        {
+            case SelectorStyle.RadioButtons:
+                var radioButtonList = new RadioButtonList();
+                radioButtonList.EnumType = property.Descriptor.PropertyType;
+                radioButtonList.SetBinding(RadioButtonList.ValueProperty, property.CreateBinding());
+                return radioButtonList;
+            case SelectorStyle.ComboBox:
+                var comboBox = new ComboBox();
+                comboBox.ItemsSource = array;
+                comboBox.DisplayMemberPath = nameof(EnumItem.Display);
+                comboBox.SelectedValuePath = nameof(EnumItem.Value);
+                comboBox.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
+                return comboBox;
+            case SelectorStyle.ListBox:
+                var listBox = new ListBox();
+                listBox.ItemsSource = array;
+                listBox.DisplayMemberPath = nameof(EnumItem.Display);
+                listBox.SelectedValuePath = nameof(EnumItem.Value);
+                listBox.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
+                return listBox;
+            default:
+                throw new InvalidOperationException();
+        }
+    }
+
     private static bool IsNullable(Type type)
     {
         if (!type.IsValueType)
@@ -181,4 +246,38 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             return DependencyProperty.UnsetValue;
         }
     }
+
+    private record EnumItem(Type Type, object? Value)
+    {
+        public string? Display { get; } = GetDisplay(Type, Value);
+
+        private static string? GetDisplay(Type type, object? value)
+        {
+            if (value == null)
+            {
+                return "-";
+            }
+            var name = Enum.GetName(type, value) ?? throw new InvalidOperationException();
+            var field = type.GetField(name) ?? throw new InvalidOperationException();
+            if (field.GetCustomAttribute<LocalizedDescriptionAttribute>()?.Description is { } desc)
+            {
+                return desc;
+            }
+            if (field.GetCustomAttribute<DisplayAttribute>()?.Name is { } disp)
+            {
+                return disp;
+            }
+
+            return name;
+        }
+
+        public static IEnumerable<EnumItem> GetEnumItems(Type type)
+        {
+            foreach (var value in Enum.GetValues(type).FilterOnBrowsableAttribute())
+            {
+                yield return new EnumItem(type, value);
+            }
+        }
+    }
+
 }

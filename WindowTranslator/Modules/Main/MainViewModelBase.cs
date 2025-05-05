@@ -123,7 +123,19 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
-        var texts = await this.ocr.RecognizeAsync(sbmp);
+        IEnumerable<TextRect> texts = [];
+        try
+        {
+            texts = await this.ocr.RecognizeAsync(sbmp);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            this.timer.DisposeAsync().Forget();
+            this.capture.StopCapture();
+            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+            return;
+        }
         {
             var tmp = texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
@@ -190,7 +202,7 @@ public abstract partial class MainViewModelBase : IDisposable
             var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
             this.cache.AddRange(requests.Select(t => t.Text).Zip(translated));
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();

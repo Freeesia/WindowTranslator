@@ -66,6 +66,11 @@ public class TargetSettings
     public double FontScale { get; set; } = 1.1;
 
     /// <summary>
+    /// オーバーレイ表示の切り替えショートカットキー
+    /// </summary>
+    public string OverlayShortcut { get; set; } = "Ctrl + Alt + O";
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);

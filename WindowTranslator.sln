@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.Goo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.OneOcrPlugin", "Plugins\WindowTranslator.Plugin.OneOcrPlugin\WindowTranslator.Plugin.OneOcrPlugin.csproj", "{D4A2E00A-7EBF-4C49-AA21-11D38041ABA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.BergamotTranslatorPlugin", "Plugins\WindowTranslator.Plugin.BergamotTranslatorPlugin\WindowTranslator.Plugin.BergamotTranslatorPlugin.csproj", "{F07F7533-4447-4A74-BB99-4FB1FA108C3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,10 @@ Global
 		{D4A2E00A-7EBF-4C49-AA21-11D38041ABA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4A2E00A-7EBF-4C49-AA21-11D38041ABA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4A2E00A-7EBF-4C49-AA21-11D38041ABA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F07F7533-4447-4A74-BB99-4FB1FA108C3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F07F7533-4447-4A74-BB99-4FB1FA108C3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F07F7533-4447-4A74-BB99-4FB1FA108C3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F07F7533-4447-4A74-BB99-4FB1FA108C3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +153,7 @@ Global
 		{A7E6289F-9FF6-43E9-904F-AEC929248BC2} = {0B1130E1-2666-4D0F-B69E-4C0A849C56E6}
 		{9F81F7B3-1F9C-4D93-B16A-7BF84A8121CB} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{D4A2E00A-7EBF-4C49-AA21-11D38041ABA8} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
+		{F07F7533-4447-4A74-BB99-4FB1FA108C3A} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_AutoCreateNewLanguageFiles = True

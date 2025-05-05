@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" />
     <PackageReference Include="DeepL.net" />
+    <PackageReference Include="ValueTaskSupplement" />
   </ItemGroup>
 
 </Project>

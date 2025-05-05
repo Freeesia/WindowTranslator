@@ -1,5 +1,4 @@
-﻿
-using System.Globalization;
+﻿using System.Globalization;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
@@ -16,7 +15,7 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
         var culture = new CultureInfo(settings.Language.Source);
         try
         {
-            if (await WindowsMediaOcrUtility.IsInstalledLanguageAsync(settings.Language.Source))
+            if (WindowsMediaOcrUtility.IsInstalledLanguage(settings.Language.Source))
             {
                 return ValidateResult.Valid;
             }

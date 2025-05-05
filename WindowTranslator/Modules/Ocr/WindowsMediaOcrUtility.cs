@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Management.Automation.Runspaces;
-using System.Management.Automation;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -14,23 +12,8 @@ public static class WindowsMediaOcrUtility
         _ => lang,
     };
 
-    public static async Task<bool> IsInstalledLanguageAsync(string lang)
-    {
-        using var runspace = RunspaceFactory.CreateRunspace();
-        runspace.Open();
-        using var ps = PowerShell.Create();
-        ps.Runspace = runspace;
-        ps.AddScript($"Get-InstalledLanguage -language {ConvertLanguage(lang)}");
-        var result = await ps.InvokeAsync().ConfigureAwait(false);
-        var output = (IList)result.Single().BaseObject;
-        if (output.Count == 0)
-        {
-            return false;
-        }
-        var langInfo = output[0];
-        var features = langInfo!.GetType().GetField("LanguageFeatures")!.GetValue(langInfo);
-        return ((int)features! & 0x20) == 0x20;
-    }
+    public static bool IsInstalledLanguage(string lang)
+        => Directory.Exists(@$"C:\Windows\OCR\{ConvertLanguage(lang)}");
 
     public static async Task InstallLanguageAsync(string language, CancellationToken cancellationToken = default)
     {
@@ -42,7 +25,7 @@ public static class WindowsMediaOcrUtility
         };
         var p = Process.Start(info);
         p!.WaitForExit();
-        while (!await IsInstalledLanguageAsync(language).ConfigureAwait(false))
+        while (!IsInstalledLanguage(language))
         {
             cancellationToken.ThrowIfCancellationRequested();
             await Task.Delay(1000, cancellationToken).ConfigureAwait(false);

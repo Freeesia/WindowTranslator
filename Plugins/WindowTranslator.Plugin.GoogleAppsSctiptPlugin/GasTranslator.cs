@@ -1,24 +1,26 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Util.Store;
-using Microsoft.Extensions.Options;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Util.Store;
+using Microsoft.Extensions.Options;
 using ValueTaskSupplement;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
-[DisplayName("Google Apps Script")]
+[DisplayName("Google翻訳")]
 public sealed class GasTranslator : ITranslateModule, IDisposable
 {
     private const string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
     private static readonly string[] Scopes = ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/script.scriptapp"];
     private static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web);
+    private readonly FileDataStore authStore = new(@"StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin");
     private readonly LanguageOptions langOptions;
     private readonly bool isPublicScript;
     private readonly AsyncLazy<UserCredential> credential;
@@ -50,8 +52,16 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
             }
             this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
         }
-        var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source, this.langOptions.Target);
+        var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
         var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
+        if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+        {
+            await this.authStore.ClearAsync().ConfigureAwait(false);
+            throw new("""
+                翻訳モジュールが要求する権限の一部もしくは全てが付与されませんでした。
+                再度翻訳を試みた際に、再度権限の付与を求められます。
+                """);
+        }
         res.EnsureSuccessStatusCode();
         var translatedTexts = await res.Content.ReadFromJsonAsync<string[]>(JsonSerializerOptions).ConfigureAwait(false);
         return translatedTexts ?? [];
@@ -69,7 +79,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
             Scopes,
             "user",
             CancellationToken.None,
-            new FileDataStore(@"StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin")
+            authStore
         ).ConfigureAwait(false);
 
     private static string Decrypt(string cipherTextBase64)
@@ -106,7 +116,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
     }
 }
 
-[DisplayName("Google Apps Script")]
+[DisplayName("Google翻訳")]
 public class GasOptions : IPluginParam
 {
 
@@ -115,27 +125,14 @@ public class GasOptions : IPluginParam
     public string DeployId { get; set; } = string.Empty;
 }
 
-public class GasValidator : ITargetSettingsValidator
+file static class Extensions
 {
-    public ValueTask<ValidateResult> Validate(TargetSettings settings)
-    {
-        // 翻訳モジュールで利用しない場合は無条件で有効
-        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GasTranslator))
+    public static string GetLangCode(this string target)
+        => target switch
         {
-            return ValueTask.FromResult(ValidateResult.Valid);
-        }
-
-        // APIキーが設定されている場合は有効
-        var op = settings.PluginParams.GetValueOrDefault(nameof(GasOptions)) as GasOptions;
-        if (string.IsNullOrEmpty(op?.DeployId))
-        {
-            return ValueTask.FromResult(ValidateResult.Invalid("Google Apps Script", """
-            現在、Google Apps Scriptの翻訳モジュールを利用するには、個々にデプロイしてスクリプトを公開する必要があります。
-
-            「対象ごとの設定」→「Google Apps Script」タブでデプロイIDを設定してください。
-            """));
-        }
-
-        return ValueTask.FromResult(ValidateResult.Valid);
-    }
+            "pt-BR" or "pt-PT" => target,
+            "zh-Hant" => "zh-TW",
+            "zh-Hans" => "zh-CN",
+            var t => t[..2],
+        };
 }

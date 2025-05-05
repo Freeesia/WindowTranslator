@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using GenerativeAI.Models;
+using GenerativeAI;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.Modules;
 
@@ -11,6 +11,7 @@ public class GoogleAIOptions : IPluginParam
     public bool IsEnabledCorrect { get; set; }
 
     [DisplayName("使用するモデル")]
+    [SelectorStyle(SelectorStyle.ComboBox)]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
 
     [DisplayName("使用するプレビューモデル")]
@@ -30,15 +31,26 @@ public class GoogleAIOptions : IPluginParam
     [DataType(DataType.MultilineText)]
     [DisplayName("翻訳時に利用する文脈情報")]
     public string? TranslateContext { get; set; }
+
+    [DisplayName("用語集パス")]
+    [FileExtensions(Extensions = ".csv")]
+    [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
+    public string? GlossaryPath { get; set; }
 }
 
 public enum GoogleAIModel
 {
-    [Display(Name = "Gemini 1.5 Flash")]
+    [Display(Name = "Gemini 1.5 Flash (～2025年9月24日)")]
     Gemini15Flash,
 
-    [Display(Name = "Gemini 1.5 Pro")]
+    [Display(Name = "Gemini 1.5 Pro (～2025年9月24日)")]
     Gemini15Pro,
+
+    [Display(Name = "Gemini 2.0 Flash Lite")]
+    Gemini20FlashLite,
+
+    [Display(Name = "Gemini 2.0 Flash")]
+    Gemini20Flash,
 }
 
 public static class GoogleAIModelExtensions
@@ -46,7 +58,9 @@ public static class GoogleAIModelExtensions
     public static string GetName(this GoogleAIModel model) => model switch
     {
         GoogleAIModel.Gemini15Flash => GoogleAIModels.Gemini15Flash,
-        GoogleAIModel.Gemini15Pro => GoogleAIModels.GeminiPro,
+        GoogleAIModel.Gemini15Pro => GoogleAIModels.Gemini15Pro,
+        GoogleAIModel.Gemini20FlashLite => "models/gemini-2.0-flash-lite",
+        GoogleAIModel.Gemini20Flash => "models/gemini-2.0-flash",
         _ => throw new ArgumentOutOfRangeException(nameof(model)),
     };
 }

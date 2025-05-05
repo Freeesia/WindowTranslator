@@ -5,7 +5,8 @@ using System.IO;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Unicode;
+using System.Text.Json.Serialization;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
@@ -17,7 +18,7 @@ using PropertyTools.DataAnnotations;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
-using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Extensions;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -33,8 +34,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         Converters =
         {
             new PluginParamConverter(),
+            new JsonStringEnumConverter(),
         },
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        AllowTrailingCommas = true,
         WriteIndented = true,
     };
     private readonly IUpdateChecker updateChecker;
@@ -119,11 +122,11 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.IsEnableCaptureOverlay = common.IsEnableCaptureOverlay;
         this.OverlaySwitch = common.OverlaySwitch;
         this.IsEnableAutoTarget = common.IsEnableAutoTarget;
-        this.AutoTargets = new(autoTargetStore.AutoTargets);
+        this.AutoTargets = [.. autoTargetStore.AutoTargets];
 
-        this.Targets = new(options.Value.Targets
+        this.Targets = [.. options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
-            .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules)));
+            .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
 
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
@@ -215,6 +218,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public void DeleteAutoTarget(string item)
         => this.AutoTargets.Remove(item);
 
+    [RelayCommand(CanExecute = nameof(CanDeleteTargetSetting))]
+    public void DeleteTargetSetting(TargetSettingsViewModel item)
+        => this.Targets.Remove(item);
+
+    public static bool CanDeleteTargetSetting(TargetSettingsViewModel item)
+        => !string.IsNullOrEmpty(item?.Name);
+
     [RelayCommand]
     public static void OpenThirdPartyLicenses()
     {
@@ -244,6 +254,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 Font = t.Font,
                 FontScale = t.FontScale,
+                OverlayShortcut = t.OverlayShortcut,
                 SelectedPlugins = new()
                 {
                     [nameof(ITranslateModule)] = t.TranslateModule,
@@ -271,6 +282,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
+            }
+            var (m, _) = target.OverlayShortcut.ToShortcutKey();
+            if (m == ModifierKeys.None)
+            {
+                r.Add(ValidateResult.Invalid("オーバーレイショートカット",
+                "少なくとも1つの修飾キー（Ctrl、Alt、Shift）を選択してください。"));
             }
             foreach (var validator in this.validators)
             {
@@ -352,6 +369,7 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("ko-KR"),
         CultureInfo.GetCultureInfo("zh-Hans"),
         CultureInfo.GetCultureInfo("zh-Hant"),
+        CultureInfo.GetCultureInfo("vi-VN"),
     ];
 
     [Browsable(false)]
@@ -415,6 +433,10 @@ public partial class TargetSettingsViewModel(
     [property: SortIndex(6)]
     [ObservableProperty]
     private double fontScale = settings.FontScale;
+
+    [property: Category("SettingsViewModel|Shortcut")]
+    [ObservableProperty]
+    private string overlayShortcut = settings.OverlayShortcut;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

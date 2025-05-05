@@ -27,4 +27,9 @@ public class LLMOptions : IPluginParam
     [DisplayName("翻訳時に利用する文脈情報")]
     [DataType(DataType.MultilineText)]
     public string? TranslateContext { get; set; }
+
+    [DisplayName("用語集パス")]
+    [FileExtensions(Extensions = ".csv")]
+    [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
+    public string? GlossaryPath { get; set; }
 }
