@@ -376,6 +376,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   キャッシュしない に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NoCache {
+            get {
+                return ResourceManager.GetString("NoCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   翻訳しない に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string NoTranslateModule {

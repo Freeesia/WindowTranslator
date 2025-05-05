@@ -309,4 +309,7 @@
   <data name="FazzyMatchThreshold" xml:space="preserve">
     <value>近いテキストの閾値</value>
   </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>キャッシュしない</value>
+  </data>
 </root>
