@@ -303,4 +303,13 @@
   <data name="NoTranslateModule" xml:space="preserve">
     <value>Übersetze nicht</value>
   </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>キャッシュ設定</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>近いテキストの閾値</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>キャッシュしない</value>
+  </data>
 </root>
