@@ -1,35 +1,48 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using PropertyTools.DataAnnotations;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Plugin.LLMPlugin.Properties;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
 public class LLMOptions : IPluginParam
 {
-    [DisplayName("認識補正を利用するか")]
-    public bool IsEnabledCorrect { get; set; }
+    [LocalizedDisplayName(typeof(Resources), nameof(CorrectMode))]
+    [SelectorStyle(SelectorStyle.ComboBox)]
+    public CorrectMode CorrectMode { get; set; }
 
-    [DisplayName("使用するモデル")]
+    [LocalizedDisplayName(typeof(Resources), nameof(Model))]
     public string? Model { get; set; } = "gpt-4o-mini";
 
-    [DisplayName("APIキー")]
+    [LocalizedDisplayName(typeof(Resources), nameof(ApiKey))]
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }
 
-    [DisplayName("接続先")]
+    [LocalizedDisplayName(typeof(Resources), nameof(Endpoint))]
     public string? Endpoint { get; set; }
 
     [Height(120)]
-    [DisplayName("補正サンプル")]
+    [LocalizedDisplayName(typeof(Resources), nameof(CorrectSample))]
     [DataType(DataType.MultilineText)]
     public string? CorrectSample { get; set; }
 
     [Height(120)]
-    [DisplayName("翻訳時に利用する文脈情報")]
+    [LocalizedDisplayName(typeof(Resources), nameof(TranslateContext))]
     [DataType(DataType.MultilineText)]
     public string? TranslateContext { get; set; }
 
-    [DisplayName("用語集パス")]
+    [LocalizedDisplayName(typeof(Resources), nameof(GlossaryPath))]
     [FileExtensions(Extensions = ".csv")]
-    [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
+    [InputFilePath(".csv", "CSV (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
+}
+
+public enum CorrectMode
+{
+    [LocalizedDescription(typeof(Resources), $"{nameof(CorrectMode)}_{nameof(None)}")]
+    None,
+    [LocalizedDescription(typeof(Resources), $"{nameof(CorrectMode)}_{nameof(Text)}")]
+    Text,
+    [LocalizedDescription(typeof(Resources), $"{nameof(CorrectMode)}_{nameof(Image)}")]
+    Image,
 }

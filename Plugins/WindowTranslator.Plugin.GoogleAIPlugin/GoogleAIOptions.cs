@@ -1,56 +1,69 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using GenerativeAI;
 using PropertyTools.DataAnnotations;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.GoogleAIPlugin.Properties;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
-public class GoogleAIOptions : IPluginParam
+public partial class GoogleAIOptions : IPluginParam
 {
-    [DisplayName("認識補正を利用するか")]
-    public bool IsEnabledCorrect { get; set; }
+    [LocalizedDisplayName(typeof(Resources), nameof(CorrectMode))]
+    [SelectorStyle(SelectorStyle.ComboBox)]
+    public CorrectMode CorrectMode { get; set; }
 
-    [DisplayName("使用するモデル")]
+    [LocalizedDisplayName(typeof(Resources), nameof(Model))]
     [SelectorStyle(SelectorStyle.ComboBox)]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
 
-    [DisplayName("使用するプレビューモデル")]
-    [Description("モデル名を入力すると「使用するモデル」より優先されます")]
+    [LocalizedDisplayName(typeof(Resources), nameof(PreviewModel))]
+    [LocalizedDescription(typeof(Resources), $"{nameof(PreviewModel)}_Desc")]
     public string? PreviewModel { get; set; }
 
-    [DisplayName("APIキー")]
+    [LocalizedDisplayName(typeof(Resources), nameof(ApiKey))]
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }
 
     [Height(120)]
     [DataType(DataType.MultilineText)]
-    [DisplayName("補正サンプル")]
+    [LocalizedDisplayName(typeof(Resources), nameof(CorrectSample))]
     public string? CorrectSample { get; set; }
 
     [Height(120)]
     [DataType(DataType.MultilineText)]
-    [DisplayName("翻訳時に利用する文脈情報")]
+    [LocalizedDisplayName(typeof(Resources), nameof(TranslateContext))]
     public string? TranslateContext { get; set; }
 
-    [DisplayName("用語集パス")]
+    [LocalizedDisplayName(typeof(Resources), nameof(GlossaryPath))]
     [FileExtensions(Extensions = ".csv")]
-    [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
+    [InputFilePath(".csv", "CSV (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
 }
 
 public enum GoogleAIModel
 {
-    [Display(Name = "Gemini 1.5 Flash (～2025年9月24日)")]
+    [LocalizedDescription(typeof(Resources), nameof(Gemini15Flash))]
     Gemini15Flash,
 
-    [Display(Name = "Gemini 1.5 Pro (～2025年9月24日)")]
+    [LocalizedDescription(typeof(Resources), nameof(Gemini15Pro))]
     Gemini15Pro,
 
-    [Display(Name = "Gemini 2.0 Flash Lite")]
+    [LocalizedDescription(typeof(Resources), nameof(Gemini20FlashLite))]
     Gemini20FlashLite,
 
-    [Display(Name = "Gemini 2.0 Flash")]
+    [LocalizedDescription(typeof(Resources), nameof(Gemini20Flash))]
     Gemini20Flash,
+}
+
+public enum CorrectMode
+{
+    [LocalizedDescription(typeof(Resources), $"{nameof(CorrectMode)}_{nameof(None)}")]
+    None,
+    [LocalizedDescription(typeof(Resources), $"{nameof(CorrectMode)}_{nameof(Text)}")]
+    Text,
+    [LocalizedDescription(typeof(Resources), $"{nameof(CorrectMode)}_{nameof(Image)}")]
+    Image,
 }
 
 public static class GoogleAIModelExtensions
@@ -70,13 +83,14 @@ public class GoogleAIValidator : ITargetSettingsValidator
     public ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
         var op = settings.PluginParams.GetValueOrDefault(nameof(GoogleAIOptions)) as GoogleAIOptions;
-        // 翻訳モジュールでも補正も利用しない場合は無条件で有効
-        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GoogleAITranslator) && !(op?.IsEnabledCorrect ?? false))
+        // APIキーが設定されている場合は有効
+        if (!string.IsNullOrEmpty(op?.ApiKey))
         {
             return ValueTask.FromResult(ValidateResult.Valid);
         }
-        // APIキーが設定されている場合は有効
-        if (!string.IsNullOrEmpty(op?.ApiKey))
+
+        // 翻訳モジュールでも補正も利用しない場合は無条件で有効
+        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GoogleAITranslator) && (op?.CorrectMode ?? CorrectMode.None) != CorrectMode.None)
         {
             return ValueTask.FromResult(ValidateResult.Valid);
         }
