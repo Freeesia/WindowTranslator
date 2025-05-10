@@ -38,13 +38,17 @@ var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry(op => op.Dsn = ""));
 #endif
 
-var typeCriteria = new TypeFinderCriteria()
+TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
 {
-    IsAbstract = false,
-#if !DEBUG
-    Query = (ctx,t) => !CustomAttributeData.GetCustomAttributes(t).Any(a => a.AttributeType == typeof(ExperimentalAttribute)),
+    // クエリを設定すると、他のオプションが判定されないので、クエリ内で全て判定する
+    Query = static (ctx, t)
+        => !t.IsGenericTypeDefinition
+        && !t.IsAbstract
+        && !t.IsInterface
+#if DEBUG
+        && !CustomAttributeData.GetCustomAttributes(t).Any(a => a.AttributeType == typeof(ExperimentalAttribute))
 #endif
-};
+});
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
@@ -60,13 +64,13 @@ builder.Services.AddPluginFramework()
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, typeCriteria, new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, typeCriteria, new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 builder.Configuration
