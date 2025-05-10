@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Text.Unicode;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Quickenshtein;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Properties;
@@ -25,12 +26,14 @@ public sealed partial class LocalCache : ICacheModule, IDisposable
     private readonly ConcurrentDictionary<string, string> cache;
     private readonly ConcurrentDictionary<string, string> nearCache = new();
     private readonly ILogger<LocalCache> logger;
+    private readonly CacheParam options;
     private readonly string path;
 
-    public LocalCache(IProcessInfoStore processInfoStore, IPresentationService presentationService, ILogger<LocalCache> logger)
+    public LocalCache(IProcessInfoStore processInfoStore, IPresentationService presentationService, ILogger<LocalCache> logger, IOptionsSnapshot<CacheParam> options)
     {
         this.processInfoStore = processInfoStore;
         this.logger = logger;
+        this.options = options.Value;
         var dir = Path.Combine(PathUtility.UserDir, "cache");
         Directory.CreateDirectory(dir);
         this.path = Path.Combine(dir, Path.ChangeExtension(this.processInfoStore.Name, ".json"));
@@ -71,7 +74,7 @@ public sealed partial class LocalCache : ICacheModule, IDisposable
         {
             return true;
         }
-        if (this.cache.IsEmpty)
+        if (this.cache.IsEmpty || Math.Abs(this.options.FuzzyMatchThreshold - 1.0) < double.Epsilon)
         {
             return false;
         }
@@ -80,9 +83,9 @@ public sealed partial class LocalCache : ICacheModule, IDisposable
             .Select(p => (src: p.Key, dst: p.Value, distance: Levenshtein.GetDistance(src, p.Key, CalculationOptions.DefaultWithThreading)))
             .MinBy(p => p.distance);
         // 編集距離のパーセンテージ
-        var p = 100.0 * distance / Math.Max(src.Length, cacheSrc.Length);
-        this.logger.LogDebug($"LevenshteinDistance: {src} -> {cacheSrc} ({p:f2}%) [{DateTime.UtcNow - t}]");
-        if (p >= 20)
+        var p = (float)distance / Math.Max(src.Length, cacheSrc.Length);
+        this.logger.LogDebug($"LevenshteinDistance: {src} -> {cacheSrc} ({p:p2}%) [{DateTime.UtcNow - t}]");
+        if (p < this.options.FuzzyMatchThreshold)
         {
             return false;
         }

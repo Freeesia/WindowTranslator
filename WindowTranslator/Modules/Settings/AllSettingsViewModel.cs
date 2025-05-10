@@ -257,6 +257,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 OverlayShortcut = t.OverlayShortcut,
                 SelectedPlugins = new()
                 {
+                    [nameof(IOcrModule)] = t.OcrModule,
                     [nameof(ITranslateModule)] = t.TranslateModule,
                     [nameof(ICacheModule)] = t.CacheModule,
                 },

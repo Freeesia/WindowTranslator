@@ -378,7 +378,7 @@ public partial class FoMFilterModule : IFilterModule
     }
 
 
-    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
         if (!this.isEnabled)
         {
@@ -446,9 +446,9 @@ public partial class FoMFilterModule : IFilterModule
         if (notContexts.Count > 0)
         {
             var contexts = match.Select(GetCharContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
-            if (contexts is [var context])
+            if (contexts is [var ctx])
             {
-                notContexts = notContexts.Select(p => p with { text = p.text with { Text = p.cache.En, Context = context + p.cache.SceneContext } }).ToList();
+                notContexts = notContexts.Select(p => p with { text = p.text with { Text = p.cache.En, Context = ctx + p.cache.SceneContext } }).ToList();
             }
             foreach (var (text, _) in notContexts)
             {
@@ -462,7 +462,7 @@ public partial class FoMFilterModule : IFilterModule
         }
     }
 
-    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts)
+    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
         => texts;
 
     private void Dropped(IReadOnlyList<string> texts)
