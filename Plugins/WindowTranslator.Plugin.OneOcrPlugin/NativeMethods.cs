@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
-partial class NativeMethods
+static partial class NativeMethods
 {
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -23,7 +23,7 @@ partial class NativeMethods
 
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial long GetOcrLineBoundingBox(long line, out BoundingBox boundingBox);
+    public static partial long GetOcrLineBoundingBox(long line, out IntPtr boundingBox);
 
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -60,20 +60,23 @@ partial class NativeMethods
     [LibraryImport("oneocr.dll", StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial long CreateOcrPipeline(string modelPath, string key, long ctx, out long pipeline);
+
+    [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    public static partial void AddDllDirectory(string newDirectory);
 }
 
 [StructLayout(LayoutKind.Sequential)]
 readonly record struct Img(int T, int Col, int Row, int Unk, long Step, IntPtr Data);
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct BoundingBox
+struct BoundingBox
 {
-    public readonly float x1;
-    public readonly float y1;
-    public readonly float x2;
-    public readonly float y2;
-    public readonly float x3;
-    public readonly float y3;
-    public readonly float x4;
-    public readonly float y4;
+    public float x1;
+    public float y1;
+    public float x2;
+    public float y2;
+    public float x3;
+    public float y3;
+    public float x4;
+    public float y4;
 }
