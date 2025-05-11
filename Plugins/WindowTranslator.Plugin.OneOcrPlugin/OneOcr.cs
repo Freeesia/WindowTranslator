@@ -14,21 +14,22 @@ namespace WindowTranslator.Plugin.OneOcrPlugin;
 [DisplayName("OneOcr文字認識")]
 public class OneOcr : IOcrModule
 {
-    const string modelPath = "oneocr.onemodel";
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
     const int maxLineCount = 1000;
     private readonly ILogger<OneOcr> logger;
     private readonly long pipeline;
     private readonly long opt;
     private readonly long context;
-    private readonly string path;
+
+    static OneOcr()
+    {
+        var context = AssemblyLoadContext.GetLoadContext(typeof(OneOcr).Assembly) ?? throw new InvalidOperationException();
+        context.ResolvingUnmanagedDll += Context_ResolvingUnmanagedDll;
+    }
 
     public OneOcr(ILogger<OneOcr> logger)
     {
         this.logger = logger;
-        this.path = Utility.FindOneOcrPath() ?? throw new InvalidOperationException("OneOcrのDLLが見つかりません。");
-        var hoge = AssemblyLoadContext.GetLoadContext(typeof(OneOcr).Assembly);
-        //hoge.ResolvingUnmanagedDll += Hoge_ResolvingUnmanagedDll;
 
         // OCR初期化オプションの作成
         var res = CreateOcrInitOptions(out this.context);
@@ -46,7 +47,7 @@ public class OneOcr : IOcrModule
         }
 
         // OCRパイプラインを作成
-        res = CreateOcrPipeline(Path.Combine(this.path, modelPath), apiKey, context, out this.pipeline);
+        res = CreateOcrPipeline(Path.Combine(Utility.OneOcrPath, Utility.OneOcrModel), apiKey, context, out this.pipeline);
         if (res != 0)
         {
             throw new InvalidOperationException($"OCRパイプラインの作成に失敗しました。エラーコード: {res}");
@@ -150,12 +151,11 @@ public class OneOcr : IOcrModule
         return textRects;
     }
 
-    private nint Hoge_ResolvingUnmanagedDll(Assembly assembly, string arg2)
+    private static nint Context_ResolvingUnmanagedDll(Assembly assembly, string arg2)
     {
-        var fullPath = Path.Combine(path!, arg2);
+        var fullPath = Path.Combine(Utility.OneOcrPath, arg2);
         if (File.Exists(fullPath))
         {
-            //NativeLibrary.Load(Path.Combine(path!, "onnxruntime.dll"));
             return NativeLibrary.Load(fullPath);
         }
         else
@@ -171,4 +171,40 @@ public class OneOcr : IOcrModule
 unsafe interface IMemoryBufferByteAccess
 {
     void GetBuffer(out byte* buffer, out uint capacity);
+}
+
+public class OneOcrValidator : ITargetSettingsValidator
+{
+    public async ValueTask<ValidateResult> Validate(TargetSettings settings)
+    {
+        // 翻訳モジュールで利用しない場合は無条件で有効
+        if (settings.SelectedPlugins[nameof(IOcrModule)] != nameof(OneOcr))
+        {
+            return ValidateResult.Valid;
+        }
+
+        if (!Utility.NeedCopyDll())
+        {
+            return ValidateResult.Valid;
+        }
+
+        // OneOcrのインストール先を取得
+        var oneOcrPath = await Utility.FindOneOcrPath().ConfigureAwait(false);
+        if (oneOcrPath == null)
+        {
+            return ValidateResult.Invalid("OneOcr", "依存モジュールが見つかりません。この環境では利用できません。");
+        }
+
+        // DLLをコピー
+        try
+        {
+            Utility.CopyDll(oneOcrPath);
+        }
+        catch (Exception ex)
+        {
+            return ValidateResult.Invalid("OneOcr", $"OneOcrのDLLのコピーに失敗しました。{ex.Message}");
+        }
+
+        return ValidateResult.Valid;
+    }
 }

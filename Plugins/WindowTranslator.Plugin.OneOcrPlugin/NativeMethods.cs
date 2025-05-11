@@ -60,9 +60,6 @@ static partial class NativeMethods
     [LibraryImport("oneocr.dll", StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial long CreateOcrPipeline(string modelPath, string key, long ctx, out long pipeline);
-
-    [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    public static partial void AddDllDirectory(string newDirectory);
 }
 
 [StructLayout(LayoutKind.Sequential)]
