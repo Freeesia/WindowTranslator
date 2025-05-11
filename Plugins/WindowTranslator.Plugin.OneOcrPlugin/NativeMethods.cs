@@ -39,7 +39,7 @@ static partial class NativeMethods
 
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial long GetOcrWordBoundingBox(long line, out BoundingBox boundingBox);
+    public static partial long GetOcrWordBoundingBox(long line, out IntPtr boundingBox);
 
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]

@@ -101,7 +101,7 @@ public class OneOcr : IOcrModule
             throw new InvalidOperationException($"OCR行数の取得に失敗しました。エラーコード: {res}");
         }
 
-        List<TextRect> textRects = new List<TextRect>();
+        var textRects = new List<TextRect>((int)lineCount);
 
         // 各行の内容を処理
         for (long i = 0; i < lineCount; i++)
