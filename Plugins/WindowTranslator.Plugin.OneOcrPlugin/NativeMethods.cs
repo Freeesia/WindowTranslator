@@ -17,9 +17,9 @@ static partial class NativeMethods
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial long GetOcrLine(long instance, long index, out long line);
 
-    [LibraryImport("oneocr.dll")]
+    [LibraryImport("oneocr.dll", StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial long GetOcrLineContent(long line, out IntPtr content);
+    public static partial long GetOcrLineContent(long line, out string content);
 
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -33,9 +33,9 @@ static partial class NativeMethods
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial long GetOcrWord(long instance, long index, out long line);
 
-    [LibraryImport("oneocr.dll")]
+    [LibraryImport("oneocr.dll", StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial long GetOcrWordContent(long line, out IntPtr content);
+    public static partial long GetOcrWordContent(long line, out string content);
 
     [LibraryImport("oneocr.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]

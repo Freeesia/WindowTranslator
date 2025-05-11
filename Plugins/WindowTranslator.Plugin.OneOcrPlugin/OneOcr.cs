@@ -114,13 +114,12 @@ public class OneOcr : IOcrModule
             }
 
             // 行のテキスト内容を取得
-            res = GetOcrLineContent(line, out IntPtr lineContentPtr);
+            res = GetOcrLineContent(line, out var lineContent);
             if (res != 0)
             {
                 throw new InvalidOperationException($"OCR行のテキスト内容の取得に失敗しました。行番号: {i}, エラーコード: {res}");
             }
 
-            var lineContent = Marshal.PtrToStringUTF8(lineContentPtr);
             if (string.IsNullOrEmpty(lineContent))
             {
                 continue;
@@ -128,11 +127,11 @@ public class OneOcr : IOcrModule
 
             // 境界ボックスを取得
             res = GetOcrLineBoundingBox(line, out var ptr);
-            var boundingBox = Marshal.PtrToStructure<BoundingBox>(ptr);
             if (res != 0)
             {
                 throw new InvalidOperationException($"OCR行の境界ボックスの取得に失敗しました。行番号: {i}, エラーコード: {res}");
             }
+            var boundingBox = Marshal.PtrToStructure<BoundingBox>(ptr);
 
             // 境界ボックスから座標を計算
             var left = Math.Min(Math.Min(boundingBox.x1, boundingBox.x2), Math.Min(boundingBox.x3, boundingBox.x4));
