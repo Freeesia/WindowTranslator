@@ -2,12 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quickenshtein;
-using WindowTranslator.ComponentModel;
-using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.Cache;
 
-[LocalizedDisplayName(typeof(Resources), nameof(InMemoryCache))]
 public class InMemoryCache(ILogger<InMemoryCache> logger, IOptionsSnapshot<CacheParam> options) : ICacheModule
 {
     private readonly ConcurrentDictionary<string, string> cache = new();

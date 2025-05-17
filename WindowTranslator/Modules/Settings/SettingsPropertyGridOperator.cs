@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Windows.Data;
-using WindowTranslator.Properties;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyTools.DataAnnotations;
@@ -11,17 +10,16 @@ using System.Reflection;
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
-
     public SettingsPropertyGridOperator()
     {
         this.ModifyCamelCaseDisplayNames = false;
     }
 
     protected override string GetLocalizedString(string key, Type declaringType)
-        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
+        => declaringType.GetResourceManager()?.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
 
     protected override string GetLocalizedDescription(string key, Type declaringType)
-        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedDescription(key, declaringType);
+        => declaringType.GetResourceManager()?.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedDescription(key, declaringType);
 
     protected override IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
     {
