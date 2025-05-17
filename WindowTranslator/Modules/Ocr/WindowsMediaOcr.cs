@@ -18,7 +18,7 @@ namespace WindowTranslator.Modules.Ocr;
 [DisplayName("Windows標準文字認識")]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
-    IOptionsSnapshot<WindowsMediaOcrParam> ocrParam,
+    IOptionsSnapshot<BasicOcrParam> ocrParam,
     ILogger<WindowsMediaOcr> logger)
     : IOcrModule, IDisposable
 {

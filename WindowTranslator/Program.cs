@@ -51,7 +51,8 @@ TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
 });
 
 builder.Services.AddPluginFramework()
-    .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
+    .AddPluginCatalog(new MainAssemblyPluginCatalog(new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
+    .AddPluginCatalog(new AbstracttionsAssemblyPluginCatalog(new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
     .AddPluginType<ITranslateModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<ITranslateModule>)
     .AddPluginType<ICacheModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<ICacheModule>)
     .AddPluginType<IOcrModule>(ServiceLifetime.Scoped, op => op.DefaultType = GetDefaultPlugin<IOcrModule>)
@@ -149,10 +150,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section
-            .GetSection(nameof(TargetSettings.PluginParams))
-            .GetSection(typeof(TOptions).Name)
-            .Bind(options);
+        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
     }
 
     public void Configure(string? name, TOptions options)
@@ -163,10 +161,19 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section
-            .GetSection(nameof(TargetSettings.PluginParams))
-            .GetSection(typeof(TOptions).Name)
-            .Bind(options);
+        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
+    }
+
+    private static IConfigurationSection GetTargetSection(IConfigurationSection section, string name)
+    {
+        section = section.GetSection(nameof(TargetSettings.PluginParams));
+        // パラメータのクラス名変わったので、互換性のために一時的にBasicOcrParamをWindowsMediaOcrParamに変換する
+        if (typeof(TOptions) == typeof(BasicOcrParam))
+        {
+            var tmp = section.GetSection(typeof(TOptions).Name);
+            return tmp.Exists() ? tmp : section.GetSection("WindowsMediaOcrParam");
+        }
+        return section.GetSection(typeof(TOptions).Name);
     }
 }
 
@@ -202,6 +209,9 @@ class ConfigureLanguageOptions(IConfiguration configuration, IProcessInfoStore s
         section.GetSection(nameof(TargetSettings.Language)).Bind(options);
     }
 }
+
+class MainAssemblyPluginCatalog(AssemblyPluginCatalogOptions options) : AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), options);
+class AbstracttionsAssemblyPluginCatalog(AssemblyPluginCatalogOptions options) : AssemblyPluginCatalog(typeof(UserSettings).Assembly, options);
 
 static class ServiceCollectionExtensions
 {
