@@ -1,7 +1,4 @@
-﻿using WindowTranslator.ComponentModel;
-using WindowTranslator.Properties;
-
-namespace WindowTranslator;
+﻿namespace WindowTranslator;
 
 /// <summary>
 /// ユーザー設定
@@ -89,13 +86,11 @@ public enum ViewMode
     /// <summary>
     /// キャプチャー
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Capture))]
     Capture,
 
     /// <summary>
     /// オーバーレイ
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Overlay))]
     Overlay,
 }
 
@@ -107,12 +102,10 @@ public enum OverlaySwitch
     /// <summary>
     /// ホールド
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Hold))]
     Hold,
 
     /// <summary>
     /// トグル
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Toggle))]
     Toggle,
 }

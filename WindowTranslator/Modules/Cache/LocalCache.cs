@@ -9,13 +9,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quickenshtein;
 using WindowTranslator.ComponentModel;
-using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
 
 [DefaultModule]
-[LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
 public sealed partial class LocalCache : ICacheModule, IDisposable
 {
     private static readonly JsonSerializerOptions serializerOptions = new()

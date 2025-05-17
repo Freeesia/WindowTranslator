@@ -9,33 +9,26 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 public partial class GoogleAIOptions : IPluginParam
 {
-    [LocalizedDisplayName(typeof(Resources), nameof(CorrectMode))]
     [SelectorStyle(SelectorStyle.ComboBox)]
     public CorrectMode CorrectMode { get; set; }
 
-    [LocalizedDisplayName(typeof(Resources), nameof(Model))]
     [SelectorStyle(SelectorStyle.ComboBox)]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
 
-    [LocalizedDisplayName(typeof(Resources), nameof(PreviewModel))]
     [LocalizedDescription(typeof(Resources), $"{nameof(PreviewModel)}_Desc")]
     public string? PreviewModel { get; set; }
 
-    [LocalizedDisplayName(typeof(Resources), nameof(ApiKey))]
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }
 
     [Height(120)]
     [DataType(DataType.MultilineText)]
-    [LocalizedDisplayName(typeof(Resources), nameof(CorrectSample))]
     public string? CorrectSample { get; set; }
 
     [Height(120)]
     [DataType(DataType.MultilineText)]
-    [LocalizedDisplayName(typeof(Resources), nameof(TranslateContext))]
     public string? TranslateContext { get; set; }
 
-    [LocalizedDisplayName(typeof(Resources), nameof(GlossaryPath))]
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "CSV (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
@@ -43,16 +36,9 @@ public partial class GoogleAIOptions : IPluginParam
 
 public enum GoogleAIModel
 {
-    [LocalizedDescription(typeof(Resources), nameof(Gemini15Flash))]
     Gemini15Flash,
-
-    [LocalizedDescription(typeof(Resources), nameof(Gemini15Pro))]
     Gemini15Pro,
-
-    [LocalizedDescription(typeof(Resources), nameof(Gemini20FlashLite))]
     Gemini20FlashLite,
-
-    [LocalizedDescription(typeof(Resources), nameof(Gemini20Flash))]
     Gemini20Flash,
 }
 
