@@ -7,6 +7,7 @@ using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
+using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using static WindowTranslator.Modules.Ocr.Utility;
