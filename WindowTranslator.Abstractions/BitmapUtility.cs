@@ -19,7 +19,7 @@ public static class BitmapUtility
     /// <param name="scale">拡大率</param>
     /// <param name="token">キャンセルトークン</param>
     /// <returns>リサイズ後の画像</returns>
-    public static async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(this SoftwareBitmap source, double scale, CancellationToken token)
+    public static async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(this SoftwareBitmap source, double scale, CancellationToken token = default)
     {
         var newWidth = (uint)(source.PixelWidth * scale);
         var newHeight = (uint)(source.PixelHeight * scale);

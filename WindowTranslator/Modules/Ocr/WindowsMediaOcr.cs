@@ -12,6 +12,7 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using static WindowTranslator.Modules.Ocr.Utility;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
+using static WindowTranslator.LanguageUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -279,29 +280,6 @@ public sealed partial class WindowsMediaOcr(
         y -= fontSize * fat * 1.5;
 
         return new(text, x, y, width, height, fontSize, lines);
-    }
-
-    private static bool IsSpaceLang(string lang)
-        => lang[..2] is not "ja" or "zh";
-
-    private static bool IsSpecialLang(string lang)
-        => lang[..2] is "ja" or "zh" or "ko" or "ru";
-
-    private static int WordCount(string text)
-    {
-        var span = text.AsSpan();
-        var count = 0;
-        while (!span.IsEmpty)
-        {
-            count++;
-            var index = span.IndexOf(' ');
-            if (index == -1)
-            {
-                break;
-            }
-            span = span[(index + 1)..];
-        }
-        return count;
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
