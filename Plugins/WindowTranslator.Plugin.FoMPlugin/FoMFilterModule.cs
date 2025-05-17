@@ -475,12 +475,12 @@ public partial class FoMFilterModule : IFilterModule
             foreach (var text in texts)
             {
                 var t = DateTime.UtcNow;
-                var (key, en, ja, l) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
-                // 編集距離のパーセンテージ
-                var p = 100.0 * l / Math.Max(text.Length, en.Length);
-                this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:f2}%) [{DateTime.UtcNow - t}]");
-                // 編集距離が短いほうの30%以下なら利用する
-                if (p >= 32)
+                var (key, en, ja, distance) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
+                // 一致率の計算
+                var p = 1 - ((float)distance / Math.Max(text.Length, en.Length));
+                this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:p2}%) [{DateTime.UtcNow - t}]");
+                // 一致率が68%未満は除外
+                if (p < 68)
                 {
                     continue;
                 }
