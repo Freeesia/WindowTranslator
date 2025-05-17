@@ -11,5 +11,5 @@ public class CacheParam : IPluginParam
     /// </summary>
     [Slidable(0, 1, .01, .1, true, .01)]
     [FormatString("P2")]
-    public double FuzzyMatchThreshold { get; set; } = 0.8;
+    public double FuzzyMatchThreshold { get; set; } = 0.9;
 }
