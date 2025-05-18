@@ -537,22 +537,16 @@ record LocInto(string Key, string Text);
 
 record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
 
-[DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
 {
-    [DisplayName("ゲームに含まれているリソースを利用した補正を利用する")]
     public bool IsEnabledCorrect { get; set; } = true;
 
-    [DisplayName("ゲームに含まれている日本語リソースを利用する")]
     public bool UseJpn { get; set; } = true;
 
-    [DisplayName("プレイヤー名")]
     public string PlayerName { get; set; } = string.Empty;
 
-    [DisplayName("農場名")]
     public string FarmName { get; set; } = string.Empty;
 
-    [DisplayName("特定できないテキストを除外")]
     public bool ExcludeUnspecifiedText { get; set; } = true;
 }
 

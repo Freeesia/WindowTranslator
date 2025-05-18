@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WindowTranslator.Plugin.LLMPlugin.Properties {
+namespace WindowTranslator.Plugin.FoMPlugin.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.LLMPlugin.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.FoMPlugin.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,101 +61,56 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         }
         
         /// <summary>
-        ///   APIキー に類似しているローカライズされた文字列を検索します。
+        ///   特定できないテキストを除外 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string ApiKey {
+        internal static string ExcludeUnspecifiedText {
             get {
-                return ResourceManager.GetString("ApiKey", resourceCulture);
+                return ResourceManager.GetString("ExcludeUnspecifiedText", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   認識補正 に類似しているローカライズされた文字列を検索します。
+        ///   農場名 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string CorrectMode {
+        internal static string FarmName {
             get {
-                return ResourceManager.GetString("CorrectMode", resourceCulture);
+                return ResourceManager.GetString("FarmName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   画像認識による補正 に類似しているローカライズされた文字列を検索します。
+        ///   Fields of Mistria専用 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string CorrectMode_Image {
+        internal static string FoMOptions {
             get {
-                return ResourceManager.GetString("CorrectMode_Image", resourceCulture);
+                return ResourceManager.GetString("FoMOptions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   補正なし に類似しているローカライズされた文字列を検索します。
+        ///   ゲームに含まれているリソースを利用した補正を利用する に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string CorrectMode_None {
+        internal static string IsEnabledCorrect {
             get {
-                return ResourceManager.GetString("CorrectMode_None", resourceCulture);
+                return ResourceManager.GetString("IsEnabledCorrect", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   テキストのみの補正 に類似しているローカライズされた文字列を検索します。
+        ///   プレイヤー名 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string CorrectMode_Text {
+        internal static string PlayerName {
             get {
-                return ResourceManager.GetString("CorrectMode_Text", resourceCulture);
+                return ResourceManager.GetString("PlayerName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   補正サンプル に類似しているローカライズされた文字列を検索します。
+        ///   ゲームに含まれている日本語リソースを利用する に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string CorrectSample {
+        internal static string UseJpn {
             get {
-                return ResourceManager.GetString("CorrectSample", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   接続先 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Endpoint {
-            get {
-                return ResourceManager.GetString("Endpoint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   OpenAIを利用する場合は空 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Endpoint_Desc {
-            get {
-                return ResourceManager.GetString("Endpoint_Desc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   用語集パス に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string GlossaryPath {
-            get {
-                return ResourceManager.GetString("GlossaryPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   使用するモデル に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Model {
-            get {
-                return ResourceManager.GetString("Model", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   翻訳時に利用する文脈情報 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string TranslateContext {
-            get {
-                return ResourceManager.GetString("TranslateContext", resourceCulture);
+                return ResourceManager.GetString("UseJpn", resourceCulture);
             }
         }
     }

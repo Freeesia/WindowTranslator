@@ -1,13 +1,14 @@
-﻿using Kamishibai;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Reflection;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
@@ -23,6 +24,7 @@ using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
@@ -125,6 +127,10 @@ static string GetPluginName(PluginNameOptions options, Type type)
     if (type.GetCustomAttribute<LocalizedDisplayNameAttribute>() is { } ldattr)
     {
         return ldattr.DisplayName;
+    }
+    else if (type.GetResourceManager()?.GetString(type.Name, CultureInfo.CurrentCulture) is { } resName)
+    {
+        return resName;
     }
     else if (type.GetCustomAttribute<DisplayNameAttribute>() is { } dattr)
     {
