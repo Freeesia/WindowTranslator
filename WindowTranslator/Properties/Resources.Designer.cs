@@ -619,6 +619,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   Windows標準文字認識 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WindowsMediaOcr {
+            get {
+                return ResourceManager.GetString("WindowsMediaOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   WindowsOCRの設定 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string WindowsMediaOcrParam {

@@ -16,6 +16,7 @@ public class LLMOptions : IPluginParam
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }
 
+    [LocalizedDescription(typeof(Resources), $"{nameof(Endpoint)}_Desc")]
     public string? Endpoint { get; set; }
 
     [Height(120)]

@@ -103,10 +103,8 @@ public class DeepLTranslator : ITranslateModule
 public class DeepLOptions : IPluginParam
 {
     [DataType(DataType.Password)]
-    [DisplayName("APIキー")]
     public string AuthKey { get; set; } = string.Empty;
 
-    [DisplayName("用語集パス")]
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
