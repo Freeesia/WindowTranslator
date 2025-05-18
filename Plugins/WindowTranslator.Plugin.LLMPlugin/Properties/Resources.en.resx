@@ -147,4 +147,7 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>用語集パス</value>
   </data>
+  <data name="Endpoint_Desc" xml:space="preserve">
+    <value>OpenAIを利用する場合は空</value>
+  </data>
 </root>
