@@ -76,7 +76,7 @@ public class GoogleAIValidator : ITargetSettingsValidator
         }
 
         // 翻訳モジュールでも補正も利用しない場合は無条件で有効
-        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GoogleAITranslator) && (op?.CorrectMode ?? CorrectMode.None) != CorrectMode.None)
+        if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(GoogleAITranslator) && (op?.CorrectMode ?? CorrectMode.None) == CorrectMode.None)
         {
             return ValueTask.FromResult(ValidateResult.Valid);
         }
