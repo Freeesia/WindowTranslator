@@ -1,12 +1,8 @@
-using WindowTranslator.ComponentModel;
-using WindowTranslator.Properties;
-
-namespace WindowTranslator.Modules.Cache;
+﻿namespace WindowTranslator.Modules.Cache;
 
 /// <summary>
 /// キャッシュを使用しないキャッシュモジュールです。
 /// </summary>
-[LocalizedDisplayName(typeof(Resources), nameof(NoCache))]
 public class NoCache : ICacheModule
 {
     /// <inheritdoc />

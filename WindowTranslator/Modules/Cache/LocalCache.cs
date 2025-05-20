@@ -9,13 +9,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quickenshtein;
 using WindowTranslator.ComponentModel;
-using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Cache;
 
 [DefaultModule]
-[LocalizedDisplayName(typeof(Resources), nameof(LocalCache))]
 public sealed partial class LocalCache : ICacheModule, IDisposable
 {
     private static readonly JsonSerializerOptions serializerOptions = new()
@@ -82,8 +80,8 @@ public sealed partial class LocalCache : ICacheModule, IDisposable
         var (cacheSrc, dst, distance) = this.cache
             .Select(p => (src: p.Key, dst: p.Value, distance: Levenshtein.GetDistance(src, p.Key, CalculationOptions.DefaultWithThreading)))
             .MinBy(p => p.distance);
-        // 編集距離のパーセンテージ
-        var p = (float)distance / Math.Max(src.Length, cacheSrc.Length);
+        // 一致率の計算
+        var p = 1 - ((float)distance / Math.Max(src.Length, cacheSrc.Length));
         this.logger.LogDebug($"LevenshteinDistance: {src} -> {cacheSrc} ({p:p2}%) [{DateTime.UtcNow - t}]");
         if (p < this.options.FuzzyMatchThreshold)
         {

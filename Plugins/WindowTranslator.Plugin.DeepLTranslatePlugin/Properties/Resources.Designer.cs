@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WindowTranslator.Plugin.LLMPlugin.Properties {
+namespace WindowTranslator.Plugin.DeepLTranslatePlugin.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.LLMPlugin.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.DeepLTranslatePlugin.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,72 +63,9 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         /// <summary>
         ///   APIキー に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string ApiKey {
+        internal static string AuthKey {
             get {
-                return ResourceManager.GetString("ApiKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   認識補正 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string CorrectMode {
-            get {
-                return ResourceManager.GetString("CorrectMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   画像認識による補正 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string CorrectMode_Image {
-            get {
-                return ResourceManager.GetString("CorrectMode_Image", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   補正なし に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string CorrectMode_None {
-            get {
-                return ResourceManager.GetString("CorrectMode_None", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   テキストのみの補正 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string CorrectMode_Text {
-            get {
-                return ResourceManager.GetString("CorrectMode_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   補正サンプル に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string CorrectSample {
-            get {
-                return ResourceManager.GetString("CorrectSample", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   接続先 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Endpoint {
-            get {
-                return ResourceManager.GetString("Endpoint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   OpenAIを利用する場合は空 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Endpoint_Desc {
-            get {
-                return ResourceManager.GetString("Endpoint_Desc", resourceCulture);
+                return ResourceManager.GetString("AuthKey", resourceCulture);
             }
         }
         
@@ -138,24 +75,6 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         internal static string GlossaryPath {
             get {
                 return ResourceManager.GetString("GlossaryPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   使用するモデル に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Model {
-            get {
-                return ResourceManager.GetString("Model", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   翻訳時に利用する文脈情報 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string TranslateContext {
-            get {
-                return ResourceManager.GetString("TranslateContext", resourceCulture);
             }
         }
     }

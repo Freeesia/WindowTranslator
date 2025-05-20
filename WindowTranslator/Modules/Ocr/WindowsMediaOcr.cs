@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,7 +16,6 @@ using static WindowTranslator.LanguageUtility;
 namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
-[DisplayName("Windows標準文字認識")]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<BasicOcrParam> ocrParam,

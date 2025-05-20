@@ -2,26 +2,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Windows.Data;
-using WindowTranslator.Properties;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyTools.DataAnnotations;
-using System.Reflection;
 
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
-
     public SettingsPropertyGridOperator()
     {
         this.ModifyCamelCaseDisplayNames = false;
     }
 
     protected override string GetLocalizedString(string key, Type declaringType)
-        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
-
-    protected override string GetLocalizedDescription(string key, Type declaringType)
-        => Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedDescription(key, declaringType);
+        => declaringType.GetResourceManager()?.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
 
     protected override IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
     {
@@ -56,12 +50,12 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
                 for (int i = 0; i < @params.Count; i++)
                 {
                     var param = @params[i];
-                    var tag = param.GetType().GetCustomAttribute<System.ComponentModel.DisplayNameAttribute>()?.DisplayName;
+                    var type = param.GetType();
+                    this.CurrentCategory = null;
+                    this.CurrentCategoryDeclaringType = type;
                     foreach (ParentablePropertyItem item in CreatePropertyItems(param, options).Cast<ParentablePropertyItem>())
                     {
                         item.AddParent($"{pd.Name}[{i}]");
-
-                        item.Tab = tag ?? item.Tab;
                         yield return item;
                     }
                 }

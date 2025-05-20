@@ -340,7 +340,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 record EnumItem<TEnum>(TEnum Value)
     where TEnum : Enum
 {
-    public string Display { get; } = typeof(TEnum).GetField(Value.ToString())?.GetCustomAttribute<LocalizedDescriptionAttribute>()?.Description ?? Value.ToString();
+    public string Display { get; } = typeof(TEnum).GetField(Value.ToString())?.GetCustomAttribute<LocalizedDescriptionAttribute>()?.Description
+        ?? typeof(TEnum).GetResourceManager()?.GetString(Value.ToString(), CultureInfo.CurrentCulture)
+        ?? Value.ToString();
 }
 
 public record ModuleItem(string Name, string DisplayName, bool IsDefault);

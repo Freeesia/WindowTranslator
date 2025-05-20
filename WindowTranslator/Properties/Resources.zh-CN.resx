@@ -279,4 +279,7 @@
   <data name="NoCache" xml:space="preserve">
     <value />
   </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value />
+  </data>
 </root>

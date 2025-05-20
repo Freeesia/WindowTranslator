@@ -14,7 +14,6 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
-[DisplayName("Google翻訳")]
 public sealed class GasTranslator : ITranslateModule, IDisposable
 {
     private const string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
@@ -116,12 +115,10 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
     }
 }
 
-[DisplayName("Google翻訳")]
 public class GasOptions : IPluginParam
 {
 
     [DataType(DataType.Password)]
-    [DisplayName("スクリプトのデプロイID")]
     public string DeployId { get; set; } = string.Empty;
 }
 

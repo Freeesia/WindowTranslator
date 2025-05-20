@@ -545,5 +545,14 @@ namespace WindowTranslator.Properties {
                 return ResourceManager.GetString("ViewMode", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Windows標準文字認識 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WindowsMediaOcr {
+            get {
+                return ResourceManager.GetString("WindowsMediaOcr", resourceCulture);
+            }
+        }
     }
 }
