@@ -271,15 +271,15 @@
     <value>Übersetze nicht</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>キャッシュ設定</value>
+    <value>Cache-Einstellungen</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>近いテキストの閾値</value>
+    <value>Textschwelle schließen</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>キャッシュしない</value>
+    <value>Nicht zwischenspeichern</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Windows標準文字認識</value>
+    <value>Windows-Standardzeichenerkennung</value>
   </data>
 </root>
