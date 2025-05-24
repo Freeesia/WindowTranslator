@@ -117,52 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Capture" xml:space="preserve">
-    <value>捕获窗口</value>
+  <data name="AuthKey" xml:space="preserve">
+    <value>APIキー</value>
   </data>
-  <data name="Overlay" xml:space="preserve">
-    <value>覆盖物</value>
-  </data>
-  <data name="Hold" xml:space="preserve">
-    <value>仅在按下</value>
-  </data>
-  <data name="Toggle" xml:space="preserve">
-    <value>按打开/关闭</value>
-  </data>
-  <data name="Recognize" xml:space="preserve">
-    <value>识别设置</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>扩大率</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>合并阈值</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>X位置移位阈值</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>y位置轮班阈值</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>线Interline阈值</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>互段阈值</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>字体尺寸偏差阈值</value>
-  </data>
-  <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>避免合并列表</value>
-  </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>缓冲区大小</value>
-  </data>
-  <data name="BasicOcrParam" xml:space="preserve">
-    <value>基本 OCR 设置</value>
-  </data>
-  <data name="Misc" xml:space="preserve">
-    <value>其他</value>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>用語集パス</value>
   </data>
 </root>

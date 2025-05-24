@@ -271,15 +271,15 @@
     <value>Übersetze nicht</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value />
+    <value>Cache-Einstellungen</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value />
+    <value>Textschwelle schließen</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value />
+    <value>Nicht zwischenspeichern</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value />
+    <value>Windows-Standardzeichenerkennung</value>
   </data>
 </root>

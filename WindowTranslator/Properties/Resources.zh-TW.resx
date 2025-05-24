@@ -271,15 +271,15 @@
     <value>請勿翻譯</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value />
+    <value>快取設定</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value />
+    <value>關閉文字臨界值。</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value />
+    <value>未緩存</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value />
+    <value>Windows 標準字元識別</value>
   </data>
 </root>

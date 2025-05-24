@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -271,15 +271,15 @@
     <value>Do not translate</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value />
+    <value>Cache setting</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value />
+    <value>Threshold for close text</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value />
+    <value>Do not cache</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value />
+    <value>Windows Standard Character Recognition</value>
   </data>
 </root>
