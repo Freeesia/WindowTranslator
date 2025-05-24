@@ -12,6 +12,7 @@ using WindowTranslator.Modules;
 using WinRT;
 using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.Plugin.OneOcrPlugin.NativeMethods;
+using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -117,7 +118,17 @@ public class OneOcr : IOcrModule
             workingBitmap.Dispose();
         }
 
-        return textRects;
+        var fat = bitmap.PixelWidth * 0.004;
+
+        return textRects
+            // マージ後に少なすぎる文字も認識ミス扱い
+            // (特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語))
+            .Where(r => IsSpecialLang(this.source) || r.Text.Length > 2)
+            // 全部数字なら対象外
+            .Where(r => !AllSymbolOrSpace().IsMatch(r.Text))
+            // 若干太らせる
+            .Select(r => r with { Width = r.Width + (fat * 2), X = r.X - fat, Y = r.Y - (r.Height * 0.04) })
+            .ToArray();
     }
 
     private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap)
@@ -141,6 +152,12 @@ public class OneOcr : IOcrModule
         res = RunOcrPipeline(pipeline, ref img, opt, out var instance);
         if (res != 0)
         {
+            if (res == 3)
+            {
+                this.logger.LogDebug("画像が小さすぎるので認識出来なかった");
+                return [];
+            }
+            bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
             throw new InvalidOperationException($"OCRパイプラインの実行に失敗しました。エラーコード: {res}");
         }
 
@@ -148,6 +165,7 @@ public class OneOcr : IOcrModule
         res = GetOcrLineCount(instance, out var lineCount);
         if (res != 0)
         {
+            bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
             throw new InvalidOperationException($"OCR行数の取得に失敗しました。エラーコード: {res}");
         }
 
@@ -160,6 +178,7 @@ public class OneOcr : IOcrModule
             res = GetOcrLine(instance, i, out var line);
             if (res != 0 || line == 0)
             {
+                bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
                 throw new InvalidOperationException($"OCR行の取得に失敗しました。行番号: {i}, エラーコード: {res}");
             }
 
@@ -167,6 +186,7 @@ public class OneOcr : IOcrModule
             res = GetOcrLineContent(line, out var lineContent);
             if (res != 0)
             {
+                bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
                 throw new InvalidOperationException($"OCR行のテキスト内容の取得に失敗しました。行番号: {i}, エラーコード: {res}");
             }
 
@@ -179,6 +199,7 @@ public class OneOcr : IOcrModule
             res = GetOcrLineBoundingBox(line, out var ptr);
             if (res != 0)
             {
+                bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
                 throw new InvalidOperationException($"OCR行の境界ボックスの取得に失敗しました。行番号: {i}, エラーコード: {res}");
             }
             var boundingBox = Marshal.PtrToStructure<BoundingBox>(ptr);
@@ -186,6 +207,7 @@ public class OneOcr : IOcrModule
             // 境界ボックスから座標を計算
             var left = Math.Min(Math.Min(boundingBox.x1, boundingBox.x2), Math.Min(boundingBox.x3, boundingBox.x4));
             var top = Math.Min(Math.Min(boundingBox.y1, boundingBox.y2), Math.Min(boundingBox.y3, boundingBox.y4));
+
             var right = Math.Max(Math.Max(boundingBox.x1, boundingBox.x2), Math.Max(boundingBox.x3, boundingBox.x4));
             var bottom = Math.Max(Math.Max(boundingBox.y1, boundingBox.y2), Math.Max(boundingBox.y3, boundingBox.y4));
 
@@ -298,10 +320,11 @@ public class OneOcr : IOcrModule
         }
 
         // x座標が近く、y間隔が近い場合にマージできる（縦方向の結合）
+        // ただし、rectのwidthがtempのwidthよりも2倍以上大きい場合は除外
         var xDiff = Math.Abs(temp.X - x); // X座標の差
         var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
         var lThre = fontSize * leadingThrethold; // 行間の閾値
-        if (xDiff < xThreshold && yGap < lThre)
+        if (xDiff < xThreshold && yGap < lThre && w < temp.Width * 2)
         {
             return true;
         }

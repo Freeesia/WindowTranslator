@@ -12,6 +12,7 @@ using WindowTranslator.Extensions;
 using static WindowTranslator.Modules.Ocr.Utility;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
 using static WindowTranslator.LanguageUtility;
+using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
@@ -125,7 +126,7 @@ public sealed partial class WindowsMediaOcr(
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
             // 全部数字なら対象外
-            .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
+            .Where(w => !AllSymbolOrSpace().IsMatch(w.Text))
             .ToArray();
     }
 
@@ -304,9 +305,6 @@ public sealed partial class WindowsMediaOcr(
         var height = words.Select(w => w.Bottom).Average() - words.Select(w => w.Top).Average();
         return new(text, x, y, width, height, height, false);
     }
-
-    [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
-    private static partial Regex IsAllSymbolOrSpace();
 
     /// <summary>
     /// 認識ミスとして無視する文字列
