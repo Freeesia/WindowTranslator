@@ -129,4 +129,40 @@
   <data name="Toggle" xml:space="preserve">
     <value>Nhấn để bật/tắt</value>
   </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>Cài đặt nhận dạng</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Tỷ lệ mở rộng</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>Hợp nhất ngưỡng</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X ngưỡng thay đổi vị trí</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>Y Ngưỡng dịch chuyển vị trí</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>Ngưỡng xen kẽ dòng</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>Ngưỡng Intercharacter</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>Ngưỡng độ lệch kích thước phông chữ</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>Tránh danh sách hợp nhất</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>Kích thước bộ đệm</value>
+  </data>
+  <data name="BasicOcrParam" xml:space="preserve">
+    <value>基本的なOCRの設定</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>người khác</value>
+  </data>
 </root>
