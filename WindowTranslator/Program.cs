@@ -47,7 +47,7 @@ TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
         => !t.IsGenericTypeDefinition
         && !t.IsAbstract
         && !t.IsInterface
-#if DEBUG
+#if !DEBUG
         && !CustomAttributeData.GetCustomAttributes(t).Any(a => a.AttributeType == typeof(ExperimentalAttribute))
 #endif
 });
