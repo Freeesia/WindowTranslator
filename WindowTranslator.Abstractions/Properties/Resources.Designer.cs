@@ -61,11 +61,38 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   基本的なOCRの設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string BasicOcrParam {
+            get {
+                return ResourceManager.GetString("BasicOcrParam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   バッファサイズ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string BufferSize {
+            get {
+                return ResourceManager.GetString("BufferSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   キャプチャーウィンドウ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Capture {
             get {
                 return ResourceManager.GetString("Capture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   文字サイズずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string FontSizeThrethold {
+            get {
+                return ResourceManager.GetString("FontSizeThrethold", resourceCulture);
             }
         }
         
@@ -79,6 +106,42 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   リストのマージを避ける に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string IsAvoidMergeList {
+            get {
+                return ResourceManager.GetString("IsAvoidMergeList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   行間閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LeadingThrethold {
+            get {
+                return ResourceManager.GetString("LeadingThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   マージ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string MergeThrethold {
+            get {
+                return ResourceManager.GetString("MergeThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   その他 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Misc {
+            get {
+                return ResourceManager.GetString("Misc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   オーバレイ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Overlay {
@@ -88,11 +151,56 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   認識設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Recognize {
+            get {
+                return ResourceManager.GetString("Recognize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   拡大率 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Scale {
+            get {
+                return ResourceManager.GetString("Scale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   文字間閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SpacingThreshold {
+            get {
+                return ResourceManager.GetString("SpacingThreshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   押してON/OFFを切り替える に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Toggle {
             get {
                 return ResourceManager.GetString("Toggle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   X位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string XPosThrethold {
+            get {
+                return ResourceManager.GetString("XPosThrethold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Y位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string YPosThrethold {
+            get {
+                return ResourceManager.GetString("YPosThrethold", resourceCulture);
             }
         }
     }

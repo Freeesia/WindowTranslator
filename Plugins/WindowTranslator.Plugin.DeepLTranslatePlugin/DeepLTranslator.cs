@@ -103,10 +103,8 @@ public class DeepLTranslator : ITranslateModule
 public class DeepLOptions : IPluginParam
 {
     [DataType(DataType.Password)]
-    [DisplayName("APIキー")]
     public string AuthKey { get; set; } = string.Empty;
 
-    [DisplayName("用語集パス")]
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
     public string? GlossaryPath { get; set; }
@@ -119,6 +117,9 @@ public class DeepLOptions : IPluginParam
 
 public class DeepLValidator : ITargetSettingsValidator
 {
+    private static string[]? SupportedSourceLanguages;
+    private static string[]? SupportedTargetLanguages;
+
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
         // 翻訳モジュールで利用しない場合は無条件で有効
@@ -148,14 +149,14 @@ public class DeepLValidator : ITargetSettingsValidator
             """);
         }
 
-        var client = new Translator(op.AuthKey);
-        var srcLangs = await client.GetSourceLanguagesAsync().ConfigureAwait(false);
-        if (!srcLangs.Select(l => l.Code).Contains(settings.Language.Source.GetSourceLangCode()))
+        using var client = new Translator(op.AuthKey);
+        SupportedSourceLanguages ??= (await client.GetSourceLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code).ToArray();
+        if (!SupportedSourceLanguages.Contains(settings.Language.Source.GetSourceLangCode()))
         {
             return ValidateResult.Invalid("DeepL", $"Translation to {settings.Language.Source} is currently not supported.");
         }
-        var trgLangs = await client.GetTargetLanguagesAsync().ConfigureAwait(false);
-        if (!trgLangs.Select(l => l.Code).Contains(settings.Language.Target.GetTargetLangCode()))
+        SupportedTargetLanguages ??= (await client.GetTargetLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code).ToArray();
+        if (!SupportedTargetLanguages.Contains(settings.Language.Target.GetTargetLangCode()))
         {
             return ValidateResult.Invalid("DeepL", $"Translation to {settings.Language.Target} is currently not supported.");
         }

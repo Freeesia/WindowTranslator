@@ -267,6 +267,10 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             {
                 return disp;
             }
+            if (type.GetResourceManager()?.GetString(name, CultureInfo.CurrentCulture) is { } resText)
+            {
+                return resText;
+            }
 
             return name;
         }

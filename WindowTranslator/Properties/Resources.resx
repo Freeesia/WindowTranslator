@@ -213,39 +213,6 @@
   <data name="TargetProcesses" xml:space="preserve">
     <value>翻訳対象プロセス</value>
   </data>
-  <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>WindowsOCRの設定</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>X位置ずれ閾値</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>行間閾値</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>文字間閾値</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>文字サイズずれ閾値</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>マージ閾値</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>Y位置ずれ閾値</value>
-  </data>
-  <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>リストのマージを避ける</value>
-  </data>
-  <data name="Recognize" xml:space="preserve">
-    <value>認識設定</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>拡大率</value>
-  </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>バッファサイズ</value>
-  </data>
   <data name="OcrModule" xml:space="preserve">
     <value>認識モジュール</value>
   </data>
@@ -302,5 +269,17 @@
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
     <value>翻訳しない</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>キャッシュ設定</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>近いテキストの閾値</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>キャッシュしない</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Windows標準文字認識</value>
   </data>
 </root>

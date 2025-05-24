@@ -97,15 +97,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   バッファサイズ に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string BufferSize {
-            get {
-                return ResourceManager.GetString("BufferSize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   ビルド日時 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string BuildDate {
@@ -120,6 +111,15 @@ namespace WindowTranslator.Properties {
         public static string CacheModule {
             get {
                 return ResourceManager.GetString("CacheModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   キャッシュ設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CacheParam {
+            get {
+                return ResourceManager.GetString("CacheParam", resourceCulture);
             }
         }
         
@@ -196,11 +196,11 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   文字サイズずれ閾値 に類似しているローカライズされた文字列を検索します。
+        ///   近いテキストの閾値 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string FontSizeThrethold {
+        public static string FuzzyMatchThreshold {
             get {
-                return ResourceManager.GetString("FontSizeThrethold", resourceCulture);
+                return ResourceManager.GetString("FuzzyMatchThreshold", resourceCulture);
             }
         }
         
@@ -250,15 +250,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   リストのマージを避ける に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string IsAvoidMergeList {
-            get {
-                return ResourceManager.GetString("IsAvoidMergeList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string IsEnableAutoTarget {
@@ -295,15 +286,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   行間閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string LeadingThrethold {
-            get {
-                return ResourceManager.GetString("LeadingThrethold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   ライセンス に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string License {
@@ -318,15 +300,6 @@ namespace WindowTranslator.Properties {
         public static string LocalCache {
             get {
                 return ResourceManager.GetString("LocalCache", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   マージ閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string MergeThrethold {
-            get {
-                return ResourceManager.GetString("MergeThrethold", resourceCulture);
             }
         }
         
@@ -354,6 +327,15 @@ namespace WindowTranslator.Properties {
         public static string NewVersionAvailable {
             get {
                 return ResourceManager.GetString("NewVersionAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   キャッシュしない に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NoCache {
+            get {
+                return ResourceManager.GetString("NoCache", resourceCulture);
             }
         }
         
@@ -448,24 +430,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   認識設定 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string Recognize {
-            get {
-                return ResourceManager.GetString("Recognize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   拡大率 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string Scale {
-            get {
-                return ResourceManager.GetString("Scale", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   設定 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Settings {
@@ -498,15 +462,6 @@ namespace WindowTranslator.Properties {
         public static string Source {
             get {
                 return ResourceManager.GetString("Source", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   文字間閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string SpacingThreshold {
-            get {
-                return ResourceManager.GetString("SpacingThreshold", resourceCulture);
             }
         }
         
@@ -592,29 +547,11 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   WindowsOCRの設定 に類似しているローカライズされた文字列を検索します。
+        ///   Windows標準文字認識 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string WindowsMediaOcrParam {
+        public static string WindowsMediaOcr {
             get {
-                return ResourceManager.GetString("WindowsMediaOcrParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   X位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string XPosThrethold {
-            get {
-                return ResourceManager.GetString("XPosThrethold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Y位置ずれ閾値 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string YPosThrethold {
-            get {
-                return ResourceManager.GetString("YPosThrethold", resourceCulture);
+                return ResourceManager.GetString("WindowsMediaOcr", resourceCulture);
             }
         }
     }

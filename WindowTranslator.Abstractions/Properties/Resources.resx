@@ -129,4 +129,40 @@
   <data name="Toggle" xml:space="preserve">
     <value>押してON/OFFを切り替える</value>
   </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>認識設定</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>拡大率</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>マージ閾値</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X位置ずれ閾値</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>Y位置ずれ閾値</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>行間閾値</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>文字間閾値</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>文字サイズずれ閾値</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>リストのマージを避ける</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>バッファサイズ</value>
+  </data>
+  <data name="BasicOcrParam" xml:space="preserve">
+    <value>基本的なOCRの設定</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>その他</value>
+  </data>
 </root>
