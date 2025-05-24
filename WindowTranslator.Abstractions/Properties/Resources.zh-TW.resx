@@ -129,4 +129,40 @@
   <data name="Toggle" xml:space="preserve">
     <value>按打開/關閉</value>
   </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>識別設置</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>擴大率</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>合併閾值</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X位置移位閾值</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>y位置輪班閾值</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>線Interline閾值</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>互段閾值</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>字體尺寸偏差閾值</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>避免合併列表</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>緩衝區大小</value>
+  </data>
+  <data name="BasicOcrParam" xml:space="preserve">
+    <value>基本的なOCRの設定</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>其他</value>
+  </data>
 </root>
