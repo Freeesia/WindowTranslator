@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.VisualStudio.Threading;
 using Octokit;
 using System.Diagnostics;
 using System.IO;
@@ -19,6 +20,7 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
     private readonly string name;
     private readonly Version version;
     private readonly ILogger<UpdateChecker> logger;
+    private readonly AsyncSemaphore downloading = new(1);
     private readonly App app;
 
     private bool hasUpdate;
@@ -105,6 +107,7 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
             // インストーラーをダウンロードして実行
             var dir = Path.Combine(Path.GetTempPath(), this.name);
             string installerPath = Path.Combine(dir, asset.Name);
+            using var _ = await this.downloading.EnterAsync(stoppingToken);
             if (File.Exists(installerPath))
             {
                 this.logger.LogInformation("インストーラーはすでにダウンロードされています。");
@@ -113,9 +116,14 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
             {
                 Directory.CreateDirectory(dir);
                 using var downloader = new HttpClient();
-                using var fs = File.Create(installerPath);
-                using var stream = await downloader.GetStreamAsync(installerUrl, stoppingToken);
-                await stream.CopyToAsync(fs, stoppingToken);
+                var tmpPath = Path.Combine(dir, Path.GetRandomFileName());
+                using (var fs = File.Create(tmpPath))
+                using (var stream = await downloader.GetStreamAsync(installerUrl, stoppingToken))
+                {
+                    await stream.CopyToAsync(fs, stoppingToken);
+                }
+                File.Move(tmpPath, installerPath, true);
+                File.Delete(tmpPath);
                 this.logger.LogInformation("インストーラーをダウンロードしました。");
             }
             await SaveUpdateInfoAsync(new(version, release.HtmlUrl, installerPath, DateTime.UtcNow, false)).ConfigureAwait(false);

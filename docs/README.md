@@ -4,10 +4,11 @@
 [![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
 [![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
 
 WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻訳するためのツールです。
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md)
 
 ## 目次
 - [ WindowTranslator](#-windowtranslator)
@@ -16,7 +17,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
     - [インストール版 ](#インストール版-)
     - [ポータブル版](#ポータブル版)
   - [使い方](#使い方)
-    - [Google翻訳 ](#google翻訳-)
+    - [Bergamot ](#bergamot-)
   - [その他の機能](#その他の機能)
 
 ## ダウンロード
@@ -34,7 +35,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 
 ## 使い方
 
-### Google翻訳 ![デフォルト](https://img.shields.io/badge/デフォルト-brightgreen)
+### Bergamot ![デフォルト](https://img.shields.io/badge/デフォルト-brightgreen)
 
 1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
    ![翻訳ボタン](images/translate.png)
@@ -45,11 +46,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 4. 設定完了後、「OK」ボタンを押下して設定画面を閉じます。  
    > OCR機能のインストールが必要な場合があります。
    > 指示に従いインストールしてください。
-5. ブラウザが起動し、Googleのログイン画面が表示されます。  
-   ![ログイン画面](images/login.png)
-6. ログイン後、アクセス許可を求められるので「すべて選択」し「続行」ボタンを押下します。
-   ![認可画面](images/auth.png)
-7. しばらくすると翻訳結果がオーバーレイで表示されます。  
+5. しばらくすると翻訳結果がオーバーレイで表示されます。  
    ![翻訳結果](images/result.png)
 
 > [!NOTE]
@@ -59,11 +56,12 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 > 
 > |                |                                                              使い方動画                                                               | メリット                    | デメリット                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
-> |   Google翻訳   | [![Goole翻訳設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 導入が容易<br/>完全無料     | 翻訳上限が低い<br/>翻訳精度が劣る |
-> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | 翻訳精度が劣る                    |
-> |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い              | 少額の課金が必要                  |
-> | LLM (クラウド) |                                                                  TBD                                                                  | 翻訳精度が高い              | 少額の課金が必要                  |
-> | LLM (ローカル) |                                                                  TBD                                                                  | サービス自体は無料          | 高スペックなPCが必要              |
+> |   Bergamot     | | 完全無料<br/>翻訳上限なし<br/>翻訳が速い | 翻訳精度が劣る<br/>1GB以上の空きメモリが必要 |
+> |   Google翻訳   | [![Goole翻訳設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 完全無料 | 翻訳上限が低い<br/>翻訳精度が劣る |
+> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | |
+> |    GoogleAI    | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い | 少額の課金が必要 |
+> | LLM (クラウド) | TBD | 翻訳精度が高い | 少額の課金が必要 |
+> | LLM (ローカル) | TBD | サービス自体は無料 | 高スペックなPCが必要 |
 
 ## その他の機能
 

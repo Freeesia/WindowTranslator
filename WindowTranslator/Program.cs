@@ -1,28 +1,31 @@
-﻿using Kamishibai;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Octokit;
-using System.ComponentModel;
-using System.IO;
-using System.Reflection;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
+using Weikio.PluginFramework.TypeFinding;
 using WindowTranslator;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Main;
-using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
@@ -38,6 +41,17 @@ var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry(op => op.Dsn = ""));
 #endif
 
+TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
+{
+    // クエリを設定すると、他のオプションが判定されないので、クエリ内で全て判定する
+    Query = static (ctx, t)
+        => !t.IsGenericTypeDefinition
+        && !t.IsAbstract
+        && !t.IsInterface
+#if DEBUG
+        && !CustomAttributeData.GetCustomAttributes(t).Any(a => a.AttributeType == typeof(ExperimentalAttribute))
+#endif
+});
 
 builder.Services.AddPluginFramework()
     .AddPluginCatalog(new AssemblyPluginCatalog(Assembly.GetExecutingAssembly(), new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }))
@@ -53,13 +67,13 @@ builder.Services.AddPluginFramework()
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, new FolderPluginCatalogOptions() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, new FolderPluginCatalogOptions() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 builder.Configuration
@@ -122,6 +136,10 @@ static string GetPluginName(PluginNameOptions options, Type type)
     if (type.GetCustomAttribute<LocalizedDisplayNameAttribute>() is { } ldattr)
     {
         return ldattr.DisplayName;
+    }
+    else if (type.GetResourceManager()?.GetString(type.Name, CultureInfo.CurrentCulture) is { } resName)
+    {
+        return resName;
     }
     else if (type.GetCustomAttribute<DisplayNameAttribute>() is { } dattr)
     {

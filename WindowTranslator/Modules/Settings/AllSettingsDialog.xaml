@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pt="http://propertytools.org/wpf"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:properties="clr-namespace:WindowTranslator.Properties"
     Title="{Binding Title}"
     Width="800"
     Height="720"
@@ -51,13 +52,13 @@
                             Style="{StaticResource DefaultUiButtonStyle}"
                             Visibility="{Binding HasUpdate, Converter={StaticResource b2vConv}}">
                             <ui:DropDownButton.ToolTip>
-                                <ui:TextBlock Text="{Binding NewVersion, StringFormat=新しいバージョン: {0} がリリースされました}" />
+                                <ui:TextBlock Text="{Binding NewVersion, StringFormat={x:Static properties:Resources.NewVersionAvailable}}" />
                             </ui:DropDownButton.ToolTip>
                             <ui:DropDownButton.Flyout>
                                 <ContextMenu>
                                     <ui:MenuItem Command="{Binding InstallUpdateCommand}">
                                         <ui:MenuItem.Header>
-                                            <ui:TextBlock Text="{Binding NewVersion, StringFormat=新しいバージョン: {0} のインストール}" />
+                                            <ui:TextBlock Text="{Binding NewVersion, StringFormat={x:Static properties:Resources.InstallNewVersion}}" />
                                         </ui:MenuItem.Header>
                                         <ui:MenuItem.Icon>
                                             <ui:SymbolIcon
@@ -68,7 +69,7 @@
                                     </ui:MenuItem>
                                     <ui:MenuItem
                                         Command="{Binding OpenReleaseNotesCommand}"
-                                        Header="更新内容の確認"
+                                        Header="{x:Static properties:Resources.CheckUpdateNotes}"
                                         Icon="{ui:SymbolIcon Globe24}" />
                                 </ContextMenu>
                             </ui:DropDownButton.Flyout>
@@ -83,7 +84,7 @@
                             Command="{Binding CheckUpdateCommand}"
                             CornerRadius="0"
                             Icon="{ui:SymbolIcon ArrowSync24}"
-                            ToolTip="新しいバージョンのチェック"
+                            ToolTip="{x:Static properties:Resources.CheckNewVersion}"
                             Visibility="{Binding HasUpdate, Mode=OneWay, Converter={x:Static local:FalseToVisibilityConverter.Default}}" />
                     </StackPanel>
                 </ui:TitleBar.TrailingContent>
@@ -101,24 +102,24 @@
                 </DockPanel.Resources>
 
                 <ui:Button
-                    Content="キャンセル"
+                    Content="{x:Static properties:Resources.Cancel}"
                     DockPanel.Dock="Right"
                     IsCancel="True" />
                 <ui:Button
                     Command="{Binding SaveCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
-                    Content="OK"
+                    Content="{x:Static properties:Resources.OK}"
                     DockPanel.Dock="Right"
                     IsDefault="True" />
                 <ui:ToggleSwitch
                     Margin="4"
-                    Content="PC起動時に自動起動"
+                    Content="{x:Static properties:Resources.AutoStartWithPC}"
                     IsChecked="{Binding IsStartup, Mode=TwoWay}" />
             </DockPanel>
             <TabControl SelectedIndex="{Binding SelectedTab}">
-                <TabItem Header="全般設定">
+                <TabItem Header="{x:Static properties:Resources.GeneralSettings}">
                     <DockPanel>
-                        <GroupBox DockPanel.Dock="Top" Header="表示方法">
+                        <GroupBox DockPanel.Dock="Top" Header="{x:Static properties:Resources.DisplayMethod}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -134,7 +135,7 @@
                                     Grid.Row="0"
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Content="翻訳結果表示モード" />
+                                    Content="{x:Static properties:Resources.ViewMode}" />
                                 <ComboBox
                                     Grid.Row="0"
                                     Grid.Column="1"
@@ -146,7 +147,7 @@
                                 <CheckBox
                                     Grid.Row="1"
                                     Grid.Column="1"
-                                    Content="オーバーレイ表示をキャプチャー可能にする"
+                                    Content="{x:Static properties:Resources.IsEnableCaptureOverlay}"
                                     IsChecked="{Binding IsEnableCaptureOverlay}"
                                     IsEnabled="{Binding IsCheckableCapture}" />
 
@@ -154,7 +155,7 @@
                                     Grid.Row="2"
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Content="オーバーレイ表示の切り替え" />
+                                    Content="{x:Static properties:Resources.OverlaySwitch}" />
                                 <ComboBox
                                     Grid.Row="2"
                                     Grid.Column="1"
@@ -164,10 +165,10 @@
                                     SelectedValuePath="Value" />
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="自動翻訳対象">
+                        <GroupBox Header="{x:Static properties:Resources.AutoTargets}">
                             <DockPanel>
                                 <CheckBox
-                                    Content="一度翻訳した対象を自動的に翻訳する"
+                                    Content="{x:Static properties:Resources.IsEnableAutoTarget}"
                                     DockPanel.Dock="Top"
                                     IsChecked="{Binding IsEnableAutoTarget}" />
                                 <ui:ListView ItemsSource="{Binding AutoTargets}">
@@ -191,41 +192,71 @@
                         </GroupBox>
                     </DockPanel>
                 </TabItem>
-                <TabItem Header="対象ごとの設定">
+                <TabItem Header="{x:Static properties:Resources.TargetSpecificSettings}">
                     <Grid>
                         <Grid.Resources>
                             <local:SettingsPropertyGridFactory x:Key="factory" />
                             <local:SettingsPropertyGridOperator x:Key="operator" />
                         </Grid.Resources>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="200" MinWidth="120" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ui:ListView
                             Grid.Column="0"
                             Margin="4"
                             ItemsSource="{Binding Targets}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                             SelectedItem="{Binding SelectedTarget}">
                             <ui:ListView.ItemContainerStyle>
                                 <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
-                                    <Setter Property="Content" Value="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}" />
-                                    <Setter Property="Padding" Value="8" />
+                                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </ui:ListView.ItemContainerStyle>
+                            <ui:ListView.ItemTemplate>
+                                <DataTemplate DataType="local:TargetSettingsViewModel">
+                                    <DockPanel LastChildFill="True">
+                                        <ui:Button
+                                            Command="{Binding DataContext.DeleteTargetSettingCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
+                                            CommandParameter="{Binding}"
+                                            Content="{ui:SymbolIcon Delete24}"
+                                            DockPanel.Dock="Right"
+                                            Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Self}, Converter={StaticResource b2vConv}}" />
+                                        <TextBlock
+                                            Margin="8,4"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextWrapping="NoWrap" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ui:ListView.ItemTemplate>
                         </ui:ListView>
-                        <pt:PropertyGrid
+                        <GridSplitter
                             Grid.Column="1"
+                            Width="4"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Stretch"
+                            Background="{DynamicResource SeparatorBorderBrush}"
+                            ResizeBehavior="PreviousAndNext" />
+                        <pt:PropertyGrid
+                            Grid.Column="2"
                             Margin="8"
                             ControlFactory="{StaticResource factory}"
                             Operator="{StaticResource operator}"
                             SelectedObject="{Binding SelectedTarget}">
                             <pt:PropertyGrid.Resources>
+                                <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                    <Setter Property="Padding" Value="4,8" />
+                                </Style>
                                 <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
                             </pt:PropertyGrid.Resources>
                         </pt:PropertyGrid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Abount">
+                <TabItem Header="{x:Static properties:Resources.About}">
                     <GroupBox>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -245,27 +276,27 @@
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 VerticalAlignment="Center"
-                                Content="バージョン" />
+                                Content="{x:Static properties:Resources.Version}" />
                             <Label
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 VerticalAlignment="Center"
-                                Content="ビルド日時" />
+                                Content="{x:Static properties:Resources.BuildDate}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="0"
                                 VerticalAlignment="Center"
-                                Content="Developed By" />
+                                Content="{x:Static properties:Resources.DevelopedBy}" />
                             <Label
                                 Grid.Row="3"
                                 Grid.Column="0"
                                 VerticalAlignment="Center"
-                                Content="公開ページ" />
+                                Content="{x:Static properties:Resources.PublishPage}" />
                             <Label
                                 Grid.Row="4"
                                 Grid.Column="0"
                                 VerticalAlignment="Center"
-                                Content="ライセンス" />
+                                Content="{x:Static properties:Resources.License}" />
 
                             <ui:TextBlock
                                 Grid.Row="0"
@@ -299,7 +330,7 @@
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
                                 Command="{Binding OpenThirdPartyLicensesCommand}"
-                                Content="サードパーティーライセンス" />
+                                Content="{x:Static properties:Resources.OpenThirdPartyLicensesCommand}" />
                         </Grid>
                     </GroupBox>
                 </TabItem>

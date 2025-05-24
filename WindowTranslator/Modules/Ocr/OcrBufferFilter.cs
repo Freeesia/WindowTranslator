@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Quickenshtein;
@@ -13,7 +13,7 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
     private readonly Queue<List<TextRect>> buffer = new();
     private readonly int bufferSize = options.Value.BufferSize;
 
-    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
         if (this.bufferSize <= 0)
         {
@@ -75,7 +75,7 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
         listPool.Return(finalBuffered);
     }
 
-    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts) => texts;
+    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context) => texts;
 
     // 矩形同士が重なっているかを判定する追加メソッド
     private static bool Intersects(TextRect rect1, TextRect rect2)
@@ -86,22 +86,22 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
 
     private static bool AreSimilar(TextRect rect1, TextRect rect2)
     {
-        // 位置とサイズのずれが10未満
+        // テキストの内容が90%以上一致してたら同じとみなす
+        var p = (float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
+            / Math.Max(rect1.Text.Length, rect2.Text.Length);
+
+        if (p >= 0.9)
+        {
+            return true;
+        }
+
+        // 位置とサイズのずれが10未満だったら同じとみなす
         var xDiff = Math.Abs(rect1.X - rect2.X);
         var yDiff = Math.Abs(rect1.Y - rect2.Y);
         var widthDiff = Math.Abs(rect1.Width - rect2.Width);
         var heightDiff = Math.Abs(rect1.Height - rect2.Height);
 
-        if (xDiff >= 10 || yDiff >= 10 || widthDiff >= 10 || heightDiff >= 10)
-        {
-            return false;
-        }
-
-        // テキストの内容が90%以上一致
-        var p = (float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
-            / Math.Max(rect1.Text.Length, rect2.Text.Length);
-
-        return p >= 0.9;
+        return xDiff < 10 && yDiff < 10 && widthDiff < 10 && heightDiff < 10;
     }
 
 }

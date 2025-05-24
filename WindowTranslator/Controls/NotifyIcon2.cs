@@ -7,8 +7,11 @@ namespace WindowTranslator.Controls;
 
 public class NotifyIcon2 : NotifyIcon, ICommandSource
 {
+    /// <summary>Identifies the <see cref="Command"/> dependency property.</summary>
     public static readonly DependencyProperty CommandProperty = DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(NotifyIcon2), new PropertyMetadata(null));
+    /// <summary>Identifies the <see cref="CommandParameter"/> dependency property.</summary>
     public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register(nameof(CommandParameter), typeof(object), typeof(NotifyIcon2), new PropertyMetadata(null));
+    /// <summary>Identifies the <see cref="CommandTarget"/> dependency property.</summary>
     public static readonly DependencyProperty CommandTargetProperty = DependencyProperty.Register(nameof(CommandTarget), typeof(IInputElement), typeof(NotifyIcon2), new PropertyMetadata(null));
 
     public IInputElement? CommandTarget

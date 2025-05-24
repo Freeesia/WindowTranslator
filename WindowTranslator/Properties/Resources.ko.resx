@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>캡처 창</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>실행</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>앱을 자동으로 시작하세요</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>앱을 자동으로 잠금 해제하세요</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>인메모리 캐시</value>
   </data>
@@ -207,13 +198,6 @@
   <data name="OpenChangelogCommand" xml:space="preserve">
     <value>세부 정보 확인</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Recognize" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Scale" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="Hold" xml:space="preserve">
     <value>당신이 압박하는 동안에 만</value>
   </data>
@@ -221,7 +205,7 @@
     <value>켜지거나 끄려면 누릅니다</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>토글 오버레이 디스플레이 (ctrl+alt+o)</value>
+    <value>토글 오버레이 디스플레이</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>오버레이 디스플레이를 사로 잡을 수 있습니다</value>
@@ -264,5 +248,71 @@
   </data>
   <data name="OcrModule" xml:space="preserve">
     <value>인식 모듈</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>바로 가기</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>오버레이 스위치</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>새 버전 {0}이 출시되었습니다</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>새 버전 {0} 설치</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>업데이트 내용 확인</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>새 버전 확인</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>알았어요</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>PC 부팅 시 자동 시작</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>전체 설정</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>표시 방법</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>대상별 설정</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>버전</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>빌드 날짜</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>개발자</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>공개 페이지</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>라이선스</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>번역하지 않습니다</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value />
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value />
   </data>
 </root>

@@ -1,4 +1,3 @@
-﻿using System.ComponentModel;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,7 +14,6 @@ using static WindowTranslator.OcrUtility;
 namespace WindowTranslator.Modules.Ocr;
 
 [DefaultModule]
-[DisplayName("Windows標準文字認識")]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<WindowsMediaOcrParam> ocrParam,
@@ -34,6 +32,7 @@ public sealed partial class WindowsMediaOcr(
             ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
     private readonly ILogger<WindowsMediaOcr> logger = logger;
     private readonly InMemoryRandomAccessStream resizeStream = new();
+    private readonly CancellationTokenSource cts = new();
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
@@ -41,13 +40,21 @@ public sealed partial class WindowsMediaOcr(
         // 画像の幅または高さがリサイズ後の幅または高さを超える場合はリサイズが必要
         var needScale = ((int)(this.scale * bitmap.PixelWidth) > bitmap.PixelWidth)
             || ((int)(this.scale * bitmap.PixelHeight) > bitmap.PixelHeight);
+
+        var newWidth = (uint)(bitmap.PixelWidth * scale);
+        var newHeight = (uint)(bitmap.PixelHeight * scale);
+        if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
+        {
+            throw new InvalidOperationException("ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。");
+        }
+
         // 拡大率に基づくリサイズ処理
-        var tResize = this.logger.LogDebugTime("Resizing Bitmap");
-        var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale) : bitmap;
-        tResize.Dispose();
+        var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale, this.cts.Token) : bitmap;
+        this.cts.Token.ThrowIfCancellationRequested();
 
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
+        this.cts.Token.ThrowIfCancellationRequested();
         t.Dispose();
 
         // 角度と中心座標を取得
@@ -118,26 +125,32 @@ public sealed partial class WindowsMediaOcr(
 
         return results.Select(r => ToTextRect(r, needScale))
             // マージ後に少なすぎる文字も認識ミス扱い
-            .Where(w => w.Text.Length > 2)
+            // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
+            .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
             // 全部数字なら対象外
             .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
             .ToArray();
     }
 
-    private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale)
+    private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale, CancellationToken token)
     {
+        using var l = this.logger.LogDebugTime("Resizing Bitmap");
         var newWidth = (uint)(source.PixelWidth * scale);
         var newHeight = (uint)(source.PixelHeight * scale);
 
         this.resizeStream.Seek(0);
         var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, resizeStream);
+        token.ThrowIfCancellationRequested();
         encoder.SetSoftwareBitmap(source);
+        encoder.BitmapTransform.InterpolationMode = scale > 1 ? BitmapInterpolationMode.Cubic : BitmapInterpolationMode.Fant;
         encoder.BitmapTransform.ScaledWidth = newWidth;
         encoder.BitmapTransform.ScaledHeight = newHeight;
         await encoder.FlushAsync();
+        token.ThrowIfCancellationRequested();
         this.resizeStream.Seek(0);
 
         var decoder = await BitmapDecoder.CreateAsync(resizeStream);
+        token.ThrowIfCancellationRequested();
         return await decoder.GetSoftwareBitmapAsync(source.BitmapPixelFormat, source.BitmapAlphaMode);
     }
 
@@ -298,6 +311,9 @@ public sealed partial class WindowsMediaOcr(
     private static bool IsSpaceLang(string lang)
         => lang[..2] is not "ja" or "zh";
 
+    private static bool IsSpecialLang(string lang)
+        => lang[..2] is "ja" or "zh" or "ko" or "ru";
+
     private static int WordCount(string text)
     {
         var span = text.AsSpan();
@@ -341,7 +357,10 @@ public sealed partial class WindowsMediaOcr(
     }
 
     public void Dispose()
-        => this.resizeStream.Dispose();
+    {
+        this.cts.Cancel();
+        this.resizeStream.Dispose();
+    }
 }
 
 file record WordRect(string Text, double X, double Y, double Width, double Height)
@@ -415,5 +434,42 @@ file static class Utility
         // `•`は大抵の場合は認識ミスなので無視
         words = words.Where(w => w.Text.Length < 3 || !IsAllSameChar(w.Text.Replace("•", string.Empty)));
         return words;
+    }
+
+    private static double CorrectHeight(double height, bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent)
+        => (isxHeight, hasAcent, hasHarfAcent, hasDecent) switch
+        {
+            (true, true, _, true) => height,
+            (true, true, _, false) => height * 1.2,
+            (true, false, true, true) => height * (1 + .1 + .0),
+            (true, false, false, true) => height * (1 + .2 + .0),
+            (true, false, true, false) => height * (1 + .1 + .2),
+            (true, false, false, false) => height * (1 + .2 + .2),
+            (false, _, _, true) => height,
+            (false, _, _, false) => height * 1.2,
+        };
+
+    private static (bool isxHeight, bool hasAcent, bool hasHarfAcent, bool hasDecent) GetTextType(string text)
+    {
+        // abcdefghijklmnopqrstuvwxyz
+        // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        var isxHeight = Contains(text, "acemnosuvwxz<>+=");
+        var hasAcent = Contains(text, "ABCDEFGHIJKLMNOPQRSTUVWXYZbdfhijkl!\"#$%&'()|/[]{}@");
+        var hasHarfAcent = Contains(text, "t^");
+        var hasDecent = Contains(text, "gjpqy()|[]{}@");
+        return (isxHeight, hasAcent, hasHarfAcent, hasDecent);
+    }
+
+    private static bool Contains(string text, string target)
+    {
+        ReadOnlySpan<char> te = text;
+        ReadOnlySpan<char> ta = target;
+        return te.ContainsAny(ta);
+    }
+
+    private static bool IsAllSameChar(string text)
+    {
+        ReadOnlySpan<char> chars = text;
+        return !chars[1..].ContainsAnyExcept(chars[0]);
     }
 }

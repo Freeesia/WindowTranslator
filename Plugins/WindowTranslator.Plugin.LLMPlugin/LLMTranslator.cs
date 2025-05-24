@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -19,7 +17,8 @@ public class LLMTranslator : ITranslateModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        AllowTrailingCommas = true,
     };
     private static readonly ChatCompletionOptions openAiOptions = new()
     {
@@ -165,23 +164,34 @@ public class LLMTranslator : ITranslateModule
     private async ValueTask<string[]> TranslateFromOther(string system, IEnumerable<TextInfo> srcs)
     {
         var client = this.client ?? throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
-        ChatCompletion completion = await client.CompleteChatAsync([
-                ChatMessage.CreateSystemMessage(system),
-                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions)),
-                assitant,
-            ], otherOptions)
-            .ConfigureAwait(false);
-        var json = completion.Content[0].Text.Trim();
-        if (!json.StartsWith('{'))
+        var retry = 0;
+        while (true)
         {
-            json = assitant.Content[0].Text + json;
+            ChatCompletion completion = await client.CompleteChatAsync([
+                    ChatMessage.CreateSystemMessage(system),
+                    ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions)),
+                    assitant,
+                ], otherOptions)
+                .ConfigureAwait(false);
+            var json = completion.Content[0].Text.Trim();
+            if (!json.StartsWith('{'))
+            {
+                json = assitant.Content[0].Text + json;
+            }
+            if (!json.EndsWith('}'))
+            {
+                json += otherOptions.StopSequences[0];
+            }
+            try
+            {
+                var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
+                return res?.Translated ?? [];
+            }
+            catch when (++retry < 5)
+            {
+                continue;
+            }
         }
-        if (!json.EndsWith('}'))
-        {
-            json += otherOptions.StopSequences[0];
-        }
-        var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
-        return res?.Translated ?? [];
     }
 
     private record Response(string[] Translated);

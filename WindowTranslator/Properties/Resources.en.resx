@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>capture window</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>execute</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>Start the app automatically</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>Unlock the app automatically</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>In-memory cache</value>
   </data>
@@ -207,13 +198,6 @@
   <data name="OpenChangelogCommand" xml:space="preserve">
     <value>Check details</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Recognize" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Scale" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="Hold" xml:space="preserve">
     <value>Only while you're pressing</value>
   </data>
@@ -221,7 +205,7 @@
     <value>Press to turn ON/OFF</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Toggle overlay display (Ctrl+Alt+O)</value>
+    <value>Toggle overlay display</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>Make overlay displays captureable</value>
@@ -264,5 +248,71 @@
   </data>
   <data name="OcrModule" xml:space="preserve">
     <value>Recognition module</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>Overlay switch</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>A new version, {0}, has been released</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>New version {0} installation</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>New version check</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>Automatically start at system boot</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>General settings</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>Display method</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>Per-item settings</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>Build date</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>developer</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>Public page</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>license</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>Do not translate</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value />
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value />
   </data>
 </root>

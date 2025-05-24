@@ -1,7 +1,4 @@
-﻿using WindowTranslator.ComponentModel;
-using WindowTranslator.Properties;
-
-namespace WindowTranslator;
+﻿namespace WindowTranslator;
 
 /// <summary>
 /// ユーザー設定
@@ -66,6 +63,11 @@ public class TargetSettings
     public double FontScale { get; set; } = 1.1;
 
     /// <summary>
+    /// オーバーレイ表示の切り替えショートカットキー
+    /// </summary>
+    public string OverlayShortcut { get; set; } = "Ctrl + Alt + O";
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
@@ -84,13 +86,11 @@ public enum ViewMode
     /// <summary>
     /// キャプチャー
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Capture))]
     Capture,
 
     /// <summary>
     /// オーバーレイ
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Overlay))]
     Overlay,
 }
 
@@ -102,12 +102,10 @@ public enum OverlaySwitch
     /// <summary>
     /// ホールド
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Hold))]
     Hold,
 
     /// <summary>
     /// トグル
     /// </summary>
-    [LocalizedDescription(typeof(Resources), nameof(Toggle))]
     Toggle,
 }

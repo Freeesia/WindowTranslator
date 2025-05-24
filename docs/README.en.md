@@ -4,10 +4,11 @@
 [![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
 [![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
 
-WindowTranslator is a tool for translating the windows of Windows applications.
+WindowTranslator is a tool for translating windows of applications on Windows.
 
-[JA](README.md) | [EN](README.en.md) | [DE](README.de.md) | [KR](README.kr.md) | [ZH-CN](README.zh-cn.md) | [ZH-TW](README.zh-tw.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md)
 
 ## Table of Contents
 - [ WindowTranslator](#-windowtranslator)
@@ -15,58 +16,59 @@ WindowTranslator is a tool for translating the windows of Windows applications.
   - [Download](#download)
     - [Installer Version ](#installer-version-)
     - [Portable Version](#portable-version)
-  - [Usage](#usage)
-    - [Google Translate ](#google-translate-)
+  - [How to Use](#how-to-use)
+    - [Bergamot ](#bergamot-)
   - [Other Features](#other-features)
 
 ## Download
-### Installer Version ![Recommended](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
-Download the `WindowTranslator-(version).msi` from the [GitHub Releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
-Installation video available here:  
-[![Installation Video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+### Installer Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
+
+Download `WindowTranslator-(version).msi` from the [GitHub release page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
+Installation guide video⬇️  
+[![Installation Guide Video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### Portable Version
-Download the zip file from the [GitHub Releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to a folder.  
-- `WindowTranslator-(version).zip` requires a .NET environment.  
-- `WindowTranslator-full-(version).zip` is independent of .NET.
 
-## Usage
+Download the zip file from the [GitHub release page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
+- `WindowTranslator-(version).zip` : Requires .NET environment  
+- `WindowTranslator-full-(version).zip` : .NET independent
 
-### Google Translate ![Default](https://img.shields.io/badge/Default-brightgreen)
+## How to Use
 
-1. Launch `WindowTranslator.exe` and click the Translate button.  
+### Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
+
+1. Launch `WindowTranslator.exe` and click the translate button.  
    ![Translate Button](images/translate.png)
-2. Select the window of the application you want to translate and click "OK".  
+2. Select the window of the application you want to translate and click the "OK" button.  
    ![Window Selection](images/select.png)
-3. In the "General Settings" tab under "Language Settings", choose the source and target languages.  
+3. From the "General Settings" tab, select the source and target languages in "Language Settings".  
    ![Language Settings](images/language.png)
-4. After settings are applied, click "OK" to close the settings dialog.  
-   > If OCR is required, follow the on-screen instructions to install it.
-5. The browser will open to display the Google login screen.  
-   ![Login Screen](images/login.png)
-6. After login, select "Select All" for permissions and click "Continue".  
-   ![Authorization Screen](images/auth.png)
-7. Shortly thereafter, the translation result will appear as an overlay.  
+4. After completing the settings, click the "OK" button to close the settings screen.  
+   > OCR function installation may be required.
+   > Please follow the instructions to install.
+5. After a while, the translation results will be displayed as an overlay.  
    ![Translation Result](images/result.png)
 
 > [!NOTE]
-> WindowTranslator supports various translation modules. The default method shown here uses Google Translate.  
-> Google Translate has a lower character limit so for heavy usage you might consider other modules.  
-> For a full list of available translation modules, please refer to the video below or [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#translation).
+> Various translation modules are available in WindowTranslator.  
+> Google Translate has a low limit on the amount of text that can be translated. If you use it frequently, consider using other modules.  
+> You can check the list of available translation modules in the videos below or on the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳).
 > 
-> |         |                                Usage Video                                 | Advantages                    | Disadvantages                        |
-> | ------- | :------------------------------------------------------------------------: | ----------------------------- | ------------------------------------ |
-> | Google  |                                  TBD                                       | Easy to set up<br/>Free       | Low translation limit<br/>Lower accuracy |
-> | DeepL   | [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0) | Generous free tier<br/>Fast translation | Lower accuracy                    |
-> | GoogleAI| [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High accuracy                | Requires a small fee                 |
-> | LLM (Cloud)|                                TBD                                     | High accuracy                | Requires a small fee                 |
-> | LLM (Local)|                                TBD                                     | Free service                 | High-end PC required                 |
+> |                |                                                           How to Use Video                                                            | Advantages                    | Disadvantages                        |
+> | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
+> |   Bergamot     | | Completely free<br/>No translation limit<br/>Fast translation | Lower translation accuracy<br/>Requires more than 1GB of free memory |
+> |   Google Translate   | [![Google Translate Setup Video](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Completely free | Low translation limit<br/>Lower translation accuracy |
+> |     DeepL      |   [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Large free tier<br/>Fast translation | |
+> |    GoogleAI    | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High translation accuracy | Small fee required |
+> | LLM (Cloud) | TBD | High translation accuracy | Small fee required |
+> | LLM (Local) | TBD | Service itself is free | High-spec PC required |
 
 ## Other Features
 
-Please refer to the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
+In addition to translation modules, WindowTranslator has various features.  
+If you want to learn more, please check the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
 
----  
-Privacy Policy: [Privacy Policy](PrivacyPolicy.en.md)
+---
+[Privacy Policy](PrivacyPolicy.md)
 
-> ※ This document was machine translated.
+This document was translated from Japanese using machine translation.
