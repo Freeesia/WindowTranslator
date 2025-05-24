@@ -118,51 +118,51 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CorrectMode_Image" xml:space="preserve">
-    <value>画像認識による補正</value>
+    <value>Berichtigung durch Bilderkennung</value>
   </data>
   <data name="CorrectMode_None" xml:space="preserve">
-    <value>補正なし</value>
+    <value>Nicht kompensiert</value>
   </data>
   <data name="CorrectMode_Text" xml:space="preserve">
-    <value>テキストのみの補正</value>
+    <value>Reine Textkorrektur.</value>
   </data>
   <data name="Gemini15Flash" xml:space="preserve">
-    <value>Gemini 1.5 Flash (～2025年9月24日)</value>
+    <value>Zwillinge 1.5 Flash (bis 24. September 2025)</value>
   </data>
   <data name="Gemini15Pro" xml:space="preserve">
-    <value>Gemini 1.5 Pro (～2025年9月24日)</value>
+    <value>Gemini 1.5 Pro (bis 24. September 2025)</value>
   </data>
   <data name="Gemini20FlashLite" xml:space="preserve">
     <value>Gemini 2.0 Flash Lite</value>
   </data>
   <data name="Gemini20Flash" xml:space="preserve">
-    <value>Gemini 2.0 Flash</value>
+    <value>Zwilling 2.0 Flash</value>
   </data>
   <data name="PreviewModel" xml:space="preserve">
-    <value>使用するプレビューモデル</value>
+    <value>Das zu verwendende Vorschaumodell.</value>
   </data>
   <data name="PreviewModel_Desc" xml:space="preserve">
-    <value>モデル名を入力すると「使用するモデル」より優先されます</value>
+    <value>Die Eingabe eines Modellnamens hat Vorrang vor "Zu verwendendes Modell".</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
-    <value>補正サンプル </value>
+    <value>Berichtigungsmuster </value>
   </data>
   <data name="ApiKey" xml:space="preserve">
-    <value>APIキー</value>
+    <value>API-Schlüssel</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>接続先</value>
+    <value>Zugangspunkt</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>用語集パス</value>
+    <value>Glossarpfad</value>
   </data>
   <data name="Model" xml:space="preserve">
-    <value>使用するモデル</value>
+    <value>Verwendete Modelle.</value>
   </data>
   <data name="TranslateContext" xml:space="preserve">
-    <value>翻訳時に利用する文脈情報</value>
+    <value>Kontextinformationen, die bei der Übersetzung verwendet werden sollen</value>
   </data>
   <data name="CorrectMode" xml:space="preserve">
-    <value>認識補正</value>
+    <value>Korrektur der Erkennung</value>
   </data>
 </root>
