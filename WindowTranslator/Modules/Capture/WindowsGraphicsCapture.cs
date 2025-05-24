@@ -35,6 +35,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public void Dispose()
     {
+        this.logger.LogDebug("Dispose");
         this.cts.Cancel();
         this.session?.Dispose();
         this.framePool?.Dispose();
@@ -42,6 +43,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public void StartCapture(IntPtr targetWindow)
     {
+        this.logger.LogDebug("StartCapture");
         var item = CaptureHelper.CreateItemForWindow(targetWindow)!;
         this.lastSize = item.Size;
         this.framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, this.lastSize);
@@ -85,6 +87,10 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
             framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
             this.logger.LogDebug($"フレームプール再生成後:({this.lastSize.Width}, {this.lastSize.Height})");
         }
+        catch (ObjectDisposedException)
+        {
+            this.logger.LogDebug($"破棄済み");
+        }
         catch (OperationCanceledException)
         {
             this.logger.LogDebug($"キャンセル処理");
@@ -93,6 +99,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
 
     public void StopCapture()
     {
+        this.logger.LogDebug("StopCapture");
         this.session?.Dispose();
         this.framePool?.Dispose();
     }
