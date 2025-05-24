@@ -213,39 +213,6 @@
   <data name="TargetProcesses" xml:space="preserve">
     <value>번역 된 프로세스</value>
   </data>
-  <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>Windows OCR 설정</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>x 위치 시프트 임계 값</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>라인 인터 라인 임계 값</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>차기 임계 값</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>글꼴 크기 편차 임계 값</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>임계 값을 병합하십시오</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>Y 위치 시프트 임계 값</value>
-  </data>
-  <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>병합 목록을 피하십시오</value>
-  </data>
-  <data name="Recognize" xml:space="preserve">
-    <value>인식 설정</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>확대율</value>
-  </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>버퍼 크기</value>
-  </data>
   <data name="OcrModule" xml:space="preserve">
     <value>인식 모듈</value>
   </data>

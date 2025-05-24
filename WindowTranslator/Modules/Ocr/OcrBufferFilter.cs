@@ -6,7 +6,7 @@ using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Ocr;
 
-public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<OcrBufferFilter> logger) : IFilterModule
+public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferFilter> logger) : IFilterModule
 {
     private static readonly ObjectPool<List<TextRect>> listPool = ObjectPool.Create(new ListPolicy());
     private readonly ILogger<OcrBufferFilter> logger = logger;

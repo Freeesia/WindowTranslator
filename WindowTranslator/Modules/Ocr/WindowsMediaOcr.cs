@@ -5,10 +5,12 @@ using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
+using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using static WindowTranslator.Modules.Ocr.Utility;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
+using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
@@ -16,7 +18,7 @@ namespace WindowTranslator.Modules.Ocr;
 [DefaultModule]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
-    IOptionsSnapshot<WindowsMediaOcrParam> ocrParam,
+    IOptionsSnapshot<BasicOcrParam> ocrParam,
     ILogger<WindowsMediaOcr> logger)
     : IOcrModule, IDisposable
 {
@@ -36,11 +38,6 @@ public sealed partial class WindowsMediaOcr(
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
-        // リサイズが必要かどうか
-        // 画像の幅または高さがリサイズ後の幅または高さを超える場合はリサイズが必要
-        var needScale = ((int)(this.scale * bitmap.PixelWidth) > bitmap.PixelWidth)
-            || ((int)(this.scale * bitmap.PixelHeight) > bitmap.PixelHeight);
-
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
         if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
@@ -49,7 +46,7 @@ public sealed partial class WindowsMediaOcr(
         }
 
         // 拡大率に基づくリサイズ処理
-        var workingBitmap = needScale ? await ResizeSoftwareBitmapAsync(bitmap, this.scale, this.cts.Token) : bitmap;
+        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
         this.cts.Token.ThrowIfCancellationRequested();
 
         var t = this.logger.LogDebugTime("OCR Recognize");
@@ -118,40 +115,18 @@ public sealed partial class WindowsMediaOcr(
             }
         }
 
-        if (needScale)
+        if (bitmap != workingBitmap)
         {
             workingBitmap.Dispose();
         }
 
-        return results.Select(r => ToTextRect(r, needScale))
+        return results.Select(r => ToTextRect(r, this.scale))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
             // 全部数字なら対象外
-            .Where(w => !IsAllSymbolOrSpace().IsMatch(w.Text))
+            .Where(w => !AllSymbolOrSpace().IsMatch(w.Text))
             .ToArray();
-    }
-
-    private async ValueTask<SoftwareBitmap> ResizeSoftwareBitmapAsync(SoftwareBitmap source, double scale, CancellationToken token)
-    {
-        using var l = this.logger.LogDebugTime("Resizing Bitmap");
-        var newWidth = (uint)(source.PixelWidth * scale);
-        var newHeight = (uint)(source.PixelHeight * scale);
-
-        this.resizeStream.Seek(0);
-        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, resizeStream);
-        token.ThrowIfCancellationRequested();
-        encoder.SetSoftwareBitmap(source);
-        encoder.BitmapTransform.InterpolationMode = scale > 1 ? BitmapInterpolationMode.Cubic : BitmapInterpolationMode.Fant;
-        encoder.BitmapTransform.ScaledWidth = newWidth;
-        encoder.BitmapTransform.ScaledHeight = newHeight;
-        await encoder.FlushAsync();
-        token.ThrowIfCancellationRequested();
-        this.resizeStream.Seek(0);
-
-        var decoder = await BitmapDecoder.CreateAsync(resizeStream);
-        token.ThrowIfCancellationRequested();
-        return await decoder.GetSoftwareBitmapAsync(source.BitmapPixelFormat, source.BitmapAlphaMode);
     }
 
     private bool CanMerge(TempMergeRect temp, TextRect rect, double xThreshold, double yThreshold)
@@ -279,19 +254,16 @@ public sealed partial class WindowsMediaOcr(
         }
     }
 
-    private TextRect ToTextRect(TempMergeRect combinedRect, bool needScale)
+    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換（リサイズ時のみ）
-        if (needScale)
-        {
-            x /= this.scale;
-            y /= this.scale;
-            width /= this.scale;
-            height /= this.scale;
-            fontSize /= this.scale;
-        }
+        // 元の画像座標に変換
+        x /= scale;
+        y /= scale;
+        width /= scale;
+        height /= scale;
+        fontSize /= scale;
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         // または、
         // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
@@ -306,29 +278,6 @@ public sealed partial class WindowsMediaOcr(
         y -= fontSize * fat * 1.5;
 
         return new(text, x, y, width, height, fontSize, lines);
-    }
-
-    private static bool IsSpaceLang(string lang)
-        => lang[..2] is not "ja" or "zh";
-
-    private static bool IsSpecialLang(string lang)
-        => lang[..2] is "ja" or "zh" or "ko" or "ru";
-
-    private static int WordCount(string text)
-    {
-        var span = text.AsSpan();
-        var count = 0;
-        while (!span.IsEmpty)
-        {
-            count++;
-            var index = span.IndexOf(' ');
-            if (index == -1)
-            {
-                break;
-            }
-            span = span[(index + 1)..];
-        }
-        return count;
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
@@ -355,6 +304,13 @@ public sealed partial class WindowsMediaOcr(
         var height = words.Select(w => w.Bottom).Average() - words.Select(w => w.Top).Average();
         return new(text, x, y, width, height, height, false);
     }
+
+    /// <summary>
+    /// 認識ミスとして無視する文字列
+    /// * 4文字以上aoeのみで構成されているかどうか
+    /// </summary>
+    [GeneratedRegex(@"^[aceo@]{3,}$")]
+    private static partial Regex IsIgnoreLine();
 
     public void Dispose()
     {
