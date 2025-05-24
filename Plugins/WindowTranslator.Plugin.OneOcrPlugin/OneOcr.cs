@@ -16,7 +16,6 @@ using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
-[DisplayName("OneOcr文字認識")]
 public class OneOcr : IOcrModule
 {
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
