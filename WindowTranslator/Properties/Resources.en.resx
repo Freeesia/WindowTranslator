@@ -213,39 +213,6 @@
   <data name="TargetProcesses" xml:space="preserve">
     <value>Translated Process</value>
   </data>
-  <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>Windows OCR Settings</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>X position shift threshold</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>Line interline threshold</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>Intercharacter Threshold</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>Font size deviation threshold</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>Merge Threshold</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>Y position shift threshold</value>
-  </data>
-  <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>Avoid merging lists</value>
-  </data>
-  <data name="Recognize" xml:space="preserve">
-    <value>Recognition settings</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>Enlargement rate</value>
-  </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Buffer size</value>
-  </data>
   <data name="OcrModule" xml:space="preserve">
     <value>Recognition module</value>
   </data>
