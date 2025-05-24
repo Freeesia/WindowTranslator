@@ -118,51 +118,51 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CorrectMode_Image" xml:space="preserve">
-    <value>画像認識による補正</value>
+    <value>透過影像辨識進行修正</value>
   </data>
   <data name="CorrectMode_None" xml:space="preserve">
-    <value>補正なし</value>
+    <value>無償</value>
   </data>
   <data name="CorrectMode_Text" xml:space="preserve">
-    <value>テキストのみの補正</value>
+    <value>純文字修正。</value>
   </data>
   <data name="Gemini15Flash" xml:space="preserve">
-    <value>Gemini 1.5 Flash (～2025年9月24日)</value>
+    <value>雙子星 1.5 Flash (至 2025 年 9 月 24 日)</value>
   </data>
   <data name="Gemini15Pro" xml:space="preserve">
-    <value>Gemini 1.5 Pro (～2025年9月24日)</value>
+    <value>雙子星 1.5 Pro (至 2025 年 9 月 24 日)</value>
   </data>
   <data name="Gemini20FlashLite" xml:space="preserve">
-    <value>Gemini 2.0 Flash Lite</value>
+    <value>雙子星 2.0 Flash 精簡版</value>
   </data>
   <data name="Gemini20Flash" xml:space="preserve">
-    <value>Gemini 2.0 Flash</value>
+    <value>雙子星 2.0 Flash</value>
   </data>
   <data name="PreviewModel" xml:space="preserve">
-    <value>使用するプレビューモデル</value>
+    <value>預覽要使用的模型。</value>
   </data>
   <data name="PreviewModel_Desc" xml:space="preserve">
-    <value>モデル名を入力すると「使用するモデル」より優先されます</value>
+    <value>輸入模型名稱優先於「要使用的模型</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
-    <value>補正サンプル </value>
+    <value>更正樣本 </value>
   </data>
   <data name="ApiKey" xml:space="preserve">
-    <value>APIキー</value>
+    <value>API 金鑰</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>接続先</value>
+    <value>存取點</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>用語集パス</value>
+    <value>詞彙路徑</value>
   </data>
   <data name="Model" xml:space="preserve">
-    <value>使用するモデル</value>
+    <value>使用的機型。</value>
   </data>
   <data name="TranslateContext" xml:space="preserve">
-    <value>翻訳時に利用する文脈情報</value>
+    <value>翻譯過程中使用的上下文資訊</value>
   </data>
   <data name="CorrectMode" xml:space="preserve">
-    <value>認識補正</value>
+    <value>識別校正</value>
   </data>
 </root>
