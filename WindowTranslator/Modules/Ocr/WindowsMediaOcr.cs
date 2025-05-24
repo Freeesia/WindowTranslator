@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Foundation;
@@ -12,7 +13,6 @@ using static WindowTranslator.Modules.Ocr.Utility;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
 using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.OcrUtility;
-using System.Text.RegularExpressions;
 
 namespace WindowTranslator.Modules.Ocr;
 
