@@ -271,15 +271,15 @@
     <value>번역하지 않습니다</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>キャッシュ設定</value>
+    <value>캐시 설정</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>近いテキストの閾値</value>
+    <value>가까운 텍스트의 임계값</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>キャッシュしない</value>
+    <value>캐시 안함</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Windows標準文字認識</value>
+    <value>Windows 표준 문자 인식</value>
   </data>
 </root>
