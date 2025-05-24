@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeployId" xml:space="preserve">
-    <value>スクリプトのデプロイID</value>
+    <value>ID der Skriptbereitstellung.</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
-    <value>Google翻訳</value>
+    <value>Google Übersetzen</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
-    <value>Google翻訳</value>
+    <value>Google Übersetzen</value>
   </data>
 </root>
