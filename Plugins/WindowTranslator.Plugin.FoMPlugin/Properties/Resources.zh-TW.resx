@@ -118,21 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ExcludeUnspecifiedText" xml:space="preserve">
-    <value>特定できないテキストを除外</value>
+    <value>排除無法辨識的文字。</value>
   </data>
   <data name="FarmName" xml:space="preserve">
-    <value>農場名</value>
+    <value>農場名稱</value>
   </data>
   <data name="FoMOptions" xml:space="preserve">
-    <value>Fields of Mistria専用</value>
+    <value>專屬於 Fields of Mistria</value>
   </data>
   <data name="IsEnabledCorrect" xml:space="preserve">
-    <value>ゲームに含まれているリソースを利用した補正を利用する</value>
+    <value>使用遊戲中包含的資源型修正。</value>
   </data>
   <data name="PlayerName" xml:space="preserve">
-    <value>プレイヤー名</value>
+    <value>玩家名稱</value>
   </data>
   <data name="UseJpn" xml:space="preserve">
-    <value>ゲームに含まれている日本語リソースを利用する</value>
+    <value>使用遊戲中包含的日文資源。</value>
   </data>
 </root>
