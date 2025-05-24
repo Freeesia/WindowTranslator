@@ -160,7 +160,7 @@
     <value>緩衝區大小</value>
   </data>
   <data name="BasicOcrParam" xml:space="preserve">
-    <value>基本的なOCRの設定</value>
+    <value>基本 OCR 設定</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
