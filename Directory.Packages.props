@@ -9,20 +9,20 @@
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.4.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="CsvHelper" Version="33.0.1" />
+    <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="DeepL.net" Version="1.15.0" />
     <PackageVersion Include="Google.Apis.Auth" Version="1.69.0" />
     <PackageVersion Include="Google.Apis.Script.v1" Version="1.68.0.3294" />
-    <PackageVersion Include="Google_GenerativeAI" Version="2.5.10" />
+    <PackageVersion Include="Google_GenerativeAI" Version="2.7.0" />
     <PackageVersion Include="Kamishibai.Hosting" Version="3.0.1" />
     <PackageVersion Include="ksemenenko.ColorThief" Version="1.1.1.4" />
     <PackageVersion Include="MdXaml" Version="1.27.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.5" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.PowerShell.SDK" Version="7.4.6" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
@@ -42,7 +42,7 @@
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="ValueTaskSupplement" Version="1.1.0" />
     <PackageVersion Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
-    <PackageVersion Include="WixSharp_wix4" Version="2.6.2" />
+    <PackageVersion Include="WixSharp_wix4" Version="2.7.0" />
     <PackageVersion Include="WPF-UI" Version="4.0.0" />
     <PackageVersion Include="WPF-UI.Tray" Version="3.0.5" />
     <PackageVersion Include="WpfAnalyzers" Version="4.1.1" />
