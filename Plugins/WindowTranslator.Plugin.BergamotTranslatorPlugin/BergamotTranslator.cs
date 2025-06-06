@@ -144,8 +144,7 @@ public class BergamotValidator : ITargetSettingsValidator
             foreach (var content in contents)
             {
                 var path = Path.Combine(tmpDir, content.Name);
-                var url = $"https://media.githubusercontent.com/media/{RepoOwner}/{RepoName}/refs/heads/main/{content.Path}";
-                await GitHubClient.DownloadFileAsync(new(url), path).ConfigureAwait(false);
+                await GitHubClient.DownloadFileAsync(RepoOwner, RepoName, content, path).ConfigureAwait(false);
                 if (Path.GetExtension(path) == ".gz")
                 {
                     var dstPath = Path.Combine(modelDir, Path.GetFileNameWithoutExtension(content.Name));
@@ -221,6 +220,28 @@ public class BergamotValidator : ITargetSettingsValidator
 
 file static class Extensions
 {
+    public static async ValueTask DownloadFileAsync(this GitHubClient client, string owner, string repo, RepositoryContent content, string path)
+    {
+        var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
+        res.HttpResponse.IsSuccessStatusCode();
+        if (res.HttpResponse.Body is string lfs && lfs.StartsWith("version https://git-lfs.github.com/spec/v1", StringComparison.Ordinal))
+        {
+            var url = $"https://media.githubusercontent.com/media/{owner}/{repo}/refs/heads/main/{content.Path}";
+            await client.DownloadFileAsync(new(url), path).ConfigureAwait(false);
+        }
+        else if (res.HttpResponse.Body is string d)
+        {
+            await using var fs = File.Create(path);
+            await using var st = new StreamWriter(fs);
+            await st.WriteAsync(d).ConfigureAwait(false);
+        }
+        else if (res.HttpResponse.Body is Stream stream)
+        {
+            await using var fs = File.Create(path);
+            await stream.CopyToAsync(fs).ConfigureAwait(false);
+        }
+    }
+
     public static async ValueTask DownloadFileAsync(this GitHubClient client, Uri url, string path)
     {
         var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
