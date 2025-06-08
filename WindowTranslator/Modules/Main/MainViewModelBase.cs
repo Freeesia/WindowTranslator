@@ -11,7 +11,6 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
-using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Stores;
 using MessageBoxImage = Kamishibai.MessageBoxImage;
 

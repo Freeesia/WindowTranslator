@@ -1,18 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Modules;
 using ColorConverter = ColorHelper.ColorConverter;
 using StudioFreesia.ColorThief;
 using System.Drawing;
 
-namespace WindowTranslator.Modules.OverlayColor;
+namespace WindowTranslator.Plugin.ColorThiefPlugin;
 
 [DefaultModule]
 [DisplayName("近似カラー")]
-public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
+public class ColorThiefPlugin(ILogger<ColorThiefPlugin> logger) : IColorModule
 {
-    private readonly ILogger<ColorThiefModule> logger = logger;
+    private readonly ILogger<ColorThiefPlugin> logger = logger;
 
     public ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
     {
