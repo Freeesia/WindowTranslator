@@ -48,8 +48,9 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
         }
 
         // 現在のテキストを列挙しながら処理
-        await foreach (var text in texts.ConfigureAwait(false))
+        await foreach (var t in texts.ConfigureAwait(false))
         {
+            var text = t;
             // 過去のバッファ内に類似するテキストがあるか確認
             if (bufferedTexts.FirstOrDefault(bufferedText => AreSimilar(bufferedText, text)) is { } similarPastText)
             {
@@ -93,8 +94,8 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
     private static bool AreSimilar(TextRect rect1, TextRect rect2)
     {
         // テキストの内容が90%以上一致してたら同じとみなす
-        var p = (float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
-            / Math.Max(rect1.Text.Length, rect2.Text.Length);
+        var p = 1 - ((float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
+            / Math.Max(rect1.Text.Length, rect2.Text.Length));
 
         if (p >= 0.9)
         {
