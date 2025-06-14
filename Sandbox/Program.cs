@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Windows.Graphics.Imaging;
 using WindowTranslator;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -20,6 +22,7 @@ var services = new ServiceCollection();
 services.Configure<Secret>(configuration.GetSection("Secret"));
 services.Configure<LanguageOptions>(op => { });
 services.Configure<BasicOcrParam>(op => { });
+services.AddLogging();
 using var serviceProvider = services.BuildServiceProvider();
 ConsoleApp.ServiceProvider = serviceProvider;
 
@@ -103,19 +106,48 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
     Console.WriteLine(translated[0]);
 }
 
-static async Task ClipTextRect(string imagePath, [FromServices]ILogger<OneOcr> logger, [FromServices]IOptionsSnapshot<LanguageOptions> langOptions, [FromServices] IOptionsSnapshot<BasicOcrParam> ocrParam)
+static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogger<OneOcr> logger, [FromServices] IOptionsSnapshot<LanguageOptions> langOptions, [FromServices] IOptionsSnapshot<BasicOcrParam> ocrParam)
 {
     var validator = new OneOcrValidator();
-    await validator.Validate(null!);
+    await validator.Validate(new() { SelectedPlugins = { [nameof(IOcrModule)] = nameof(OneOcr) } }).ConfigureAwait(false);
     var ocr = new OneOcr(logger, langOptions, ocrParam);
 
     // 画像ファイルの読み込み
+    using var fileStream = new FileStream(imagePath, FileMode.Open);
+    using var randomAccessStream = fileStream.AsRandomAccessStream();
+    var decoder = await BitmapDecoder.CreateAsync(randomAccessStream);
+    var bitmap = await decoder.GetSoftwareBitmapAsync();
 
-    // ocrの実行
+    // OCRの実行
+    var textRects = await ocr.RecognizeAsync(bitmap);
 
     // 画像からテキスト矩形を切り抜き
+    var outputDir = Path.Combine(Path.GetDirectoryName(imagePath)!, "clipped");
+    Directory.CreateDirectory(outputDir);
 
-    // 切り抜いた画像を保存
+    var index = 0;
+    foreach (var textRect in textRects)
+    {
+        // TextRectからRectangleに変換
+        var rect = textRect.ToRect();
+
+        // 画像の境界をチェックして調整
+        rect.X = Math.Max(0, rect.X);
+        rect.Y = Math.Max(0, rect.Y);
+        rect.Width = Math.Min(rect.Width, bitmap.PixelWidth - rect.X);
+        rect.Height = Math.Min(rect.Height, bitmap.PixelHeight - rect.Y);        // 切り抜いた画像を保存（連番ファイル名）
+        var outputFileName = $"text_{index:D3}.jpg";
+        var outputPath = Path.Combine(outputDir, outputFileName);
+
+        // 矩形で指定された部分をJPEGバイト配列として取得し、ファイルに書き込み
+        var croppedImageData = await bitmap.EncodeToJpegBytes(rect);
+        await File.WriteAllBytesAsync(outputPath, croppedImageData);
+
+        Console.WriteLine($"切り抜き画像を保存しました: {outputFileName} (テキスト: \"{textRect.Text}\")");
+        index++;
+    }
+
+    Console.WriteLine($"合計 {textRects.Count()} 個のテキスト矩形を切り抜きました。");
 }
 
 
