@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.20348.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup><ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WindowTranslator.Plugin.ColorThiefPlugin\WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
+    <ProjectReference Update="..\..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" ExcludeAssets="none" IncludeAssets="all" Private="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="images\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

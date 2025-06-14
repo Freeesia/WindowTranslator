@@ -12,9 +12,9 @@ namespace WindowTranslator.Plugin.ColorThiefPlugin;
 
 [DefaultModule]
 [DisplayName("近似カラー")]
-public class ColorThiefPlugin(ILogger<ColorThiefPlugin> logger) : IColorModule
+public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
 {
-    private readonly ILogger<ColorThiefPlugin> logger = logger;
+    private readonly ILogger<ColorThiefModule> logger = logger;
 
     public ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
     {
