@@ -6,7 +6,11 @@ using GenerativeAI;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WindowTranslator;
+using WindowTranslator.Modules;
+using WindowTranslator.Plugin.OneOcrPlugin;
 
 var configuration = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
@@ -14,6 +18,8 @@ var configuration = new ConfigurationBuilder()
 
 var services = new ServiceCollection();
 services.Configure<Secret>(configuration.GetSection("Secret"));
+services.Configure<LanguageOptions>(op => { });
+services.Configure<BasicOcrParam>(op => { });
 using var serviceProvider = services.BuildServiceProvider();
 ConsoleApp.ServiceProvider = serviceProvider;
 
@@ -97,9 +103,19 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
     Console.WriteLine(translated[0]);
 }
 
-static async Task ClipTextRect(string imagePath)
+static async Task ClipTextRect(string imagePath, [FromServices]ILogger<OneOcr> logger, [FromServices]IOptionsSnapshot<LanguageOptions> langOptions, [FromServices] IOptionsSnapshot<BasicOcrParam> ocrParam)
 {
+    var validator = new OneOcrValidator();
+    await validator.Validate(null!);
+    var ocr = new OneOcr(logger, langOptions, ocrParam);
 
+    // 画像ファイルの読み込み
+
+    // ocrの実行
+
+    // 画像からテキスト矩形を切り抜き
+
+    // 切り抜いた画像を保存
 }
 
 
