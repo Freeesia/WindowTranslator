@@ -14,7 +14,6 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
-[DisplayName("Google翻訳")]
 public sealed class GasTranslator : ITranslateModule, IDisposable
 {
     private const string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
@@ -52,7 +51,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
             }
             this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
         }
-        var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source, this.langOptions.Target);
+        var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
         var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
         if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
         {
@@ -116,11 +115,21 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
     }
 }
 
-[DisplayName("Google翻訳")]
 public class GasOptions : IPluginParam
 {
 
     [DataType(DataType.Password)]
-    [DisplayName("スクリプトのデプロイID")]
     public string DeployId { get; set; } = string.Empty;
+}
+
+file static class Extensions
+{
+    public static string GetLangCode(this string target)
+        => target switch
+        {
+            "pt-BR" or "pt-PT" => target,
+            "zh-Hant" => "zh-TW",
+            "zh-Hans" => "zh-CN",
+            var t => t[..2],
+        };
 }

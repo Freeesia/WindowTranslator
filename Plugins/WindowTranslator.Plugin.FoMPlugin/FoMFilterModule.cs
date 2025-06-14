@@ -378,7 +378,7 @@ public partial class FoMFilterModule : IFilterModule
     }
 
 
-    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
         if (!this.isEnabled)
         {
@@ -446,9 +446,9 @@ public partial class FoMFilterModule : IFilterModule
         if (notContexts.Count > 0)
         {
             var contexts = match.Select(GetCharContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
-            if (contexts is [var context])
+            if (contexts is [var ctx])
             {
-                notContexts = notContexts.Select(p => p with { text = p.text with { Text = p.cache.En, Context = context + p.cache.SceneContext } }).ToList();
+                notContexts = notContexts.Select(p => p with { text = p.text with { Text = p.cache.En, Context = ctx + p.cache.SceneContext } }).ToList();
             }
             foreach (var (text, _) in notContexts)
             {
@@ -462,7 +462,7 @@ public partial class FoMFilterModule : IFilterModule
         }
     }
 
-    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts)
+    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
         => texts;
 
     private void Dropped(IReadOnlyList<string> texts)
@@ -475,12 +475,12 @@ public partial class FoMFilterModule : IFilterModule
             foreach (var text in texts)
             {
                 var t = DateTime.UtcNow;
-                var (key, en, ja, l) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
-                // 編集距離のパーセンテージ
-                var p = 100.0 * l / Math.Max(text.Length, en.Length);
-                this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:f2}%) [{DateTime.UtcNow - t}]");
-                // 編集距離が短いほうの30%以下なら利用する
-                if (p >= 32)
+                var (key, en, ja, distance) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
+                // 一致率の計算
+                var p = 1 - ((float)distance / Math.Max(text.Length, en.Length));
+                this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:p2}%) [{DateTime.UtcNow - t}]");
+                // 一致率が68%未満は除外
+                if (p < 68)
                 {
                     continue;
                 }
@@ -537,22 +537,16 @@ record LocInto(string Key, string Text);
 
 record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
 
-[DisplayName("Fields of Mistria専用")]
 public class FoMOptions : IPluginParam
 {
-    [DisplayName("ゲームに含まれているリソースを利用した補正を利用する")]
     public bool IsEnabledCorrect { get; set; } = true;
 
-    [DisplayName("ゲームに含まれている日本語リソースを利用する")]
     public bool UseJpn { get; set; } = true;
 
-    [DisplayName("プレイヤー名")]
     public string PlayerName { get; set; } = string.Empty;
 
-    [DisplayName("農場名")]
     public string FarmName { get; set; } = string.Empty;
 
-    [DisplayName("特定できないテキストを除外")]
     public bool ExcludeUnspecifiedText { get; set; } = true;
 }
 
@@ -577,6 +571,12 @@ file static class Extentions
             .Replace("[TREAT_ITEM]", "Treat")
             .Replace("[BATHHOUSE_COST]", string.Empty)
             .Replace("[INN_SOUP_OF_THE_DAY]", string.Empty)
+            .Replace("[pet_name]", string.Empty)
+            .Replace("[pet_type]", string.Empty)
+            .Replace("[festival_large_animal_name]", string.Empty)
+            .Replace("[festival_large_animal_type]", string.Empty)
+            .Replace("[festival_small_animal_name]", string.Empty)
+            .Replace("[festival_small_animal_type]", string.Empty)
             //.Replace("[statue_cost_low]", string.Empty)
             //.Replace("[statue_cost_high]", string.Empty)
             //.Replace("[offering_item_count]", string.Empty)

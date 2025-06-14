@@ -1,4 +1,9 @@
-﻿[*.{cs,vb}]
+﻿root = true
+
+[*]
+indent_style = space
+
+[*.{cs,vb}]
 
 tab_width = 4
 indent_size = 4
@@ -149,4 +154,14 @@ csharp_style_prefer_primary_constructors = true:suggestion
 indent_size = 2
 
 [*.md]
+indent_size = 2
+
+[*.resx]
+charset = utf-8-bom
+end_of_line = crlf
+indent_size = 2
+
+[*.bat]
+charset = latin1
+end_of_line = crlf
 indent_size = 2

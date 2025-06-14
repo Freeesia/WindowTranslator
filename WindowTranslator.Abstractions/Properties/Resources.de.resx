@@ -129,4 +129,40 @@
   <data name="Toggle" xml:space="preserve">
     <value>Drücken Sie, um ein-/auszuschalten</value>
   </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>Erkennungseinstellungen</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Erweiterungsrate</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>Schwelle verschmelzen</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>X Positionsverschiebungschwelle</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>Y Positionsverschiebungsschwelle</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>Linien -Interline -Schwelle</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>Intercharakteristische Schwelle</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>Schriftgröße Schwelle der Schriftgröße</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>Vermeiden Sie das Zusammenführen von Listen</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>Puffergröße</value>
+  </data>
+  <data name="BasicOcrParam" xml:space="preserve">
+    <value>Grundlegende OCR-Einstellungen</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>Sonstiges</value>
+  </data>
 </root>

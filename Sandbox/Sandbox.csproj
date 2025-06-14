@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.20348.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>1cda64be-8678-4eb9-a533-77744fa3438c</UserSecretsId>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Plugins\WindowTranslator.Plugin.GoogleAIPlugin\GenerativeModelEx.cs" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OneOcrPlugin\WindowTranslator.Plugin.OneOcrPlugin.csproj" />
   </ItemGroup>
 
 </Project>

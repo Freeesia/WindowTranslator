@@ -1,0 +1,3 @@
+files:
+  - source: /**/Properties/Resources.resx
+    translation: /**/Properties/Resources.%two_letters_code%.resx

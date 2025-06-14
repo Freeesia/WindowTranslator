@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>Aufnahmefenster</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>Ausführung</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>Starten Sie die App automatisch</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>Entsperren Sie die App automatisch</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>In-Memory-Cache</value>
   </data>
@@ -214,46 +205,13 @@
     <value>Drücken Sie, um ein-/auszuschalten</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Überlagerungsanzeige (Strg+Alt+O) umschalten</value>
+    <value>Überlagerungsanzeige umschalten</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>Machen Sie Overlay -Anzeigen faszinierbar</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
     <value>Übersetzter Prozess</value>
-  </data>
-  <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>Windows OCR -Einstellungen</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>X Positionsverschiebungschwelle</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>Linien -Interline -Schwelle</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>Intercharakteristische Schwelle</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>Schriftgröße Schwelle der Schriftgröße</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>Schwelle verschmelzen</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>Y Positionsverschiebungsschwelle</value>
-  </data>
-  <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>Vermeiden Sie das Zusammenführen von Listen</value>
-  </data>
-  <data name="Recognize" xml:space="preserve">
-    <value>Erkennungseinstellungen</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>Erweiterungsrate</value>
-  </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Puffergröße</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
     <value>Erkennungsmodul</value>
@@ -263,5 +221,65 @@
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
     <value>Overlay -Schalter</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>neue Version: {0} ist erschienen</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>Neue Version: {0} installieren</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>Aktualisierungsübersicht</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>neue Version prüfen</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Stornierung</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>PC-Startvorgang beim Hochfahren automatisch starten</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Allgemeine Einstellungen</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>Anzeigemethode</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>objektspezifische Einstellungen</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>Entwickler</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>öffentliche Seite</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Lizenz</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>Übersetze nicht</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>Cache-Einstellungen</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>Textschwelle schließen</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>Nicht zwischenspeichern</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Windows-Standardzeichenerkennung</value>
   </data>
 </root>

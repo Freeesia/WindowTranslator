@@ -6,14 +6,14 @@ using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Ocr;
 
-public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<OcrBufferFilter> logger) : IFilterModule
+public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferFilter> logger) : IFilterModule
 {
     private static readonly ObjectPool<List<TextRect>> listPool = ObjectPool.Create(new ListPolicy());
     private readonly ILogger<OcrBufferFilter> logger = logger;
     private readonly Queue<List<TextRect>> buffer = new();
     private readonly int bufferSize = options.Value.BufferSize;
 
-    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts)
+    public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
         if (this.bufferSize <= 0)
         {
@@ -81,7 +81,7 @@ public class OcrBufferFilter(IOptions<WindowsMediaOcrParam> options, ILogger<Ocr
         listPool.Return(finalBuffered);
     }
 
-    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts) => texts;
+    public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context) => texts;
 
     // 矩形同士が重なっているかを判定する追加メソッド
     private static bool Intersects(TextRect rect1, TextRect rect2)

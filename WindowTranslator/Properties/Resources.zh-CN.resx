@@ -156,15 +156,6 @@
   <data name="Capture" xml:space="preserve">
     <value>捕获窗口</value>
   </data>
-  <data name="Run" xml:space="preserve">
-    <value>执行</value>
-  </data>
-  <data name="RegisterToStartupCommand" xml:space="preserve">
-    <value>自动启动应用</value>
-  </data>
-  <data name="UnregisterFromStartupCommand" xml:space="preserve">
-    <value>自动解锁应用</value>
-  </data>
   <data name="InMemoryCache" xml:space="preserve">
     <value>内存缓存</value>
   </data>
@@ -214,46 +205,13 @@
     <value>按打开/关闭</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>切换覆盖显示（CTRL+ALT+O）</value>
+    <value>切换覆盖显示</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
     <value>使叠加显示可捕获</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
     <value>翻译过程</value>
-  </data>
-  <data name="WindowsMediaOcrParam" xml:space="preserve">
-    <value>Windows OCR设置</value>
-  </data>
-  <data name="XPosThrethold" xml:space="preserve">
-    <value>X位置移位阈值</value>
-  </data>
-  <data name="LeadingThrethold" xml:space="preserve">
-    <value>线Interline阈值</value>
-  </data>
-  <data name="SpacingThreshold" xml:space="preserve">
-    <value>互段阈值</value>
-  </data>
-  <data name="FontSizeThrethold" xml:space="preserve">
-    <value>字体尺寸偏差阈值</value>
-  </data>
-  <data name="MergeThrethold" xml:space="preserve">
-    <value>合并阈值</value>
-  </data>
-  <data name="YPosThrethold" xml:space="preserve">
-    <value>y位置轮班阈值</value>
-  </data>
-  <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>避免合并列表</value>
-  </data>
-  <data name="Recognize" xml:space="preserve">
-    <value>识别设置</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>扩大率</value>
-  </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>缓冲区大小</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
     <value>识别模块</value>
@@ -263,5 +221,65 @@
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
     <value>覆盖开关</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>新的版本：{0} 已发布</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>新的版本：{0} 的安装</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>更新信息确认</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>新版本检查</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>好的</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>开机自动启动</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>全般设置</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>显示方式</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>针对每个对象进行设置</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>构建日期</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>开发者</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>公开页面</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>执照</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>翻译不进行</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>缓存设置</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>关闭文本阈值。</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>未缓存</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Windows 标准字符识别</value>
   </data>
 </root>

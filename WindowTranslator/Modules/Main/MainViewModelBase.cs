@@ -11,7 +11,6 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
-using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Stores;
 using MessageBoxImage = Kamishibai.MessageBoxImage;
 
@@ -136,11 +135,16 @@ public abstract partial class MainViewModelBase : IDisposable
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
             return;
         }
+        var context = new FilterContext()
+        {
+            SoftwareBitmap = sbmp,
+            ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
+        };
         {
             var tmp = texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
             {
-                tmp = filter.ExecutePreTranslate(tmp);
+                tmp = filter.ExecutePreTranslate(tmp, context);
             }
             using var t = this.logger.LogDebugTime("PreTranslate");
             texts = await tmp.ToArrayAsync();
@@ -152,7 +156,7 @@ public abstract partial class MainViewModelBase : IDisposable
             var tmp = texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderBy(f => f.Priority))
             {
-                tmp = filter.ExecutePostTranslate(tmp);
+                tmp = filter.ExecutePostTranslate(tmp, context);
             }
             using var t = this.logger.LogDebugTime("PostTranslate");
             texts = await tmp.ToArrayAsync();

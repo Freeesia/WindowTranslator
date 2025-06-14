@@ -27,6 +27,28 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
+        },
+        {
+            "name": "Sandbox ClipTextRect",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-sandbox",
+            "program": "${workspaceFolder}/Sandbox/bin/Debug/Sandbox.exe",
+            "args": [
+                "ClipTextRect",
+                "${input:imagePath}"
+            ],
+            "cwd": "${workspaceFolder}/Sandbox",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "imagePath",
+            "description": "画像ファイルのパスを入力してください",
+            "default": "C:\\path\\to\\your\\image.jpg",
+            "type": "promptString"
         }
     ]
 }

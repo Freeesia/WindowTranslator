@@ -19,14 +19,30 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
 
     public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions)
     {
+        if (!SystemUtility.IsX64Machine())
+        {
+            throw new Exception($"ご利用のPCではBergamotを利用できません");
+        }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
         var path = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}{dst}", "config.yml");
-        this.service = new BlockingService(path);
+        if (File.Exists(path))
+        {
+            this.service = new BlockingService(path);
+            return;
+        }
+        var path1 = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}en", "config.yml");
+        var path2 = Path.Combine(PathUtility.UserDir, "bergamot", $"en{dst}", "config.yml");
+        if (File.Exists(path1) && File.Exists(path2))
+        {
+            this.service = new BlockingService(path1, path2);
+            return;
+        }
+        throw new Exception("Bergamot モデルが存在しないため、翻訳できません。");
     }
 
     public void Dispose()
-        => this.service.Dispose();
+        => this.service?.Dispose();
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => await Task.Run(() => Translate(srcTexts)).ConfigureAwait(false);
@@ -63,31 +79,72 @@ public class BergamotValidator : ITargetSettingsValidator
             return ValidateResult.Valid;
         }
 
+        if (!SystemUtility.IsX64Machine())
+        {
+            return ValidateResult.Invalid("対象外のPC", $"ご利用のPCではBergamotを利用できません");
+        }
+
         var src = settings.Language.Source[..2];
         var dst = settings.Language.Target[..2];
+
+        try
+        {
+            if (await DownloadIfNotExists(src, dst).ConfigureAwait(false))
+            {
+                return ValidateResult.Valid;
+            }
+            else if (src == "en" || dst == "en")
+            {
+                var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
+                var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"No model data was found that can be translated from {srcLang} to {dstLang}. Translation is not available for this language pair.");
+            }
+
+            if (!await DownloadIfNotExists(src, "en").ConfigureAwait(false))
+            {
+                var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"{srcLang}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+            }
+            if (!await DownloadIfNotExists("en", dst).ConfigureAwait(false))
+            {
+                var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
+                return ValidateResult.Invalid("Bergamot モデル", $"{dstLang}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+            }
+
+            return ValidateResult.Valid;
+        }
+        catch (Exception ex)
+        {
+            return ValidateResult.Invalid("Bergamot モデル",
+                $"モデルファイルのダウンロードに失敗しました。\n{ex.Message}");
+        }
+    }
+
+    private static async ValueTask<bool> DownloadIfNotExists(string src, string dst)
+    {
         var langPair = $"{src}{dst}";
         var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
         var configPath = Path.Combine(modelDir, "config.yml");
 
         if (File.Exists(configPath))
         {
-            return ValidateResult.Valid;
+            return true;
         }
 
         Directory.CreateDirectory(modelDir);
 
+        var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(tmpDir);
+
         try
         {
-            var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tmpDir);
             var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"models/prod/{langPair}").ConfigureAwait(false);
 
             var files = new List<string>();
             foreach (var content in contents)
             {
                 var path = Path.Combine(tmpDir, content.Name);
-                var url = $"https://media.githubusercontent.com/media/{RepoOwner}/{RepoName}/refs/heads/main/{content.Path}";
-                await GitHubClient.DownloadFileAsync(new(url), path).ConfigureAwait(false);
+                await GitHubClient.DownloadFileAsync(RepoOwner, RepoName, content, path).ConfigureAwait(false);
                 if (Path.GetExtension(path) == ".gz")
                 {
                     var dstPath = Path.Combine(modelDir, Path.GetFileNameWithoutExtension(content.Name));
@@ -123,20 +180,12 @@ public class BergamotValidator : ITargetSettingsValidator
                     _ => throw new InvalidOperationException($"Unknown model name pattern: ${modelPath}")
                 });
             await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
-
-            return ValidateResult.Valid;
         }
         catch (NotFoundException)
         {
-            var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
-            var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
-            return ValidateResult.Invalid("Bergamot モデル", $"{srcLang}、{dstLang}の言語ペアのモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+            return false;
         }
-        catch (Exception ex)
-        {
-            return ValidateResult.Invalid("Bergamot モデル",
-                $"モデルファイルのダウンロードに失敗しました。\n{ex.Message}");
-        }
+        return true;
     }
 
     private static string CreateConfig(string modelPath, string srcVocabPath, string trgVocabPath, string shortListPath, string precision) => $"""
@@ -171,6 +220,28 @@ public class BergamotValidator : ITargetSettingsValidator
 
 file static class Extensions
 {
+    public static async ValueTask DownloadFileAsync(this GitHubClient client, string owner, string repo, RepositoryContent content, string path)
+    {
+        var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
+        res.HttpResponse.IsSuccessStatusCode();
+        if (res.HttpResponse.Body is string lfs && lfs.StartsWith("version https://git-lfs.github.com/spec/v1", StringComparison.Ordinal))
+        {
+            var url = $"https://media.githubusercontent.com/media/{owner}/{repo}/refs/heads/main/{content.Path}";
+            await client.DownloadFileAsync(new(url), path).ConfigureAwait(false);
+        }
+        else if (res.HttpResponse.Body is string d)
+        {
+            await using var fs = File.Create(path);
+            await using var st = new StreamWriter(fs);
+            await st.WriteAsync(d).ConfigureAwait(false);
+        }
+        else if (res.HttpResponse.Body is Stream stream)
+        {
+            await using var fs = File.Create(path);
+            await stream.CopyToAsync(fs).ConfigureAwait(false);
+        }
+    }
+
     public static async ValueTask DownloadFileAsync(this GitHubClient client, Uri url, string path)
     {
         var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
