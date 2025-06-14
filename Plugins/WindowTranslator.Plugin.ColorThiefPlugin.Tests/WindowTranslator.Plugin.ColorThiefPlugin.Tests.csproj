@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows10.0.20348.0</TargetFramework>
-    <IsPackable>false</IsPackable>
   </PropertyGroup><ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
