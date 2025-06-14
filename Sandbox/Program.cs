@@ -20,6 +20,7 @@ ConsoleApp.ServiceProvider = serviceProvider;
 var app = ConsoleApp.Create();
 app.Add("DeepL", DeepLTest);
 app.Add("GoogleAI", GoogleAITranslateTest);
+app.Add("ClipTextRect", ClipTextRect);
 app.Run(args);
 
 static async Task DeepLTest([FromServices] IOptions<Secret> secret)
@@ -94,6 +95,11 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
     };
     var translated = await client.GenerateObjectAsync<string[]>(req).ConfigureAwait(false) ?? [];
     Console.WriteLine(translated[0]);
+}
+
+static async Task ClipTextRect(string imagePath)
+{
+
 }
 
 
