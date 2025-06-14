@@ -4,27 +4,26 @@ using Windows.Graphics.Imaging;
 namespace WindowTranslator.Plugin.ColorThiefPlugin.Tests;
 
 public class ColorThiefModuleTests
-{
-    // 各画像に対する期待値を定義（後で調整可能）
+{    // 各画像に対する期待値を定義（後で調整可能）
     private readonly Dictionary<string, (Color expectedBack, Color expectedFront)> expectedColors = new()
     {
-        { "text_000.jpg", (Color.FromArgb(255, 240, 240, 240), Color.FromArgb(255, 50, 50, 50)) },
-        { "text_001.jpg", (Color.FromArgb(255, 230, 230, 230), Color.FromArgb(255, 40, 40, 40)) },
-        { "text_002.jpg", (Color.FromArgb(255, 220, 220, 220), Color.FromArgb(255, 60, 60, 60)) },
-        { "text_003.jpg", (Color.FromArgb(255, 250, 250, 250), Color.FromArgb(255, 30, 30, 30)) },
-        { "text_004.jpg", (Color.FromArgb(255, 200, 200, 200), Color.FromArgb(255, 80, 80, 80)) },
-        { "text_005.jpg", (Color.FromArgb(255, 210, 210, 210), Color.FromArgb(255, 70, 70, 70)) },
-        { "text_006.jpg", (Color.FromArgb(255, 190, 190, 190), Color.FromArgb(255, 90, 90, 90)) },
-        { "text_007.jpg", (Color.FromArgb(255, 180, 180, 180), Color.FromArgb(255, 100, 100, 100)) },
-        { "text_008.jpg", (Color.FromArgb(255, 170, 170, 170), Color.FromArgb(255, 110, 110, 110)) },
-        { "text_009.jpg", (Color.FromArgb(255, 160, 160, 160), Color.FromArgb(255, 120, 120, 120)) },
-        { "text_010.jpg", (Color.FromArgb(255, 150, 150, 150), Color.FromArgb(255, 130, 130, 130)) },
-        { "text_011.jpg", (Color.FromArgb(255, 140, 140, 140), Color.FromArgb(255, 140, 140, 140)) },
-        { "text_012.jpg", (Color.FromArgb(255, 130, 130, 130), Color.FromArgb(255, 150, 150, 150)) },
-        { "text_013.jpg", (Color.FromArgb(255, 120, 120, 120), Color.FromArgb(255, 160, 160, 160)) },
-        { "text_014.jpg", (Color.FromArgb(255, 110, 110, 110), Color.FromArgb(255, 170, 170, 170)) },
-        { "text_015.jpg", (Color.FromArgb(255, 100, 100, 100), Color.FromArgb(255, 180, 180, 180)) },
-        { "text_016.jpg", (Color.FromArgb(255, 90, 90, 90), Color.FromArgb(255, 190, 190, 190)) }
+        { "text_000.jpg", (Color.FromArgb(0xF0, 0xF0, 0xF0), Color.FromArgb(0x32, 0x32, 0x32)) },
+        { "text_001.jpg", (Color.FromArgb(0xE6, 0xE6, 0xE6), Color.FromArgb(0x28, 0x28, 0x28)) },
+        { "text_002.jpg", (Color.FromArgb(0xDC, 0xDC, 0xDC), Color.FromArgb(0x3C, 0x3C, 0x3C)) },
+        { "text_003.jpg", (Color.FromArgb(0xFA, 0xFA, 0xFA), Color.FromArgb(0x1E, 0x1E, 0x1E)) },
+        { "text_004.jpg", (Color.FromArgb(0xC8, 0xC8, 0xC8), Color.FromArgb(0x50, 0x50, 0x50)) },
+        { "text_005.jpg", (Color.FromArgb(0xD2, 0xD2, 0xD2), Color.FromArgb(0x46, 0x46, 0x46)) },
+        { "text_006.jpg", (Color.FromArgb(0xBE, 0xBE, 0xBE), Color.FromArgb(0x5A, 0x5A, 0x5A)) },
+        { "text_007.jpg", (Color.FromArgb(0xB4, 0xB4, 0xB4), Color.FromArgb(0x64, 0x64, 0x64)) },
+        { "text_008.jpg", (Color.FromArgb(0xAA, 0xAA, 0xAA), Color.FromArgb(0x6E, 0x6E, 0x6E)) },
+        { "text_009.jpg", (Color.FromArgb(0xA0, 0xA0, 0xA0), Color.FromArgb(0x78, 0x78, 0x78)) },
+        { "text_010.jpg", (Color.FromArgb(0x96, 0x96, 0x96), Color.FromArgb(0x82, 0x82, 0x82)) },
+        { "text_011.jpg", (Color.FromArgb(0x8C, 0x8C, 0x8C), Color.FromArgb(0x8C, 0x8C, 0x8C)) },
+        { "text_012.jpg", (Color.FromArgb(0x82, 0x82, 0x82), Color.FromArgb(0x96, 0x96, 0x96)) },
+        { "text_013.jpg", (Color.FromArgb(0x78, 0x78, 0x78), Color.FromArgb(0xA0, 0xA0, 0xA0)) },
+        { "text_014.jpg", (Color.FromArgb(0x6E, 0x6E, 0x6E), Color.FromArgb(0xAA, 0xAA, 0xAA)) },
+        { "text_015.jpg", (Color.FromArgb(0x64, 0x64, 0x64), Color.FromArgb(0xB4, 0xB4, 0xB4)) },
+        { "text_016.jpg", (Color.FromArgb(0x5A, 0x5A, 0x5A), Color.FromArgb(0xBE, 0xBE, 0xBE)) }
     };
 
     [Theory]
