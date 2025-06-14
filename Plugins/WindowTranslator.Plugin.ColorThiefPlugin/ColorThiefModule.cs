@@ -3,10 +3,10 @@ using System.ComponentModel;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
-using ColorConverter = ColorHelper.ColorConverter;
 using StudioFreesia.ColorThief;
 using System.Drawing;
 using System.Diagnostics;
+using Wacton.Unicolour;
 
 namespace WindowTranslator.Plugin.ColorThiefPlugin;
 
@@ -39,12 +39,12 @@ public class ColorThiefModule(ILogger<ColorThiefModule> logger) : IColorModule
             .ToArray();
         var back = colors[0];
 
-        // 文字影が文字色より大きくなることがあるので、背景色とのBrightness距離が大きい方を文字色とする
-        var backB = ColorConverter.RgbToHsv(new(back.R, back.G, back.B)).V;
-        var front = GetDistance(backB, colors[1]) > GetDistance(backB, colors[2]) ? colors[1] : colors[2];
+        // 文字影が文字色より大きくなることがあるので、背景色とOklch色空間の明度差が大きい方を文字色とする
+        var backL = new Unicolour(ColourSpace.Rgb255, back.R, back.G, back.B).Oklch.L;
+        var front = GetDistance(backL, colors[1]) > GetDistance(backL, colors[2]) ? colors[1] : colors[2];
         return (back, front);
     }
 
     private static double GetDistance(double h1, Color h2)
-        => Math.Abs(h1 - ColorConverter.RgbToHsv(new(h2.R, h2.G, h2.B)).V);
+        => Math.Abs(h1 - new Unicolour(ColourSpace.Rgb255, h2.R, h2.G, h2.B).Oklch.L);
 }

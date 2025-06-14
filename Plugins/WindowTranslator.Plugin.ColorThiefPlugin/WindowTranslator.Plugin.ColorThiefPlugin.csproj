@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ColorHelper" />
+    <PackageReference Include="Wacton.Unicolour" />
   </ItemGroup>
 
   <ItemGroup>
