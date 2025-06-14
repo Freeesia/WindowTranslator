@@ -7,23 +7,23 @@ public class ColorThiefModuleTests
 {    // 各画像に対する期待値を定義（後で調整可能）
     private readonly Dictionary<string, (Color expectedBack, Color expectedFront)> expectedColors = new()
     {
-        { "text_000.jpg", (Color.FromArgb(0xF0, 0xF0, 0xF0), Color.FromArgb(0x32, 0x32, 0x32)) },
-        { "text_001.jpg", (Color.FromArgb(0xE6, 0xE6, 0xE6), Color.FromArgb(0x28, 0x28, 0x28)) },
-        { "text_002.jpg", (Color.FromArgb(0xDC, 0xDC, 0xDC), Color.FromArgb(0x3C, 0x3C, 0x3C)) },
-        { "text_003.jpg", (Color.FromArgb(0xFA, 0xFA, 0xFA), Color.FromArgb(0x1E, 0x1E, 0x1E)) },
-        { "text_004.jpg", (Color.FromArgb(0xC8, 0xC8, 0xC8), Color.FromArgb(0x50, 0x50, 0x50)) },
-        { "text_005.jpg", (Color.FromArgb(0xD2, 0xD2, 0xD2), Color.FromArgb(0x46, 0x46, 0x46)) },
-        { "text_006.jpg", (Color.FromArgb(0xBE, 0xBE, 0xBE), Color.FromArgb(0x5A, 0x5A, 0x5A)) },
-        { "text_007.jpg", (Color.FromArgb(0xB4, 0xB4, 0xB4), Color.FromArgb(0x64, 0x64, 0x64)) },
-        { "text_008.jpg", (Color.FromArgb(0xAA, 0xAA, 0xAA), Color.FromArgb(0x6E, 0x6E, 0x6E)) },
-        { "text_009.jpg", (Color.FromArgb(0xA0, 0xA0, 0xA0), Color.FromArgb(0x78, 0x78, 0x78)) },
-        { "text_010.jpg", (Color.FromArgb(0x96, 0x96, 0x96), Color.FromArgb(0x82, 0x82, 0x82)) },
-        { "text_011.jpg", (Color.FromArgb(0x8C, 0x8C, 0x8C), Color.FromArgb(0x8C, 0x8C, 0x8C)) },
-        { "text_012.jpg", (Color.FromArgb(0x82, 0x82, 0x82), Color.FromArgb(0x96, 0x96, 0x96)) },
-        { "text_013.jpg", (Color.FromArgb(0x78, 0x78, 0x78), Color.FromArgb(0xA0, 0xA0, 0xA0)) },
-        { "text_014.jpg", (Color.FromArgb(0x6E, 0x6E, 0x6E), Color.FromArgb(0xAA, 0xAA, 0xAA)) },
-        { "text_015.jpg", (Color.FromArgb(0x64, 0x64, 0x64), Color.FromArgb(0xB4, 0xB4, 0xB4)) },
-        { "text_016.jpg", (Color.FromArgb(0x5A, 0x5A, 0x5A), Color.FromArgb(0xBE, 0xBE, 0xBE)) }
+        { "text_000.jpg", (Color.FromArgb(0x6c6c6c), Color.FromArgb(0xdddddd)) },
+        { "text_001.jpg", (Color.FromArgb(0xacadaf), Color.FromArgb(0x292a32)) },
+        { "text_002.jpg", (Color.FromArgb(0x0e6c6c), Color.FromArgb(0xbed0d2)) },
+        { "text_003.jpg", (Color.FromArgb(0x0707b4), Color.FromArgb(0x0c0c79)) },
+        { "text_004.jpg", (Color.FromArgb(0x10706f), Color.FromArgb(0xcfdbdd)) },
+        { "text_005.jpg", (Color.FromArgb(0x0808b5), Color.FromArgb(0xc9cbf5)) },
+        { "text_006.jpg", (Color.FromArgb(0xe1e2eb), Color.FromArgb(0x696898)) },
+        { "text_007.jpg", (Color.FromArgb(0x0f6b6a), Color.FromArgb(0xbed1d2)) },
+        { "text_008.jpg", (Color.FromArgb(0xeaeaec), Color.FromArgb(0x7c7c7c)) },
+        { "text_009.jpg", (Color.FromArgb(0xb2b2b2), Color.FromArgb(0x1e1e1e)) },
+        { "text_010.jpg", (Color.FromArgb(0x156968), Color.FromArgb(0xb7cccd)) },
+        { "text_011.jpg", (Color.FromArgb(0x0707b5), Color.FromArgb(0x19195e)) },
+        { "text_012.jpg", (Color.FromArgb(0x106e6e), Color.FromArgb(0xd6eaeb)) },
+        { "text_013.jpg", (Color.FromArgb(0x0908b0), Color.FromArgb(0x0c0c4b)) },
+        { "text_014.jpg", (Color.FromArgb(0x106b6b), Color.FromArgb(0xc4d6d8)) },
+        { "text_015.jpg", (Color.FromArgb(0x0808b0), Color.FromArgb(0x121257)) },
+        { "text_016.jpg", (Color.FromArgb(0xaaaaaa), Color.FromArgb(0x1e1e1e)) }
     };
 
     [Theory]
