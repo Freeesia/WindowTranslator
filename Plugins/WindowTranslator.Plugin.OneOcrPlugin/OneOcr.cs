@@ -205,6 +205,20 @@ public class OneOcr : IOcrModule
             // 傾いた矩形の適切なサイズと位置を計算
             var (x, y, width, height, angle) = Utility.CalculateOrientedRect(boundingBox);
 
+            // 元の4頂点から軸平行外接矩形の中心を計算
+            var minX = Math.Min(Math.Min(boundingBox.x1, boundingBox.x2), Math.Min(boundingBox.x3, boundingBox.x4));
+            var maxX = Math.Max(Math.Max(boundingBox.x1, boundingBox.x2), Math.Max(boundingBox.x3, boundingBox.x4));
+            var minY = Math.Min(Math.Min(boundingBox.y1, boundingBox.y2), Math.Min(boundingBox.y3, boundingBox.y4));
+            var maxY = Math.Max(Math.Max(boundingBox.y1, boundingBox.y2), Math.Max(boundingBox.y3, boundingBox.y4));
+            var boundingBoxCenterX = (minX + maxX) / 2;
+            var boundingBoxCenterY = (minY + maxY) / 2;
+
+            // 回転した矩形の中心を軸平行外接矩形の中心に合わせて位置を調整
+            var currentCenterX = x + width / 2;
+            var currentCenterY = y + height / 2;
+            x += boundingBoxCenterX - currentCenterX;
+            y += boundingBoxCenterY - currentCenterY;
+
             // デバッグ情報をログに出力
             this.logger.LogDebug($"Text: '{lineContent}', Angle: {angle:F2}°, Size: {width:F1}x{height:F1}, Position: ({x:F1}, {y:F1})");
 
