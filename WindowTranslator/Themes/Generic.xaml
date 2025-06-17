@@ -93,8 +93,10 @@
                                         </data:BoolToDataTemplateConverter>
                                     </Border.Resources>
                                     <Border.RenderTransform>
-                                        <!--  TODO: Fix Scale  -->
-                                        <ScaleTransform ScaleY="1.1" />
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="1.1" />
+                                            <RotateTransform Angle="{Binding Angle}" />
+                                        </TransformGroup>
                                     </Border.RenderTransform>
                                     <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
                                 </Border>
