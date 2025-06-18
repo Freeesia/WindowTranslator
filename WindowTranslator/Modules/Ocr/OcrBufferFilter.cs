@@ -62,7 +62,7 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
                 text.FontSize != similarPastText.FontSize)
             {
                 // フォントサイズを平均化
-                text = text with { FontSize = (text.FontSize + similarPastText.FontSize) / 2 };
+                text = text with { FontSize = similarPastText.FontSize };
             }
             currentTextsList.Add(text);
             yield return text;
