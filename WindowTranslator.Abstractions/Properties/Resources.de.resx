@@ -165,4 +165,13 @@
   <data name="Misc" xml:space="preserve">
     <value>Sonstiges</value>
   </data>
+  <data name="Buffer" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value />
+  </data>
 </root>

@@ -165,4 +165,13 @@
   <data name="Misc" xml:space="preserve">
     <value>その他</value>
   </data>
+  <data name="Buffer" xml:space="preserve">
+    <value>バッファ機能</value>
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value>認識ミスの補正</value>
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value>振動の抑制</value>
+  </data>
 </root>
