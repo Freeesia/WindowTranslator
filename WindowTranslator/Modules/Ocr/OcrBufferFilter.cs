@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Drawing;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Quickenshtein;
@@ -12,6 +13,8 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
     private readonly ILogger<OcrBufferFilter> logger = logger;
     private readonly Queue<List<TextRect>> buffer = new();
     private readonly int bufferSize = options.Value.BufferSize;
+    private readonly bool isSuppressVibe = options.Value.IsSuppressVibe;
+    private readonly bool isEnableRecover = options.Value.IsEnableRecover;
 
     public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
@@ -24,11 +27,12 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
             yield break;
         }
         using var l = this.logger.LogDebugTime("OcrBufferFilter");
+        var threshold = (context.ImageSize * 0.05f).ToSize(); // 画像サイズの8%をしきい値とする
         // バッファ内の全テキストを集め、AreSimilarで重複チェックして重複を排除
         var bufferedTexts = listPool.Get();
         foreach (var rect in this.buffer.SelectMany(b => b))
         {
-            if (!bufferedTexts.Any(existing => AreSimilar(existing, rect)))
+            if (!bufferedTexts.Any(existing => AreSimilar(existing, rect, threshold)))
             {
                 bufferedTexts.Add(rect);
             }
@@ -52,10 +56,13 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
         {
             var text = t;
             // 過去のバッファ内に類似するテキストがあるか確認
-            if (bufferedTexts.FirstOrDefault(bufferedText => AreSimilar(bufferedText, text)) is { } similarPastText)
+            // もしあって、かつフォントサイズが異なる場合は過去のテキストのフォントサイズを使用
+            if (this.isSuppressVibe &&
+                bufferedTexts.FirstOrDefault(bufferedText => AreSimilar(bufferedText, text, threshold)) is { } similarPastText &&
+                text.FontSize != similarPastText.FontSize)
             {
-                // 過去のバッファのテキストサイズを使用して新しい TextRect を作成
-                text = text with { FontSize = similarPastText.FontSize };
+                // フォントサイズを平均化
+                text = text with { FontSize = (text.FontSize + similarPastText.FontSize) / 2 };
             }
             currentTextsList.Add(text);
             yield return text;
@@ -66,14 +73,17 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
 
         // finalBufferedCacheを再利用: 事前にクリアしてから、bufferedTextsから候補を追加
         var finalBuffered = listPool.Get();
-        foreach (var bufferedText in bufferedTexts)
+        if (this.isEnableRecover)
         {
-            if (!currentTextsList.Any(t => AreSimilar(t, bufferedText) || Intersects(t, bufferedText)) &&
-                !finalBuffered.Any(existing => Intersects(existing, bufferedText)))
+            foreach (var bufferedText in bufferedTexts)
             {
-                finalBuffered.Add(bufferedText);
-                this.logger.LogDebug($"Buffered: {bufferedText.Text}");
-                yield return bufferedText;
+                if (!currentTextsList.Any(t => AreSimilar(t, bufferedText, threshold) || Intersects(t, bufferedText)) &&
+                    !finalBuffered.Any(existing => Intersects(existing, bufferedText)))
+                {
+                    finalBuffered.Add(bufferedText);
+                    this.logger.LogDebug($"Buffered: {bufferedText.Text}");
+                    yield return bufferedText;
+                }
             }
         }
 
@@ -91,24 +101,22 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
             rect1.Y < rect2.Y + rect2.Height &&
             rect1.Y + rect1.Height > rect2.Y;
 
-    private static bool AreSimilar(TextRect rect1, TextRect rect2)
+    private static bool AreSimilar(TextRect rect1, TextRect rect2, Size threshold)
     {
-        // テキストの内容が90%以上一致してたら同じとみなす
+        // テキストの一致率が80%未満なら別扱い
         var p = 1 - ((float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
             / Math.Max(rect1.Text.Length, rect2.Text.Length));
 
-        if (p >= 0.9)
+        if (p < 0.8)
         {
-            return true;
+            return false;
         }
 
-        // 位置とサイズのずれが10未満だったら同じとみなす
-        var xDiff = Math.Abs(rect1.X - rect2.X);
-        var yDiff = Math.Abs(rect1.Y - rect2.Y);
-        var widthDiff = Math.Abs(rect1.Width - rect2.Width);
-        var heightDiff = Math.Abs(rect1.Height - rect2.Height);
-
-        return xDiff < 10 && yDiff < 10 && widthDiff < 10 && heightDiff < 10;
+        // 位置とサイズのずれがしきい値以下だったら同じとみなす
+        return Math.Abs(rect1.X - rect2.X) <= threshold.Width &&
+            Math.Abs(rect1.Y - rect2.Y) <= threshold.Height &&
+            Math.Abs(rect1.Width - rect2.Width) <= threshold.Width &&
+            Math.Abs(rect1.Height - rect2.Height) <= threshold.Height;
     }
 }
 
