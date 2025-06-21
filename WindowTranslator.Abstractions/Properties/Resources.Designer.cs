@@ -70,6 +70,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   バッファ機能 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Buffer {
+            get {
+                return ResourceManager.GetString("Buffer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   バッファサイズ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string BufferSize {
@@ -111,6 +120,24 @@ namespace WindowTranslator.Properties {
         internal static string IsAvoidMergeList {
             get {
                 return ResourceManager.GetString("IsAvoidMergeList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   認識ミスの補正 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string IsEnableRecover {
+            get {
+                return ResourceManager.GetString("IsEnableRecover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   振動の抑制 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string IsSuppressVibe {
+            get {
+                return ResourceManager.GetString("IsSuppressVibe", resourceCulture);
             }
         }
         

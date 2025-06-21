@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Interop;
 using HwndExtensions.Utils;
-using PInvoke;
+using Windows.Win32.UI.WindowsAndMessaging;
+using Windows.Win32.Foundation;
+using static Windows.Win32.PInvoke;
 
 namespace HwndExtensions.Adorner;
 
@@ -19,7 +21,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
 
     private HwndSource? m_ownerSource;
 
-    private const User32.SetWindowPosFlags SET_ONLY_ZORDER = User32.SetWindowPosFlags.SWP_NOMOVE | User32.SetWindowPosFlags.SWP_NOSIZE | User32.SetWindowPosFlags.SWP_NOACTIVATE;
+    private const SET_WINDOW_POS_FLAGS SET_ONLY_ZORDER = SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
     internal HwndAdornerGroup(UIElement commonAncestor)
         : base(commonAncestor)
@@ -121,7 +123,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
     }
 
     private void SetOwnership(HwndAdorner adorner)
-        => User32.SetWindowLongPtr(adorner.Handle, User32.WindowLongIndexFlags.GWLP_HWNDPARENT, m_ownerSource?.Handle ?? throw new InvalidOperationException());
+        => SetWindowLongPtr(adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, m_ownerSource?.Handle ?? throw new InvalidOperationException());
 
     private void RemoveOwnership()
     {
@@ -132,7 +134,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
     }
 
     private static void RemoveOwnership(HwndAdorner adorner)
-        => User32.SetWindowLongPtr(adorner.Handle, User32.WindowLongIndexFlags.GWLP_HWNDPARENT, IntPtr.Zero);
+        => SetWindowLongPtr(adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, 0);
 
     private void SetPosition()
     {
@@ -149,16 +151,18 @@ internal class HwndAdornerGroup : HwndSourceConnector
     {
         if (m_ownerSource is null) return;
 
-        // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
-        var hwndAbove = User32.GetWindow(m_ownerSource.Handle, User32.GetWindowCommands.GW_HWNDPREV);
+        var hwnd = (HWND)m_ownerSource.Handle;
 
-        if (hwndAbove == IntPtr.Zero && HasAdorners)
+        // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
+        var hwndAbove = GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDPREV);
+
+        if (hwndAbove == HWND.Null && HasAdorners)
         // owner is the Top most window
         {
             // randomly selecting an owned hwnd
             var owned = m_adornersInGroup.First().Handle;
             // setting owner after (visually under) it 
-            User32.SetWindowPos(m_ownerSource.Handle, owned, 0, 0, 0, 0, SET_ONLY_ZORDER);
+            SetWindowPos(hwnd, owned, 0, 0, 0, 0, SET_ONLY_ZORDER);
 
             // now this is the 'above' hwnd
             hwndAbove = owned;
@@ -169,7 +173,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
         foreach (var adorner in m_adornersInGroup)
         {
             var handle = adorner.Handle;
-            User32.SetWindowPos(handle, hwndAbove, 0, 0, 0, 0, SET_ONLY_ZORDER);
+            SetWindowPos(handle, hwndAbove, 0, 0, 0, 0, SET_ONLY_ZORDER);
             hwndAbove = handle;
         }
     }
@@ -178,34 +182,35 @@ internal class HwndAdornerGroup : HwndSourceConnector
     {
         if (m_ownerSource is null) return;
 
-        var current = m_ownerSource.Handle;
+        var current = (HWND)m_ownerSource.Handle;
+        var adornerHandle = adorner.Handle;
 
         // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
-        var prev = User32.GetWindow(current, User32.GetWindowCommands.GW_HWNDPREV);
+        var prev = GetWindow(current, GET_WINDOW_CMD.GW_HWNDPREV);
 
         // searching up for the first non-sibling hwnd
         while (m_adornersInGroup.Any(o => o.Handle == prev))
         {
             current = prev;
-            prev = User32.GetWindow(current, User32.GetWindowCommands.GW_HWNDPREV);
+            prev = GetWindow(current, GET_WINDOW_CMD.GW_HWNDPREV);
         }
 
         if (prev == IntPtr.Zero)
         // the owner or one of the siblings is the Top-most window
         {
             // setting the Top-most under the activated adorner
-            User32.SetWindowPos(current, adorner.Handle, 0, 0, 0, 0, SET_ONLY_ZORDER);
+            SetWindowPos(current, adornerHandle, 0, 0, 0, 0, SET_ONLY_ZORDER);
         }
         else
         {
             // setting the activated adorner under the first non-sibling hwnd
-            User32.SetWindowPos(adorner.Handle, prev, 0, 0, 0, 0, SET_ONLY_ZORDER);
+            SetWindowPos(adornerHandle, prev, 0, 0, 0, 0, SET_ONLY_ZORDER);
         }
     }
 
     private IntPtr OwnerHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        if (msg == (int)User32.WindowMessage.WM_WINDOWPOSCHANGED)
+        if (msg == (int)WM_WINDOWPOSCHANGED)
         {
             SetPosition();
         }

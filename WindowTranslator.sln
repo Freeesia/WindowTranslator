@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solution Items", "{90C4837E-3350-4820-8B62-F81E18B8D609}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\copilot-instructions.md = .github\copilot-instructions.md
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
@@ -334,9 +335,9 @@ Global
 		{04FE6097-262E-4B93-91A5-7F202EB7E0BE} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
-		RESX_AutoCreateNewLanguageFiles = True
-		RESX_ConfirmAddLanguageFile = True
 		RESX_NeutralResourcesLanguage = ja-JP
+		RESX_ConfirmAddLanguageFile = True
+		RESX_AutoCreateNewLanguageFiles = True
+		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
 	EndGlobalSection
 EndGlobal
