@@ -4,6 +4,7 @@ namespace WindowTranslator.Plugin.OneOcrPlugin;
 
 static class Utility
 {
+    public const double IgnoreAngleThreshold = 3.0; // 度
     private const string OneOcrDll = "oneocr.dll";
     public const string OneOcrModel = "oneocr.onemodel";
     private const string OnnxRuntimeDll = "onnxruntime.dll";
@@ -79,10 +80,40 @@ static class Utility
             (boundingBox.x4, boundingBox.y4)
         };
 
-        // OneOcrの仕様に従い、(x1,y1)と(x2,y2)を結ぶ線が矩形の上端なので、この角度を使用
-        var edgeAngle = Math.Atan2(boundingBox.y2 - boundingBox.y1, boundingBox.x2 - boundingBox.x1);
+        // (x1,y1)(x2,y2)間と(x2,y2)(x3,y3)間の距離を計算
+        var distance12 = Math.Sqrt(Math.Pow(boundingBox.x2 - boundingBox.x1, 2) + Math.Pow(boundingBox.y2 - boundingBox.y1, 2));
+        var distance23 = Math.Sqrt(Math.Pow(boundingBox.x3 - boundingBox.x2, 2) + Math.Pow(boundingBox.y3 - boundingBox.y2, 2));
+
+        // 距離の長い方を矩形の上端として角度を計算
+        double edgeAngle;
+        if (distance12 >= distance23)
+        {
+            // (x1,y1)と(x2,y2)を結ぶ線が長い場合
+            edgeAngle = Math.Atan2(boundingBox.y2 - boundingBox.y1, boundingBox.x2 - boundingBox.x1);
+        }
+        else
+        {
+            // (x2,y2)と(x3,y3)を結ぶ線が長い場合
+            edgeAngle = Math.Atan2(boundingBox.y3 - boundingBox.y2, boundingBox.x3 - boundingBox.x2);
+        }
 
         var angleInDegrees = edgeAngle * 180.0 / Math.PI;
+
+        // 角度が閾値未満なら角度を無視する
+        if (Math.Abs(angleInDegrees) < IgnoreAngleThreshold)
+        {
+            // 単純に外接矩形を計算
+            var simpleMinX = points.Min(p => p.x);
+            var simpleMaxX = points.Max(p => p.x);
+            var simpleMinY = points.Min(p => p.y);
+            var simpleMaxY = points.Max(p => p.y);
+
+            var simpleWidth = simpleMaxX - simpleMinX;
+            var simpleHeight = simpleMaxY - simpleMinY;
+
+            // 角度を0度として返す
+            return (simpleMinX, simpleMinY, simpleWidth, simpleHeight, 0.0);
+        }
 
         // この角度で全ての点を回転
         var rotatedPoints = points.Select(p => RotatePoint(p, -edgeAngle, 0, 0)).ToArray();

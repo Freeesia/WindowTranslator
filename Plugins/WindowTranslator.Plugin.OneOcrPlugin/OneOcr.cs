@@ -278,6 +278,13 @@ public class OneOcr : IOcrModule
     /// </summary>
     private bool CanMerge(TextRectMerger temp, TextRect rect, double xThreshold, double yThreshold)
     {
+        // 角度の差が閾値以上の場合はマージしない
+        var angleDiff = Math.Abs(temp.Rects.Average(r => r.Angle) - rect.Angle);
+        if (angleDiff >= Utility.IgnoreAngleThreshold)
+        {
+            return false;
+        }
+
         // 重なっている場合はマージできる
         if (temp.IntersectsWith(rect))
         {
