@@ -3,7 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using HwndExtensions.Utils;
-using PInvoke;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.PInvoke;
 
 namespace HwndExtensions.Adorner;
 
@@ -32,10 +34,10 @@ public sealed class HwndAdorner : IDisposable
 
     private bool m_disposed;
 
-    private const User32.SetWindowPosFlags NO_REPOSITION_FLAGS = User32.SetWindowPosFlags.SWP_NOMOVE | User32.SetWindowPosFlags.SWP_NOSIZE | User32.SetWindowPosFlags.SWP_NOACTIVATE |
-                                             User32.SetWindowPosFlags.SWP_NOZORDER | User32.SetWindowPosFlags.SWP_NOOWNERZORDER | User32.SetWindowPosFlags.SWP_NOREPOSITION;
+    private const SET_WINDOW_POS_FLAGS NO_REPOSITION_FLAGS = SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE |
+                                             SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION;
 
-    private const User32.SetWindowPosFlags SET_ONLY_LOCATION = User32.SetWindowPosFlags.SWP_NOACTIVATE | User32.SetWindowPosFlags.SWP_NOZORDER | User32.SetWindowPosFlags.SWP_NOOWNERZORDER;
+    private const SET_WINDOW_POS_FLAGS SET_ONLY_LOCATION = SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER;
 
     public HwndAdorner(FrameworkElement attachedTo)
     {
@@ -53,7 +55,7 @@ public sealed class HwndAdorner : IDisposable
         m_elementAttachedTo.LayoutUpdated += OnLayoutUpdated;
     }
 
-    internal IntPtr Handle => m_hwndSource?.Handle ?? IntPtr.Zero;
+    internal HWND Handle => (HWND)(m_hwndSource?.Handle ?? 0);
 
     internal void InvalidateAppearance()
     {
@@ -63,7 +65,7 @@ public sealed class HwndAdorner : IDisposable
         {
             if (!m_shown)
             {
-                User32.SetWindowPos(m_hwndSource.Handle, IntPtr.Zero, 0, 0, 0, 0, NO_REPOSITION_FLAGS | User32.SetWindowPosFlags.SWP_SHOWWINDOW);
+                SetWindowPos(this.Handle, HWND.Null, 0, 0, 0, 0, NO_REPOSITION_FLAGS | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
                 m_shown = true;
             }
         }
@@ -71,7 +73,7 @@ public sealed class HwndAdorner : IDisposable
         {
             if (m_shown)
             {
-                User32.SetWindowPos(m_hwndSource.Handle, IntPtr.Zero, 0, 0, 0, 0, NO_REPOSITION_FLAGS | User32.SetWindowPosFlags.SWP_HIDEWINDOW);
+                SetWindowPos(this.Handle, HWND.Null, 0, 0, 0, 0, NO_REPOSITION_FLAGS | SET_WINDOW_POS_FLAGS.SWP_HIDEWINDOW);
                 m_shown = false;
             }
         }
@@ -174,12 +176,12 @@ public sealed class HwndAdorner : IDisposable
     {
         if (m_hwndSource == null) return;
 
-        User32.SetWindowPos(m_hwndSource.Handle, IntPtr.Zero,
+        SetWindowPos(this.Handle, HWND.Null,
             (int)(m_parentBoundingBox.X + m_boundingBox.X),
             (int)(m_parentBoundingBox.Y + m_boundingBox.Y),
             (int)(Math.Min(m_boundingBox.Width, m_parentBoundingBox.Width - m_boundingBox.X)),
             (int)(Math.Min(m_boundingBox.Height, m_parentBoundingBox.Height - m_boundingBox.Y)),
-            SET_ONLY_LOCATION | User32.SetWindowPosFlags.SWP_ASYNCWINDOWPOS);
+            SET_ONLY_LOCATION | SET_WINDOW_POS_FLAGS.SWP_ASYNCWINDOWPOS);
     }
 
     private void InitHwndSource()
@@ -188,7 +190,7 @@ public sealed class HwndAdorner : IDisposable
 
         int classStyle = 0;
         int style = 0;
-        int styleEx = (int)User32.WindowStylesEx.WS_EX_NOACTIVATE;
+        int styleEx = (int)WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
 
         var parameters = new HwndSourceParameters()
         {
@@ -222,15 +224,13 @@ public sealed class HwndAdorner : IDisposable
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        var m = (User32.WindowMessage)msg;
-        if (m == User32.WindowMessage.WM_ACTIVATE)
+        if (msg == WM_ACTIVATE)
         {
             m_hwndAdornerGroup?.ActivateInGroupLimits(this);
         }
-        else if (m == User32.WindowMessage.WM_GETMINMAXINFO)
+        else if (msg == WM_GETMINMAXINFO)
         {
-            var minMaxInfo = Marshal.PtrToStructure<User32.MINMAXINFO>(lParam);
-            minMaxInfo.ptMinTrackSize = new POINT();
+            var minMaxInfo = Marshal.PtrToStructure<MINMAXINFO>(lParam);
             Marshal.StructureToPtr(minMaxInfo, lParam, true);
         }
 
