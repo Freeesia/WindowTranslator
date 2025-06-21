@@ -9,8 +9,8 @@ namespace WindowTranslator;
 /// テキスト
 /// <paramref name="IsTranslated"/> が true の場合は翻訳後のテキスト
 /// </param>
-/// <param name="X">X位置</param>
-/// <param name="Y">Y位置</param>
+/// <param name="X">X位置（左上角のX座標）</param>
+/// <param name="Y">Y位置（左上角のY座標）</param>
 /// <param name="Width">幅</param>
 /// <param name="Height">高さ</param>
 /// <param name="FontSize">フォントサイズ</param>
@@ -25,6 +25,11 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     /// 空
     /// </summary>
     public static TextRect Empty { get; } = new TextRect(string.Empty, 0, 0, 0, 0, 0, false);
+
+    /// <summary>
+    /// 回転角度（度数法、時計回り）
+    /// </summary>
+    public double Angle { get; init; }
 
     /// <summary>
     /// コンストラクタ
