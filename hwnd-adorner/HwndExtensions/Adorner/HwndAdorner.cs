@@ -1,4 +1,4 @@
-﻿﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -65,7 +65,7 @@ public sealed class HwndAdorner : IDisposable
         {
             if (!m_shown)
             {
-                SetWindowPos(this.Handle, HWND.Null, 0, 0, 0, 0, NO_REPOSITION_FLAGS | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
+                SetWindowPos(this.Handle, HWND.HWND_TOP, 0, 0, 0, 0, NO_REPOSITION_FLAGS | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
                 m_shown = true;
             }
         }
@@ -73,7 +73,7 @@ public sealed class HwndAdorner : IDisposable
         {
             if (m_shown)
             {
-                SetWindowPos(this.Handle, HWND.Null, 0, 0, 0, 0, NO_REPOSITION_FLAGS | SET_WINDOW_POS_FLAGS.SWP_HIDEWINDOW);
+                SetWindowPos(this.Handle, HWND.HWND_TOP, 0, 0, 0, 0, NO_REPOSITION_FLAGS | SET_WINDOW_POS_FLAGS.SWP_HIDEWINDOW);
                 m_shown = false;
             }
         }
@@ -96,8 +96,7 @@ public sealed class HwndAdorner : IDisposable
         get => m_adornment;
         set
         {
-            if (m_disposed)
-                throw new ObjectDisposedException("HwndAdorner");
+            ObjectDisposedException.ThrowIf(m_disposed, this);
 
             m_adornment = value;
             if (m_elementAttachedTo.IsLoaded)
@@ -176,11 +175,11 @@ public sealed class HwndAdorner : IDisposable
     {
         if (m_hwndSource == null) return;
 
-        SetWindowPos(this.Handle, HWND.Null,
+        SetWindowPos(this.Handle, HWND.HWND_TOP,
             (int)(m_parentBoundingBox.X + m_boundingBox.X),
             (int)(m_parentBoundingBox.Y + m_boundingBox.Y),
-            (int)(Math.Min(m_boundingBox.Width, m_parentBoundingBox.Width - m_boundingBox.X)),
-            (int)(Math.Min(m_boundingBox.Height, m_parentBoundingBox.Height - m_boundingBox.Y)),
+            (int)Math.Min(m_boundingBox.Width, m_parentBoundingBox.Width - m_boundingBox.X),
+            (int)Math.Min(m_boundingBox.Height, m_parentBoundingBox.Height - m_boundingBox.Y),
             SET_ONLY_LOCATION | SET_WINDOW_POS_FLAGS.SWP_ASYNCWINDOWPOS);
     }
 
@@ -200,8 +199,8 @@ public sealed class HwndAdorner : IDisposable
             ExtendedWindowStyle = styleEx,
             PositionX = (int)(m_parentBoundingBox.X + m_boundingBox.X),
             PositionY = (int)(m_parentBoundingBox.Y + m_boundingBox.Y),
-            Width = (int)(m_boundingBox.Width),
-            Height = (int)(m_boundingBox.Height)
+            Width = (int)m_boundingBox.Width,
+            Height = (int)m_boundingBox.Height
         };
 
         m_hwndSource = new HwndSource(parameters);
@@ -231,6 +230,7 @@ public sealed class HwndAdorner : IDisposable
         else if (msg == WM_GETMINMAXINFO)
         {
             var minMaxInfo = Marshal.PtrToStructure<MINMAXINFO>(lParam);
+            minMaxInfo.ptMinTrackSize = default;
             Marshal.StructureToPtr(minMaxInfo, lParam, true);
         }
 

@@ -123,7 +123,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
     }
 
     private void SetOwnership(HwndAdorner adorner)
-        => SetWindowLong((HWND)adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, (int)(m_ownerSource?.Handle ?? throw new InvalidOperationException()));
+        => SetWindowLongPtr(adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, m_ownerSource?.Handle ?? throw new InvalidOperationException());
 
     private void RemoveOwnership()
     {
@@ -134,7 +134,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
     }
 
     private static void RemoveOwnership(HwndAdorner adorner)
-        => SetWindowLong((HWND)adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, 0);
+        => SetWindowLongPtr(adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, 0);
 
     private void SetPosition()
     {
@@ -156,11 +156,11 @@ internal class HwndAdornerGroup : HwndSourceConnector
         // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
         var hwndAbove = GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDPREV);
 
-        if (hwndAbove == IntPtr.Zero && HasAdorners)
+        if (hwndAbove == HWND.Null && HasAdorners)
         // owner is the Top most window
         {
             // randomly selecting an owned hwnd
-            var owned = (HWND)m_adornersInGroup.First().Handle;
+            var owned = m_adornersInGroup.First().Handle;
             // setting owner after (visually under) it 
             SetWindowPos(hwnd, owned, 0, 0, 0, 0, SET_ONLY_ZORDER);
 
@@ -172,7 +172,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
         // currently not preserving any previous z-order state between the adorners (unsupported for now)
         foreach (var adorner in m_adornersInGroup)
         {
-            var handle = (HWND)adorner.Handle;
+            var handle = adorner.Handle;
             SetWindowPos(handle, hwndAbove, 0, 0, 0, 0, SET_ONLY_ZORDER);
             hwndAbove = handle;
         }
@@ -183,7 +183,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
         if (m_ownerSource is null) return;
 
         var current = (HWND)m_ownerSource.Handle;
-        var adornerHandle = (HWND)adorner.Handle;
+        var adornerHandle = adorner.Handle;
 
         // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
         var prev = GetWindow(current, GET_WINDOW_CMD.GW_HWNDPREV);
