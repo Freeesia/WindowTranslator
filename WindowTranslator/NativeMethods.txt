@@ -18,6 +18,7 @@ GetDpiForSystem
 GetWindowPlacement
 GetCursorPos
 IsChild
+HWND_TOPMOST
 
 // ProcessWindowPresenter
 WINDOW_STYLE
