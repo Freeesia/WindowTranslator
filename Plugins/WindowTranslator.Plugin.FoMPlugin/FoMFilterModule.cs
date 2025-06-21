@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using WindowTranslator.Modules;
 using WindowTranslator.Stores;
-using PInvoke;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.Options;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
@@ -244,7 +244,7 @@ public partial class FoMFilterModule : IFilterModule
             SingleWriter = true,
         }, Dropped);
         this.logger = logger;
-        _ = User32.GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
+        _ = GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
         if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
             this.isEnabled = true;

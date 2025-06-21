@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
-using PInvoke;
 using System.Diagnostics;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator;
 public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore autoTargetStore, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
@@ -30,15 +30,15 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore 
     {
         this.logger.LogDebug("プロセスチェック開始");
         var windows = new HashSet<IntPtr>();
-        User32.EnumWindows((hWnd, lParam) =>
+        EnumWindows((hWnd, lParam) =>
         {
-            if (!User32.IsWindowVisible(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
+            if (!IsWindowVisible(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
             {
                 return true;
             }
 
-            var windowTitle = User32.GetWindowText(hWnd);
-            if (User32.GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            var windowTitle = GetWindowText(hWnd);
+            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
             {
                 return true;
             }

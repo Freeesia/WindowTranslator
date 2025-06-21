@@ -3,15 +3,15 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PInvoke;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
+using Windows.Win32.UI.WindowsAndMessaging;
+using WindowTranslator.Extensions;
 using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
-using static PInvoke.User32;
-using CommunityToolkit.Mvvm.Messaging;
-using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -87,12 +87,12 @@ public partial class OverlayMainWindow : Window
             this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
         }
 
-        var extendedStyle = (SetWindowLongFlags)GetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE) | SetWindowLongFlags.WS_EX_TRANSPARENT;
+        var extendedStyle = (WINDOW_EX_STYLE)GetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE) | WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
         if (!this.isEnableCapture)
         {
-            extendedStyle |= SetWindowLongFlags.WS_EX_TOOLWINDOW;
+            extendedStyle |= WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
         }
-        var r = SetWindowLong(windowHandle, WindowLongIndexFlags.GWL_EXSTYLE, extendedStyle);
+        var r = SetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, extendedStyle);
         if (r == 0)
         {
             this.logger.LogError($"SetWindowLong failed. {Marshal.GetLastWin32Error()}");
@@ -100,10 +100,10 @@ public partial class OverlayMainWindow : Window
 
         // ShowInTaskbarをfalseにすると↓の方法で一番上に表示する必要がある
         // https://social.msdn.microsoft.com/Forums/en-US/cdbe457f-d653-4a18-9295-bb9b609bc4e3/desktop-apps-on-top-of-metro-extended
-        IntPtr hWndHiddenOwner = User32.GetWindow(this.windowHandle, GetWindowCommands.GW_OWNER);
-        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
+        var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
+        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
         // 2回呼ばないと安定して最上位にならない
-        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
+        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
         this.timer.Start();
 
         RegisterHotKey(new(this.windowHandle), 0, this.shortcutModifiers, (uint)this.shortcutKey);
@@ -133,8 +133,8 @@ public partial class OverlayMainWindow : Window
     private unsafe void UpdateWindowPositionAndSize()
     {
         var sw = Stopwatch.StartNew();
-        var windowInfo = WINDOWINFO.Create();
-        if (!GetWindowInfo(this.processInfo.MainWindowHandle, ref windowInfo))
+        var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
+        if (!GetWindowInfo(new(this.processInfo.MainWindowHandle), ref windowInfo))
         {
             this.timer.Stop();
             this.Close();
@@ -146,39 +146,50 @@ public partial class OverlayMainWindow : Window
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
             return;
         }
-        else
-        {
-            this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
-        }
-
-        // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
-        IntPtr hWndHiddenOwner = User32.GetWindow(this.windowHandle, GetWindowCommands.GW_OWNER);
-        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOACTIVATE);
-
-        var monitorHandle = MonitorFromWindow(this.processInfo.MainWindowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-        GetMonitorInfo(monitorHandle, out var monitorInfo);
-        var mode = DEVMODE.Create();
-        EnumDisplaySettings(monitorInfo.DeviceName, ENUM_CURRENT_SETTINGS, &mode);
-        var eDpiScale = GetDpiForSystem() / 96.0;
-        var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.Monitor.right - monitorInfo.Monitor.left);
 
         var clientRect = windowInfo.rcClient;
         var windowRect = windowInfo.rcWindow;
 
-        var p = GetWindowPlacement(this.processInfo.MainWindowHandle);
+        // 対象のウィンドウの中心位置が他のウィンドウによって隠れているかチェック
+        var windowAtPoint = WindowFromPoint(new((clientRect.left + clientRect.right) / 2, (clientRect.top + clientRect.bottom) / 2));
+        // ウィンドウの中心が別のウィンドウに隠されている場合は非表示にする
+        if (windowAtPoint != this.processInfo.MainWindowHandle && !IsChild(new(this.processInfo.MainWindowHandle), windowAtPoint))
+        {
+            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+            return;
+        }
+
+        // 上記のすべてのチェックに合格した場合、オーバーレイを表示
+        this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+
+        // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
+        var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
+        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
+        var monitorHandle = MonitorFromWindow(new(this.processInfo.MainWindowHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        var monitorInfo = default(MONITORINFOEXW);
+        monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+        GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo);
+        var mode = default(DEVMODEW);
+        EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode);
+        var eDpiScale = GetDpiForSystem() / 96.0;
+        var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
+
+        var p = default(WINDOWPLACEMENT);
+        GetWindowPlacement(new(this.processInfo.MainWindowHandle), ref p);
 
         var left = clientRect.left;
-        var top = p.showCmd.HasFlag(WindowShowStyle.SW_MAXIMIZE) ? clientRect.top : windowRect.top;
+        var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? clientRect.top : windowRect.top;
         var width = clientRect.right - left;
         var height = clientRect.bottom - top;
 
-        var nativePos = GetCursorPos();
-        var x = (nativePos.x - left) / eDpiScale;
-        var y = (nativePos.y - top) / eDpiScale;
+        GetCursorPos(out var nativePos);
+        var x = (nativePos.X - left) / eDpiScale;
+        var y = (nativePos.Y - top) / eDpiScale;
 
         this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
         this.SetCurrentValue(MousePosProperty, new Point(x, y));
-        if (this.isEnableCapture && p.showCmd == WindowShowStyle.SW_SHOWMINIMIZED)
+        if (this.isEnableCapture && p.showCmd == SHOW_WINDOW_CMD.SW_SHOWMINIMIZED)
         {
             return;
         }

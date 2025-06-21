@@ -1,3 +1,39 @@
-﻿RegisterHotKey
+﻿// OverlayMainWindow
+RegisterHotKey
 UnregisterHotKey
 WM_HOTKEY
+WindowFromPoint
+SetWindowPos
+GetWindowLong
+SetWindowLong
+GetWindow
+WINDOW_EX_STYLE
+WINDOWINFO
+GetWindowInfo
+MonitorFromWindow
+MONITORINFOEXW
+GetMonitorInfo
+EnumDisplaySettings
+GetDpiForSystem
+GetWindowPlacement
+GetCursorPos
+IsChild
+
+// ProcessWindowPresenter
+WINDOW_STYLE
+SetParent
+DestroyWindow
+
+// WindowCaptureCompositionHost
+CreateWindowEx
+
+// StartupViewModel
+FindWindowEx
+GetWindowText
+GetWindowTextLength
+GetWindowThreadProcessId
+
+
+// WindowMonitor
+EnumWindows
+IsWindowVisible

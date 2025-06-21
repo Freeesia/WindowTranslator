@@ -1,9 +1,11 @@
 ﻿using HwndExtensions.Host;
-using PInvoke;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using Windows.Win32.Foundation;
 using WindowTranslator.Stores;
+using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Controls;
 public class ProcessWindowPresenter : HwndHostPresenter
@@ -33,28 +35,28 @@ public class ProcessWindowPresenter : HwndHostPresenter
     private class ProcessWindowHost(IProcessInfoStore process) : HwndHost
     {
         private readonly IProcessInfoStore process = process;
-        private IntPtr beforeStyle;
+        private nint beforeStyle;
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            var childStyle = (IntPtr)(User32.WindowStyles.WS_CHILD |
-                                      // Child window should be have a thin-line border
-                                      User32.WindowStyles.WS_BORDER |
-                                      // the parent cannot draw over the child's area. this is needed to avoid refresh issues
-                                      User32.WindowStyles.WS_CLIPCHILDREN |
-                                      User32.WindowStyles.WS_VISIBLE |
-                                      User32.WindowStyles.WS_MAXIMIZE);
-            this.beforeStyle = User32.GetWindowLongPtr_IntPtr(this.process.MainWindowHandle, User32.WindowLongIndexFlags.GWL_STYLE);
-            User32.SetWindowLongPtr(this.process.MainWindowHandle, User32.WindowLongIndexFlags.GWL_STYLE, childStyle);
-            User32.SetParent(this.process.MainWindowHandle, hwndParent.Handle);
+            var childStyle = (nint)(WINDOW_STYLE.WS_CHILD |
+                            // Child window should be have a thin-line border
+                            WINDOW_STYLE.WS_BORDER |
+                            // the parent cannot draw over the child's area. this is needed to avoid refresh issues
+                            WINDOW_STYLE.WS_CLIPCHILDREN |
+                            WINDOW_STYLE.WS_VISIBLE |
+                            WINDOW_STYLE.WS_MAXIMIZE);
+            this.beforeStyle = GetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            _ = SetWindowLongPtr((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, childStyle);
+            SetParent((HWND)this.process.MainWindowHandle, (HWND)hwndParent.Handle);
             return new HandleRef(this, this.process.MainWindowHandle);
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            User32.SetParent(this.process.MainWindowHandle, IntPtr.Zero);
-            User32.SetWindowLongPtr(this.process.MainWindowHandle, User32.WindowLongIndexFlags.GWL_STYLE, this.beforeStyle);
-            User32.DestroyWindow(hwnd.Handle);
+            SetParent((HWND)this.process.MainWindowHandle, HWND.Null);
+            _ = SetWindowLongPtr((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, this.beforeStyle);
+            DestroyWindow((HWND)hwnd.Handle);
         }
     }
 }
