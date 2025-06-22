@@ -5,9 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pt="http://propertytools.org/wpf"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:properties="clr-namespace:WindowTranslator.Properties"
+    xmlns:pt="http://propertytools.org/wpf"
+    xmlns:root="clr-namespace:WindowTranslator"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="{Binding Title}"
     Width="800"
     Height="720"
@@ -302,28 +303,28 @@
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Text="{Binding Version}" />
+                                Text="{Binding Source={x:Static root:AppInfo.Version}}" />
                             <ui:TextBlock
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Text="{Binding BuildDate}" />
+                                Text="{Binding Source={x:Static root:AppInfo.BuildDate}}" />
                             <ui:TextBlock
                                 Grid.Row="2"
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Text="{Binding DevelopedBy}" />
+                                Text="{x:Static root:AppInfo.DevelopedBy}" />
                             <pt:LinkBlock
                                 Grid.Row="3"
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                NavigateUri="{Binding Link}"
-                                Text="{Binding Link}" />
+                                NavigateUri="{x:Static root:AppInfo.Link}"
+                                Text="{Binding Source={x:Static root:AppInfo.Link}}" />
                             <ui:TextBlock
                                 Grid.Row="4"
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Text="{Binding License}" />
+                                Text="{x:Static root:AppInfo.License}" />
 
                             <ui:Button
                                 Grid.Row="5"

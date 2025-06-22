@@ -26,7 +26,7 @@
     <SentryUploadSources>true</SentryUploadSources>
   </PropertyGroup>
   <ItemGroup>
-    <SplashScreen Include="splash.png" />
+    <SplashScreen Include="splash.gif" />
     <Resource Include="$(ApplicationIcon)" />
     <None Include="appsettings.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
@@ -58,6 +58,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Threading" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" />
     <PackageReference Include="Quickenshtein" />
+    <PackageReference Include="XamlAnimatedGif" />
   </ItemGroup>
 
   <ItemGroup>

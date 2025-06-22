@@ -29,8 +29,23 @@ using MessageBoxImage = Kamishibai.MessageBoxImage;
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 
-var ss = new SplashScreen("splash.png");
-ss.Show(true);
+#if DEBUG
+var createdNew = true;
+#else
+using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+#endif
+if (!createdNew)
+{
+    new MessageDialog()
+    {
+        Caption = "WindowTranslator",
+        Icon = MessageBoxImage.Error,
+        Text = Resources.MutexError,
+    }.Show();
+    return;
+}
+var d = SplashWindow.Show();
+
 
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
@@ -105,21 +120,11 @@ builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLangu
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
 
 var app = builder.Build();
-#if DEBUG
-var createdNew = true;
-#else
-using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
-#endif
-if (!createdNew)
+app.Loaded += (_, e) =>
 {
-    new MessageDialog()
-    {
-        Caption = "WindowTranslator",
-        Icon = MessageBoxImage.Error,
-        Text = Resources.MutexError,
-    }.Show();
-    return;
-}
+    d.Dispose();
+    e.Window.Activate();
+};
 await app.RunAsync();
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
