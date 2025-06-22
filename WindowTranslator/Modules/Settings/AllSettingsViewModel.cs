@@ -78,8 +78,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private TargetSettingsViewModel selectedTarget;
 
-    public string Title { get; } = $"WindowTranslator {Assembly.GetExecutingAssembly().GetName().Version}";
-
     public IReadOnlyList<EnumItem<ViewMode>> ViewModes { get; } = Enum.GetValues<ViewMode>().Select(v => new EnumItem<ViewMode>(v)).ToArray();
 
     public IReadOnlyList<EnumItem<OverlaySwitch>> OverlaySwitches { get; } = Enum.GetValues<OverlaySwitch>().Select(v => new EnumItem<OverlaySwitch>(v)).ToArray();
@@ -89,16 +87,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public ObservableCollection<string> AutoTargets { get; }
 
     public ObservableCollection<TargetSettingsViewModel> Targets { get; }
-
-    public Version Version { get; }
-
-    public DateTime BuildDate { get; }
-
-    public string DevelopedBy { get; }
-
-    public Uri Link { get; }
-
-    public string License { get; }
 
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
@@ -149,17 +137,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
-
-        var asm = Assembly.GetExecutingAssembly();
-        var name = asm.GetName();
-        this.Version = name.Version ?? new Version();
-        this.BuildDate = asm.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Where(a => a.Key == "BuildDateTime")?
-            .Select(a => DateTime.Parse(a.Value!, CultureInfo.InvariantCulture))
-            .FirstOrDefault() ?? default;
-        this.DevelopedBy = "Freesia";
-        this.Link = new("https://github.com/Freeesia/WindowTranslator");
-        this.License = "MIT License";
     }
 
     private void UpdateChecker_UpdateAvailable(object? sender, EventArgs e)

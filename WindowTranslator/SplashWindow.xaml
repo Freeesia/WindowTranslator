@@ -3,9 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
     xmlns:local="clr-namespace:WindowTranslator"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="420"
+    Width="640"
+    Foreground="#ecfaff"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     SizeToContent="Height"
@@ -14,9 +16,20 @@
     mc:Ignorable="d">
     <Grid>
         <Image
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Source="pack://application:,,,/WindowTranslator;component/splash.png"
+            gif:AnimationBehavior.RepeatBehavior="Forever"
+            gif:AnimationBehavior.SourceUri="splash.gif"
             Stretch="Uniform" />
+        <Canvas>
+            <TextBlock
+                Canvas.Top="4"
+                Canvas.Right="32"
+                FontSize="18"
+                Text="{x:Static local:AppInfo.Title}" />
+            <TextBlock
+                Canvas.Right="32"
+                Canvas.Bottom="4"
+                FontSize="18"
+                Text="{Binding Source={x:Static local:AppInfo.BuildDate}, StringFormat=Build: {0}}" />
+        </Canvas>
     </Grid>
 </Window>
