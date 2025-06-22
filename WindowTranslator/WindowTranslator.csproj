@@ -26,7 +26,6 @@
     <SentryUploadSources>true</SentryUploadSources>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="splash.gif" />
     <SplashScreen Include="splash.gif" />
     <Resource Include="$(ApplicationIcon)" />
     <None Include="appsettings.json" CopyToOutputDirectory="Always" />
