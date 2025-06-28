@@ -27,7 +27,7 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     public static TextRect Empty { get; } = new TextRect(string.Empty, 0, 0, 0, 0, 0, false);
 
     /// <summary>
-    /// 回転角度（度数法、時計回り）
+    /// 左上を中心とした回転角度（度数法、時計回り）
     /// </summary>
     public double Angle { get; init; }
 
