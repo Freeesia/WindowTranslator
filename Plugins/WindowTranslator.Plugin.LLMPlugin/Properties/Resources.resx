@@ -150,4 +150,7 @@
   <data name="Endpoint_Desc" xml:space="preserve">
     <value>OpenAIを利用する場合は空</value>
   </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>補正が完了してから翻訳を行う</value>
+  </data>
 </root>
