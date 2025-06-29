@@ -12,6 +12,8 @@ public partial class GoogleAIOptions : IPluginParam
     [SelectorStyle(SelectorStyle.ComboBox)]
     public CorrectMode CorrectMode { get; set; }
 
+    public bool WaitCorrect { get; set; }
+
     [SelectorStyle(SelectorStyle.ComboBox)]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
 
