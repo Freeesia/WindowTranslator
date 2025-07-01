@@ -12,7 +12,7 @@ using WindowTranslator.Modules;
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 [Experimental("WT0001")]
-[DisplayName("Google AI")]
+[DisplayName("Gemini")]
 public sealed class GoogleAIOcr : IOcrModule
 {
     private readonly ILogger<GoogleAIOcr> logger;

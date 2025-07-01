@@ -12,7 +12,7 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
-[DisplayName("LLM")]
+[DisplayName("ChatGPT")]
 public class LLMTranslator : ITranslateModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
