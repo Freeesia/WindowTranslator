@@ -59,9 +59,9 @@ Tải xuống tệp zip từ [trang Releases trên GitHub](https://github.com/Fr
 > |   Bergamot     | | Hoàn toàn miễn phí<br/>Không giới hạn dịch<br/>Dịch nhanh | Độ chính xác dịch thấp hơn<br/>Cần ít nhất 1GB RAM trống |
 > |   Google Dịch   | [![Video cài đặt Google Dịch](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Hoàn toàn miễn phí | Giới hạn dịch thấp<br/>Độ chính xác dịch thấp hơn |
 > |     DeepL      |   [![Video cài đặt DeepL](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Nhiều mức miễn phí<br/>Dịch nhanh | |
-> |    GoogleAI    | [![Video cài đặt Google AI](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Độ chính xác dịch cao | Cần thanh toán một khoản nhỏ |
-> | LLM (đám mây) | TBD | Độ chính xác dịch cao | Cần thanh toán một khoản nhỏ |
-> | LLM (cục bộ) | TBD | Dịch vụ miễn phí | Cần PC cấu hình cao |
+> |     Gemini     | [![Video cài đặt Google AI](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Độ chính xác dịch cao | Cần thanh toán một khoản nhỏ |
+> | ChatGPT (đám mây) | TBD | Độ chính xác dịch cao | Cần thanh toán một khoản nhỏ |
+> | ChatGPT (cục bộ) | TBD | Dịch vụ miễn phí | Cần PC cấu hình cao |
 
 ## Các tính năng khác
 
