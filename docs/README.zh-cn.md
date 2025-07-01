@@ -60,8 +60,8 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 > |   Google翻译   | [![Google翻译设置视频](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 完全免费 | 翻译限制低<br/>翻译准确度较低 |
 > |     DeepL      |   [![DeepL设置视频](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 免费额度大<br/>翻译速度快 | |
 > |     Gemini     | [![Google AI设置视频](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻译准确度高 | 需要少量付费 |
-> | ChatGPT (云端) | TBD | 翻译准确度高 | 需要少量付费 |
-> | ChatGPT (本地) | TBD | 服务本身免费 | 需要高配置PC |
+> |    ChatGPT     | TBD | 翻译准确度高 | 需要少量付费 |
+> | 本地LLM | TBD | 服务本身免费 | 需要高配置PC |
 
 ## 其他功能
 

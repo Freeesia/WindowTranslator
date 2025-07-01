@@ -60,8 +60,8 @@ Download the zip file from the [GitHub release page](https://github.com/Freeesia
 > |   Google Translate   | [![Google Translate Setup Video](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Completely free | Low translation limit<br/>Lower translation accuracy |
 > |     DeepL      |   [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Large free tier<br/>Fast translation | |
 > |     Gemini     | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High translation accuracy | Small fee required |
-> | ChatGPT (Cloud) | TBD | High translation accuracy | Small fee required |
-> | ChatGPT (Local) | TBD | Service itself is free | High-spec PC required |
+> |    ChatGPT     | TBD | High translation accuracy | Small fee required |
+> | Local LLM | TBD | Service itself is free | High-spec PC required |
 
 ## Other Features
 
