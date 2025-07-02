@@ -123,6 +123,9 @@ public class GoogleAITranslator : ITranslateModule
             SystemInstruction = RequestExtensions.FormatSystemInstruction(system),
             Contents = [RequestExtensions.FormatGenerateContentInput(content)],
         };
+        var jsonErrorRetryCount = 0;
+        const int maxJsonErrorRetries = 3;
+        
         while (true)
         {
             try
@@ -149,9 +152,22 @@ public class GoogleAITranslator : ITranslateModule
                 await Task.Delay(10000).ConfigureAwait(false);
                 continue;
             }
-            // Jsonエラーということは指定した以外のレスポンスが返ってきたのでもう一度
-            catch (JsonException)
+            // Jsonエラーということは指定した以外のレスポンスが返ってきた（上限到達等でHTMLが返る可能性）
+            catch (JsonException e)
             {
+                jsonErrorRetryCount++;
+                this.logger.LogWarning($"GoogleAIから予期しないレスポンスが返されました。リトライ {jsonErrorRetryCount}/{maxJsonErrorRetries}");
+                
+                if (jsonErrorRetryCount >= maxJsonErrorRetries)
+                {
+                    throw new InvalidOperationException(
+                        "GoogleAIから継続的に予期しないレスポンスが返されています。" +
+                        "時間あたりの翻訳可能量を超えた可能性があります。" +
+                        "しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。", e);
+                }
+                
+                // 短時間待機してからリトライ
+                await Task.Delay(1000).ConfigureAwait(false);
                 continue;
             }
         }
