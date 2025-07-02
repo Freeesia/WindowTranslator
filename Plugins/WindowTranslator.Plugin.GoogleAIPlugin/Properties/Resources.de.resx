@@ -166,9 +166,9 @@
     <value>Korrektur der Erkennung</value>
   </data>
   <data name="GoogleAIOptions" xml:space="preserve">
-    <value />
+    <value>Gemini-Einstellungen</value>
   </data>
   <data name="GoogleAITranslator" xml:space="preserve">
-    <value />
+    <value>Gemini-Übersetzung</value>
   </data>
 </root>

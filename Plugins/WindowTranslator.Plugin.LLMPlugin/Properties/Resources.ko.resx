@@ -136,7 +136,7 @@
     <value>API 키</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>접속처</value>
+    <value>로컬 LLM 접속처</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
     <value>보정 샘플</value>
@@ -151,9 +151,9 @@
     <value>OpenAI를 이용할 경우 비어있음</value>
   </data>
   <data name="LLMOptions" xml:space="preserve">
-    <value />
+    <value>ChatGPT API 설정</value>
   </data>
   <data name="LLMTranslator" xml:space="preserve">
-    <value />
+    <value>ChatGPT API 번역</value>
   </data>
 </root>

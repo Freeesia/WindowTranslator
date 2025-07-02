@@ -166,9 +166,9 @@
     <value>인식 보정</value>
   </data>
   <data name="GoogleAIOptions" xml:space="preserve">
-    <value />
+    <value>Gemini 설정</value>
   </data>
   <data name="GoogleAITranslator" xml:space="preserve">
-    <value />
+    <value>Gemini 번역</value>
   </data>
 </root>
