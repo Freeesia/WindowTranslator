@@ -166,12 +166,12 @@
     <value>người khác</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value />
+    <value>Chức năng bộ đệm</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value />
+    <value>Hiệu chỉnh lỗi nhận dạng</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value />
+    <value>Ngăn chặn rung động</value>
   </data>
 </root>

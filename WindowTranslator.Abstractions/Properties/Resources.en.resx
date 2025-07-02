@@ -166,12 +166,12 @@
     <value>Other</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value />
+    <value>Buffer function</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value />
+    <value>Recognition error correction</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value />
+    <value>Vibration suppression</value>
   </data>
 </root>

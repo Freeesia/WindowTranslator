@@ -166,12 +166,12 @@
     <value>Sonstiges</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value />
+    <value>Pufferfunktion</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value />
+    <value>Erkennungsfehlerkorrektur</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value />
+    <value>Vibrationsunterdrückung</value>
   </data>
 </root>

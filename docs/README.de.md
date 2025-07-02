@@ -59,9 +59,9 @@ Laden Sie die Zip-Datei von der [GitHub-Release-Seite](https://github.com/Freees
 > |   Bergamot     | | Völlig kostenlos<br/>Keine Übersetzungsbegrenzung<br/>Schnelle Übersetzung | Geringere Übersetzungsgenauigkeit<br/>Erfordert mehr als 1 GB freien Speicher |
 > |   Google Translate   | [![Google Translate Einrichtungsvideo](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Völlig kostenlos | Niedrige Übersetzungsbegrenzung<br/>Geringere Übersetzungsgenauigkeit |
 > |     DeepL      |   [![DeepL Einrichtungsvideo](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Großes kostenloses Kontingent<br/>Schnelle Übersetzung | |
-> |    GoogleAI    | [![Google AI Einrichtungsvideo](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Hohe Übersetzungsgenauigkeit | Kleine Gebühr erforderlich |
-> | LLM (Cloud) | TBD | Hohe Übersetzungsgenauigkeit | Kleine Gebühr erforderlich |
-> | LLM (Lokal) | TBD | Service selbst ist kostenlos | Leistungsstarker PC erforderlich |
+> |     Gemini     | [![Google AI Einrichtungsvideo](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Hohe Übersetzungsgenauigkeit | Kleine Gebühr erforderlich |
+> |    ChatGPT     | TBD | Hohe Übersetzungsgenauigkeit | Kleine Gebühr erforderlich |
+> | Lokales LLM | TBD | Service selbst ist kostenlos | Leistungsstarker PC erforderlich |
 
 ## Weitere Funktionen
 

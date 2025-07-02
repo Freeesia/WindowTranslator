@@ -108,19 +108,19 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
                 }
                 catch (ApiException e) when (e.ErrorCode == 400)
                 {
-                    throw new ApiException(e.ErrorCode, "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+                    throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
                 }
                 // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
                 catch (ApiException e) when (e.ErrorCode == 503)
                 {
-                    this.Logger.LogWarning("GoogleAIのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
+                    this.Logger.LogWarning("Geminiのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
                     await Task.Delay(500).ConfigureAwait(false);
                     continue;
                 }
                 // レート制限を超えました。
                 catch (ApiException e) when (e.ErrorCode == 429)
                 {
-                    this.Logger.LogWarning("GoogleAIのレート制限を超えました。10秒待機して再試行します。");
+                    this.Logger.LogWarning("Geminiのレート制限を超えました。10秒待機して再試行します。");
                     await Task.Delay(10000).ConfigureAwait(false);
                     continue;
                 }
