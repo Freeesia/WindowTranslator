@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Encodings.Web;
@@ -14,7 +14,7 @@ using WindowTranslator.Modules;
 namespace WindowTranslator.Plugin.LLMPlugin;
 
 [Experimental("WT0001")]
-[DisplayName("ChatGPT")]
+[DisplayName("ChatGPT API")]
 public sealed class LLMOcr : IOcrModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)

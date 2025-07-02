@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -12,7 +11,6 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
-[DisplayName("ChatGPT")]
 public class LLMTranslator : ITranslateModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)

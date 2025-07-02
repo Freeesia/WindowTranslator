@@ -169,6 +169,24 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         }
         
         /// <summary>
+        ///   Gemini設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GoogleAIOptions {
+            get {
+                return ResourceManager.GetString("GoogleAIOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Gemini翻訳 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GoogleAITranslator {
+            get {
+                return ResourceManager.GetString("GoogleAITranslator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   使用するモデル に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Model {
