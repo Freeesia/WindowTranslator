@@ -278,15 +278,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         }
         if (results.Any())
         {
-            // エラーが発生したモジュール名を取得
-            var errorModules = results.SelectMany(p => p.Value.Select(v => v.Title)).Distinct().ToArray();
-            var moduleNames = errorModules.Length <= 3 
-                ? string.Join(", ", errorModules)
-                : $"{string.Join(", ", errorModules.Take(2))} 他{errorModules.Length - 2}個";
-            
             var r = await this.dialogService.ShowSimpleDialogAsync(new()
             {
-                Title = $"設定検証エラー - {moduleNames}",
+                Title = "設定検証エラー",
                 Content = string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : "デフォルト設定")}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
                 PrimaryButtonText = "保存して閉じる",
                 CloseButtonText = "キャンセル",
