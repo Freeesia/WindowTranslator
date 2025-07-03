@@ -81,7 +81,7 @@ public class BergamotValidator : ITargetSettingsValidator
 
         if (!SystemUtility.IsX64Machine())
         {
-            return ValidateResult.Invalid("Bergamot - 対象外のPC", $"ご利用のPCではBergamotを利用できません");
+            return ValidateResult.Invalid("対象外のPC", $"ご利用のPCではBergamotを利用できません");
         }
 
         var src = settings.Language.Source[..2];

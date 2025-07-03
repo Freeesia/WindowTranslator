@@ -7,7 +7,7 @@ namespace WindowTranslator.Modules.Ocr;
 
 public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITargetSettingsValidator
 {
-    private static readonly ValidateResult Invalid = ValidateResult.Invalid("WindowsMediaOcr - 文字認識機能", "文字認識に必要な機能がインストールされていません");
+    private static readonly ValidateResult Invalid = ValidateResult.Invalid("文字認識機能", "文字認識に必要な機能がインストールされていません");
     private readonly IContentDialogService dialogService = dialogService;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
@@ -22,7 +22,7 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
         }
         catch (Exception ex)
         {
-            return ValidateResult.Invalid("WindowsMediaOcr - 文字認識機能",
+            return ValidateResult.Invalid("文字認識機能",
                 $"""
                 ORC機能のインストール状態の取得に失敗しました。  
                     
@@ -39,7 +39,7 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
 
         var r = await this.dialogService.ShowSimpleDialogAsync(new()
         {
-            Title = "WindowsMediaOcr - 文字認識機能",
+            Title = "文字認識機能",
             Content = $"""
             翻訳元言語「{culture.DisplayName}」は文字認識のために必要なOCR機能がインストールされていません。
             
@@ -72,7 +72,7 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
         {
             await this.dialogService.ShowSimpleDialogAsync(new()
             {
-                Title = "WindowsMediaOcr - 文字認識機能のインストール中...",
+                Title = "文字認識機能のインストール中...",
                 Content = $"""
                 「{culture.DisplayName}」の言語パックをインストール中...
                 5～10分程度かかる場合があります。
