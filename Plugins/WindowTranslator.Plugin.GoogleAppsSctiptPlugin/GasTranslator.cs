@@ -76,10 +76,11 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         catch (JsonException e)
         {
             this.logger.LogWarning("Google翻訳から予期しないレスポンスが返されました");
-            throw new InvalidOperationException(
-                "Google翻訳から予期しないレスポンスが返されています。" +
-                "時間あたりの翻訳可能量を超えた可能性があります。" +
-                "しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。", e);
+            throw new InvalidOperationException("""
+                Google翻訳から予期しないレスポンスが返されています。
+                時間あたりの翻訳可能量を超えた可能性があります。
+                しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。
+                """, e);
         }
     }
 
