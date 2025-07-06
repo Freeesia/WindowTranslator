@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ValueTaskSupplement;
 using WindowTranslator.Modules;
@@ -24,9 +25,11 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
     private readonly bool isPublicScript;
     private readonly AsyncLazy<UserCredential> credential;
     private readonly HttpClient client;
+    private readonly ILogger<GasTranslator> logger;
 
-    public GasTranslator(IOptions<LanguageOptions> langOptions, IOptions<GasOptions> gasOptions)
+    public GasTranslator(IOptions<LanguageOptions> langOptions, IOptions<GasOptions> gasOptions, ILogger<GasTranslator> logger)
     {
+        this.logger = logger;
         this.langOptions = langOptions.Value;
         this.isPublicScript = string.IsNullOrEmpty(gasOptions.Value.DeployId);
         this.credential = new(GetCredential);
@@ -37,33 +40,48 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         };
     }
 
+    public string Name => nameof(GasTranslator);
+
     public void Dispose()
         => this.client.Dispose();
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
-        if (this.isPublicScript)
+        try
         {
-            var credential = await this.credential.AsValueTask().ConfigureAwait(false);
-            if (credential.Token.IsStale)
+            if (this.isPublicScript)
             {
-                await credential.RefreshTokenAsync(CancellationToken.None).ConfigureAwait(false);
+                var credential = await this.credential.AsValueTask().ConfigureAwait(false);
+                if (credential.Token.IsStale)
+                {
+                    await credential.RefreshTokenAsync(CancellationToken.None).ConfigureAwait(false);
+                }
+                this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
             }
-            this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
+            var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
+            var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
+            if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+            {
+                await this.authStore.ClearAsync().ConfigureAwait(false);
+                throw new("""
+                    翻訳モジュールが要求する権限の一部もしくは全てが付与されませんでした。
+                    再度翻訳を試みた際に、再度権限の付与を求められます。
+                    """);
+            }
+            res.EnsureSuccessStatusCode();
+            var translatedTexts = await res.Content.ReadFromJsonAsync<string[]>(JsonSerializerOptions).ConfigureAwait(false);
+            return translatedTexts ?? [];
         }
-        var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
-        var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
-        if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+        // Jsonエラーということは指定した以外のレスポンスが返ってきた（上限到達等でHTMLが返る可能性）
+        catch (JsonException e)
         {
-            await this.authStore.ClearAsync().ConfigureAwait(false);
-            throw new("""
-                翻訳モジュールが要求する権限の一部もしくは全てが付与されませんでした。
-                再度翻訳を試みた際に、再度権限の付与を求められます。
-                """);
+            this.logger.LogWarning("Google翻訳から予期しないレスポンスが返されました");
+            throw new InvalidOperationException("""
+                Google翻訳から予期しないレスポンスが返されています。
+                時間あたりの翻訳可能量を超えた可能性があります。
+                しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。
+                """, e);
         }
-        res.EnsureSuccessStatusCode();
-        var translatedTexts = await res.Content.ReadFromJsonAsync<string[]>(JsonSerializerOptions).ConfigureAwait(false);
-        return translatedTexts ?? [];
     }
 
     private record TranslateRequest(string[] Texts, string SourceLanguage, string TargetLanguage);
