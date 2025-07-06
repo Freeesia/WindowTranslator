@@ -256,7 +256,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             }
             if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
             {
-                r.Add(ValidateResult.Invalid("翻訳モジュール", """
+                r.Add(ValidateResult.Invalid("キャッシュモジュール", """
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));

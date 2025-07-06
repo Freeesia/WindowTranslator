@@ -136,7 +136,7 @@
     <value>API-Schlüssel</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>Zugangspunkt</value>
+    <value>Lokale LLM-Verbindung</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
     <value>Berichtigungsmuster</value>
@@ -149,6 +149,12 @@
   </data>
   <data name="Endpoint_Desc" xml:space="preserve">
     <value>Leer bei Verwendung von OpenAI</value>
+  </data>
+  <data name="LLMOptions" xml:space="preserve">
+    <value>ChatGPT API Einstellungen</value>
+  </data>
+  <data name="LLMTranslator" xml:space="preserve">
+    <value>ChatGPT API Übersetzung</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
     <value />

@@ -8,6 +8,11 @@ namespace WindowTranslator.Modules;
 /// </summary>
 public interface IOcrModule
 {
+    /// <summary>
+    /// モジュール名
+    /// </summary>
+    public string Name => GetType().Name;
+
 #if WINDOWS
     /// <summary>
     /// 画像からテキストを認識する

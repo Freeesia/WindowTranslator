@@ -59,9 +59,9 @@ WindowTranslator是一款用於翻譯Windows應用程式視窗的工具。
 > |   Bergamot     | | 完全免費<br/>無翻譯限制<br/>翻譯速度快 | 翻譯準確度較低<br/>需要1GB以上空閒記憶體 |
 > |   Google翻譯   | [![Google翻譯設定影片](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 完全免費 | 翻譯限制低<br/>翻譯準確度較低 |
 > |     DeepL      |   [![DeepL設定影片](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 免費額度大<br/>翻譯速度快 | |
-> |    GoogleAI    | [![Google AI設定影片](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻譯準確度高 | 需要少量付費 |
-> | LLM (雲端) | TBD | 翻譯準確度高 | 需要少量付費 |
-> | LLM (本地) | TBD | 服務本身免費 | 需要高配置PC |
+> |     Gemini     | [![Google AI設定影片](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻譯準確度高 | 需要少量付費 |
+> |    ChatGPT     | TBD | 翻譯準確度高 | 需要少量付費 |
+> | 本地LLM | TBD | 服務本身免費 | 需要高配置PC |
 
 ## 其他功能
 

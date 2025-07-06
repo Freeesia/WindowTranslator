@@ -130,7 +130,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
             return;
         }
@@ -223,7 +223,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            this.presentationService.ShowMessage(e.Message, $"{this.translator.Name} - {this.name}", icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
         finally
