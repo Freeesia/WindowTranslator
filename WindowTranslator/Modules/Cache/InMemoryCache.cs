@@ -27,9 +27,14 @@ public class InMemoryCache(ILogger<InMemoryCache> logger, IOptionsSnapshot<Cache
             .Select(p => (src: p.Key, dst: p.Value, distance: Levenshtein.GetDistance(src, p.Key, CalculationOptions.DefaultWithThreading)))
             .MinBy(p => p.distance);
 
+        // 元の文字列がキャッシュより長い場合は、文字アニメで伸びているかもなので、キャッシュ対象外
         if (src.Length > cacheSrc.Length)
         {
-            // 元の文字列がキャッシュより長い場合は、文字アニメで伸びているかもなので、キャッシュ対象外
+            if (src.StartsWith(cacheSrc, StringComparison.OrdinalIgnoreCase))
+            {
+                // 伸びているテキストなら、短い方をキャッシュから削除する(揺れ防止のため)
+                this.cache.TryRemove(cacheSrc, out _);
+            }
             return false;
         }
 
