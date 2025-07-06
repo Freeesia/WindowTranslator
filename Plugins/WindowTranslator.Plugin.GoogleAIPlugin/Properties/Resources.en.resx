@@ -171,4 +171,7 @@
   <data name="GoogleAITranslator" xml:space="preserve">
     <value>Gemini Translation</value>
   </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>補正が完了してから翻訳を行う</value>
+  </data>
 </root>
