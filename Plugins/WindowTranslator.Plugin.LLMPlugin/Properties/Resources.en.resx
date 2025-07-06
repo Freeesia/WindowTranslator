@@ -136,7 +136,7 @@
     <value>API Key</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>access point</value>
+    <value>Local LLM Connection</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
     <value>Correction Sample</value>
@@ -149,5 +149,11 @@
   </data>
   <data name="Endpoint_Desc" xml:space="preserve">
     <value>Empty when using OpenAI</value>
+  </data>
+  <data name="LLMOptions" xml:space="preserve">
+    <value>ChatGPT API Settings</value>
+  </data>
+  <data name="LLMTranslator" xml:space="preserve">
+    <value>ChatGPT API Translation</value>
   </data>
 </root>
