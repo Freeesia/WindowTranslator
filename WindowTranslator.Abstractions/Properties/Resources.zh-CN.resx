@@ -166,12 +166,12 @@
     <value>其他</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
+    <value>缓冲功能</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
+    <value>识别错误纠正</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
+    <value>振动抑制</value>
   </data>
 </root>
