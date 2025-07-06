@@ -119,7 +119,7 @@ jobs:
           dotnet-version: 8.0.x
       - uses: gittools/actions/gitversion/setup@v4.0.0
         with:
-          versionSpec: "5.x"
+          versionSpec: "6.x"
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v4.0.0
       - env:
