@@ -165,4 +165,10 @@
   <data name="CorrectMode" xml:space="preserve">
     <value>Korrektur der Erkennung</value>
   </data>
+  <data name="GoogleAIOptions" xml:space="preserve">
+    <value>Gemini-Einstellungen</value>
+  </data>
+  <data name="GoogleAITranslator" xml:space="preserve">
+    <value>Gemini-Übersetzung</value>
+  </data>
 </root>
