@@ -1,4 +1,4 @@
-#if WINDOWS
+﻿#if WINDOWS
 using System.Buffers;
 using System.Drawing;
 using Windows.Graphics.Imaging;
@@ -67,10 +67,14 @@ public static class BitmapExtensions
 
     /// <summary>
     /// TextRect オブジェクトを System.Drawing.Rectangle に変換します。
+    /// 回転を考慮した境界ボックスを返します。
     /// </summary>
     /// <param name="rect">変換する TextRect オブジェクト。</param>
-    /// <returns>変換された System.Drawing.Rectangle オブジェクト。</returns>
+    /// <returns>回転を考慮した境界ボックスの System.Drawing.Rectangle オブジェクト。</returns>
     public static Rectangle ToRect(this TextRect rect)
-        => new((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+    {
+        var (x, y, width, height) = rect.GetRotatedBoundingBox();
+        return new((int)Math.Floor(x), (int)Math.Floor(y), (int)Math.Ceiling(width), (int)Math.Ceiling(height));
+    }
 }
 #endif

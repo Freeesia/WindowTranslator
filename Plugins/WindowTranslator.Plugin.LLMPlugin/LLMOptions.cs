@@ -11,6 +11,8 @@ public class LLMOptions : IPluginParam
     [SelectorStyle(SelectorStyle.ComboBox)]
     public CorrectMode CorrectMode { get; set; }
 
+    public bool WaitCorrect { get; set; }
+
     public string? Model { get; set; } = "gpt-4o-mini";
 
     [DataType(DataType.Password)]

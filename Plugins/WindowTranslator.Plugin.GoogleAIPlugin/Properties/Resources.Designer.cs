@@ -221,5 +221,14 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
                 return ResourceManager.GetString("TranslateContext", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   補正が完了してから翻訳を行う に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string WaitCorrect {
+            get {
+                return ResourceManager.GetString("WaitCorrect", resourceCulture);
+            }
+        }
     }
 }

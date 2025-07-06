@@ -156,4 +156,7 @@
   <data name="LLMTranslator" xml:space="preserve">
     <value>Dịch ChatGPT API</value>
   </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value />
+  </data>
 </root>

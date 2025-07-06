@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
+using System.Text.Json;
 using GenerativeAI;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
@@ -21,8 +22,21 @@ public sealed class OcrCorrectFromImageFilter(
     protected override string GetSystem(LanguageOptions languageOptions, GoogleAIOptions googleAIOptions)
         => $$"""
         あなたは{{CultureInfo.GetCultureInfo(languageOptions.Source).DisplayName}}のテキストを認識可能なOCR（光学文字認識）を実行するAIです。
-        入力された複数の画像を、送信された順番（1番目、2番目、3番目...）に従って処理してください。
-        各画像からテキストを抽出し、以下の**厳密なJSON形式**で結果のみを出力してください。
+        入力は事前にOCRされた文字列配列とOCRすべき複数の画像のBase64エンコードされたデータです。
+        入力された文字列の順番と画像の順番は一致しており、各画像はその文字列に対応しています。
+        文字列配列のフォーマットは以下の通りです。
+
+        ```json
+        [
+          "[画像1の事前OCRの文字列]",
+          "[画像2の事前OCRの文字列]",
+          "[画像3の事前OCRの文字列]",
+          // ... 入力された文字列と画像の数だけオブジェクトが続く
+        ]
+        ```
+
+        複数の画像を、送信された順番（1番目、2番目、3番目...）に従って処理してください。
+        各画像からテキストを抽出し、以下のJSON形式で結果のみを出力してください。
 
         ```json
         [
@@ -43,7 +57,8 @@ public sealed class OcrCorrectFromImageFilter(
         ```
         `image_index` キーには、入力画像の順番（1から始まる整数）を出力してください。
         `ocr_text` キーには、認識されたテキストを出力してください。もしテキストが認識できなかった場合は、 空文字列を出力してください。
-        JSON配列の要素数は、入力された画像の枚数と必ず一致しなければならないことに注意してください。
+
+        出力される配列の数と順番は入力された文字列および画像の数と順番と一致する必要があります。
         """;
 
     protected override async ValueTask<IReadOnlyList<TextTarget>> GetQueueData(IEnumerable<TextRect> targets, FilterContext context)
@@ -67,9 +82,12 @@ public sealed class OcrCorrectFromImageFilter(
     protected override async Task CorrectCore(IReadOnlyList<TextTarget> texts, CancellationToken cancellationToken)
     {
         var sw = Stopwatch.StartNew();
-        await Parallel.ForEachAsync(texts.Chunk(5), cancellationToken, async (chunk, ct) =>
+        await Parallel.ForEachAsync(texts.Chunk(4), cancellationToken, async (chunk, ct) =>
         {
             var req = new GenerateContentRequest();
+            var original = chunk.Select(t => t.Original).ToArray();
+            var json = JsonSerializer.Serialize(original, DefaultSerializerOptions.GenerateObjectJsonOptions);
+            req.AddText(json);
             foreach (var (text, base64) in chunk)
             {
                 this.Cache.TryAdd(text, null);
@@ -82,7 +100,6 @@ public sealed class OcrCorrectFromImageFilter(
                     .ConfigureAwait(false) ?? [];
                 cancellationToken.ThrowIfCancellationRequested();
                 Array.Sort(corrected, (x, y) => x.ImageIndex - y.ImageIndex);
-                var original = chunk.Select(t => t.Original).ToArray();
                 for (var i = 0; i < original.Length; i++)
                 {
                     this.Cache[original[i]] = corrected[i].OcrText;
