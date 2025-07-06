@@ -160,6 +160,24 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         }
         
         /// <summary>
+        ///   Gemini 2.5 Flash に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Gemini25Flash {
+            get {
+                return ResourceManager.GetString("Gemini25Flash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Gemini 2.5 Pro に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Gemini25Pro {
+            get {
+                return ResourceManager.GetString("Gemini25Pro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   用語集パス に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string GlossaryPath {

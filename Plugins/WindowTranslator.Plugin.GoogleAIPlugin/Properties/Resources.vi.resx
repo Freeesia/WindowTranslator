@@ -174,4 +174,10 @@
   <data name="WaitCorrect" xml:space="preserve">
     <value />
   </data>
+  <data name="Gemini25Flash" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Gemini25Pro" xml:space="preserve">
+    <value />
+  </data>
 </root>
