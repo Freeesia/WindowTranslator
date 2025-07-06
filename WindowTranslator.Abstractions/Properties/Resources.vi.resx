@@ -166,12 +166,12 @@
     <value>người khác</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
+    <value>Chức năng bộ đệm</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
+    <value>Hiệu chỉnh lỗi nhận dạng</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
+    <value>Ngăn chặn rung động</value>
   </data>
 </root>
