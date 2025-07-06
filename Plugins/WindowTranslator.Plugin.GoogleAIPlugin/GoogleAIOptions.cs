@@ -81,13 +81,13 @@ public class GoogleAIValidator : ITargetSettingsValidator
             return ValueTask.FromResult(ValidateResult.Valid);
         }
 
-        return ValueTask.FromResult(ValidateResult.Invalid("GoogleAI", """
-            翻訳モジュールにGoogleAIが選択もしくは認識補正が有効化されています。
+        return ValueTask.FromResult(ValidateResult.Invalid("Gemini", """
+            翻訳モジュールに「Gemini翻訳」が選択もしくは認識補正が有効化されています。
             
-            GoogleAIの利用にはAPIキーが必要です。
-            「対象ごとの設定」→「GoogleAIOptions」タブのAPIキーを設定してください。
+            Geminiの利用にはAPIキーが必要です。
+            「対象ごとの設定」→「Gemini設定」タブのAPIキーを設定してください。
 
-            APIキーはGoogleAIの[APIキーページ](https://aistudio.google.com/app/apikey)から取得できます。
+            APIキーはGeminiの[APIキーページ](https://aistudio.google.com/app/apikey)から取得できます。
             """));
     }
 }
