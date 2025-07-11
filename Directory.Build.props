@@ -7,6 +7,7 @@
     <NeutralLanguage>ja-JP</NeutralLanguage>
     <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>Freesia</Authors>
