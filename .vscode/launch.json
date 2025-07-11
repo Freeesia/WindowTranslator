@@ -24,6 +24,17 @@
             "preLaunchTask": "build",
         },
         {
+            "name": ".NET Core Launch (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build:linux",
+            "program": "${workspaceFolder}/WindowTranslator.Linux/bin/Debug/WindowTranslator.Linux.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/WindowTranslator",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
