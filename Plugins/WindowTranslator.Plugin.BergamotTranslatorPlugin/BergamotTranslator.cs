@@ -52,7 +52,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         var translated = new string[srcTexts.Length];
         for (var i = 0; i < srcTexts.Length; i++)
         {
-            translated[i] = this.service.Translate(srcTexts[i].Text);
+            translated[i] = this.service.Translate(srcTexts[i].SourceText);
         }
         return translated;
     }

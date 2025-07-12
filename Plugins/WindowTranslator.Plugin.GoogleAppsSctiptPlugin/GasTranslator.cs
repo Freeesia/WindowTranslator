@@ -58,7 +58,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
                 }
                 this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
             }
-            var req = new TranslateRequest([.. srcTexts.Select(t => t.Text)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
+            var req = new TranslateRequest([.. srcTexts.Select(t => t.SourceText)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
             var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
             if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
             {
