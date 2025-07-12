@@ -9,7 +9,7 @@
     xmlns:pt="http://propertytools.org/wpf"
     xmlns:root="clr-namespace:WindowTranslator"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="{Binding Title}"
+    Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
     Width="800"
     Height="720"
     d:DataContext="{d:DesignInstance {x:Type local:AllSettingsViewModel}}"
@@ -34,7 +34,7 @@
     <Grid>
         <DockPanel>
             <ui:TitleBar
-                Title="{Binding Title}"
+                Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
                 DockPanel.Dock="Top"
                 ShowMinimize="False">
                 <ui:TitleBar.Icon>

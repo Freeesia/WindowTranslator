@@ -35,6 +35,10 @@ public partial class AppInfo
     public Uri Mond { get; } = new("https://mond.how/ja/WindowTrans");
 
     [Category("Address")]
+    [Description("Freesia")]
+    public Uri Steam { get; } = new("https://steamcommunity.com/profiles/76561198182917794/");
+
+    [Category("Address")]
     [Description("Wishlist")]
     public Uri SteamWishlist { get; } = new("https://steamcommunity.com/profiles/76561198182917794/wishlist/");
 
