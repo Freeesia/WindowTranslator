@@ -36,7 +36,7 @@ public partial class AppInfo
 
     [Category("Address")]
     [Description("Wishlist")]
-    public Uri SteamWishlist { get; } = new("https://steamcommunity.com/id/Freesia/wishlist/");
+    public Uri SteamWishlist { get; } = new("https://steamcommunity.com/profiles/76561198182917794/wishlist/");
 
     [Category("Develop")]
     [Description("MIT License")]
