@@ -38,6 +38,7 @@
                                 <Border
                                     MinWidth="{Binding Width}"
                                     MinHeight="{Binding Height}"
+                                    MaxWidth="{Binding MaxWidth}"
                                     Padding="2"
                                     Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                     BorderBrush="#40000000"
@@ -94,7 +95,6 @@
                                     </Border.Resources>
                                     <Border.RenderTransform>
                                         <TransformGroup>
-                                            <ScaleTransform ScaleY="1.1" />
                                             <RotateTransform Angle="{Binding Angle}" />
                                         </TransformGroup>
                                     </Border.RenderTransform>
