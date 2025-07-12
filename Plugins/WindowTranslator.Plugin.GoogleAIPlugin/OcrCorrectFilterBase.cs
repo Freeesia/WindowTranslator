@@ -74,14 +74,14 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
         // 全てのテキストを収集し、キャッシュを確認
         await foreach (var text in texts.ConfigureAwait(false))
         {
-            if (!this.Cache.TryGetValue(text.Text, out var corrected))
+            if (!this.Cache.TryGetValue(text.SourceText, out var corrected))
             {
                 targets.Add(text);
             }
             // キャッシュに存在する場合は、補正済みのテキストを返す
             if (corrected is not null)
             {
-                yield return text.Text != corrected ? text with { Text = corrected } : text;
+                yield return text.SourceText != corrected ? text with { SourceText = corrected } : text;
             }
             // WaitCorrectが無効な場合は、補正を待たずにそのまま返す
             else if (!this.waitCorrect)
@@ -103,8 +103,8 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
                 foreach (var text in targets)
                 {
                     // キャッシュに必ず存在するはずだけど、念のためなかったらそのまま返す
-                    yield return this.Cache.TryGetValue(text.Text, out var corrected) && corrected is not null && text.Text != corrected
-                        ? (text with { Text = corrected })
+                    yield return this.Cache.TryGetValue(text.SourceText, out var corrected) && corrected is not null && text.SourceText != corrected
+                        ? (text with { SourceText = corrected })
                         : text;
                 }
             }

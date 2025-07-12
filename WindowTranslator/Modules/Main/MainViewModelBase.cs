@@ -136,7 +136,7 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
         texts = await this.color.ConvertColorAsync(sbmp, texts);
-        
+
         // 外接矩形が既存の矩形に被っていない物だけ先に追加
         foreach (var newText in texts)
         {
@@ -147,7 +147,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 this.OcrTexts.Add(newText);
             }
         }
-        
+
         var context = new FilterContext()
         {
             SoftwareBitmap = sbmp,
@@ -163,7 +163,11 @@ public abstract partial class MainViewModelBase : IDisposable
             texts = await tmp.ToArrayAsync();
         }
         TranslateAsync(texts).Forget();
-        texts = texts.Select(t => t.IsTranslated ? t : t with { IsTranslated = this.cache.Contains(t.Text), Text = this.cache.Get(t.Text) }).ToArray();
+        texts = texts.Select(t => t switch
+        {
+            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+            _ => t,
+        }).ToArray();
         {
             var tmp = texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderBy(f => f.Priority))
@@ -202,8 +206,8 @@ public abstract partial class MainViewModelBase : IDisposable
                 return;
             }
             requests = requests
-                .Where(t => !t.IsTranslated)
-                .Where(t => !this.cache.Contains(t.Text))
+                .Where(t => t.TranslatedText is null)
+                .Where(t => !this.cache.Contains(t.SourceText))
                 .ToArray();
             if (!requests.Any())
             {
@@ -217,7 +221,7 @@ public abstract partial class MainViewModelBase : IDisposable
             }
             this.logger.LogDebug("Translate");
             var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
-            this.cache.AddRange(requests.Select(t => t.Text).Zip(translated));
+            this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {

@@ -124,9 +124,9 @@ public sealed partial class WindowsMediaOcr(
         return results.Select(r => ToTextRect(r, this.scale, angle))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
-            .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
+            .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
             // 全部数字なら対象外
-            .Where(w => !AllSymbolOrSpace().IsMatch(w.Text))
+            .Where(w => !AllSymbolOrSpace().IsMatch(w.SourceText))
             .ToArray();
     }
 
@@ -146,7 +146,7 @@ public sealed partial class WindowsMediaOcr(
         }
 
         var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
-        var (text, x, y, w, _, _, _, _, _, _) = rect;
+        var (text, x, y, w, _, _, _, _, _) = rect;
 
         // y座標が近く、x間隔が近い場合にマージできる
         var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
@@ -206,13 +206,13 @@ public sealed partial class WindowsMediaOcr(
         {
             this.lang = lang;
             this.text = new(CreateText, LazyThreadSafetyMode.None);
-            (_, X, Y, Width, Height, FontSize, _, _, _, _) = rect;
+            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
             this.rects = [rect];
         }
 
         public void Merge(TextRect rect)
         {
-            var (_, x, y, width, height, _, _, _, _, _) = rect;
+            var (_, x, y, width, height, _, _, _, _) = rect;
             this.rects.Add(rect);
             var x1 = Math.Min(X, x);
             var y1 = Math.Min(Y, y);
@@ -228,10 +228,10 @@ public sealed partial class WindowsMediaOcr(
 
         private string CreateText()
         {
-            var builder = new StringBuilder(this.Rects.Sum(r => r.Text.Length + 1));
+            var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
             foreach (var rect in this.Rects.OrderBy(r => (int)((r.Y - this.Y) / this.FontSize)).ThenBy(r => r.X))
             {
-                builder.Append(rect.Text);
+                builder.Append(rect.SourceText);
                 if (IsSpaceLang(this.lang))
                 {
                     builder.Append(' ');

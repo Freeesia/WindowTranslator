@@ -121,9 +121,9 @@ public class OneOcr : IOcrModule
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い
             // (特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語))
-            .Where(r => IsSpecialLang(this.source) || r.Text.Length > 2)
+            .Where(r => IsSpecialLang(this.source) || r.SourceText.Length > 2)
             // 全部数字なら対象外
-            .Where(r => !AllSymbolOrSpace().IsMatch(r.Text))
+            .Where(r => !AllSymbolOrSpace().IsMatch(r.SourceText))
             // 若干太らせる
             .Select(r => r with { Width = r.Width + (fat * 2), X = r.X - fat, Y = r.Y - (r.Height * 0.04) })
             .ToArray();
@@ -227,7 +227,7 @@ public class OneOcr : IOcrModule
         var sw = Stopwatch.StartNew();
 
         // 空のリストや無効なテキストの場合は処理しない
-        var rects = textRects.Where(r => !string.IsNullOrEmpty(r.Text)).ToArray();
+        var rects = textRects.Where(r => !string.IsNullOrEmpty(r.SourceText)).ToArray();
         if (rects.Length == 0)
         {
             return Array.Empty<TextRect>();
@@ -299,7 +299,7 @@ public class OneOcr : IOcrModule
         }
 
         var fontSize = (temp.FontSize + rect.FontSize) / 2;
-        var (text, x, y, w, _, _, _, _, _, _) = rect;
+        var (text, x, y, w, _, _, _, _, _) = rect;
 
         // y座標が近く、x間隔が近い場合にマージできる（横方向の結合）
         var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
@@ -390,14 +390,14 @@ public class OneOcr : IOcrModule
         {
             get
             {
-                var builder = new StringBuilder(this.Rects.Sum(r => r.Text.Length + 1));
+                var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
 
                 // Y座標でソートしてから、同じY座標内ではX座標でソート
                 foreach (var rect in this.Rects
                     .OrderBy(r => (int)((r.Y - this.Y) / this.FontSize))
                     .ThenBy(r => r.X))
                 {
-                    builder.Append(rect.Text);
+                    builder.Append(rect.SourceText);
                     builder.Append(' ');
                 }
 
@@ -413,13 +413,13 @@ public class OneOcr : IOcrModule
 
         public TextRectMerger(TextRect rect)
         {
-            (_, X, Y, Width, Height, FontSize, _, _, _, _) = rect;
+            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
             this.rects = [rect];
         }
 
         public void Merge(TextRect rect)
         {
-            var (_, x, y, width, height, _, _, _, _, _) = rect;
+            var (_, x, y, width, height, _, _, _, _) = rect;
             this.rects.Add(rect);
 
             // 新しい境界を計算

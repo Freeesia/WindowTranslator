@@ -55,14 +55,14 @@ public class DeepLTranslator : ITranslateModule
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
-        var translated = srcTexts.Select(t => t.Text).ToArray();
+        var translated = srcTexts.Select(t => t.SourceText).ToArray();
         this.logger.LogDebug($"Translating {srcTexts.Length} texts.");
         var sw = Stopwatch.StartNew();
         var glossaryId = await this.glossaryId.AsValueTask().ConfigureAwait(false);
         await Parallel.ForEachAsync(srcTexts.GroupBy(t => t.Context).ToAsyncEnumerable(), async (g, ct) =>
         {
             var context = string.Join('\n', this.context, g.Key);
-            var srcs = g.Select(t => t.Text).ToArray();
+            var srcs = g.Select(t => t.SourceText).ToArray();
             var results = await translator.TranslateTextAsync(srcs, this.sourceLang, this.targetLang, new() { Context = context, GlossaryId = glossaryId }, ct)
                 .ConfigureAwait(false);
             foreach (var (s, t) in srcs.Zip(results))

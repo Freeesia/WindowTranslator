@@ -125,7 +125,7 @@ public sealed class OcrCorrectFromImageFilter(
             var r = rect.ToRect();
             r.Inflate((int)(r.Width * 0.1), (int)(r.Height * 0.1));
             r.Intersect(max);
-            list.Add(new(rect.Text, await context.SoftwareBitmap.EncodeToJpegBytes(r).ConfigureAwait(false)));
+            list.Add(new(rect.SourceText, await context.SoftwareBitmap.EncodeToJpegBytes(r).ConfigureAwait(false)));
         }
         this.Logger.LogDebug($"Image to CropedBase64: {sw.Elapsed}");
         return list;

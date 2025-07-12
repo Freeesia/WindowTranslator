@@ -143,7 +143,7 @@ static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogg
         var croppedImageData = await bitmap.EncodeToJpegBytes(rect);
         await File.WriteAllBytesAsync(outputPath, croppedImageData);
 
-        Console.WriteLine($"切り抜き画像を保存しました: {outputFileName} (テキスト: \"{textRect.Text}\")");
+        Console.WriteLine($"切り抜き画像を保存しました: {outputFileName} (テキスト: \"{textRect.SourceText}\")");
         index++;
     }
 
