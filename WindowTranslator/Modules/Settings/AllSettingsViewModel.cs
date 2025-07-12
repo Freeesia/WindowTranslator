@@ -203,13 +203,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         => !string.IsNullOrEmpty(item?.Name);
 
     [RelayCommand]
-    public static void OpenThirdPartyLicenses()
-    {
-        var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
-        Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
-    }
-
-    [RelayCommand]
     public async Task SaveAsync(object window)
     {
         using var b = EnterBusy();

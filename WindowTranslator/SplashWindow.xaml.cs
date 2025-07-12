@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using WindowTranslator.ComponentModel;
 
@@ -17,6 +19,7 @@ public partial class SplashWindow : Window
         var t = new Thread(_ =>
         {
             w = new SplashWindow();
+            w.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
             w.Closed += (_, _) =>
             {
                 w.Dispatcher.BeginInvokeShutdown(DispatcherPriority.SystemIdle);
