@@ -32,6 +32,11 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     public double Angle { get; init; }
 
     /// <summary>
+    /// 最大幅
+    /// </summary>
+    public double MaxWidth { get; init; } = double.NaN;
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="text">テキスト</param>
@@ -50,11 +55,11 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     /// 回転を考慮した境界ボックスを計算する
     /// </summary>
     /// <returns>回転を考慮した境界ボックス (X, Y, Width, Height)</returns>
-    public (double X, double Y, double Width, double Height) GetRotatedBoundingBox()
+    public RectInfo GetRotatedBoundingBox()
     {
         if (Math.Abs(Angle) < 1e-10)
         {
-            return (X, Y, Width, Height);
+            return new(X, Y, Width, Height);
         }
 
         var angleRadians = Angle * Math.PI / 180.0;
@@ -91,7 +96,7 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
             if (y > maxY) maxY = y;
         }
 
-        return (minX, minY, maxX - minX, maxY - minY);
+        return new(minX, minY, maxX - minX, maxY - minY);
     }
 
     /// <summary>
@@ -100,17 +105,56 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     /// <param name="other">比較対象のTextRect</param>
     /// <returns>重なっている場合はtrue、そうでなければfalse</returns>
     public bool OverlapsWith(TextRect other)
-    {
-        // 自身の回転を考慮した境界ボックスを取得
-        var (x1, y1, w1, h1) = GetRotatedBoundingBox();
-        
-        // 相手の回転を考慮した境界ボックスを取得
-        var (x2, y2, w2, h2) = other.GetRotatedBoundingBox();
-
-        // 矩形の重なり判定
-        return !(x1 + w1 <= x2 || x2 + w2 <= x1 || y1 + h1 <= y2 || y2 + h2 <= y1);
-    }
+        => GetRotatedBoundingBox().OverlapsWith(other.GetRotatedBoundingBox());
 };
+
+/// <summary>
+/// 矩形情報
+/// </summary>
+/// <param name="X">X位置（左上角のX座標）</param>
+/// <param name="Y">Y位置（左上角のY座標）</param>
+/// <param name="Width">幅</param>
+/// <param name="Height">高さ</param>
+public readonly record struct RectInfo(double X, double Y, double Width, double Height)
+{
+    /// <summary>
+    /// 空の矩形
+    /// </summary>
+    public static readonly RectInfo Empty = new(0, 0, 0, 0);
+
+    /// <summary>
+    /// 矩形が空かどうか
+    /// </summary>
+    public bool IsEmpty => Width <= 0 || Height <= 0;
+
+    /// <summary>
+    /// 矩形の上端のY座標
+    /// </summary>
+    public double Top => Y;
+
+    /// <summary>
+    /// 矩形の下端のY座標
+    /// </summary>
+    public double Bottom => Y + Height;
+
+    /// <summary>
+    /// 矩形の左端のX座標
+    /// </summary>
+    public double Left => X;
+
+    /// <summary>
+    /// 矩形の右端のX座標
+    /// </summary>
+    public double Right => X + Width;
+
+    /// <summary>
+    /// 矩形の重なり判定
+    /// </summary>
+    /// <param name="other">比較対象</param>
+    /// <returns>重なっている場合はtrue、そうでなければfalse</returns>
+    public bool OverlapsWith(RectInfo other) =>
+        !(Right <= other.Left || other.Right <= Left || Bottom <= other.Top || other.Bottom <= Top);
+}
 
 /// <summary>
 /// 翻訳テキストの矩形情報

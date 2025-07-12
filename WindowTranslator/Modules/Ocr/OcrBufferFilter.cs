@@ -16,6 +16,8 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
     private readonly bool isSuppressVibe = options.Value.IsSuppressVibe;
     private readonly bool isEnableRecover = options.Value.IsEnableRecover;
 
+    public double Priority => FilterPriority.OcrBufferFilter;
+
     public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
         if (this.bufferSize <= 0)
