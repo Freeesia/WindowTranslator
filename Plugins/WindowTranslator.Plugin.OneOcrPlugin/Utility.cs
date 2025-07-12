@@ -25,7 +25,12 @@ static class Utility
             return null;
         }
         var path = await p.StandardOutput.ReadToEndAsync();
-        return path.Trim();
+        path = path.Trim();
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+        return path;
     }
 
     public static async ValueTask<string?> FindOneOcrPath()
@@ -33,9 +38,13 @@ static class Utility
         var scketch = await GetInstallLocation("Microsoft.ScreenSketch").ConfigureAwait(false);
         if (!string.IsNullOrEmpty(scketch))
         {
-            return Path.Combine(scketch, "SnippingTool");
+            var path = Path.Combine(scketch, "SnippingTool");
+            if (File.Exists(Path.Combine(path, OneOcrDll)))
+            {
+                return path;
+            }
         }
-        return await GetInstallLocation("Microsoft.Photos").ConfigureAwait(false);
+        return await GetInstallLocation("Microsoft.Windows.Photos").ConfigureAwait(false);
     }
 
     public static bool NeedCopyDll()
