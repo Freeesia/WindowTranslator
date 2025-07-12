@@ -118,7 +118,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            selected = new TargetSettingsViewModel(target, sp, new(), ocrModules, translateModules, cacheModules);
+            selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
             this.Targets.Add(selected);
         }
         if (!string.IsNullOrEmpty(target))
