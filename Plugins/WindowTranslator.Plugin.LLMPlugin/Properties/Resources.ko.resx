@@ -157,6 +157,6 @@
     <value>ChatGPT API 번역</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
-    <value>補正が完了してから翻訳を行う</value>
+    <value>보정 완료 후 번역하기</value>
   </data>
 </root>
