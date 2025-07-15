@@ -1,8 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:WindowTranslator.Behaviors"
     xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:data="clr-namespace:WindowTranslator.Data"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:root="clr-namespace:WindowTranslator;assembly=WindowTranslator.Abstractions"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
     <ResourceDictionary.MergedDictionaries>
@@ -56,7 +58,11 @@
                                                         FontSize="{Binding FontSize}"
                                                         Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                                         Text="{Binding Text}"
-                                                        TextWrapping="Wrap" />
+                                                        TextWrapping="Wrap">
+                                                        <i:Interaction.Behaviors>
+                                                            <b:FontSizeToOffsetYBehavior />
+                                                        </i:Interaction.Behaviors>
+                                                    </TextBlock>
                                                 </DataTemplate>
                                             </data:BoolToDataTemplateConverter.TrueContent>
                                             <data:BoolToDataTemplateConverter.FalseContent>
