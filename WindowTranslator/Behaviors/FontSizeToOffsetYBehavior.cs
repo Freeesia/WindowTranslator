@@ -26,9 +26,7 @@ public sealed class FontSizeToOffsetYBehavior : Behavior<TextBlock>
         {
             return;
         }
-        double baseline = glyph.Baseline * this.AssociatedObject.FontSize;
-        double capHeight = glyph.CapsHeight * this.AssociatedObject.FontSize;
-        double offsetY = -(baseline - capHeight);
+        var offsetY = -(glyph.Height - glyph.Baseline) * this.AssociatedObject.FontSize * 0.9;
         this.AssociatedObject.SetCurrentValue(FrameworkElement.MarginProperty, new Thickness(0, offsetY, 0, 0));
     }
 }
