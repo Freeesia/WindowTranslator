@@ -65,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.Col
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Linux", "WindowTranslator.Linux\WindowTranslator.Linux.csproj", "{DD8DCC83-7BB7-4863-8967-E84888492E17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Macos", "WindowTranslator.Macos\WindowTranslator.Macos.csproj", "{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -319,6 +321,18 @@ Global
 		{DD8DCC83-7BB7-4863-8967-E84888492E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD8DCC83-7BB7-4863-8967-E84888492E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD8DCC83-7BB7-4863-8967-E84888492E17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Debug|x64.Build.0 = Debug|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Debug|x86.Build.0 = Debug|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Release|x64.ActiveCfg = Release|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Release|x64.Build.0 = Release|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Release|x86.ActiveCfg = Release|Any CPU
+		{6E7FBDEB-EC4B-40A5-8289-DA418EA07984}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

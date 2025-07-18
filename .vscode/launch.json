@@ -35,6 +35,17 @@
             "stopAtEntry": false
         },
         {
+            "name": ".NET Core Launch (Macos)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build:macos",
+            "program": "${workspaceFolder}/WindowTranslator.Macos/bin/Debug/WindowTranslator.Macos.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/WindowTranslator",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
