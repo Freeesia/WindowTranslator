@@ -25,7 +25,7 @@
                                 FalseValue="0.5"
                                 TrueValue="1.0" />
                             <data:SizeToCornerRadiusConverter
-                                x:Key="sizeToCornerRadiusConverter"
+                                x:Key="s2crConv"
                                 MaxValue="10"
                                 MinValue="2"
                                 ScaleFactor="0.15" />
@@ -46,7 +46,7 @@
                                     BorderBrush="#40000000"
                                     BorderThickness="2"
                                     ClipToBounds="True"
-                                    CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource sizeToCornerRadiusConverter}}"
+                                    CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource s2crConv}}"
                                     Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}">
                                     <Border.Resources>
                                         <data:BoolToDataTemplateConverter x:Key="b2dtConv">
