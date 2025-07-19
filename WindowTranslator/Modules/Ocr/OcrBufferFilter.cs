@@ -86,7 +86,7 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
                     !finalBuffered.Any(existing => Intersects(existing, buf)))
                 {
                     finalBuffered.Add(buf);
-                    this.logger.LogDebug($"Buffered: {buf.Text}");
+                    this.logger.LogDebug($"Buffered: {buf.SourceText}");
                     yield return buf;
                 }
             }
@@ -109,8 +109,8 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
     private static bool AreSimilar(TextRect rect1, TextRect rect2, Size threshold)
     {
         // テキストの一致率が80%未満なら別扱い
-        var p = 1 - ((float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
-            / Math.Max(rect1.Text.Length, rect2.Text.Length));
+        var p = 1 - ((float)Levenshtein.GetDistance(rect1.SourceText, rect2.SourceText, CalculationOptions.DefaultWithThreading)
+            / Math.Max(rect1.SourceText.Length, rect2.SourceText.Length));
 
         if (p < 0.8)
         {
