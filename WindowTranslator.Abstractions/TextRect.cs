@@ -102,6 +102,7 @@ public record TextRect(string SourceText, double X, double Y, double Width, doub
     /// <returns>重なっている場合はtrue、そうでなければfalse</returns>
     public bool OverlapsWith(TextRect other)
         => GetRotatedBoundingBox().OverlapsWith(other.GetRotatedBoundingBox());
+}
 
 /// <summary>
 /// 矩形情報
