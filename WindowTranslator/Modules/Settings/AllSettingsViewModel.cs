@@ -88,6 +88,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<TargetSettingsViewModel> Targets { get; }
 
+    public bool TargetMode => !string.IsNullOrEmpty(this.target);
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
@@ -292,7 +294,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
-        await this.presentationService.CloseDialogAsync(true, window);
+        if (!this.TargetMode)
+        {
+            await this.presentationService.CloseDialogAsync(true, window);
+        }
     }
 
     private DisposeAction EnterBusy()

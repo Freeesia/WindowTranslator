@@ -178,6 +178,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   閉じる に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   デタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Detach {
@@ -453,6 +462,15 @@ namespace WindowTranslator.Properties {
         public static string PublishPage {
             get {
                 return ResourceManager.GetString("PublishPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   保存 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
             }
         }
         
