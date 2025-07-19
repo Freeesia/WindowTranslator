@@ -3,21 +3,14 @@ using System.Windows.Data;
 
 namespace WindowTranslator.Data;
 
-[ValueConversion(typeof(bool), typeof(double))]
-public class BoolToDoubleConverter : IValueConverter
+[ValueConversion(typeof(object), typeof(double))]
+public class NullToDoubleConverter : IValueConverter
 {
-    public double TrueValue { get; set; }
-    public double FalseValue { get; set; }
+    public double NullValue { get; set; }
+    public double NotNullValue { get; set; }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is bool boolValue)
-        {
-            return boolValue ? TrueValue : FalseValue;
-        }
-
-        return FalseValue;
-    }
+        => value is null ? NullValue : NotNullValue;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotSupportedException();

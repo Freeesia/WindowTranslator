@@ -5,10 +5,7 @@ namespace WindowTranslator;
 /// <summary>
 /// 翻訳テキストの矩形情報
 /// </summary>
-/// <param name="Text">
-/// テキスト
-/// <paramref name="IsTranslated"/> が true の場合は翻訳後のテキスト
-/// </param>
+/// <param name="SourceText">翻訳前テキスト</param>
 /// <param name="X">X位置（左上角のX座標）</param>
 /// <param name="Y">Y位置（左上角のY座標）</param>
 /// <param name="Width">幅</param>
@@ -17,9 +14,8 @@ namespace WindowTranslator;
 /// <param name="MultiLine">複数行かどうか</param>
 /// <param name="Foreground">文字色</param>
 /// <param name="Background">背景色</param>
-/// <param name="IsTranslated"><paramref name="Text"/>が翻訳後のテキストかどうか</param>
-public record TextRect(string Text, double X, double Y, double Width, double Height, double FontSize, bool MultiLine, Color Foreground, Color Background, bool IsTranslated = false)
-    : TextInfo(Text, IsTranslated)
+public record TextRect(string SourceText, double X, double Y, double Width, double Height, double FontSize, bool MultiLine, Color Foreground, Color Background)
+    : TextInfo(SourceText, null)
 {
     /// <summary>
     /// 空
@@ -106,7 +102,6 @@ public record TextRect(string Text, double X, double Y, double Width, double Hei
     /// <returns>重なっている場合はtrue、そうでなければfalse</returns>
     public bool OverlapsWith(TextRect other)
         => GetRotatedBoundingBox().OverlapsWith(other.GetRotatedBoundingBox());
-};
 
 /// <summary>
 /// 矩形情報
@@ -159,12 +154,9 @@ public readonly record struct RectInfo(double X, double Y, double Width, double 
 /// <summary>
 /// 翻訳テキストの矩形情報
 /// </summary>
-/// <param name="Text">
-/// テキスト
-/// <paramref name="IsTranslated"/> が true の場合は翻訳後のテキスト
-/// </param>
-/// <param name="IsTranslated"><paramref name="Text"/>が翻訳後のテキストかどうか</param>
-public record TextInfo(string Text, bool IsTranslated = false)
+/// <param name="SourceText">翻訳前のテキスト</param>
+/// <param name="TranslatedText">翻訳後のテキスト</param>
+public record TextInfo(string SourceText, string? TranslatedText)
 {
     /// <summary>
     /// このテキストの文脈

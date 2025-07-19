@@ -86,8 +86,8 @@ public class GoogleAITranslator : ITranslateModule
         {
             throw new InvalidOperationException("Gemini機能が初期化されていません。設定ダイアログからGoogleAIオプションを設定してください");
         }
-        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.Text.Contains(kv.Key))).ToArray();
-        var common = this.common.Where(c => srcTexts.Any(s => s.Text.Contains(c))).ToArray();
+        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
+        var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
         var sb = new StringBuilder();
         if (glossary.Length > 0)
         {
@@ -111,7 +111,7 @@ public class GoogleAITranslator : ITranslateModule
         }
 
         var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
-        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), DefaultSerializerOptions.GenerateObjectJsonOptions);
+        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.SourceText, s.Context }).ToArray(), DefaultSerializerOptions.GenerateObjectJsonOptions);
         this.logger.LogDebug($"""
             System:
             {system}

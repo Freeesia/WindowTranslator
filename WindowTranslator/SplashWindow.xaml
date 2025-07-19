@@ -24,12 +24,12 @@
                 Canvas.Top="4"
                 Canvas.Right="32"
                 FontSize="18"
-                Text="{x:Static local:AppInfo.Title}" />
+                Text="{Binding Title, Source={x:Static local:AppInfo.Instance}}" />
             <TextBlock
                 Canvas.Right="32"
                 Canvas.Bottom="4"
                 FontSize="18"
-                Text="{Binding Source={x:Static local:AppInfo.BuildDate}, StringFormat=Build: {0}}" />
+                Text="{Binding BuildDate, Source={x:Static local:AppInfo.Instance}, StringFormat=Build: {0}}" />
         </Canvas>
     </Grid>
 </Window>

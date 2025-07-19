@@ -15,7 +15,7 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
     }
 
     protected override string GetLocalizedString(string key, Type declaringType)
-        => declaringType.GetResourceManager()?.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
+        => declaringType?.GetResourceManager()?.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
 
     protected override IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
     {

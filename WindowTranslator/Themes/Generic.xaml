@@ -20,10 +20,10 @@
                         Height="{TemplateBinding RectHeight}"
                         ItemsSource="{TemplateBinding Texts}">
                         <ItemsControl.Resources>
-                            <data:BoolToDoubleConverter
-                                x:Key="b2dConv"
-                                FalseValue="0.5"
-                                TrueValue="1.0" />
+                            <data:NullToDoubleConverter
+                                x:Key="n2dConv"
+                                NotNullValue="1.0"
+                                NullValue="0.5" />
                             <data:SizeToCornerRadiusConverter
                                 x:Key="s2crConv"
                                 MaxValue="10"
@@ -47,25 +47,25 @@
                                     BorderThickness="2"
                                     ClipToBounds="True"
                                     CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource s2crConv}}"
-                                    Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}">
+                                    Opacity="{Binding TranslatedText, Converter={StaticResource n2dConv}}">
                                     <Border.Resources>
-                                        <data:BoolToDataTemplateConverter x:Key="b2dtConv">
-                                            <data:BoolToDataTemplateConverter.TrueContent>
+                                        <data:NullToDataTemplateConverter x:Key="b2dtConv">
+                                            <data:NullToDataTemplateConverter.NotNullContent>
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <TextBlock
                                                         Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
                                                         VerticalAlignment="Center"
                                                         FontSize="{Binding FontSize}"
                                                         Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                                        Text="{Binding Text}"
+                                                        Text="{Binding TranslatedText}"
                                                         TextWrapping="Wrap">
                                                         <i:Interaction.Behaviors>
                                                             <b:FontSizeToOffsetYBehavior />
                                                         </i:Interaction.Behaviors>
                                                     </TextBlock>
                                                 </DataTemplate>
-                                            </data:BoolToDataTemplateConverter.TrueContent>
-                                            <data:BoolToDataTemplateConverter.FalseContent>
+                                            </data:NullToDataTemplateConverter.NotNullContent>
+                                            <data:NullToDataTemplateConverter.NullContent>
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <Viewbox
                                                         Width="{Binding Width}"
@@ -96,15 +96,15 @@
                                                         </Path>
                                                     </Viewbox>
                                                 </DataTemplate>
-                                            </data:BoolToDataTemplateConverter.FalseContent>
-                                        </data:BoolToDataTemplateConverter>
+                                            </data:NullToDataTemplateConverter.NullContent>
+                                        </data:NullToDataTemplateConverter>
                                     </Border.Resources>
                                     <Border.RenderTransform>
                                         <TransformGroup>
                                             <RotateTransform Angle="{Binding Angle}" />
                                         </TransformGroup>
                                     </Border.RenderTransform>
-                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
+                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding TranslatedText, Converter={StaticResource b2dtConv}}" />
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

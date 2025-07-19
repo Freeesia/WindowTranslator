@@ -19,6 +19,7 @@ using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -45,6 +46,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
+    private readonly IMainWindowModule mainWindowModule;
     private readonly IConfigurationRoot? rootConfig;
     private readonly string target;
     [ObservableProperty]
@@ -88,6 +90,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<TargetSettingsViewModel> Targets { get; }
 
+    public bool TargetMode => !string.IsNullOrEmpty(this.target);
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
@@ -98,6 +102,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
+        [Inject] IMainWindowModule mainWindowModule,
         string target)
     {
         var items = provider.GetPlugins();
@@ -118,7 +123,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            selected = new TargetSettingsViewModel(target, sp, new(), ocrModules, translateModules, cacheModules);
+            selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
             this.Targets.Add(selected);
         }
         if (!string.IsNullOrEmpty(target))
@@ -132,6 +137,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
         this.validators = validators;
+        this.mainWindowModule = mainWindowModule;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
@@ -201,13 +207,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public static bool CanDeleteTargetSetting(TargetSettingsViewModel item)
         => !string.IsNullOrEmpty(item?.Name);
-
-    [RelayCommand]
-    public static void OpenThirdPartyLicenses()
-    {
-        var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
-        Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
-    }
 
     [RelayCommand]
     public async Task SaveAsync(object window)
@@ -299,7 +298,18 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
-        await this.presentationService.CloseDialogAsync(true, window);
+        if (this.TargetMode)
+        {
+            foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
+            {
+                w.Close();
+                await this.mainWindowModule.OpenTargetAsync(handle, target);
+            }
+        }
+        else
+        {
+            await this.presentationService.CloseDialogAsync(true, window);
+        }
     }
 
     private DisposeAction EnterBusy()
