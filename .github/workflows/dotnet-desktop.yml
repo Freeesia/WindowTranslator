@@ -117,11 +117,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - uses: gittools/actions/gitversion/setup@v3.2.1
+      - uses: gittools/actions/gitversion/setup@v4.0.1
         with:
-          versionSpec: "5.x"
+          versionSpec: "6.x"
       - id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.2.1
+        uses: gittools/actions/gitversion/execute@v4.0.1
       - env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
@@ -131,7 +131,7 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
       - run: |
-          $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" }
+          $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" -and $_.Name -notmatch "Tests?" }
           for ($i = 0; $i -lt $folders.Count; $i++) {
             dotnet publish $folders[$i].FullName -c Release -o "publish\plugins\$($folders[$i].Name)" `
               -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `

@@ -5,10 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pt="http://propertytools.org/wpf"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:properties="clr-namespace:WindowTranslator.Properties"
-    Title="{Binding Title}"
+    xmlns:pt="http://propertytools.org/wpf"
+    xmlns:root="clr-namespace:WindowTranslator"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
     Width="800"
     Height="720"
     d:DataContext="{d:DesignInstance {x:Type local:AllSettingsViewModel}}"
@@ -27,11 +28,13 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="8" />
         </Style>
+        <local:SettingsPropertyGridFactory x:Key="factory" />
+        <local:SettingsPropertyGridOperator x:Key="operator" />
     </ui:FluentWindow.Resources>
     <Grid>
         <DockPanel>
             <ui:TitleBar
-                Title="{Binding Title}"
+                Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
                 DockPanel.Dock="Top"
                 ShowMinimize="False">
                 <ui:TitleBar.Icon>
@@ -194,10 +197,6 @@
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.TargetSpecificSettings}">
                     <Grid>
-                        <Grid.Resources>
-                            <local:SettingsPropertyGridFactory x:Key="factory" />
-                            <local:SettingsPropertyGridOperator x:Key="operator" />
-                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200" MinWidth="120" />
                             <ColumnDefinition Width="Auto" />
@@ -257,82 +256,20 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.About}">
-                    <GroupBox>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <Label
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.Version}" />
-                            <Label
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.BuildDate}" />
-                            <Label
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.DevelopedBy}" />
-                            <Label
-                                Grid.Row="3"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.PublishPage}" />
-                            <Label
-                                Grid.Row="4"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.License}" />
-
-                            <ui:TextBlock
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding Version}" />
-                            <ui:TextBlock
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding BuildDate}" />
-                            <ui:TextBlock
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding DevelopedBy}" />
-                            <pt:LinkBlock
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                NavigateUri="{Binding Link}"
-                                Text="{Binding Link}" />
-                            <ui:TextBlock
-                                Grid.Row="4"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding License}" />
-
-                            <ui:Button
-                                Grid.Row="5"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Command="{Binding OpenThirdPartyLicensesCommand}"
-                                Content="{x:Static properties:Resources.OpenThirdPartyLicensesCommand}" />
-                        </Grid>
-                    </GroupBox>
+                    <pt:PropertyGrid
+                        Grid.Column="2"
+                        Margin="8"
+                        ControlFactory="{StaticResource factory}"
+                        Operator="{StaticResource operator}"
+                        SelectedObject="{x:Static root:AppInfo.Instance}"
+                        TabVisibility="Collapsed">
+                        <pt:PropertyGrid.Resources>
+                            <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                <Setter Property="Padding" Value="4,8" />
+                            </Style>
+                            <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
+                        </pt:PropertyGrid.Resources>
+                    </pt:PropertyGrid>
                 </TabItem>
             </TabControl>
         </DockPanel>

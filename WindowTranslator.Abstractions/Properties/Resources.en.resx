@@ -160,9 +160,18 @@
     <value>Buffer size</value>
   </data>
   <data name="BasicOcrParam" xml:space="preserve">
-    <value />
+    <value>Basic OCR Setup</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Other</value>
+  </data>
+  <data name="Buffer" xml:space="preserve">
+    <value>Buffer function</value>
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value>Recognition error correction</value>
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value>Vibration suppression</value>
   </data>
 </root>

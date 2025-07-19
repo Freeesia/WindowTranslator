@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Composition.WindowsRuntimeHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using PInvoke;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -10,8 +9,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Graphics.Capture;
+using Windows.Win32.Foundation;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Modules.Startup;
 
@@ -151,19 +152,19 @@ public partial class StartupViewModel
 
     private static ProcessInfo? FindProcessByWindowTitle(string targetTitle)
     {
-        var hWnd = User32.FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, null);
+        var hWnd = FindWindowEx(HWND.Null, HWND.Null, null, null);
 
         while (hWnd != IntPtr.Zero)
         {
-            var windowTitle = User32.GetWindowText(hWnd);
+            var windowTitle = GetWindowText(hWnd);
             if (windowTitle == targetTitle)
             {
-                _ = User32.GetWindowThreadProcessId(hWnd, out var processId);
+                _ = GetWindowThreadProcessId(hWnd, out var processId);
                 var p = Process.GetProcessById(processId);
                 return new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
             }
 
-            hWnd = User32.FindWindowEx(IntPtr.Zero, hWnd, null, null);
+            hWnd = FindWindowEx(HWND.Null, hWnd, null, null);
         }
         return null;
     }

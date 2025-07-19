@@ -9,9 +9,9 @@ using Windows.Storage.Streams;
 using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.Modules.Ocr.Utility;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
-using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
@@ -121,7 +121,7 @@ public sealed partial class WindowsMediaOcr(
             workingBitmap.Dispose();
         }
 
-        return results.Select(r => ToTextRect(r, this.scale))
+        return results.Select(r => ToTextRect(r, this.scale, angle))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
@@ -255,7 +255,7 @@ public sealed partial class WindowsMediaOcr(
         }
     }
 
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale)
+    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale, double angle)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
@@ -278,7 +278,7 @@ public sealed partial class WindowsMediaOcr(
         height += fontSize * fat;
         y -= fontSize * fat * 1.5;
 
-        return new(text, x, y, width, height, fontSize, lines);
+        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
@@ -303,7 +303,7 @@ public sealed partial class WindowsMediaOcr(
         var y = words.Select(w => w.Y).Average();
         var width = words.Select(w => w.Right).Max() - words.Select(w => w.Left).Min();
         var height = words.Select(w => w.Bottom).Average() - words.Select(w => w.Top).Average();
-        return new(text, x, y, width, height, height, false);
+        return new(text, x, y, width, height, height, false) { Angle = angle };
     }
 
     /// <summary>

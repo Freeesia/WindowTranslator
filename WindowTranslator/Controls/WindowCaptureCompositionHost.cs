@@ -1,9 +1,7 @@
 ﻿using Composition.WindowsRuntimeHelpers;
-using PInvoke;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -11,7 +9,10 @@ using System.Windows.Interop;
 using Windows.Graphics;
 using Windows.Graphics.DirectX.Direct3D11;
 using Windows.UI.Composition;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WindowTranslator.Modules.Capture;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Controls;
 
@@ -126,7 +127,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
 
     public class CompositionHost(double height, double width) : HwndHost
     {
-        IntPtr hwndHost;
+        HWND hwndHost;
         private readonly int hostHeight = (int)height;
         private readonly int hostWidth = (int)width;
         CompositionTarget? compositionTarget;
@@ -150,17 +151,17 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            hwndHost = User32.CreateWindowEx(0, "static", "",
-                User32.WindowStyles.WS_CHILD | User32.WindowStyles.WS_VISIBLE,
+            hwndHost = CreateWindowEx(0, "static", "",
+                WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
                 0, 0,
                 hostWidth, hostHeight,
-                hwndParent.Handle,
-                IntPtr.Zero,
-                IntPtr.Zero,
+                (HWND)hwndParent.Handle,
+                null!,
+                null!,
                 IntPtr.Zero);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
-            User32.SetWindowPos(hwndHost, 1, 0, 0, 0, 0, User32.SetWindowPosFlags.SWP_NOMOVE | User32.SetWindowPosFlags.SWP_NOSIZE);
+            SetWindowPos(hwndHost, new(1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);
 
             // Build Composition Tree of content
             InitComposition(hwndHost);
@@ -172,7 +173,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
         {
             compositionTarget?.Root?.Dispose();
             compositionTarget?.Dispose();
-            User32.DestroyWindow(hwnd.Handle);
+            DestroyWindow((HWND)hwnd.Handle);
         }
 
         private void InitComposition(IntPtr hwndHost)

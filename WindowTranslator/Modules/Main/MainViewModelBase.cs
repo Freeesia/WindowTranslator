@@ -10,8 +10,6 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
-using WindowTranslator.Modules.Ocr;
-using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Stores;
 using MessageBoxImage = Kamishibai.MessageBoxImage;
 
@@ -132,10 +130,24 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
             return;
         }
+        texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
+        texts = await this.color.ConvertColorAsync(sbmp, texts);
+        
+        // 外接矩形が既存の矩形に被っていない物だけ先に追加
+        foreach (var newText in texts)
+        {
+            // 既存のOcrTexts要素との衝突をチェック
+            if (!this.OcrTexts.Any(newText.OverlapsWith))
+            {
+                // 被っていない場合のみ追加
+                this.OcrTexts.Add(newText);
+            }
+        }
+        
         var context = new FilterContext()
         {
             SoftwareBitmap = sbmp,
@@ -151,7 +163,6 @@ public abstract partial class MainViewModelBase : IDisposable
             texts = await tmp.ToArrayAsync();
         }
         TranslateAsync(texts).Forget();
-        texts = await this.color.ConvertColorAsync(sbmp, texts);
         texts = texts.Select(t => t.IsTranslated ? t : t with { IsTranslated = this.cache.Contains(t.Text), Text = this.cache.Get(t.Text) }).ToArray();
         {
             var tmp = texts.ToAsyncEnumerable();
@@ -162,15 +173,16 @@ public abstract partial class MainViewModelBase : IDisposable
             using var t = this.logger.LogDebugTime("PostTranslate");
             texts = await tmp.ToArrayAsync();
         }
-        var hash = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale }).ToHashSet();
-        foreach (var item in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
+
+        var hash = texts.ToHashSet();
+        foreach (var text in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
         {
-            this.OcrTexts.Remove(item);
+            this.OcrTexts.Remove(text);
         }
         hash.ExceptWith(this.OcrTexts);
-        foreach (var item in hash)
+        foreach (var text in hash)
         {
-            this.OcrTexts.Add(item);
+            this.OcrTexts.Add(text);
         }
     }
 
@@ -211,7 +223,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            this.presentationService.ShowMessage(e.Message, this.name, icon: MessageBoxImage.Error);
+            this.presentationService.ShowMessage(e.Message, $"{this.translator.Name} - {this.name}", icon: MessageBoxImage.Error);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
         finally

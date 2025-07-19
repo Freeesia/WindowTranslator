@@ -1,8 +1,11 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WindowTranslator.Stores;
-using static PInvoke.User32;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -30,8 +33,8 @@ public partial class CaptureMainWindow
 
     private void CheckTargetWindow()
     {
-        var windowInfo = WINDOWINFO.Create();
-        if (!GetWindowInfo(this.processInfo.MainWindowHandle, ref windowInfo))
+        var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
+        if (!GetWindowInfo((HWND)this.processInfo.MainWindowHandle, ref windowInfo))
         {
             this.Close();
             return;

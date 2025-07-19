@@ -70,6 +70,24 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   連絡先 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Address {
+            get {
+                return ResourceManager.GetString("Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   アプリ情報 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Application {
+            get {
+                return ResourceManager.GetString("Application", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Attach {
@@ -165,6 +183,15 @@ namespace WindowTranslator.Properties {
         public static string Detach {
             get {
                 return ResourceManager.GetString("Detach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   技術情報 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Develop {
+            get {
+                return ResourceManager.GetString("Develop", resourceCulture);
             }
         }
         
@@ -466,6 +493,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   Steamでゲームをギフト に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SteamWishlist {
+            get {
+                return ResourceManager.GetString("SteamWishlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   翻訳先(表示)言語 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Target {
@@ -489,6 +525,15 @@ namespace WindowTranslator.Properties {
         public static string TargetSpecificSettings {
             get {
                 return ResourceManager.GetString("TargetSpecificSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   アプリ名 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
         

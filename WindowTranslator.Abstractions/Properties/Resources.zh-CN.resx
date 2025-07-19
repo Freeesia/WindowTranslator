@@ -160,9 +160,18 @@
     <value>缓冲区大小</value>
   </data>
   <data name="BasicOcrParam" xml:space="preserve">
-    <value />
+    <value>基本 OCR 设置</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
+  </data>
+  <data name="Buffer" xml:space="preserve">
+    <value>缓冲功能</value>
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value>识别错误纠正</value>
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value>振动抑制</value>
   </data>
 </root>

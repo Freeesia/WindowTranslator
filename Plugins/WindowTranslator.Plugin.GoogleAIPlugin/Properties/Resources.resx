@@ -165,4 +165,19 @@
   <data name="CorrectMode" xml:space="preserve">
     <value>認識補正</value>
   </data>
+  <data name="GoogleAIOptions" xml:space="preserve">
+    <value>Gemini設定</value>
+  </data>
+  <data name="GoogleAITranslator" xml:space="preserve">
+    <value>Gemini翻訳</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>補正が完了してから翻訳を行う</value>
+  </data>
+  <data name="Gemini25Flash" xml:space="preserve">
+    <value>Gemini 2.5 Flash</value>
+  </data>
+  <data name="Gemini25Pro" xml:space="preserve">
+    <value>Gemini 2.5 Pro</value>
+  </data>
 </root>

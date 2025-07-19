@@ -26,6 +26,18 @@ public class InMemoryCache(ILogger<InMemoryCache> logger, IOptionsSnapshot<Cache
         var (cacheSrc, dst, distance) = this.cache
             .Select(p => (src: p.Key, dst: p.Value, distance: Levenshtein.GetDistance(src, p.Key, CalculationOptions.DefaultWithThreading)))
             .MinBy(p => p.distance);
+
+        // 元の文字列がキャッシュより長い場合は、文字アニメで伸びているかもなので、キャッシュ対象外
+        if (src.Length > cacheSrc.Length)
+        {
+            if (src.StartsWith(cacheSrc, StringComparison.OrdinalIgnoreCase))
+            {
+                // 伸びているテキストなら、短い方をキャッシュから削除する(揺れ防止のため)
+                this.cache.TryRemove(cacheSrc, out _);
+            }
+            return false;
+        }
+
         // 一致率の計算
         var p = 1 - ((float)distance / Math.Max(src.Length, cacheSrc.Length));
         this.logger.LogDebug($"LevenshteinDistance: {src} -> {cacheSrc} ({p:p2}%) [{DateTime.UtcNow - t}]");

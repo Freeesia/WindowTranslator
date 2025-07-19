@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,16 +20,33 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Main;
-using WindowTranslator.Modules.OverlayColor;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
+
+#if DEBUG
+var createdNew = true;
+#else
+using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+#endif
+if (!createdNew)
+{
+    new MessageDialog()
+    {
+        Caption = "WindowTranslator",
+        Icon = MessageBoxImage.Error,
+        Text = Resources.MutexError,
+    }.Show();
+    return;
+}
+var d = SplashWindow.Show();
+
 
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
@@ -48,7 +66,7 @@ TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
         => !t.IsGenericTypeDefinition
         && !t.IsAbstract
         && !t.IsInterface
-#if DEBUG
+#if !DEBUG
         && !CustomAttributeData.GetCustomAttributes(t).Any(a => a.AttributeType == typeof(ExperimentalAttribute))
 #endif
 });
@@ -111,21 +129,11 @@ builder.Services.AddSingleton<IGitHubClient>(_ =>
 });
 
 var app = builder.Build();
-#if DEBUG
-var createdNew = true;
-#else
-using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
-#endif
-if (!createdNew)
+app.Loaded += (_, e) =>
 {
-    new MessageDialog()
-    {
-        Caption = "WindowTranslator",
-        Icon = MessageBoxImage.Error,
-        Text = Resources.MutexError,
-    }.Show();
-    return;
-}
+    d.Dispose();
+    e.Window.Activate();
+};
 await app.RunAsync();
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)

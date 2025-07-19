@@ -8,6 +8,11 @@ namespace WindowTranslator.Modules;
 /// </summary>
 public interface IOcrModule
 {
+    /// <summary>
+    /// モジュール名
+    /// </summary>
+    public string Name => GetType().Name;
+
 #if WINDOWS
     /// <summary>
     /// 画像からテキストを認識する
@@ -78,7 +83,19 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// バッファサイズ
     /// </summary>
-    [Category("Misc")]
+    [Category("Buffer")]
     [Spinnable]
     public int BufferSize { get; set; } = 3;
+
+    /// <summary>
+    /// フォントサイズの振動を抑制する
+    /// </summary>
+    [Category("Buffer")]
+    public bool IsSuppressVibe { get; set; } = true;
+
+    /// <summary>
+    /// 復元を有効にするかどうか
+    /// </summary>
+    [Category("Buffer")]
+    public bool IsEnableRecover { get; set; } = true;
 }

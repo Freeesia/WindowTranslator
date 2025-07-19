@@ -160,9 +160,18 @@
     <value>Kích thước bộ đệm</value>
   </data>
   <data name="BasicOcrParam" xml:space="preserve">
-    <value />
+    <value>基本的なOCRの設定</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>người khác</value>
+  </data>
+  <data name="Buffer" xml:space="preserve">
+    <value>Chức năng bộ đệm</value>
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value>Hiệu chỉnh lỗi nhận dạng</value>
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value>Ngăn chặn rung động</value>
   </data>
 </root>

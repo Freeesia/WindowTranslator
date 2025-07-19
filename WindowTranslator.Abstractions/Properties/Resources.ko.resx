@@ -160,9 +160,18 @@
     <value>버퍼 크기</value>
   </data>
   <data name="BasicOcrParam" xml:space="preserve">
-    <value />
+    <value>기본 OCR 설정</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>기타</value>
+  </data>
+  <data name="Buffer" xml:space="preserve">
+    <value>버퍼 기능</value>
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value>인식 오류 보정</value>
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value>진동 억제</value>
   </data>
 </root>

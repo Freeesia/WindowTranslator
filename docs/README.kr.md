@@ -59,9 +59,9 @@ WindowTranslator는 Windows 애플리케이션 창을 번역하기 위한 도구
 > |   Bergamot     | | 완전 무료<br/>번역 제한 없음<br/>번역 속도 빠름 | 번역 정확도가 낮음<br/>1GB 이상의 여유 메모리 필요 |
 > |   Google 번역   | [![Google 번역 설정 동영상](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | 완전 무료 | 낮은 번역 제한<br/>번역 정확도가 낮음 |
 > |     DeepL      |   [![DeepL 설정 동영상](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 무료 사용량 많음<br/>번역 속도 빠름 | |
-> |    GoogleAI    | [![Google AI 설정 동영상](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 번역 정확도 높음 | 소액 결제 필요 |
-> | LLM (클라우드) | TBD | 번역 정확도 높음 | 소액 결제 필요 |
-> | LLM (로컬) | TBD | 서비스 자체는 무료 | 고사양 PC 필요 |
+> |     Gemini     | [![Google AI 설정 동영상](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 번역 정확도 높음 | 소액 결제 필요 |
+> |    ChatGPT     | TBD | 번역 정확도 높음 | 소액 결제 필요 |
+> | 로컬 LLM | TBD | 서비스 자체는 무료 | 고사양 PC 필요 |
 
 ## 기타 기능
 

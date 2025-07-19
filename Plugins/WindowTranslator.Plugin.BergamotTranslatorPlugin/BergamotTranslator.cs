@@ -126,68 +126,108 @@ public class BergamotValidator : ITargetSettingsValidator
         var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
         var configPath = Path.Combine(modelDir, "config.yml");
 
+        // すでに設定ファイルが存在する場合は処理をスキップ
         if (File.Exists(configPath))
-        {
             return true;
-        }
 
         Directory.CreateDirectory(modelDir);
 
         var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Directory.CreateDirectory(tmpDir);
 
+        // base → base-memory → tiny の順でフォールバック
+        var modelPaths = new[] { "models/base", "models/base-memory", "models/tiny" };
+
+        foreach (var modelPath in modelPaths)
+        {
+            if (await TryDownloadModelFromPath(modelPath, langPair, tmpDir, modelDir, configPath))
+                return true;
+        }
+
+        // すべてのパスで見つからなかった場合
+        return false;
+    }
+
+    private static async ValueTask<bool> TryDownloadModelFromPath(string modelPath, string langPair, string tmpDir, string modelDir, string configPath)
+    {
         try
         {
-            var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"models/prod/{langPair}").ConfigureAwait(false);
-
-            var files = new List<string>();
-            foreach (var content in contents)
-            {
-                var path = Path.Combine(tmpDir, content.Name);
-                var url = $"https://media.githubusercontent.com/media/{RepoOwner}/{RepoName}/refs/heads/main/{content.Path}";
-                await GitHubClient.DownloadFileAsync(new(url), path).ConfigureAwait(false);
-                if (Path.GetExtension(path) == ".gz")
-                {
-                    var dstPath = Path.Combine(modelDir, Path.GetFileNameWithoutExtension(content.Name));
-                    using var st = File.OpenRead(path);
-                    using var gz = new GZipStream(st, CompressionMode.Decompress);
-                    using var fs = File.Create(dstPath);
-                    await gz.CopyToAsync(fs).ConfigureAwait(false);
-                    files.Add(Path.GetFileNameWithoutExtension(content.Name));
-                }
-                else
-                {
-                    var dstPath = Path.Combine(modelDir, content.Name);
-                    File.Move(path, dstPath, true);
-                    files.Add(content.Name);
-                }
-            }
-
-            var modelPath = files.FirstOrDefault(f => f.StartsWith("model"));
-            var vocabPath = files.FirstOrDefault(f => f.StartsWith("vocab"));
-            var srcVocabPath = files.FirstOrDefault(f => f.Contains("srcvocab"));
-            var trgVocabPath = files.FirstOrDefault(f => f.Contains("trgvocab"));
-            var shortListPath = files.FirstOrDefault(f => f.StartsWith("lex"));
-
-            var config = CreateConfig(
-                modelPath ?? throw new InvalidOperationException("modelデータが存在しません"),
-                srcVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
-                trgVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
-                shortListPath ?? throw new InvalidOperationException("shortListデータが存在しません"),
-                modelPath.Split('.') switch
-                {
-                    [.., "intgemm", "alphas", "bin"] => "int8shiftAlphaAll",
-                    [.., "intgemm8", "bin"] => "int8shiftAll",
-                    _ => throw new InvalidOperationException($"Unknown model name pattern: ${modelPath}")
-                });
-            await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
+            var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"{modelPath}/{langPair}").ConfigureAwait(false);
+            var files = await DownloadAndExtractFiles(contents, tmpDir, modelDir);
+            await CreateConfigFile(files, configPath);
+            return true;
         }
         catch (NotFoundException)
         {
             return false;
         }
-        return true;
     }
+
+    private static async ValueTask<List<string>> DownloadAndExtractFiles(IReadOnlyList<RepositoryContent> contents, string tmpDir, string modelDir)
+    {
+        var files = new List<string>();
+
+        foreach (var content in contents)
+        {
+            var tmpPath = Path.Combine(tmpDir, content.Name);
+            await GitHubClient.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
+
+            var fileName = await ExtractFileIfNeeded(tmpPath, modelDir);
+            files.Add(fileName);
+        }
+
+        return files;
+    }
+
+    private static async ValueTask<string> ExtractFileIfNeeded(string tmpPath, string modelDir)
+    {
+        if (Path.GetExtension(tmpPath) == ".gz")
+        {
+            var fileName = Path.GetFileNameWithoutExtension(Path.GetFileName(tmpPath));
+            var dstPath = Path.Combine(modelDir, fileName);
+
+            using var st = File.OpenRead(tmpPath);
+            using var gz = new GZipStream(st, CompressionMode.Decompress);
+            using var fs = File.Create(dstPath);
+            await gz.CopyToAsync(fs).ConfigureAwait(false);
+
+            return fileName;
+        }
+        else
+        {
+            var fileName = Path.GetFileName(tmpPath);
+            var dstPath = Path.Combine(modelDir, fileName);
+            File.Move(tmpPath, dstPath, true);
+
+            return fileName;
+        }
+    }
+
+    private static async ValueTask CreateConfigFile(List<string> files, string configPath)
+    {
+        var modelFile = files.FirstOrDefault(f => f.StartsWith("model"));
+        var vocabPath = files.FirstOrDefault(f => f.StartsWith("vocab"));
+        var srcVocabPath = files.FirstOrDefault(f => f.Contains("srcvocab"));
+        var trgVocabPath = files.FirstOrDefault(f => f.Contains("trgvocab"));
+        var shortListPath = files.FirstOrDefault(f => f.StartsWith("lex"));
+
+        var config = CreateConfig(
+            modelFile ?? throw new InvalidOperationException("modelデータが存在しません"),
+            srcVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
+            trgVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
+            shortListPath ?? throw new InvalidOperationException("shortListデータが存在しません"),
+            GetModelPrecision(modelFile));
+
+        await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
+    }
+
+    private static string GetModelPrecision(string modelFile)
+        => modelFile?.Split('.') switch
+        {
+            [.., "intgemm", "alphas", "bin"] => "int8shiftAlphaAll",
+            [.., "intgemm8", "bin"] => "int8shiftAll",
+            _ => throw new InvalidOperationException($"Unknown model name pattern: {modelFile}")
+        };
 
     private static string CreateConfig(string modelPath, string srcVocabPath, string trgVocabPath, string shortListPath, string precision) => $"""
         # These Marian options are set according to
@@ -221,6 +261,28 @@ public class BergamotValidator : ITargetSettingsValidator
 
 file static class Extensions
 {
+    public static async ValueTask DownloadFileAsync(this GitHubClient client, string owner, string repo, RepositoryContent content, string path)
+    {
+        var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
+        res.HttpResponse.IsSuccessStatusCode();
+        if (res.HttpResponse.Body is string lfs && lfs.StartsWith("version https://git-lfs.github.com/spec/v1", StringComparison.Ordinal))
+        {
+            var url = $"https://media.githubusercontent.com/media/{owner}/{repo}/refs/heads/main/{content.Path}";
+            await client.DownloadFileAsync(new(url), path).ConfigureAwait(false);
+        }
+        else if (res.HttpResponse.Body is string d)
+        {
+            await using var fs = File.Create(path);
+            await using var st = new StreamWriter(fs);
+            await st.WriteAsync(d).ConfigureAwait(false);
+        }
+        else if (res.HttpResponse.Body is Stream stream)
+        {
+            await using var fs = File.Create(path);
+            await stream.CopyToAsync(fs).ConfigureAwait(false);
+        }
+    }
+
     public static async ValueTask DownloadFileAsync(this GitHubClient client, Uri url, string path)
     {
         var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);

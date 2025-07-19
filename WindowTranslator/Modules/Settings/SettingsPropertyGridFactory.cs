@@ -56,6 +56,18 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         return grid;
     }
 
+    protected override FrameworkElement CreateLinkControl(PropertyItem property)
+    {
+        var fe = base.CreateLinkControl(property);
+        fe.SetResourceReference(TextBlock.ForegroundProperty, "HyperlinkButtonForeground");
+        fe.SetCurrentValue(TextBlock.TextDecorationsProperty, TextDecorations.Underline);
+        if (!string.IsNullOrEmpty(property.Description))
+        {
+            fe.SetValue(TextBlock.TextProperty, property.Description);
+        }
+        return fe;
+    }
+
     protected override FrameworkElement CreateSpinControl(PropertyItem property)
     {
         if (property.Is(typeof(byte)) ||
@@ -119,11 +131,6 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         if (!double.IsNaN(property.FontSize))
         {
             textBoxEx.FontSize = property.FontSize;
-        }
-
-        if (property.IsReadOnly)
-        {
-            textBoxEx.Foreground = Brushes.RoyalBlue;
         }
 
         var binding = property.CreateBinding(property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default);

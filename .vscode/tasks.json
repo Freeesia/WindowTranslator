@@ -52,6 +52,22 @@
                 "cwd": "${workspaceFolder}/docs"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "build-sandbox",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Sandbox/Sandbox.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
         }
     ]
 }

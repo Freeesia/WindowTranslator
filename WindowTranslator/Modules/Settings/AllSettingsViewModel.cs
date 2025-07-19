@@ -78,8 +78,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private TargetSettingsViewModel selectedTarget;
 
-    public string Title { get; } = $"WindowTranslator {Assembly.GetExecutingAssembly().GetName().Version}";
-
     public IReadOnlyList<EnumItem<ViewMode>> ViewModes { get; } = Enum.GetValues<ViewMode>().Select(v => new EnumItem<ViewMode>(v)).ToArray();
 
     public IReadOnlyList<EnumItem<OverlaySwitch>> OverlaySwitches { get; } = Enum.GetValues<OverlaySwitch>().Select(v => new EnumItem<OverlaySwitch>(v)).ToArray();
@@ -89,16 +87,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public ObservableCollection<string> AutoTargets { get; }
 
     public ObservableCollection<TargetSettingsViewModel> Targets { get; }
-
-    public Version Version { get; }
-
-    public DateTime BuildDate { get; }
-
-    public string DevelopedBy { get; }
-
-    public Uri Link { get; }
-
-    public string License { get; }
 
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
@@ -130,7 +118,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            selected = new TargetSettingsViewModel(target, sp, new(), ocrModules, translateModules, cacheModules);
+            selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
             this.Targets.Add(selected);
         }
         if (!string.IsNullOrEmpty(target))
@@ -149,17 +137,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
-
-        var asm = Assembly.GetExecutingAssembly();
-        var name = asm.GetName();
-        this.Version = name.Version ?? new Version();
-        this.BuildDate = asm.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Where(a => a.Key == "BuildDateTime")?
-            .Select(a => DateTime.Parse(a.Value!, CultureInfo.InvariantCulture))
-            .FirstOrDefault() ?? default;
-        this.DevelopedBy = "Freesia";
-        this.Link = new("https://github.com/Freeesia/WindowTranslator");
-        this.License = "MIT License";
     }
 
     private void UpdateChecker_UpdateAvailable(object? sender, EventArgs e)
@@ -226,13 +203,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         => !string.IsNullOrEmpty(item?.Name);
 
     [RelayCommand]
-    public static void OpenThirdPartyLicenses()
-    {
-        var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
-        Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
-    }
-
-    [RelayCommand]
     public async Task SaveAsync(object window)
     {
         using var b = EnterBusy();
@@ -279,7 +249,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             }
             if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
             {
-                r.Add(ValidateResult.Invalid("翻訳モジュール", """
+                r.Add(ValidateResult.Invalid("キャッシュモジュール", """
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
