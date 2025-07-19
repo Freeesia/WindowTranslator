@@ -88,6 +88,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   適用 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Apply {
+            get {
+                return ResourceManager.GetString("Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Attach {
@@ -462,15 +471,6 @@ namespace WindowTranslator.Properties {
         public static string PublishPage {
             get {
                 return ResourceManager.GetString("PublishPage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   保存 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string Save {
-            get {
-                return ResourceManager.GetString("Save", resourceCulture);
             }
         }
         

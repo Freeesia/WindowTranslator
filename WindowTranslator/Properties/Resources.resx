@@ -300,7 +300,7 @@
   <data name="Close" xml:space="preserve">
     <value>閉じる</value>
   </data>
-  <data name="Save" xml:space="preserve">
-    <value>保存</value>
+  <data name="Apply" xml:space="preserve">
+    <value>適用</value>
   </data>
 </root>

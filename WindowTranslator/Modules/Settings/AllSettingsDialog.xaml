@@ -127,7 +127,7 @@
                             <Setter Property="Content" Value="{x:Static properties:Resources.OK}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding TargetMode, Mode=OneTime}" Value="True">
-                                    <Setter Property="Content" Value="{x:Static properties:Resources.Save}" />
+                                    <Setter Property="Content" Value="{x:Static properties:Resources.Apply}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
