@@ -19,6 +19,7 @@ using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -45,6 +46,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
+    private readonly IMainWindowModule mainWindowModule;
     private readonly IConfigurationRoot? rootConfig;
     private readonly string target;
     [ObservableProperty]
@@ -100,6 +102,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
+        [Inject] IMainWindowModule mainWindowModule,
         string target)
     {
         var items = provider.GetPlugins();
@@ -134,6 +137,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
         this.validators = validators;
+        this.mainWindowModule = mainWindowModule;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
@@ -294,7 +298,15 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
-        if (!this.TargetMode)
+        if (this.TargetMode)
+        {
+            foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
+            {
+                w.Close();
+                await this.mainWindowModule.OpenTargetAsync(handle, target);
+            }
+        }
+        else
         {
             await this.presentationService.CloseDialogAsync(true, window);
         }
