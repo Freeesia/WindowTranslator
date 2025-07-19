@@ -297,4 +297,10 @@
   <data name="Develop" xml:space="preserve">
     <value>기술 정보</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
 </root>
