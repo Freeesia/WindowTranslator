@@ -29,7 +29,7 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
             yield break;
         }
         using var l = this.logger.LogDebugTime("OcrBufferFilter");
-        var threshold = (context.ImageSize * 0.05f).ToSize(); // 画像サイズの8%をしきい値とする
+        var threshold = (context.ImageSize * 0.02f).ToSize();
         // バッファ内の全テキストを集め、AreSimilarで重複チェックして重複を排除
         var bufferedTexts = listPool.Get();
         foreach (var rect in this.buffer.SelectMany(b => b))
