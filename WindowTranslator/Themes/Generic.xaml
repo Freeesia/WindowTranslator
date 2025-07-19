@@ -1,8 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:WindowTranslator.Behaviors"
     xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:data="clr-namespace:WindowTranslator.Data"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:root="clr-namespace:WindowTranslator;assembly=WindowTranslator.Abstractions"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
     <ResourceDictionary.MergedDictionaries>
@@ -23,7 +25,7 @@
                                 NotNullValue="1.0"
                                 NullValue="0.5" />
                             <data:SizeToCornerRadiusConverter
-                                x:Key="sizeToCornerRadiusConverter"
+                                x:Key="s2crConv"
                                 MaxValue="10"
                                 MinValue="2"
                                 ScaleFactor="0.15" />
@@ -38,12 +40,13 @@
                                 <Border
                                     MinWidth="{Binding Width}"
                                     MinHeight="{Binding Height}"
+                                    MaxWidth="{Binding MaxWidth}"
                                     Padding="2"
                                     Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                     BorderBrush="#40000000"
                                     BorderThickness="2"
                                     ClipToBounds="True"
-                                    CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource sizeToCornerRadiusConverter}}"
+                                    CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource s2crConv}}"
                                     Opacity="{Binding TranslatedText, Converter={StaticResource n2dConv}}">
                                     <Border.Resources>
                                         <data:NullToDataTemplateConverter x:Key="b2dtConv">
@@ -55,7 +58,11 @@
                                                         FontSize="{Binding FontSize}"
                                                         Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                                         Text="{Binding TranslatedText}"
-                                                        TextWrapping="Wrap" />
+                                                        TextWrapping="Wrap">
+                                                        <i:Interaction.Behaviors>
+                                                            <b:FontSizeToOffsetYBehavior />
+                                                        </i:Interaction.Behaviors>
+                                                    </TextBlock>
                                                 </DataTemplate>
                                             </data:NullToDataTemplateConverter.NotNullContent>
                                             <data:NullToDataTemplateConverter.NullContent>
@@ -94,7 +101,6 @@
                                     </Border.Resources>
                                     <Border.RenderTransform>
                                         <TransformGroup>
-                                            <ScaleTransform ScaleY="1.1" />
                                             <RotateTransform Angle="{Binding Angle}" />
                                         </TransformGroup>
                                     </Border.RenderTransform>
