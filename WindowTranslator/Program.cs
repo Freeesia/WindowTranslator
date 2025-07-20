@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Octokit;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
@@ -118,6 +119,14 @@ builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePlugi
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
 builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
+builder.Services.AddSingleton<IGitHubClient>(_ =>
+{
+    var assembly = Assembly.GetExecutingAssembly();
+    var asmName = assembly.GetName();
+    var name = asmName.Name ?? throw new InvalidOperationException();
+    var version = asmName.Version ?? throw new InvalidOperationException();
+    return new GitHubClient(new ProductHeaderValue(name, version.ToString()));
+});
 
 var app = builder.Build();
 app.Loaded += (_, e) =>

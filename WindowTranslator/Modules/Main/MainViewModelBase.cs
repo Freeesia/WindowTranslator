@@ -126,7 +126,21 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             texts = await this.ocr.RecognizeAsync(sbmp);
         }
-        catch (Exception e) when (e is not OperationCanceledException)
+        catch (ObjectDisposedException)
+        {
+            // すでに破棄されている場合は何もしない
+            this.timer.DisposeAsync().Forget();
+            this.capture.StopCapture();
+            return;
+        }
+        catch (OperationCanceledException)
+        {
+            // キャンセルされた場合は何もしない
+            this.timer.DisposeAsync().Forget();
+            this.capture.StopCapture();
+            return;
+        }
+        catch (Exception e)
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();

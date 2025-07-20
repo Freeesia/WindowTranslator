@@ -40,6 +40,7 @@
     <PackageVersion Include="System.Drawing.Common" Version="9.0.0" />
     <PackageVersion Include="System.Interactive" Version="6.0.3" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="TesseractOCR" Version="5.4.2" />
     <PackageVersion Include="ValueTaskSupplement" Version="1.1.0" />
     <PackageVersion Include="Wacton.Unicolour" Version="6.1.0" />
     <PackageVersion Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />

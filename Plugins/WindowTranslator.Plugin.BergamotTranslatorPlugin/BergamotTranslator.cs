@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
-using System.Reflection;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
 using Octokit;
@@ -58,18 +57,11 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     }
 }
 
-public class BergamotValidator : ITargetSettingsValidator
+public class BergamotValidator(IGitHubClient client) : ITargetSettingsValidator
 {
-    private static readonly GitHubClient GitHubClient = new(CreateHeader());
     private const string RepoOwner = "mozilla";
     private const string RepoName = "firefox-translations-models";
-
-    private static ProductHeaderValue CreateHeader()
-    {
-        var asm = Assembly.GetExecutingAssembly();
-        var name = asm.GetName();
-        return new(name.Name, name.Version?.ToString());
-    }
+    private readonly IGitHubClient client = client;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -120,7 +112,7 @@ public class BergamotValidator : ITargetSettingsValidator
         }
     }
 
-    private static async ValueTask<bool> DownloadIfNotExists(string src, string dst)
+    private async ValueTask<bool> DownloadIfNotExists(string src, string dst)
     {
         var langPair = $"{src}{dst}";
         var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
@@ -148,11 +140,11 @@ public class BergamotValidator : ITargetSettingsValidator
         return false;
     }
 
-    private static async ValueTask<bool> TryDownloadModelFromPath(string modelPath, string langPair, string tmpDir, string modelDir, string configPath)
+    private async ValueTask<bool> TryDownloadModelFromPath(string modelPath, string langPair, string tmpDir, string modelDir, string configPath)
     {
         try
         {
-            var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"{modelPath}/{langPair}").ConfigureAwait(false);
+            var contents = await this.client.Repository.Content.GetAllContents(RepoOwner, RepoName, $"{modelPath}/{langPair}").ConfigureAwait(false);
             var files = await DownloadAndExtractFiles(contents, tmpDir, modelDir);
             await CreateConfigFile(files, configPath);
             return true;
@@ -163,14 +155,14 @@ public class BergamotValidator : ITargetSettingsValidator
         }
     }
 
-    private static async ValueTask<List<string>> DownloadAndExtractFiles(IReadOnlyList<RepositoryContent> contents, string tmpDir, string modelDir)
+    private async ValueTask<List<string>> DownloadAndExtractFiles(IReadOnlyList<RepositoryContent> contents, string tmpDir, string modelDir)
     {
         var files = new List<string>();
 
         foreach (var content in contents)
         {
             var tmpPath = Path.Combine(tmpDir, content.Name);
-            await GitHubClient.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
+            await this.client.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
 
             var fileName = await ExtractFileIfNeeded(tmpPath, modelDir);
             files.Add(fileName);
@@ -261,7 +253,7 @@ public class BergamotValidator : ITargetSettingsValidator
 
 file static class Extensions
 {
-    public static async ValueTask DownloadFileAsync(this GitHubClient client, string owner, string repo, RepositoryContent content, string path)
+    public static async ValueTask DownloadFileAsync(this IGitHubClient client, string owner, string repo, RepositoryContent content, string path)
     {
         var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
         res.HttpResponse.IsSuccessStatusCode();
@@ -283,7 +275,7 @@ file static class Extensions
         }
     }
 
-    public static async ValueTask DownloadFileAsync(this GitHubClient client, Uri url, string path)
+    public static async ValueTask DownloadFileAsync(this IGitHubClient client, Uri url, string path)
     {
         var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
         res.HttpResponse.IsSuccessStatusCode();

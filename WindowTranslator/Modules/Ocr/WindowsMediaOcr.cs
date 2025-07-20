@@ -16,7 +16,6 @@ using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
-[DefaultModule]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<BasicOcrParam> ocrParam,
@@ -108,6 +107,16 @@ public sealed partial class WindowsMediaOcr(
                         {
                             temp.Merge(lineResult);
                             queue.Remove(lineResult);
+                            merged = true;
+                        }
+                    }
+                    foreach (var rect in results.OrderBy(r => r.Y).ToArray())
+                    {
+                        var r = rect.ToRect();
+                        if (CanMerge(temp, r, xt, yt))
+                        {
+                            temp.Merge(r);
+                            results.Remove(rect);
                             merged = true;
                         }
                     }
@@ -252,6 +261,15 @@ public sealed partial class WindowsMediaOcr(
             height = Height;
             fontSize = FontSize;
             rects = Rects;
+        }
+
+        public TextRect ToRect()
+        {
+            // 元の画像座標に変換
+            var text = this.Text;
+            // 高さがフォントサイズの2倍以上の場合は複数行とみなす
+            var lines = Height / FontSize >= 2;
+            return new(text, X, Y, Width, Height, FontSize, lines);
         }
     }
 
