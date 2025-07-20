@@ -1,4 +1,0 @@
-[submodule "NAudio"]
-	path = NAudio
-	url = git@github.com:naudio/NAudio.git
-	branch = process-audio-capture
