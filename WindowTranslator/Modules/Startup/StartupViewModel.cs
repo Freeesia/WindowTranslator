@@ -135,15 +135,7 @@ public partial class StartupViewModel
     {
         using var scope = this.serviceProvider.CreateScope();
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
-        var r = await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
-        if (r && !string.IsNullOrEmpty(target))
-        {
-            foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
-            {
-                w.Close();
-                await this.mainWindowModule.OpenTargetAsync(handle, target);
-            }
-        }
+        await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
     }
 
     [RelayCommand]

@@ -16,6 +16,8 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
     private readonly bool isSuppressVibe = options.Value.IsSuppressVibe;
     private readonly bool isEnableRecover = options.Value.IsEnableRecover;
 
+    public double Priority => FilterPriority.OcrBufferFilter;
+
     public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
         if (this.bufferSize <= 0)
@@ -27,7 +29,7 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
             yield break;
         }
         using var l = this.logger.LogDebugTime("OcrBufferFilter");
-        var threshold = (context.ImageSize * 0.05f).ToSize(); // 画像サイズの8%をしきい値とする
+        var threshold = (context.ImageSize * 0.02f).ToSize();
         // バッファ内の全テキストを集め、AreSimilarで重複チェックして重複を排除
         var bufferedTexts = listPool.Get();
         foreach (var rect in this.buffer.SelectMany(b => b))
@@ -86,7 +88,7 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
                     !finalBuffered.Any(existing => Intersects(existing, buf)))
                 {
                     finalBuffered.Add(buf);
-                    this.logger.LogDebug($"Buffered: {buf.Text}");
+                    this.logger.LogDebug($"Buffered: {buf.SourceText}");
                     yield return buf;
                 }
             }
@@ -109,8 +111,8 @@ public class OcrBufferFilter(IOptions<BasicOcrParam> options, ILogger<OcrBufferF
     private static bool AreSimilar(TextRect rect1, TextRect rect2, Size threshold)
     {
         // テキストの一致率が80%未満なら別扱い
-        var p = 1 - ((float)Levenshtein.GetDistance(rect1.Text, rect2.Text, CalculationOptions.DefaultWithThreading)
-            / Math.Max(rect1.Text.Length, rect2.Text.Length));
+        var p = 1 - ((float)Levenshtein.GetDistance(rect1.SourceText, rect2.SourceText, CalculationOptions.DefaultWithThreading)
+            / Math.Max(rect1.SourceText.Length, rect2.SourceText.Length));
 
         if (p < 0.8)
         {

@@ -88,6 +88,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   適用 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Apply {
+            get {
+                return ResourceManager.GetString("Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   アタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Attach {
@@ -174,6 +183,15 @@ namespace WindowTranslator.Properties {
         public static string CheckUpdateNotes {
             get {
                 return ResourceManager.GetString("CheckUpdateNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   閉じる に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
             }
         }
         

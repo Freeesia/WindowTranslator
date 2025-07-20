@@ -76,7 +76,7 @@ public class OcrCorrectionTextFilter(IOptionsSnapshot<LanguageOptions> langOptio
 
 
     protected override ValueTask<IReadOnlyList<string>> GetQueueData(IEnumerable<TextRect> targets, FilterContext context)
-        => new([.. targets.Select(t => t.Text)]);
+        => new([.. targets.Select(t => t.SourceText)]);
 
     protected override async Task CorrectCore(IReadOnlyList<string> texts, CancellationToken cancellationToken)
     {
