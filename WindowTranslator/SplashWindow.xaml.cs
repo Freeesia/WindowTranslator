@@ -13,7 +13,7 @@ public partial class SplashWindow : Window
     private SplashWindow()
         => InitializeComponent();
 
-    public static IDisposable Show()
+    public static IDisposable ShowSplash()
     {
         SplashWindow? w = null;
         var t = new Thread(_ =>

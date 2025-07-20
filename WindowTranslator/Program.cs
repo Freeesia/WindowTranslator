@@ -44,7 +44,7 @@ if (!createdNew)
     }.Show();
     return;
 }
-var d = SplashWindow.Show();
+var d = SplashWindow.ShowSplash();
 
 
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
