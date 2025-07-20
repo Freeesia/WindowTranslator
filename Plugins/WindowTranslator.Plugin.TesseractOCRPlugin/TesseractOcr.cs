@@ -26,6 +26,7 @@ public sealed class TesseractOcr(
     private readonly ILogger<TesseractOcr> logger = logger;
     private readonly Engine engine = new(DataDir, ConvertLanguage(langOptions.Value.Source), EngineMode.Default, logger: logger);
     private readonly InMemoryRandomAccessStream stream = new();
+    private readonly CancellationTokenSource cts = new();
 
     // マージと除外処理のためのパラメータ
     private readonly double xPosThreshold = ocrParam.Value.XPosThrethold;
@@ -40,11 +41,13 @@ public sealed class TesseractOcr(
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         // 拡大率に基づくリサイズ処理
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
+        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
+        this.cts.Token.ThrowIfCancellationRequested();
 
         var sw = Stopwatch.StartNew();
         // テキスト認識処理をバックグラウンドで実行
-        var textRects = await Task.Run(async () => await Recognize(workingBitmap).ConfigureAwait(false)).ConfigureAwait(false);
+        var textRects = await Task.Run(async () => await Recognize(workingBitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
+        this.cts.Token.ThrowIfCancellationRequested();
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
 
         if (textRects.Length == 0)
@@ -61,6 +64,8 @@ public sealed class TesseractOcr(
 
         while (queue.TryDequeue(out var target))
         {
+            this.cts.Token.ThrowIfCancellationRequested();
+            
             var temp = new TempMergeRect(this.source, target);
             var merged = false;
             do
@@ -106,8 +111,13 @@ public sealed class TesseractOcr(
     private async ValueTask<TextRect[]> Recognize(SoftwareBitmap bitmap)
     {
         using var buf = await SoftwareToBytesAsync(bitmap);
+        this.cts.Token.ThrowIfCancellationRequested();
+        
         using var img = Image.LoadFromMemory(buf.Bytes, 0, buf.Size);
+        this.cts.Token.ThrowIfCancellationRequested();
+        
         using var page = engine.Process(img);
+        this.cts.Token.ThrowIfCancellationRequested();
 
         // 基本的な認識処理
         return page
@@ -291,8 +301,10 @@ public sealed class TesseractOcr(
 
     public void Dispose()
     {
+        this.cts.Cancel();
         stream.Dispose();
         engine.Dispose();
+        this.cts.Dispose();
     }
 
     public static Language ConvertLanguage(string lang) => lang switch
