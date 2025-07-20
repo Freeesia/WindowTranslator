@@ -208,7 +208,7 @@ public class OneOcr : IOcrModule
             this.logger.LogDebug($"Text: '{lineContent}', Angle: {angle:F2}°, Size: {width:F1}x{height:F1}, Position: ({x:F1}, {y:F1})");
 
             // TextRectを作成して追加（角度情報を含む、座標は左上位置）
-            textRects.Add(new(lineContent, x, y, width, height, height, false) { Angle = angle });
+            textRects.Add(new(lineContent, x, y, width, height, height * 0.9, false) { Angle = angle });
         }
 
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");

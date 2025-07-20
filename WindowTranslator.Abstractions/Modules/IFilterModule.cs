@@ -11,7 +11,7 @@ public interface IFilterModule
     /// 優先度
     /// </summary>
     /// <remarks>
-    /// 数値が大きい順に翻訳前処理が行われ、小さい順に翻訳後処理が行われる
+    /// 数値が小さい順に翻訳前処理が行われ、大きい順に翻訳後処理が行われる
     /// </remarks>
     double Priority => 0;
 
