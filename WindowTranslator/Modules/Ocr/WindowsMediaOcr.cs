@@ -16,7 +16,6 @@ using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
-[DefaultModule]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<BasicOcrParam> ocrParam,

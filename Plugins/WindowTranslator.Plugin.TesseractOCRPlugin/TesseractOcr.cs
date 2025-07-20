@@ -11,12 +11,14 @@ using TesseractOCR.Pix;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using WindowTranslator.Collections;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Plugin.TesseractOCRPlugin;
 
+[DefaultModule]
 public sealed class TesseractOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<BasicOcrParam> ocrParam,
