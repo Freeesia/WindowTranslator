@@ -1,8 +1,30 @@
 ﻿{
+  "inputs": [
+    {
+      "id": "tavily_apikey",
+      "type": "promptString",
+      "description": "tavilyのAPIキー",
+      "password": true
+    }
+  ],
   "servers": {
     "github": {
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "tavily": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "TAVILY_API_KEY",
+        "mcp/tavily"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "${input:tavily_apikey}"
+      }
     }
   }
 }
