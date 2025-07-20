@@ -110,7 +110,7 @@
                         <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="ui:Button">
                             <Setter Property="Content" Value="{x:Static properties:Resources.Cancel}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding TargetMode, Mode=OneTime}" Value="True">
+                                <DataTrigger Binding="{Binding ApplyMode, Mode=OneTime}" Value="True">
                                     <Setter Property="Content" Value="{x:Static properties:Resources.Close}" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -121,12 +121,12 @@
                     Command="{Binding SaveCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
                     DockPanel.Dock="Right"
-                    IsDefault="{Binding TargetMode, Converter={x:Static data:InverseBoolConverter.Default}}">
+                    IsDefault="{Binding ApplyMode, Converter={x:Static data:InverseBoolConverter.Default}}">
                     <ui:Button.Style>
                         <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="ui:Button">
                             <Setter Property="Content" Value="{x:Static properties:Resources.OK}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding TargetMode, Mode=OneTime}" Value="True">
+                                <DataTrigger Binding="{Binding ApplyMode, Mode=OneTime}" Value="True">
                                     <Setter Property="Content" Value="{x:Static properties:Resources.Apply}" />
                                 </DataTrigger>
                             </Style.Triggers>

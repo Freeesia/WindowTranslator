@@ -92,6 +92,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool TargetMode => !string.IsNullOrEmpty(this.target);
 
+    public bool ApplyMode { get; }
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
@@ -121,6 +123,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
             .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
 
+        this.ApplyMode = !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
             selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
@@ -298,7 +301,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
         this.rootConfig?.Reload();
-        if (this.TargetMode)
+        if (this.ApplyMode)
         {
             foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
             {
