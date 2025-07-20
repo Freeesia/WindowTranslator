@@ -22,5 +22,13 @@ WindowTranslator は、Windows アプリケーションのウィンドウ上の�
 * `Directory.Build.props`に共通のビルド設定を定義
 
 
+## 実装時の注意点
+### MCP(Module Communication Protocol)の使用
+* ライブラリの使用方法はGitHubのリポジトリ情報を参照する
+* リポジトリに情報が足りない場合はTavilyで検索する
+
+## シェル操作について
+
+* 直接的なシェル操作は避け、必ずスクリプトファイルを生成して実行する
 
 

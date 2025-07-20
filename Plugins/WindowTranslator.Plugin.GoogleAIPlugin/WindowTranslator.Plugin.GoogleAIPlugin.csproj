@@ -6,6 +6,8 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="Google_GenerativeAI" />
+    <PackageReference Include="Google_GenerativeAI.Live" />
+    <PackageReference Include="NAudio.Wasapi" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
