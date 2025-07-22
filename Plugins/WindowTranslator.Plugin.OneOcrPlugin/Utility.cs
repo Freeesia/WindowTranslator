@@ -8,6 +8,7 @@ static class Utility
     private const string OneOcrDll = "oneocr.dll";
     public const string OneOcrModel = "oneocr.onemodel";
     private const string OnnxRuntimeDll = "onnxruntime.dll";
+    public const string ErrorPath = "Error.txt";
     public static string OneOcrPath { get; } = Path.Combine(PathUtility.UserDir, "OneOcr");
 
     private static async ValueTask<string?> GetInstallLocation(string appName)
@@ -49,6 +50,10 @@ static class Utility
 
     public static bool NeedCopyDll()
     {
+        if (File.Exists(Path.Combine(OneOcrPath, ErrorPath)))
+        {
+            return true;
+        }
         if (!File.Exists(Path.Combine(OneOcrPath, OneOcrDll)))
         {
             return true;
@@ -67,6 +72,7 @@ static class Utility
     public static void CopyDll(string path)
     {
         Directory.CreateDirectory(OneOcrPath);
+        File.Delete(Path.Combine(OneOcrPath, ErrorPath));
         File.Copy(Path.Combine(path, OneOcrDll), Path.Combine(OneOcrPath, OneOcrDll), true);
         File.Copy(Path.Combine(path, OneOcrModel), Path.Combine(OneOcrPath, OneOcrModel), true);
         File.Copy(Path.Combine(path, OnnxRuntimeDll), Path.Combine(OneOcrPath, OnnxRuntimeDll), true);
