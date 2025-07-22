@@ -11,7 +11,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
-using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
@@ -316,7 +315,7 @@ public partial class FoMFilterModule : IFilterModule
                 .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
                 .Select(p => (p.Key,
                     Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
-                    En: loc.Eng[p.Key].ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty)))
+                    En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
                 .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
                 .ToDictionary(
                     g => g.Key,
