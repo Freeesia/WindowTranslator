@@ -67,7 +67,7 @@ public sealed class TesseractOcr(
         while (queue.TryDequeue(out var target))
         {
             this.cts.Token.ThrowIfCancellationRequested();
-            
+
             var temp = new TempMergeRect(this.source, target);
             var merged = false;
             do
@@ -114,22 +114,25 @@ public sealed class TesseractOcr(
     {
         using var buf = await SoftwareToBytesAsync(bitmap);
         this.cts.Token.ThrowIfCancellationRequested();
-        
+
         using var img = Image.LoadFromMemory(buf.Bytes, 0, buf.Size);
         this.cts.Token.ThrowIfCancellationRequested();
-        
-        using var page = engine.Process(img);
-        this.cts.Token.ThrowIfCancellationRequested();
 
-        // 基本的な認識処理
-        return page
-            .Layout
-            .SelectMany(l => l.Paragraphs)
-            .SelectMany(p => p.TextLines)
-            .SelectMany(t => t.Words)
-            .Select(CalcRect)
-            .Where(w => !string.IsNullOrEmpty(w.SourceText))
-            .ToArray();
+        lock (this.engine)
+        {
+            using var page = engine.Process(img);
+            this.cts.Token.ThrowIfCancellationRequested();
+
+            // 基本的な認識処理
+            return page
+                .Layout
+                .SelectMany(l => l.Paragraphs)
+                .SelectMany(p => p.TextLines)
+                .SelectMany(t => t.Words)
+                .Select(CalcRect)
+                .Where(w => !string.IsNullOrEmpty(w.SourceText))
+                .ToArray();
+        }
     }
 
     private bool CanMerge(TempMergeRect temp, TextRect rect, double xThreshold, double yThreshold)
@@ -305,7 +308,10 @@ public sealed class TesseractOcr(
     {
         this.cts.Cancel();
         stream.Dispose();
-        engine.Dispose();
+        lock (this.engine)
+        {
+            engine.Dispose();
+        }
         this.cts.Dispose();
     }
 
