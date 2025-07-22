@@ -11,9 +11,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
-using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 using static Windows.Win32.PInvoke;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
