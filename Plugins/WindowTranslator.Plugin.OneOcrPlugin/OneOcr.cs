@@ -83,7 +83,14 @@ public class OneOcr : IOcrModule
         res = CreateOcrPipeline(Path.Combine(Utility.OneOcrPath, Utility.OneOcrModel), apiKey, context, out this.pipeline);
         if (res != 0)
         {
-            throw new InvalidOperationException($"OCRパイプラインの作成に失敗しました。エラーコード: {res}");
+            File.WriteAllText(Path.Combine(Utility.OneOcrPath, Utility.ErrorPath),
+                $"""
+                OCRパイプラインの作成に失敗しました。エラーコード: {res}
+                """);
+            throw new InvalidOperationException($"""
+                OCRパイプラインの作成に失敗しました。エラーコード: {res}
+                「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。
+                """);
         }
 
         // OCRプロセスオプション作成
