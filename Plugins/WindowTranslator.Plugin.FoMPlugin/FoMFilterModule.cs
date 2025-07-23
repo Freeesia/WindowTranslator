@@ -479,7 +479,7 @@ public partial class FoMFilterModule : IFilterModule
                 var p = 1 - ((float)distance / Math.Max(text.Length, en.Length));
                 this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:p2}%) [{DateTime.UtcNow - t}]");
                 // 一致率が68%未満は除外
-                if (p < 68)
+                if (p < 0.68)
                 {
                     continue;
                 }
