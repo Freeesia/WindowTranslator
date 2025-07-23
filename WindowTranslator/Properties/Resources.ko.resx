@@ -298,9 +298,9 @@
     <value>기술 정보</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>閉じる</value>
+    <value>닫기</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>適用</value>
+    <value>적용</value>
   </data>
 </root>
