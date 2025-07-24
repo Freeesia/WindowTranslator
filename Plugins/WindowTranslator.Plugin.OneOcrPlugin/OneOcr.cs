@@ -123,7 +123,7 @@ public class OneOcr : IOcrModule
             workingBitmap.Dispose();
         }
 
-        var fat = bitmap.PixelWidth * 0.004;
+        var wFat = bitmap.PixelWidth * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い
@@ -132,7 +132,7 @@ public class OneOcr : IOcrModule
             // 全部数字なら対象外
             .Where(r => !AllSymbolOrSpace().IsMatch(r.SourceText))
             // 若干太らせる
-            .Select(r => r with { Width = r.Width + (fat * 2), X = r.X - fat, Y = r.Y - (r.Height * 0.04) })
+            .Select(r => r with { X = r.X - wFat, Width = r.Width + (wFat * 2), Y = r.Y - (r.Height * 0.04), Height = r.Height * 1.08 })
             .ToArray();
     }
 
