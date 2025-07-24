@@ -44,6 +44,7 @@ public enum GoogleAIModel
     Gemini20Flash,
     Gemini25Flash,
     Gemini25Pro,
+    Gemini25FlashLite,
 }
 
 public enum CorrectMode
@@ -66,6 +67,7 @@ public static class GoogleAIModelExtensions
         GoogleAIModel.Gemini20Flash => GoogleAIModels.Gemini2Flash,
         GoogleAIModel.Gemini25Flash => "models/gemini-2.5-flash",
         GoogleAIModel.Gemini25Pro => "models/gemini-2.5-pro",
+        GoogleAIModel.Gemini25FlashLite => "models/gemini-2.5-flash-lite",
         _ => throw new ArgumentOutOfRangeException(nameof(model)),
     };
 }
