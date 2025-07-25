@@ -27,7 +27,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
     private readonly HttpClient client;
     private readonly ILogger<GasTranslator> logger;
 
-    public GasTranslator(IOptions<LanguageOptions> langOptions, IOptions<GasOptions> gasOptions, ILogger<GasTranslator> logger)
+    public GasTranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GasOptions> gasOptions, ILogger<GasTranslator> logger)
     {
         this.logger = logger;
         this.langOptions = langOptions.Value;
