@@ -283,18 +283,18 @@
     <value>Windows-Standardzeichenerkennung</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value />
+    <value>App-Name</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value />
+    <value>Steam-Wunschliste</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value />
+    <value>Anwendungsinformationen</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value />
+    <value>Kontaktadresse</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value />
+    <value>Technische Informationen</value>
   </data>
 </root>
