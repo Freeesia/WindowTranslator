@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using WindowTranslator.Modules;
 using WindowTranslator.Stores;
-using PInvoke;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -12,7 +11,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
-using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
@@ -244,7 +243,7 @@ public partial class FoMFilterModule : IFilterModule
             SingleWriter = true,
         }, Dropped);
         this.logger = logger;
-        _ = User32.GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
+        _ = GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
         if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
         {
             this.isEnabled = true;
@@ -281,21 +280,21 @@ public partial class FoMFilterModule : IFilterModule
                 .GroupBy(
                     p => p.key switch
                         {
-                        ["Conversations", .., "prompts", _] => string.Join('/', p.key[..^3]),
-                        ["Conversations", .., not "prompts", _] => string.Join('/', p.key[..^1]),
-                        ["Cutscenes", .., "prompts", _] => string.Join('/', p.key[..^3]),
-                        ["Cutscenes", .., not "prompts", _] => string.Join('/', p.key[..^1]),
-                        ["letters", ..] => string.Join('/', p.key[..^1]),
+                            ["Conversations", .., "prompts", _] => string.Join('/', p.key[..^3]),
+                            ["Conversations", .., not "prompts", _] => string.Join('/', p.key[..^1]),
+                            ["Cutscenes", .., "prompts", _] => string.Join('/', p.key[..^3]),
+                            ["Cutscenes", .., not "prompts", _] => string.Join('/', p.key[..^1]),
+                            ["letters", ..] => string.Join('/', p.key[..^1]),
                             _ => throw new InvalidOperationException(),
                         },
                     (group, items) => (group, value: items
                         .OrderBy(p => p.key switch
                         {
-                        ["Conversations", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
-                        ["Conversations", .., not "prompts", var n] => ParseOrder(n),
-                        ["Cutscenes", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
-                        ["Cutscenes", .., not "prompts", var n] => ParseOrder(n),
-                        ["letters", _, var key] => key is "local" ? 1.0 : 0.0,
+                            ["Conversations", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
+                            ["Conversations", .., not "prompts", var n] => ParseOrder(n),
+                            ["Cutscenes", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
+                            ["Cutscenes", .., not "prompts", var n] => ParseOrder(n),
+                            ["letters", _, var key] => key is "local" ? 1.0 : 0.0,
                             _ => throw new InvalidOperationException(),
                         })
                         .Join(group)))
@@ -316,7 +315,7 @@ public partial class FoMFilterModule : IFilterModule
                 .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
                 .Select(p => (p.Key,
                     Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
-                    En: loc.Eng[p.Key].ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty)))
+                    En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
                 .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
                 .ToDictionary(
                     g => g.Key,
@@ -393,13 +392,13 @@ public partial class FoMFilterModule : IFilterModule
         var targets = new List<string>();
         await foreach (var src in texts.ConfigureAwait(false))
         {
-            if (this.builtin.TryGetValue(src.Text, out var dst))
+            if (this.builtin.TryGetValue(src.SourceText, out var dst))
             {
-                match.Add(src.Text);
+                match.Add(src.SourceText);
                 var keys = dst.Key.Split('/');
                 if (this.useJpn && !string.IsNullOrEmpty(dst.Text))
                 {
-                    yield return src with { Text = dst.Text, IsTranslated = true };
+                    yield return src with { TranslatedText = dst.Text };
                 }
                 else if (GetCharContext(keys) is { Length: > 0 } charContext)
                 {
@@ -411,23 +410,23 @@ public partial class FoMFilterModule : IFilterModule
                 }
                 else
                 {
-                    notContexts.Add((src, new(keys, src.Text, dst.Text, string.Empty, GetSceneContext(keys))));
+                    notContexts.Add((src, new(keys, src.SourceText, dst.Text, string.Empty, GetSceneContext(keys))));
                 }
             }
-            else if (this.cache.TryGetValue(src.Text, out var c))
+            else if (this.cache.TryGetValue(src.SourceText, out var c))
             {
                 match.Add(c.En);
                 if (this.useJpn && !string.IsNullOrEmpty(c.Ja))
                 {
-                    yield return src with { Text = c.Ja, IsTranslated = true };
+                    yield return src with { TranslatedText = c.Ja };
                 }
                 else if (!string.IsNullOrEmpty(c.CharContext))
                 {
-                    yield return src with { Text = c.En, Context = c.CharContext + c.SceneContext };
+                    yield return src with { SourceText = c.En, Context = c.CharContext + c.SceneContext };
                 }
                 else if (c.Keys is [.., "prompts", _])
                 {
-                    yield return src with { Text = c.En, Context = GetCharContext("Ari") + c.SceneContext };
+                    yield return src with { SourceText = c.En, Context = GetCharContext("Ari") + c.SceneContext };
                 }
                 else
                 {
@@ -436,7 +435,7 @@ public partial class FoMFilterModule : IFilterModule
             }
             else
             {
-                targets.Add(src.Text);
+                targets.Add(src.SourceText);
                 if (!this.exclude)
                 {
                     yield return src;
@@ -448,7 +447,7 @@ public partial class FoMFilterModule : IFilterModule
             var contexts = match.Select(GetCharContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
             if (contexts is [var ctx])
             {
-                notContexts = notContexts.Select(p => p with { text = p.text with { Text = p.cache.En, Context = ctx + p.cache.SceneContext } }).ToList();
+                notContexts = notContexts.Select(p => p with { text = p.text with { SourceText = p.cache.En, Context = ctx + p.cache.SceneContext } }).ToList();
             }
             foreach (var (text, _) in notContexts)
             {
@@ -480,7 +479,7 @@ public partial class FoMFilterModule : IFilterModule
                 var p = 1 - ((float)distance / Math.Max(text.Length, en.Length));
                 this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:p2}%) [{DateTime.UtcNow - t}]");
                 // 一致率が68%未満は除外
-                if (p < 68)
+                if (p < 0.68)
                 {
                     continue;
                 }
@@ -515,11 +514,11 @@ public partial class FoMFilterModule : IFilterModule
     {
         var scene = keys switch
         {
-        ["Conversations", .., "prompts", _] => string.Join('/', keys[..^3]),
-        ["Conversations", .., not "prompts", _] => string.Join('/', keys[..^1]),
-        ["Cutscenes", .., "prompts", _] => string.Join('/', keys[..^3]),
-        ["Cutscenes", .., not "prompts", _] => string.Join('/', keys[..^1]),
-        ["letters", ..] => string.Join('/', keys[..^1]),
+            ["Conversations", .., "prompts", _] => string.Join('/', keys[..^3]),
+            ["Conversations", .., not "prompts", _] => string.Join('/', keys[..^1]),
+            ["Cutscenes", .., "prompts", _] => string.Join('/', keys[..^3]),
+            ["Cutscenes", .., not "prompts", _] => string.Join('/', keys[..^1]),
+            ["letters", ..] => string.Join('/', keys[..^1]),
             _ => string.Empty,
         };
         return this.scenes.TryGetValue(scene, out var s) ? s : string.Empty;

@@ -84,10 +84,10 @@ public class GoogleAITranslator : ITranslateModule
     {
         if (this.client is null)
         {
-            throw new InvalidOperationException("GoogleAI機能が初期化されていません。設定ダイアログからGoogleAIオプションを設定してください");
+            throw new InvalidOperationException("Gemini機能が初期化されていません。設定ダイアログからGoogleAIオプションを設定してください");
         }
-        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.Text.Contains(kv.Key))).ToArray();
-        var common = this.common.Where(c => srcTexts.Any(s => s.Text.Contains(c))).ToArray();
+        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
+        var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
         var sb = new StringBuilder();
         if (glossary.Length > 0)
         {
@@ -111,7 +111,7 @@ public class GoogleAITranslator : ITranslateModule
         }
 
         var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
-        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.Text, s.Context }).ToArray(), DefaultSerializerOptions.GenerateObjectJsonOptions);
+        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.SourceText, s.Context }).ToArray(), DefaultSerializerOptions.GenerateObjectJsonOptions);
         this.logger.LogDebug($"""
             System:
             {system}
@@ -133,19 +133,19 @@ public class GoogleAITranslator : ITranslateModule
             }
             catch (ApiException e) when (e.ErrorCode == 400)
             {
-                throw new ApiException(e.ErrorCode, "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+                throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
             }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (ApiException e) when (e.ErrorCode == 503)
             {
-                this.logger.LogWarning("GoogleAIのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
+                this.logger.LogWarning("Geminiのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
                 await Task.Delay(500).ConfigureAwait(false);
                 continue;
             }
             // レート制限を超えました。
             catch (ApiException e) when (e.ErrorCode == 429)
             {
-                this.logger.LogWarning("GoogleAIのレート制限を超えました。10秒待機して再試行します。");
+                this.logger.LogWarning("Geminiのレート制限を超えました。10秒待機して再試行します。");
                 await Task.Delay(10000).ConfigureAwait(false);
                 continue;
             }

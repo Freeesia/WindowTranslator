@@ -1,6 +1,6 @@
 assembly-versioning-scheme: MajorMinorPatchTag
-mode: ContinuousDeployment
+workflow: GitHubFlow/v1
 tag-prefix: '[vV]'
-ignore:
-  sha: []
-merge-message-formats: {}
+branches:
+  main:
+    label: 'pre'

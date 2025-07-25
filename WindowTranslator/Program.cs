@@ -3,12 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Octokit;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
@@ -23,10 +25,28 @@ using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
+
+#if DEBUG
+var createdNew = true;
+#else
+using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+#endif
+if (!createdNew)
+{
+    new MessageDialog()
+    {
+        Caption = "WindowTranslator",
+        Icon = MessageBoxImage.Error,
+        Text = Resources.MutexError,
+    }.Show();
+    return;
+}
+var d = SplashWindow.ShowSplash();
+
 
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
@@ -99,23 +119,21 @@ builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePlugi
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
 builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
+builder.Services.AddSingleton<IGitHubClient>(_ =>
+{
+    var assembly = Assembly.GetExecutingAssembly();
+    var asmName = assembly.GetName();
+    var name = asmName.Name ?? throw new InvalidOperationException();
+    var version = asmName.Version ?? throw new InvalidOperationException();
+    return new GitHubClient(new ProductHeaderValue(name, version.ToString()));
+});
 
 var app = builder.Build();
-#if DEBUG
-var createdNew = true;
-#else
-using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
-#endif
-if (!createdNew)
+app.Loaded += (_, e) =>
 {
-    new MessageDialog()
-    {
-        Caption = "WindowTranslator",
-        Icon = MessageBoxImage.Error,
-        Text = Resources.MutexError,
-    }.Show();
-    return;
-}
+    d.Dispose();
+    e.Window.Activate();
+};
 await app.RunAsync();
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)

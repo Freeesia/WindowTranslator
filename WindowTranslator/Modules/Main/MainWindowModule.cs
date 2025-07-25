@@ -26,9 +26,9 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
         var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
         processInfo.SetTargetProcess(targetWindowHandle, name);
 
-        if (!options.Value.Targets.ContainsKey(name))
+        if (!options.Value.Targets.ContainsKey(name) && !await presentationService.OpenAllSettingsDialogAsync(name))
         {
-            await presentationService.OpenAllSettingsDialogAsync(name);
+            return;
         }
 
         var window = options.Value.Common.ViewMode switch

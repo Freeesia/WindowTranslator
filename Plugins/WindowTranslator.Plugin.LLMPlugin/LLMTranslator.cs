@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -12,7 +11,6 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
-[DisplayName("LLM")]
 public class LLMTranslator : ITranslateModule
 {
     private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
@@ -114,8 +112,8 @@ public class LLMTranslator : ITranslateModule
         {
             throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         }
-        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.Text.Contains(kv.Key))).ToArray();
-        var common = this.common.Where(c => srcTexts.Any(s => s.Text.Contains(c))).ToArray();
+        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
+        var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
         var sb = new StringBuilder();
         if (glossary.Length > 0)
         {
@@ -154,7 +152,7 @@ public class LLMTranslator : ITranslateModule
         var client = this.client ?? throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         ChatCompletion completion = await client.CompleteChatAsync([
                 ChatMessage.CreateSystemMessage(system),
-                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions)),
+                ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.SourceText, s.Context }).ToArray(), jsonOptions)),
             ], openAiOptions)
             .ConfigureAwait(false);
         var res = JsonSerializer.Deserialize<Response>(completion.Content[0].Text.Trim(), jsonOptions);
@@ -169,7 +167,7 @@ public class LLMTranslator : ITranslateModule
         {
             ChatCompletion completion = await client.CompleteChatAsync([
                     ChatMessage.CreateSystemMessage(system),
-                    ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.Text, s.Context }).ToArray(), jsonOptions)),
+                    ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.SourceText, s.Context }).ToArray(), jsonOptions)),
                     assitant,
                 ], otherOptions)
                 .ConfigureAwait(false);

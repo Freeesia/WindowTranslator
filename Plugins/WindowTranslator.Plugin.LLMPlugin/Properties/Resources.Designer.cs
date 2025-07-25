@@ -115,7 +115,7 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         }
         
         /// <summary>
-        ///   接続先 に類似しているローカライズされた文字列を検索します。
+        ///   ローカルLLM接続先 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Endpoint {
             get {
@@ -142,6 +142,24 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         }
         
         /// <summary>
+        ///   ChatGPT API設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LLMOptions {
+            get {
+                return ResourceManager.GetString("LLMOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ChatGPT API翻訳 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LLMTranslator {
+            get {
+                return ResourceManager.GetString("LLMTranslator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   使用するモデル に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Model {
@@ -156,6 +174,15 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         internal static string TranslateContext {
             get {
                 return ResourceManager.GetString("TranslateContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   補正が完了してから翻訳を行う に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string WaitCorrect {
+            get {
+                return ResourceManager.GetString("WaitCorrect", resourceCulture);
             }
         }
     }

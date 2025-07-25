@@ -3,12 +3,14 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pt="http://propertytools.org/wpf"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:properties="clr-namespace:WindowTranslator.Properties"
-    Title="{Binding Title}"
+    xmlns:pt="http://propertytools.org/wpf"
+    xmlns:root="clr-namespace:WindowTranslator"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
     Width="800"
     Height="720"
     d:DataContext="{d:DesignInstance {x:Type local:AllSettingsViewModel}}"
@@ -27,11 +29,13 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="8" />
         </Style>
+        <local:SettingsPropertyGridFactory x:Key="factory" />
+        <local:SettingsPropertyGridOperator x:Key="operator" />
     </ui:FluentWindow.Resources>
     <Grid>
         <DockPanel>
             <ui:TitleBar
-                Title="{Binding Title}"
+                Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
                 DockPanel.Dock="Top"
                 ShowMinimize="False">
                 <ui:TitleBar.Icon>
@@ -101,23 +105,56 @@
                     </Style>
                 </DockPanel.Resources>
 
-                <ui:Button
-                    Content="{x:Static properties:Resources.Cancel}"
-                    DockPanel.Dock="Right"
-                    IsCancel="True" />
+                <ui:Button DockPanel.Dock="Right" IsCancel="True">
+                    <ui:Button.Style>
+                        <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="ui:Button">
+                            <Setter Property="Content" Value="{x:Static properties:Resources.Cancel}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ApplyMode, Mode=OneTime}" Value="True">
+                                    <Setter Property="Content" Value="{x:Static properties:Resources.Close}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:Button.Style>
+                </ui:Button>
                 <ui:Button
                     Command="{Binding SaveCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
-                    Content="{x:Static properties:Resources.OK}"
                     DockPanel.Dock="Right"
-                    IsDefault="True" />
+                    IsDefault="{Binding ApplyMode, Converter={x:Static data:InverseBoolConverter.Default}}">
+                    <ui:Button.Style>
+                        <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="ui:Button">
+                            <Setter Property="Content" Value="{x:Static properties:Resources.OK}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ApplyMode, Mode=OneTime}" Value="True">
+                                    <Setter Property="Content" Value="{x:Static properties:Resources.Apply}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:Button.Style>
+                </ui:Button>
                 <ui:ToggleSwitch
                     Margin="4"
                     Content="{x:Static properties:Resources.AutoStartWithPC}"
                     IsChecked="{Binding IsStartup, Mode=TwoWay}" />
             </DockPanel>
             <TabControl SelectedIndex="{Binding SelectedTab}">
-                <TabItem Header="{x:Static properties:Resources.GeneralSettings}">
+                <TabItem Header="{x:Static properties:Resources.GeneralSettings}" IsEnabled="{Binding TargetMode, Mode=OneTime, Converter={x:Static data:InverseBoolConverter.Default}}">
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding}">
+                                <ui:TextBlock.Style>
+                                    <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:TextBlock.Style>
+                            </ui:TextBlock>
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
                     <DockPanel>
                         <GroupBox DockPanel.Dock="Top" Header="{x:Static properties:Resources.DisplayMethod}">
                             <Grid>
@@ -194,10 +231,6 @@
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.TargetSpecificSettings}">
                     <Grid>
-                        <Grid.Resources>
-                            <local:SettingsPropertyGridFactory x:Key="factory" />
-                            <local:SettingsPropertyGridOperator x:Key="operator" />
-                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200" MinWidth="120" />
                             <ColumnDefinition Width="Auto" />
@@ -206,6 +239,7 @@
                         <ui:ListView
                             Grid.Column="0"
                             Margin="4"
+                            IsEnabled="{Binding TargetMode, Mode=OneTime, Converter={x:Static data:InverseBoolConverter.Default}}"
                             ItemsSource="{Binding Targets}"
                             ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                             SelectedItem="{Binding SelectedTarget}">
@@ -213,6 +247,11 @@
                                 <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
                                     <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}" />
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
+                                        </Trigger>
+                                    </Style.Triggers>
                                 </Style>
                             </ui:ListView.ItemContainerStyle>
                             <ui:ListView.ItemTemplate>
@@ -224,7 +263,7 @@
                                             Content="{ui:SymbolIcon Delete24}"
                                             DockPanel.Dock="Right"
                                             Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Self}, Converter={StaticResource b2vConv}}" />
-                                        <TextBlock
+                                        <ui:TextBlock
                                             Margin="8,4"
                                             VerticalAlignment="Center"
                                             Text="{Binding Name, Converter={x:Static local:TargetNameConverter.Default}}"
@@ -257,82 +296,20 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.About}">
-                    <GroupBox>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <Label
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.Version}" />
-                            <Label
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.BuildDate}" />
-                            <Label
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.DevelopedBy}" />
-                            <Label
-                                Grid.Row="3"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.PublishPage}" />
-                            <Label
-                                Grid.Row="4"
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Content="{x:Static properties:Resources.License}" />
-
-                            <ui:TextBlock
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding Version}" />
-                            <ui:TextBlock
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding BuildDate}" />
-                            <ui:TextBlock
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding DevelopedBy}" />
-                            <pt:LinkBlock
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                NavigateUri="{Binding Link}"
-                                Text="{Binding Link}" />
-                            <ui:TextBlock
-                                Grid.Row="4"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Text="{Binding License}" />
-
-                            <ui:Button
-                                Grid.Row="5"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Command="{Binding OpenThirdPartyLicensesCommand}"
-                                Content="{x:Static properties:Resources.OpenThirdPartyLicensesCommand}" />
-                        </Grid>
-                    </GroupBox>
+                    <pt:PropertyGrid
+                        Grid.Column="2"
+                        Margin="8"
+                        ControlFactory="{StaticResource factory}"
+                        Operator="{StaticResource operator}"
+                        SelectedObject="{x:Static root:AppInfo.Instance}"
+                        TabVisibility="Collapsed">
+                        <pt:PropertyGrid.Resources>
+                            <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                <Setter Property="Padding" Value="4,8" />
+                            </Style>
+                            <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
+                        </pt:PropertyGrid.Resources>
+                    </pt:PropertyGrid>
                 </TabItem>
             </TabControl>
         </DockPanel>

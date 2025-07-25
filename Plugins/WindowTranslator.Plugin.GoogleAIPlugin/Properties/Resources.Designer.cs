@@ -160,11 +160,47 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         }
         
         /// <summary>
+        ///   Gemini 2.5 Flash に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Gemini25Flash {
+            get {
+                return ResourceManager.GetString("Gemini25Flash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Gemini 2.5 Pro に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Gemini25Pro {
+            get {
+                return ResourceManager.GetString("Gemini25Pro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   用語集パス に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string GlossaryPath {
             get {
                 return ResourceManager.GetString("GlossaryPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Gemini設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GoogleAIOptions {
+            get {
+                return ResourceManager.GetString("GoogleAIOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Gemini翻訳 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GoogleAITranslator {
+            get {
+                return ResourceManager.GetString("GoogleAITranslator", resourceCulture);
             }
         }
         
@@ -201,6 +237,15 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         internal static string TranslateContext {
             get {
                 return ResourceManager.GetString("TranslateContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   補正が完了してから翻訳を行う に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string WaitCorrect {
+            get {
+                return ResourceManager.GetString("WaitCorrect", resourceCulture);
             }
         }
     }

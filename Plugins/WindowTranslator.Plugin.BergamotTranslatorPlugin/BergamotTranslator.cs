@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
-using System.Reflection;
 using BergamotTranslatorSharp;
 using Microsoft.Extensions.Options;
 using Octokit;
@@ -52,24 +51,17 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         var translated = new string[srcTexts.Length];
         for (var i = 0; i < srcTexts.Length; i++)
         {
-            translated[i] = this.service.Translate(srcTexts[i].Text);
+            translated[i] = this.service.Translate(srcTexts[i].SourceText);
         }
         return translated;
     }
 }
 
-public class BergamotValidator : ITargetSettingsValidator
+public class BergamotValidator(IGitHubClient client) : ITargetSettingsValidator
 {
-    private static readonly GitHubClient GitHubClient = new(CreateHeader());
     private const string RepoOwner = "mozilla";
     private const string RepoName = "firefox-translations-models";
-
-    private static ProductHeaderValue CreateHeader()
-    {
-        var asm = Assembly.GetExecutingAssembly();
-        var name = asm.GetName();
-        return new(name.Name, name.Version?.ToString());
-    }
+    private readonly IGitHubClient client = client;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -120,73 +112,114 @@ public class BergamotValidator : ITargetSettingsValidator
         }
     }
 
-    private static async ValueTask<bool> DownloadIfNotExists(string src, string dst)
+    private async ValueTask<bool> DownloadIfNotExists(string src, string dst)
     {
         var langPair = $"{src}{dst}";
         var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
         var configPath = Path.Combine(modelDir, "config.yml");
 
+        // すでに設定ファイルが存在する場合は処理をスキップ
         if (File.Exists(configPath))
-        {
             return true;
-        }
 
         Directory.CreateDirectory(modelDir);
 
         var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Directory.CreateDirectory(tmpDir);
 
+        // base → base-memory → tiny の順でフォールバック
+        var modelPaths = new[] { "models/base", "models/base-memory", "models/tiny" };
+
+        foreach (var modelPath in modelPaths)
+        {
+            if (await TryDownloadModelFromPath(modelPath, langPair, tmpDir, modelDir, configPath))
+                return true;
+        }
+
+        // すべてのパスで見つからなかった場合
+        return false;
+    }
+
+    private async ValueTask<bool> TryDownloadModelFromPath(string modelPath, string langPair, string tmpDir, string modelDir, string configPath)
+    {
         try
         {
-            var contents = await GitHubClient.Repository.Content.GetAllContents(RepoOwner, RepoName, $"models/prod/{langPair}").ConfigureAwait(false);
-
-            var files = new List<string>();
-            foreach (var content in contents)
-            {
-                var path = Path.Combine(tmpDir, content.Name);
-                await GitHubClient.DownloadFileAsync(RepoOwner, RepoName, content, path).ConfigureAwait(false);
-                if (Path.GetExtension(path) == ".gz")
-                {
-                    var dstPath = Path.Combine(modelDir, Path.GetFileNameWithoutExtension(content.Name));
-                    using var st = File.OpenRead(path);
-                    using var gz = new GZipStream(st, CompressionMode.Decompress);
-                    using var fs = File.Create(dstPath);
-                    await gz.CopyToAsync(fs).ConfigureAwait(false);
-                    files.Add(Path.GetFileNameWithoutExtension(content.Name));
-                }
-                else
-                {
-                    var dstPath = Path.Combine(modelDir, content.Name);
-                    File.Move(path, dstPath, true);
-                    files.Add(content.Name);
-                }
-            }
-
-            var modelPath = files.FirstOrDefault(f => f.StartsWith("model"));
-            var vocabPath = files.FirstOrDefault(f => f.StartsWith("vocab"));
-            var srcVocabPath = files.FirstOrDefault(f => f.Contains("srcvocab"));
-            var trgVocabPath = files.FirstOrDefault(f => f.Contains("trgvocab"));
-            var shortListPath = files.FirstOrDefault(f => f.StartsWith("lex"));
-
-            var config = CreateConfig(
-                modelPath ?? throw new InvalidOperationException("modelデータが存在しません"),
-                srcVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
-                trgVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
-                shortListPath ?? throw new InvalidOperationException("shortListデータが存在しません"),
-                modelPath.Split('.') switch
-                {
-                    [.., "intgemm", "alphas", "bin"] => "int8shiftAlphaAll",
-                    [.., "intgemm8", "bin"] => "int8shiftAll",
-                    _ => throw new InvalidOperationException($"Unknown model name pattern: ${modelPath}")
-                });
-            await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
+            var contents = await this.client.Repository.Content.GetAllContents(RepoOwner, RepoName, $"{modelPath}/{langPair}").ConfigureAwait(false);
+            var files = await DownloadAndExtractFiles(contents, tmpDir, modelDir);
+            await CreateConfigFile(files, configPath);
+            return true;
         }
         catch (NotFoundException)
         {
             return false;
         }
-        return true;
     }
+
+    private async ValueTask<List<string>> DownloadAndExtractFiles(IReadOnlyList<RepositoryContent> contents, string tmpDir, string modelDir)
+    {
+        var files = new List<string>();
+
+        foreach (var content in contents)
+        {
+            var tmpPath = Path.Combine(tmpDir, content.Name);
+            await this.client.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
+
+            var fileName = await ExtractFileIfNeeded(tmpPath, modelDir);
+            files.Add(fileName);
+        }
+
+        return files;
+    }
+
+    private static async ValueTask<string> ExtractFileIfNeeded(string tmpPath, string modelDir)
+    {
+        if (Path.GetExtension(tmpPath) == ".gz")
+        {
+            var fileName = Path.GetFileNameWithoutExtension(Path.GetFileName(tmpPath));
+            var dstPath = Path.Combine(modelDir, fileName);
+
+            using var st = File.OpenRead(tmpPath);
+            using var gz = new GZipStream(st, CompressionMode.Decompress);
+            using var fs = File.Create(dstPath);
+            await gz.CopyToAsync(fs).ConfigureAwait(false);
+
+            return fileName;
+        }
+        else
+        {
+            var fileName = Path.GetFileName(tmpPath);
+            var dstPath = Path.Combine(modelDir, fileName);
+            File.Move(tmpPath, dstPath, true);
+
+            return fileName;
+        }
+    }
+
+    private static async ValueTask CreateConfigFile(List<string> files, string configPath)
+    {
+        var modelFile = files.FirstOrDefault(f => f.StartsWith("model"));
+        var vocabPath = files.FirstOrDefault(f => f.StartsWith("vocab"));
+        var srcVocabPath = files.FirstOrDefault(f => f.Contains("srcvocab"));
+        var trgVocabPath = files.FirstOrDefault(f => f.Contains("trgvocab"));
+        var shortListPath = files.FirstOrDefault(f => f.StartsWith("lex"));
+
+        var config = CreateConfig(
+            modelFile ?? throw new InvalidOperationException("modelデータが存在しません"),
+            srcVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
+            trgVocabPath ?? vocabPath ?? throw new InvalidOperationException("vocabデータが存在しません"),
+            shortListPath ?? throw new InvalidOperationException("shortListデータが存在しません"),
+            GetModelPrecision(modelFile));
+
+        await File.WriteAllTextAsync(configPath, config).ConfigureAwait(false);
+    }
+
+    private static string GetModelPrecision(string modelFile)
+        => modelFile?.Split('.') switch
+        {
+            [.., "intgemm", "alphas", "bin"] => "int8shiftAlphaAll",
+            [.., "intgemm8", "bin"] => "int8shiftAll",
+            _ => throw new InvalidOperationException($"Unknown model name pattern: {modelFile}")
+        };
 
     private static string CreateConfig(string modelPath, string srcVocabPath, string trgVocabPath, string shortListPath, string precision) => $"""
         # These Marian options are set according to
@@ -220,7 +253,7 @@ public class BergamotValidator : ITargetSettingsValidator
 
 file static class Extensions
 {
-    public static async ValueTask DownloadFileAsync(this GitHubClient client, string owner, string repo, RepositoryContent content, string path)
+    public static async ValueTask DownloadFileAsync(this IGitHubClient client, string owner, string repo, RepositoryContent content, string path)
     {
         var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
         res.HttpResponse.IsSuccessStatusCode();
@@ -242,7 +275,7 @@ file static class Extensions
         }
     }
 
-    public static async ValueTask DownloadFileAsync(this GitHubClient client, Uri url, string path)
+    public static async ValueTask DownloadFileAsync(this IGitHubClient client, Uri url, string path)
     {
         var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
         res.HttpResponse.IsSuccessStatusCode();

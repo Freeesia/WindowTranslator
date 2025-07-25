@@ -15,6 +15,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
     private readonly Channel<IReadOnlyList<T>> queue;
     private readonly CancellationTokenSource cts = new();
     private readonly GenerativeModel? client;
+    private readonly bool waitCorrect;
     private bool disposedValue;
 
     protected ConcurrentDictionary<string, string?> Cache { get; } = new();
@@ -28,6 +29,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
     {
         var options = googleAiOptions.Value;
         this.Logger = logger;
+        this.waitCorrect = options.WaitCorrect;
         this.queue = Channel.CreateBounded<IReadOnlyList<T>>(new(1)
         {
             AllowSynchronousContinuations = true,
@@ -68,28 +70,49 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
             yield break;
         }
         var targets = new List<TextRect>();
+
+        // 全てのテキストを収集し、キャッシュを確認
         await foreach (var text in texts.ConfigureAwait(false))
         {
-            if (!this.Cache.TryGetValue(text.Text, out var corrected))
+            if (!this.Cache.TryGetValue(text.SourceText, out var corrected))
             {
                 targets.Add(text);
             }
+            // キャッシュに存在する場合は、補正済みのテキストを返す
             if (corrected is not null)
             {
-                yield return text.Text != corrected ? text with { Text = corrected } : text;
+                yield return text.SourceText != corrected ? text with { SourceText = corrected } : text;
             }
-            else
+            // WaitCorrectが無効な場合は、補正を待たずにそのまま返す
+            else if (!this.waitCorrect)
             {
                 yield return text;
             }
         }
 
+        // 補正が必要なテキストの処理
         if (targets.Count > 0)
         {
-            await this.queue.Writer.WriteAsync(
-                await GetQueueData(targets, context).ConfigureAwait(false),
-                this.cts.Token)
-                .ConfigureAwait(false);
+            var queueData = await GetQueueData(targets, context).ConfigureAwait(false);
+
+            // WaitCorrectが有効な場合：補正処理を完了してから結果を返す
+            if (this.waitCorrect)
+            {
+                await CorrectCore(queueData, this.cts.Token).ConfigureAwait(false);
+                // 補正後のテキストをキャッシュから返す
+                foreach (var text in targets)
+                {
+                    // キャッシュに必ず存在するはずだけど、念のためなかったらそのまま返す
+                    yield return this.Cache.TryGetValue(text.SourceText, out var corrected) && corrected is not null && text.SourceText != corrected
+                        ? (text with { SourceText = corrected })
+                        : text;
+                }
+            }
+            // WaitCorrectが無効な場合：従来の遅延処理
+            else
+            {
+                await this.queue.Writer.WriteAsync(queueData, this.cts.Token).ConfigureAwait(false);
+            }
         }
     }
 
@@ -108,19 +131,19 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
                 }
                 catch (ApiException e) when (e.ErrorCode == 400)
                 {
-                    throw new ApiException(e.ErrorCode, "GoogleAIのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+                    throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
                 }
                 // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
                 catch (ApiException e) when (e.ErrorCode == 503)
                 {
-                    this.Logger.LogWarning("GoogleAIのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
+                    this.Logger.LogWarning("Geminiのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
                     await Task.Delay(500).ConfigureAwait(false);
                     continue;
                 }
                 // レート制限を超えました。
                 catch (ApiException e) when (e.ErrorCode == 429)
                 {
-                    this.Logger.LogWarning("GoogleAIのレート制限を超えました。10秒待機して再試行します。");
+                    this.Logger.LogWarning("Geminiのレート制限を超えました。10秒待機して再試行します。");
                     await Task.Delay(10000).ConfigureAwait(false);
                     continue;
                 }

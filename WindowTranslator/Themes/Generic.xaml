@@ -1,8 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:WindowTranslator.Behaviors"
     xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:data="clr-namespace:WindowTranslator.Data"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:root="clr-namespace:WindowTranslator;assembly=WindowTranslator.Abstractions"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
     <ResourceDictionary.MergedDictionaries>
@@ -18,12 +20,12 @@
                         Height="{TemplateBinding RectHeight}"
                         ItemsSource="{TemplateBinding Texts}">
                         <ItemsControl.Resources>
-                            <data:BoolToDoubleConverter
-                                x:Key="b2dConv"
-                                FalseValue="0.5"
-                                TrueValue="1.0" />
+                            <data:NullToDoubleConverter
+                                x:Key="n2dConv"
+                                NotNullValue="1.0"
+                                NullValue="0.5" />
                             <data:SizeToCornerRadiusConverter
-                                x:Key="sizeToCornerRadiusConverter"
+                                x:Key="s2crConv"
                                 MaxValue="10"
                                 MinValue="2"
                                 ScaleFactor="0.15" />
@@ -38,27 +40,32 @@
                                 <Border
                                     MinWidth="{Binding Width}"
                                     MinHeight="{Binding Height}"
+                                    MaxWidth="{Binding MaxWidth}"
                                     Padding="2"
                                     Background="{Binding Background, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
                                     BorderBrush="#40000000"
                                     BorderThickness="2"
                                     ClipToBounds="True"
-                                    CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource sizeToCornerRadiusConverter}}"
-                                    Opacity="{Binding IsTranslated, Converter={StaticResource b2dConv}}">
+                                    CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource s2crConv}}"
+                                    Opacity="{Binding TranslatedText, Converter={StaticResource n2dConv}}">
                                     <Border.Resources>
-                                        <data:BoolToDataTemplateConverter x:Key="b2dtConv">
-                                            <data:BoolToDataTemplateConverter.TrueContent>
+                                        <data:NullToDataTemplateConverter x:Key="b2dtConv">
+                                            <data:NullToDataTemplateConverter.NotNullContent>
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <TextBlock
                                                         Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
                                                         VerticalAlignment="Center"
                                                         FontSize="{Binding FontSize}"
                                                         Foreground="{Binding Foreground, Converter={x:Static data:DrawingColorToBrushConverter.Default}}"
-                                                        Text="{Binding Text}"
-                                                        TextWrapping="Wrap" />
+                                                        Text="{Binding TranslatedText}"
+                                                        TextWrapping="Wrap">
+                                                        <i:Interaction.Behaviors>
+                                                            <b:FontSizeToOffsetYBehavior />
+                                                        </i:Interaction.Behaviors>
+                                                    </TextBlock>
                                                 </DataTemplate>
-                                            </data:BoolToDataTemplateConverter.TrueContent>
-                                            <data:BoolToDataTemplateConverter.FalseContent>
+                                            </data:NullToDataTemplateConverter.NotNullContent>
+                                            <data:NullToDataTemplateConverter.NullContent>
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <Viewbox
                                                         Width="{Binding Width}"
@@ -89,14 +96,15 @@
                                                         </Path>
                                                     </Viewbox>
                                                 </DataTemplate>
-                                            </data:BoolToDataTemplateConverter.FalseContent>
-                                        </data:BoolToDataTemplateConverter>
+                                            </data:NullToDataTemplateConverter.NullContent>
+                                        </data:NullToDataTemplateConverter>
                                     </Border.Resources>
                                     <Border.RenderTransform>
-                                        <!--  TODO: Fix Scale  -->
-                                        <ScaleTransform ScaleY="1.1" />
+                                        <TransformGroup>
+                                            <RotateTransform Angle="{Binding Angle}" />
+                                        </TransformGroup>
                                     </Border.RenderTransform>
-                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding IsTranslated, Converter={StaticResource b2dtConv}}" />
+                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding TranslatedText, Converter={StaticResource b2dtConv}}" />
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

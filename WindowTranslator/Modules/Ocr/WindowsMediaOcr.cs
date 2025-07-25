@@ -9,14 +9,13 @@ using Windows.Storage.Streams;
 using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
+using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.Modules.Ocr.Utility;
 using static WindowTranslator.Modules.Ocr.WindowsMediaOcrUtility;
-using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.OcrUtility;
 
 namespace WindowTranslator.Modules.Ocr;
 
-[DefaultModule]
 public sealed partial class WindowsMediaOcr(
     IOptionsSnapshot<LanguageOptions> langOptions,
     IOptionsSnapshot<BasicOcrParam> ocrParam,
@@ -111,6 +110,16 @@ public sealed partial class WindowsMediaOcr(
                             merged = true;
                         }
                     }
+                    foreach (var rect in results.OrderBy(r => r.Y).ToArray())
+                    {
+                        var r = rect.ToRect();
+                        if (CanMerge(temp, r, xt, yt))
+                        {
+                            temp.Merge(r);
+                            results.Remove(rect);
+                            merged = true;
+                        }
+                    }
                 } while (merged);
                 results.Add(temp);
             }
@@ -121,12 +130,12 @@ public sealed partial class WindowsMediaOcr(
             workingBitmap.Dispose();
         }
 
-        return results.Select(r => ToTextRect(r, this.scale))
+        return results.Select(r => ToTextRect(r, this.scale, angle))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
-            .Where(w => IsSpecialLang(this.source) || w.Text.Length > 2)
+            .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
             // 全部数字なら対象外
-            .Where(w => !AllSymbolOrSpace().IsMatch(w.Text))
+            .Where(w => !AllSymbolOrSpace().IsMatch(w.SourceText))
             .ToArray();
     }
 
@@ -146,7 +155,7 @@ public sealed partial class WindowsMediaOcr(
         }
 
         var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
-        var (text, x, y, w, _, _, _, _, _, _) = rect;
+        var (text, x, y, w, _, _, _, _, _) = rect;
 
         // y座標が近く、x間隔が近い場合にマージできる
         var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
@@ -206,13 +215,13 @@ public sealed partial class WindowsMediaOcr(
         {
             this.lang = lang;
             this.text = new(CreateText, LazyThreadSafetyMode.None);
-            (_, X, Y, Width, Height, FontSize, _, _, _, _) = rect;
+            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
             this.rects = [rect];
         }
 
         public void Merge(TextRect rect)
         {
-            var (_, x, y, width, height, _, _, _, _, _) = rect;
+            var (_, x, y, width, height, _, _, _, _) = rect;
             this.rects.Add(rect);
             var x1 = Math.Min(X, x);
             var y1 = Math.Min(Y, y);
@@ -228,10 +237,10 @@ public sealed partial class WindowsMediaOcr(
 
         private string CreateText()
         {
-            var builder = new StringBuilder(this.Rects.Sum(r => r.Text.Length + 1));
+            var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
             foreach (var rect in this.Rects.OrderBy(r => (int)((r.Y - this.Y) / this.FontSize)).ThenBy(r => r.X))
             {
-                builder.Append(rect.Text);
+                builder.Append(rect.SourceText);
                 if (IsSpaceLang(this.lang))
                 {
                     builder.Append(' ');
@@ -253,9 +262,18 @@ public sealed partial class WindowsMediaOcr(
             fontSize = FontSize;
             rects = Rects;
         }
+
+        public TextRect ToRect()
+        {
+            // 元の画像座標に変換
+            var text = this.Text;
+            // 高さがフォントサイズの2倍以上の場合は複数行とみなす
+            var lines = Height / FontSize >= 2;
+            return new(text, X, Y, Width, Height, FontSize, lines);
+        }
     }
 
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale)
+    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale, double angle)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
@@ -276,9 +294,9 @@ public sealed partial class WindowsMediaOcr(
         width += fontSize * fat;
         x -= fontSize * fat * .5;
         height += fontSize * fat;
-        y -= fontSize * fat * 1.5;
+        y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines);
+        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
@@ -303,7 +321,7 @@ public sealed partial class WindowsMediaOcr(
         var y = words.Select(w => w.Y).Average();
         var width = words.Select(w => w.Right).Max() - words.Select(w => w.Left).Min();
         var height = words.Select(w => w.Bottom).Average() - words.Select(w => w.Top).Average();
-        return new(text, x, y, width, height, height, false);
+        return new(text, x, y, width, height, height, false) { Angle = angle };
     }
 
     /// <summary>

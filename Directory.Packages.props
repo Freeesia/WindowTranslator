@@ -27,7 +27,7 @@
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageVersion Include="Microsoft.VisualStudio.Threading" Version="17.12.19" />
-    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.162" />
+    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.183" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
@@ -40,13 +40,15 @@
     <PackageVersion Include="System.Drawing.Common" Version="9.0.0" />
     <PackageVersion Include="System.Interactive" Version="6.0.3" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="TesseractOCR" Version="5.4.2" />
     <PackageVersion Include="ValueTaskSupplement" Version="1.1.0" />
     <PackageVersion Include="Wacton.Unicolour" Version="6.1.0" />
     <PackageVersion Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
-    <PackageVersion Include="WixSharp_wix4" Version="2.7.1" />
+    <PackageVersion Include="WixSharp_wix4" Version="2.7.4" />
     <PackageVersion Include="WPF-UI" Version="4.0.0" />
     <PackageVersion Include="WPF-UI.Tray" Version="3.0.5" />
     <PackageVersion Include="WpfAnalyzers" Version="4.1.1" />
+    <PackageVersion Include="XamlAnimatedGif" Version="2.3.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
     <PackageVersion Include="OpenAI" Version="2.1.0" />

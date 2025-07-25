@@ -136,7 +136,7 @@
     <value>APIキー</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>接続先</value>
+    <value>ローカルLLM接続先</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
     <value>補正サンプル</value>
@@ -149,5 +149,14 @@
   </data>
   <data name="Endpoint_Desc" xml:space="preserve">
     <value>OpenAIを利用する場合は空</value>
+  </data>
+  <data name="LLMOptions" xml:space="preserve">
+    <value>ChatGPT API設定</value>
+  </data>
+  <data name="LLMTranslator" xml:space="preserve">
+    <value>ChatGPT API翻訳</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>補正が完了してから翻訳を行う</value>
   </data>
 </root>

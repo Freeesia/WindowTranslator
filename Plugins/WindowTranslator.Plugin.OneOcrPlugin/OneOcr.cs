@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
@@ -11,8 +10,8 @@ using WindowTranslator.Collections;
 using WindowTranslator.Modules;
 using WinRT;
 using static WindowTranslator.LanguageUtility;
-using static WindowTranslator.Plugin.OneOcrPlugin.NativeMethods;
 using static WindowTranslator.OcrUtility;
+using static WindowTranslator.Plugin.OneOcrPlugin.NativeMethods;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -84,7 +83,14 @@ public class OneOcr : IOcrModule
         res = CreateOcrPipeline(Path.Combine(Utility.OneOcrPath, Utility.OneOcrModel), apiKey, context, out this.pipeline);
         if (res != 0)
         {
-            throw new InvalidOperationException($"OCRパイプラインの作成に失敗しました。エラーコード: {res}");
+            File.WriteAllText(Path.Combine(Utility.OneOcrPath, Utility.ErrorPath),
+                $"""
+                OCRパイプラインの作成に失敗しました。エラーコード: {res}
+                """);
+            throw new InvalidOperationException($"""
+                OCRパイプラインの作成に失敗しました。エラーコード: {res}
+                「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。
+                """);
         }
 
         // OCRプロセスオプション作成
@@ -117,16 +123,16 @@ public class OneOcr : IOcrModule
             workingBitmap.Dispose();
         }
 
-        var fat = bitmap.PixelWidth * 0.004;
+        var wFat = bitmap.PixelWidth * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い
             // (特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語))
-            .Where(r => IsSpecialLang(this.source) || r.Text.Length > 2)
+            .Where(r => IsSpecialLang(this.source) || r.SourceText.Length > 2)
             // 全部数字なら対象外
-            .Where(r => !AllSymbolOrSpace().IsMatch(r.Text))
+            .Where(r => !AllSymbolOrSpace().IsMatch(r.SourceText))
             // 若干太らせる
-            .Select(r => r with { Width = r.Width + (fat * 2), X = r.X - fat, Y = r.Y - (r.Height * 0.04) })
+            .Select(r => r with { X = r.X - wFat, Width = r.Width + (wFat * 2), Y = r.Y - (r.Height * 0.04), Height = r.Height * 1.08 })
             .ToArray();
     }
 
@@ -202,19 +208,14 @@ public class OneOcr : IOcrModule
                 throw new InvalidOperationException($"OCR行の境界ボックスの取得に失敗しました。行番号: {i}, エラーコード: {res}");
             }
             var boundingBox = Marshal.PtrToStructure<BoundingBox>(ptr);
+            // 傾いた矩形の適切なサイズと位置を計算
+            var (x, y, width, height, angle) = Utility.CalculateOrientedRect(boundingBox);
 
-            // 境界ボックスから座標を計算
-            var left = Math.Min(Math.Min(boundingBox.x1, boundingBox.x2), Math.Min(boundingBox.x3, boundingBox.x4));
-            var top = Math.Min(Math.Min(boundingBox.y1, boundingBox.y2), Math.Min(boundingBox.y3, boundingBox.y4));
+            // デバッグ情報をログに出力
+            this.logger.LogDebug($"Text: '{lineContent}', Angle: {angle:F2}°, Size: {width:F1}x{height:F1}, Position: ({x:F1}, {y:F1})");
 
-            var right = Math.Max(Math.Max(boundingBox.x1, boundingBox.x2), Math.Max(boundingBox.x3, boundingBox.x4));
-            var bottom = Math.Max(Math.Max(boundingBox.y1, boundingBox.y2), Math.Max(boundingBox.y3, boundingBox.y4));
-
-            var width = right - left;
-            var height = bottom - top;
-
-            // TextRectを作成して追加
-            textRects.Add(new TextRect(lineContent, left, top, width, height, height, false));
+            // TextRectを作成して追加（角度情報を含む、座標は左上位置）
+            textRects.Add(new(lineContent, x, y, width, height, height * 0.9, false) { Angle = angle });
         }
 
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
@@ -233,7 +234,7 @@ public class OneOcr : IOcrModule
         var sw = Stopwatch.StartNew();
 
         // 空のリストや無効なテキストの場合は処理しない
-        var rects = textRects.Where(r => !string.IsNullOrEmpty(r.Text)).ToArray();
+        var rects = textRects.Where(r => !string.IsNullOrEmpty(r.SourceText)).ToArray();
         if (rects.Length == 0)
         {
             return Array.Empty<TextRect>();
@@ -284,6 +285,13 @@ public class OneOcr : IOcrModule
     /// </summary>
     private bool CanMerge(TextRectMerger temp, TextRect rect, double xThreshold, double yThreshold)
     {
+        // 角度の差が閾値以上の場合はマージしない
+        var angleDiff = Math.Abs(temp.Rects.Average(r => r.Angle) - rect.Angle);
+        if (angleDiff >= Utility.IgnoreAngleThreshold)
+        {
+            return false;
+        }
+
         // 重なっている場合はマージできる
         if (temp.IntersectsWith(rect))
         {
@@ -298,7 +306,7 @@ public class OneOcr : IOcrModule
         }
 
         var fontSize = (temp.FontSize + rect.FontSize) / 2;
-        var (text, x, y, w, _, _, _, _, _, _) = rect;
+        var (text, x, y, w, _, _, _, _, _) = rect;
 
         // y座標が近く、x間隔が近い場合にマージできる（横方向の結合）
         var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
@@ -359,7 +367,10 @@ public class OneOcr : IOcrModule
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         var lines = height / fontSize >= 2;
 
-        return new(text, x, y, width, height, fontSize, lines);
+        // 結合された矩形の平均角度を計算
+        var angle = mergedRect.Rects.Average(r => r.Angle);
+
+        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     /// <summary>
@@ -386,14 +397,14 @@ public class OneOcr : IOcrModule
         {
             get
             {
-                var builder = new StringBuilder(this.Rects.Sum(r => r.Text.Length + 1));
+                var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
 
                 // Y座標でソートしてから、同じY座標内ではX座標でソート
                 foreach (var rect in this.Rects
                     .OrderBy(r => (int)((r.Y - this.Y) / this.FontSize))
                     .ThenBy(r => r.X))
                 {
-                    builder.Append(rect.Text);
+                    builder.Append(rect.SourceText);
                     builder.Append(' ');
                 }
 
@@ -409,13 +420,13 @@ public class OneOcr : IOcrModule
 
         public TextRectMerger(TextRect rect)
         {
-            (_, X, Y, Width, Height, FontSize, _, _, _, _) = rect;
+            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
             this.rects = [rect];
         }
 
         public void Merge(TextRect rect)
         {
-            var (_, x, y, width, height, _, _, _, _, _) = rect;
+            var (_, x, y, width, height, _, _, _, _) = rect;
             this.rects.Add(rect);
 
             // 新しい境界を計算
