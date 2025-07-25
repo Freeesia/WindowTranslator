@@ -294,7 +294,7 @@ public sealed partial class WindowsMediaOcr(
         width += fontSize * fat;
         x -= fontSize * fat * .5;
         height += fontSize * fat;
-        y -= fontSize * fat * 1.5;
+        y -= fontSize * fat * .5;
 
         return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }

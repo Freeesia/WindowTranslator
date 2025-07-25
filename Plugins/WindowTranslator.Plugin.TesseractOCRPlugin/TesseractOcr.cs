@@ -295,11 +295,11 @@ public sealed class TesseractOcr(
         var lines = height / fontSize >= 2;
 
         // 若干太らせて完全に文字を覆う
-        const double fat = .2;
+        const double fat = .4;
         width += fontSize * fat;
         x -= fontSize * fat * .5;
         height += fontSize * fat;
-        y -= fontSize * fat * 1.5;
+        y -= fontSize * fat * .5;
 
         return new(text, x, y, width, height, fontSize, lines);
     }
