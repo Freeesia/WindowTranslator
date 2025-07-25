@@ -136,7 +136,7 @@
     <value>Gemini 2.0 Flash Lite</value>
   </data>
   <data name="Gemini20Flash" xml:space="preserve">
-    <value>Zwilling 2.0 Flash</value>
+    <value>Gemini 2.0 Flash</value>
   </data>
   <data name="PreviewModel" xml:space="preserve">
     <value>Das zu verwendende Vorschaumodell.</value>
@@ -172,15 +172,15 @@
     <value>Gemini-Übersetzung</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
-    <value />
+    <value>Warten Sie, bis die Korrektur abgeschlossen ist, bevor Sie mit der Übersetzung fortfahren</value>
   </data>
   <data name="Gemini25Flash" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Flash</value>
   </data>
   <data name="Gemini25Pro" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Pro</value>
   </data>
   <data name="Gemini25FlashLite" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Flash Lite</value>
   </data>
 </root>

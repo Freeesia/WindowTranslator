@@ -172,15 +172,15 @@
     <value>Gemini Translation</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
-    <value />
+    <value>Wait for correction to complete before proceeding with translation</value>
   </data>
   <data name="Gemini25Flash" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Flash</value>
   </data>
   <data name="Gemini25Pro" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Pro</value>
   </data>
   <data name="Gemini25FlashLite" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Flash Lite</value>
   </data>
 </root>

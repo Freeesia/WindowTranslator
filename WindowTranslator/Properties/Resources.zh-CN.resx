@@ -255,6 +255,12 @@
   <data name="Version" xml:space="preserve">
     <value>版本</value>
   </data>
+  <data name="Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
   <data name="BuildDate" xml:space="preserve">
     <value>构建日期</value>
   </data>
