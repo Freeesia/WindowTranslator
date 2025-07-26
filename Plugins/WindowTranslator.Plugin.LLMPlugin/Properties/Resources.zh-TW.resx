@@ -157,6 +157,6 @@
     <value>ChatGPT API 翻譯</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
-    <value />
+    <value>修正完成後進行翻譯</value>
   </data>
 </root>

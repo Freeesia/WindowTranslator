@@ -133,10 +133,10 @@
     <value>双子座 1.5 Pro（至 2025 年 9 月 24 日）</value>
   </data>
   <data name="Gemini20FlashLite" xml:space="preserve">
-    <value>双子座 2.0 闪存精简版</value>
+    <value>Gemini 2.0 Flash Lite</value>
   </data>
   <data name="Gemini20Flash" xml:space="preserve">
-    <value>双子座 2.0 闪存</value>
+    <value>Gemini 2.0 Flash</value>
   </data>
   <data name="PreviewModel" xml:space="preserve">
     <value>预览使用的模型。</value>
@@ -172,12 +172,15 @@
     <value>Gemini 翻译</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
-    <value />
+    <value>校正完成后进行翻译</value>
   </data>
   <data name="Gemini25Flash" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Flash</value>
   </data>
   <data name="Gemini25Pro" xml:space="preserve">
-    <value />
+    <value>Gemini 2.5 Pro</value>
+  </data>
+  <data name="Gemini25FlashLite" xml:space="preserve">
+    <value>Gemini 2.5 Flash Lite</value>
   </data>
 </root>

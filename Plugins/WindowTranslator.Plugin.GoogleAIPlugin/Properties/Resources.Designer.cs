@@ -169,6 +169,15 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         }
         
         /// <summary>
+        ///   Gemini 2.5 Flash Lite に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Gemini25FlashLite {
+            get {
+                return ResourceManager.GetString("Gemini25FlashLite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Gemini 2.5 Pro に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Gemini25Pro {
