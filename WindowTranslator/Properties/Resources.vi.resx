@@ -297,10 +297,10 @@
   <data name="Develop" xml:space="preserve">
     <value>Thông tin kỹ thuật</value>
   </data>
-  <data name="Apply" xml:space="preserve">
-    <value>Áp dụng</value>
-  </data>
   <data name="Close" xml:space="preserve">
     <value>Đóng</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Áp dụng</value>
   </data>
 </root>
