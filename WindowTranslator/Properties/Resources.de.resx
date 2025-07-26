@@ -297,10 +297,10 @@
   <data name="Develop" xml:space="preserve">
     <value>Technische Informationen</value>
   </data>
-  <data name="Apply" xml:space="preserve">
-    <value>Anwenden</value>
-  </data>
   <data name="Close" xml:space="preserve">
     <value>Schließen</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Anwenden</value>
   </data>
 </root>
