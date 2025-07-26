@@ -4,8 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:WindowTranslator.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     x:Name="host"
     Title="{Binding Title}"
     d:DataContext="{d:DesignInstance local:OverlayMainViewModel}"
@@ -19,16 +21,9 @@
     WindowStyle="None"
     mc:Ignorable="d">
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="b2vConv" />
-        <Storyboard x:Key="busyAnim">
-            <DoubleAnimation
-                AutoReverse="True"
-                RepeatBehavior="Forever"
-                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                From="1"
-                To="-1"
-                Duration="0:0:1" />
-        </Storyboard>
+        <data:BoolAndConverter x:Key="b2vConv">
+            <BooleanToVisibilityConverter />
+        </data:BoolAndConverter>
     </Window.Resources>
     <Canvas>
         <control:OverlayTextsControl
@@ -39,23 +34,35 @@
             RectWidth="{Binding Width}"
             Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
             Texts="{Binding OcrTexts}" />
-        <Image
+        <ui:ProgressRing
             Canvas.Right="0"
+            Canvas.Bottom="0"
             Width="20"
             Height="20"
             Margin="4"
-            Opacity="0.6"
-            RenderTransformOrigin="0.5,0.5"
-            Source="/wt.ico"
-            Visibility="{Binding IsFirstBusy, Converter={StaticResource b2vConv}}">
-            <Image.RenderTransform>
-                <ScaleTransform />
-            </Image.RenderTransform>
-            <Image.Triggers>
-                <EventTrigger RoutedEvent="Image.Loaded">
-                    <BeginStoryboard Storyboard="{StaticResource busyAnim}" />
-                </EventTrigger>
-            </Image.Triggers>
-        </Image>
+            Foreground="#ECA2F5"
+            IsIndeterminate="True">
+            <ui:ProgressRing.Visibility>
+                <MultiBinding Converter="{StaticResource b2vConv}">
+                    <Binding Path="DisplayBusy" />
+                    <Binding Path="Filtering.IsBusy" />
+                </MultiBinding>
+            </ui:ProgressRing.Visibility>
+        </ui:ProgressRing>
+        <ui:ProgressRing
+            Canvas.Right="0"
+            Canvas.Bottom="0"
+            Width="20"
+            Height="20"
+            Margin="4"
+            Foreground="#8BCC45"
+            IsIndeterminate="True">
+            <ui:ProgressRing.Visibility>
+                <MultiBinding Converter="{StaticResource b2vConv}">
+                    <Binding Path="DisplayBusy" />
+                    <Binding Path="Recognizing.IsBusy" />
+                </MultiBinding>
+            </ui:ProgressRing.Visibility>
+        </ui:ProgressRing>
     </Canvas>
 </Window>

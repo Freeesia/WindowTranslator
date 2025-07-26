@@ -25,12 +25,22 @@
             Icon="{ui:ImageIcon '/wt.ico'}"
             ShowMinimize="False">
             <ui:TitleBar.Header>
-                <ui:ProgressRing
-                    Width="20"
-                    Height="20"
-                    Margin="8,0"
-                    IsIndeterminate="True"
-                    Visibility="{Binding IsFirstBusy, Converter={StaticResource b2vConv}}" />
+                <Grid Visibility="{Binding DisplayBusy, Converter={StaticResource b2vConv}}">
+                    <ui:ProgressRing
+                        Width="20"
+                        Height="20"
+                        Margin="8,0"
+                        Foreground="#ECA2F5"
+                        IsIndeterminate="True"
+                        Visibility="{Binding Filtering.IsBusy, Converter={StaticResource b2vConv}}" />
+                    <ui:ProgressRing
+                        Width="20"
+                        Height="20"
+                        Margin="8,0"
+                        Foreground="#8BCC45"
+                        IsIndeterminate="True"
+                        Visibility="{Binding Recognizing.IsBusy, Converter={StaticResource b2vConv}}" />
+                </Grid>
             </ui:TitleBar.Header>
         </ui:TitleBar>
         <adorner:HwndAdornerManager>

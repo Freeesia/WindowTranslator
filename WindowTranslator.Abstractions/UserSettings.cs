@@ -68,6 +68,11 @@ public class TargetSettings
     public string OverlayShortcut { get; set; } = "Ctrl + Alt + O";
 
     /// <summary>
+    /// 処理中の表示を行うか
+    /// </summary>
+    public bool DisplayBusy { get; set; } = true;
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
