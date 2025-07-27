@@ -10,6 +10,7 @@ using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.GoogleAIPlugin.Properties;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
@@ -84,7 +85,7 @@ public class GoogleAITranslator : ITranslateModule
     {
         if (this.client is null)
         {
-            throw new InvalidOperationException("Gemini機能が初期化されていません。設定ダイアログからGoogleAIオプションを設定してください");
+            throw new InvalidOperationException(Resources.GeminiNotInitialized);
         }
         var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
         var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
@@ -133,7 +134,7 @@ public class GoogleAITranslator : ITranslateModule
             }
             catch (ApiException e) when (e.ErrorCode == 400)
             {
-                throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+                throw new ApiException(e.ErrorCode, Resources.InvalidApiKey, e.ErrorStatus);
             }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (ApiException e) when (e.ErrorCode == 503)

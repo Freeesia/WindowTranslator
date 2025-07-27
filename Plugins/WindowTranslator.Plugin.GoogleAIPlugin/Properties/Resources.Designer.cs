@@ -187,6 +187,15 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         }
         
         /// <summary>
+        ///   Gemini機能が初期化されていません。設定ダイアログからGoogleAIオプションを設定してください に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GeminiNotInitialized {
+            get {
+                return ResourceManager.GetString("GeminiNotInitialized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   用語集パス に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string GlossaryPath {
@@ -210,6 +219,15 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         internal static string GoogleAITranslator {
             get {
                 return ResourceManager.GetString("GoogleAITranslator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidApiKey {
+            get {
+                return ResourceManager.GetString("InvalidApiKey", resourceCulture);
             }
         }
         
