@@ -241,6 +241,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                     [nameof(ICacheModule)] = t.CacheModule,
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
+                DisplayBusy = t.DisplayBusy,
             }),
         };
 
@@ -430,6 +431,11 @@ public partial class TargetSettingsViewModel(
     [property: Category("SettingsViewModel|Shortcut")]
     [ObservableProperty]
     private string overlayShortcut = settings.OverlayShortcut;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(7)]
+    [ObservableProperty]
+    private bool displayBusy;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

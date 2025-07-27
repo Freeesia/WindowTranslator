@@ -223,6 +223,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   処理中アイコンを表示する に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DisplayBusy {
+            get {
+                return ResourceManager.GetString("DisplayBusy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   表示方法 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DisplayMethod {

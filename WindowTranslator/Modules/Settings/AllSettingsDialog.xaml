@@ -166,6 +166,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Label
@@ -200,6 +201,13 @@
                                     ItemsSource="{Binding OverlaySwitches}"
                                     SelectedValue="{Binding OverlaySwitch}"
                                     SelectedValuePath="Value" />
+
+
+                                <CheckBox
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Content="処理中アイコンを表示する"
+                                    IsChecked="{Binding DisplayBusy}" />
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="{x:Static properties:Resources.AutoTargets}">

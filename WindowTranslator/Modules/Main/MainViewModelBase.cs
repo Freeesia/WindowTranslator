@@ -41,8 +41,10 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private double height = double.NaN;
 
-    [ObservableProperty]
-    private bool isFirstBusy = true;
+    public bool DisplayBusy { get; }
+
+    public BusyScope Recognizing { get; } = new();
+    public BusyScope Filtering { get; } = new();
 
     private SoftwareBitmap? capturedBmp;
     private SoftwareBitmap? analyzingBmp;
@@ -67,6 +69,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.presentationService = presentationService;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
+        this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
@@ -105,7 +108,6 @@ public abstract partial class MainViewModelBase : IDisposable
         using var rel = new DisposeAction(() =>
         {
             this.analyzing.Release();
-            this.IsFirstBusy = false;
         });
         var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
         if (sbmp is null)
@@ -122,74 +124,69 @@ public abstract partial class MainViewModelBase : IDisposable
             return;
         }
         IEnumerable<TextRect> texts = [];
-        try
+        using (this.Recognizing.EnterBusy())
         {
-            texts = await this.ocr.RecognizeAsync(sbmp);
+            try
+            {
+                texts = await this.ocr.RecognizeAsync(sbmp);
+            }
+            catch (ObjectDisposedException)
+            {
+                // すでに破棄されている場合は何もしない
+                this.timer.DisposeAsync().Forget();
+                this.capture.StopCapture();
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                // キャンセルされた場合は何もしない
+                this.timer.DisposeAsync().Forget();
+                this.capture.StopCapture();
+                return;
+            }
+            catch (Exception e)
+            {
+                this.timer.DisposeAsync().Forget();
+                this.capture.StopCapture();
+                this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
+                StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+                return;
+            }
         }
-        catch (ObjectDisposedException)
+        using (this.Filtering.EnterBusy())
         {
-            // すでに破棄されている場合は何もしない
-            this.timer.DisposeAsync().Forget();
-            this.capture.StopCapture();
-            return;
-        }
-        catch (OperationCanceledException)
-        {
-            // キャンセルされた場合は何もしない
-            this.timer.DisposeAsync().Forget();
-            this.capture.StopCapture();
-            return;
-        }
-        catch (Exception e)
-        {
-            this.timer.DisposeAsync().Forget();
-            this.capture.StopCapture();
-            this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
-            StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-            return;
-        }
-        texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
-        texts = await this.color.ConvertColorAsync(sbmp, texts);
+            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
+            texts = await this.color.ConvertColorAsync(sbmp, texts);
 
-        // 外接矩形が既存の矩形に被っていない物だけ先に追加
-        foreach (var newText in texts)
-        {
-            // 既存のOcrTexts要素との衝突をチェック
-            if (!this.OcrTexts.Any(newText.OverlapsWith))
+            var context = new FilterContext()
             {
-                // 被っていない場合のみ追加
-                this.OcrTexts.Add(newText);
-            }
-        }
-
-        var context = new FilterContext()
-        {
-            SoftwareBitmap = sbmp,
-            ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
-        };
-        {
-            var tmp = texts.ToAsyncEnumerable();
-            foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
+                SoftwareBitmap = sbmp,
+                ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
+            };
             {
-                tmp = filter.ExecutePreTranslate(tmp, context);
+                var tmp = texts.ToAsyncEnumerable();
+                foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
+                {
+                    tmp = filter.ExecutePreTranslate(tmp, context);
+                }
+                using var t = this.logger.LogDebugTime("PreTranslate");
+                texts = await tmp.ToArrayAsync();
             }
-            using var t = this.logger.LogDebugTime("PreTranslate");
-            texts = await tmp.ToArrayAsync();
-        }
-        TranslateAsync(texts).Forget();
-        texts = texts.Select(t => t switch
-        {
-            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
-            _ => t,
-        }).ToArray();
-        {
-            var tmp = texts.ToAsyncEnumerable();
-            foreach (var filter in this.filters.OrderBy(f => f.Priority))
+            TranslateAsync(texts).Forget();
+            texts = texts.Select(t => t switch
             {
-                tmp = filter.ExecutePostTranslate(tmp, context);
+                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+                _ => t,
+            }).ToArray();
+            {
+                var tmp = texts.ToAsyncEnumerable();
+                foreach (var filter in this.filters.OrderBy(f => f.Priority))
+                {
+                    tmp = filter.ExecutePostTranslate(tmp, context);
+                }
+                using var t = this.logger.LogDebugTime("PostTranslate");
+                texts = await tmp.ToArrayAsync();
             }
-            using var t = this.logger.LogDebugTime("PostTranslate");
-            texts = await tmp.ToArrayAsync();
         }
 
         var hash = texts.ToHashSet();
