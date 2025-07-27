@@ -159,4 +159,15 @@
   <data name="WaitCorrect" xml:space="preserve">
     <value>修正完成後進行翻譯</value>
   </data>
+  <data name="NeedSettings" xml:space="preserve">
+    <value>LLM 功能未初始化。請在設定對話框中配置 LLM 選項</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>翻譯模組中選擇了「ChatGPT API 翻譯」或啟用了識別修正。
+
+使用 ChatGPT API 需要 API 金鑰。
+請在「目標設定」→「ChatGPT API 設定」標籤中設定 API 金鑰。
+
+※ 使用本機 LLM 時，由於程式庫限制也需要 API 金鑰。</value>
+  </data>
 </root>
