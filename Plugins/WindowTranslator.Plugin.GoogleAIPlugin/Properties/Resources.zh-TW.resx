@@ -183,4 +183,10 @@
   <data name="Gemini25FlashLite" xml:space="preserve">
     <value>Gemini 2.5 Flash Lite</value>
   </data>
+  <data name="GeminiNotInitialized" xml:space="preserve">
+    <value>Gemini 功能未初始化。請從設定對話框配置 Google AI 選項</value>
+  </data>
+  <data name="InvalidApiKey" xml:space="preserve">
+    <value>Gemini API 金鑰無效。請從設定對話框配置 Google AI 選項</value>
+  </data>
 </root>
