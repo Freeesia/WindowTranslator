@@ -303,4 +303,7 @@
   <data name="Apply" xml:space="preserve">
     <value>적용</value>
   </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>처리 중 아이콘을 표시합니다</value>
+  </data>
 </root>
