@@ -118,12 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeployId" xml:space="preserve">
-    <value>スクリプトのデプロイID</value>
+    <value>ID triển khai script</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
-    <value>Google翻訳</value>
+    <value>Google Dịch</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
-    <value>Google翻訳</value>
+    <value>Google Dịch</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>Google Dịch đang trả về phản hồi không mong muốn.
+Bạn có thể đã vượt quá giới hạn dịch thuật hàng giờ.
+Vui lòng đợi một lúc và thử lại, hoặc sử dụng mô-đun dịch thuật khác.</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>Một số hoặc tất cả quyền mà mô-đun dịch thuật yêu cầu đã không được cấp.
+Khi bạn thử dịch lại, bạn sẽ được nhắc cấp quyền một lần nữa.</value>
   </data>
 </root>
