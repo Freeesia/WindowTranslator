@@ -159,4 +159,15 @@
   <data name="WaitCorrect" xml:space="preserve">
     <value>보정 완료 후 번역하기</value>
   </data>
+  <data name="NeedSettings" xml:space="preserve">
+    <value>LLM 기능이 초기화되지 않았습니다. 설정 대화상자에서 LLM 옵션을 설정해 주세요</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>번역 모듈에 "ChatGPT API 번역"이 선택되어 있거나 인식 보정이 활성화되어 있습니다.
+
+ChatGPT API 이용에는 API 키가 필요합니다.
+"대상별 설정" → "ChatGPT API 설정" 탭의 API 키를 설정해 주세요.
+
+※ 로컬 LLM을 이용할 경우에도 라이브러리 제약으로 인해 API 키가 필요합니다.</value>
+  </data>
 </root>
