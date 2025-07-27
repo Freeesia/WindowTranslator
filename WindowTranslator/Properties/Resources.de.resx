@@ -303,4 +303,7 @@
   <data name="Apply" xml:space="preserve">
     <value>Anwenden</value>
   </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>Zeige das Beschäftigt-Symbol</value>
+  </data>
 </root>
