@@ -88,24 +88,21 @@ public class OneOcr : IOcrModule
                 $"""
                 OCRパイプラインの作成に失敗しました。エラーコード: {res}
                 """);
-            throw new InvalidOperationException($"""
-                OCRパイプラインの作成に失敗しました。エラーコード: {res}
-                「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。
-                """);
+            throw new InvalidOperationException(string.Format(Resources.CreatePipelineFaild, res));
         }
 
         // OCRプロセスオプション作成
         res = CreateOcrProcessOptions(out this.opt);
         if (res != 0)
         {
-            throw new InvalidOperationException($"OCRプロセスオプションの作成に失敗しました。エラーコード: {res}");
+            throw new InvalidOperationException(string.Format(Resources.CreateProcessOptionsFaild, res));
         }
 
         // 最大認識行数を設定
         res = OcrProcessOptionsSetMaxRecognitionLineCount(opt, maxLineCount);
         if (res != 0)
         {
-            throw new InvalidOperationException($"OCR最大認識行数の設定に失敗しました。エラーコード: {res}");
+            throw new InvalidOperationException(string.Format(Resources.SetMaxRecognitionLineCountFaild, res));
         }
     }
 
@@ -164,7 +161,7 @@ public class OneOcr : IOcrModule
                 return [];
             }
             bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
-            throw new InvalidOperationException($"OCRパイプラインの実行に失敗しました。エラーコード: {res}");
+            throw new InvalidOperationException(string.Format(Resources.RunPipelineFaild, res));
         }
 
         // 認識された行数を取得
@@ -172,7 +169,7 @@ public class OneOcr : IOcrModule
         if (res != 0)
         {
             bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
-            throw new InvalidOperationException($"OCR行数の取得に失敗しました。エラーコード: {res}");
+            throw new InvalidOperationException(string.Format(Resources.GetLineCountFaild, res));
         }
 
         var textRects = new List<TextRect>((int)lineCount);
@@ -185,7 +182,7 @@ public class OneOcr : IOcrModule
             if (res != 0 || line == 0)
             {
                 bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
-                throw new InvalidOperationException($"OCR行の取得に失敗しました。行番号: {i}, エラーコード: {res}");
+                throw new InvalidOperationException(string.Format(Resources.GetLineFaild, i, res));
             }
 
             // 行のテキスト内容を取得
@@ -193,7 +190,7 @@ public class OneOcr : IOcrModule
             if (res != 0)
             {
                 bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
-                throw new InvalidOperationException($"OCR行のテキスト内容の取得に失敗しました。行番号: {i}, エラーコード: {res}");
+                throw new InvalidOperationException(string.Format(Resources.GetLineContentFaild, i, res));
             }
 
             if (string.IsNullOrEmpty(lineContent))
@@ -206,7 +203,7 @@ public class OneOcr : IOcrModule
             if (res != 0)
             {
                 bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
-                throw new InvalidOperationException($"OCR行の境界ボックスの取得に失敗しました。行番号: {i}, エラーコード: {res}");
+                throw new InvalidOperationException(string.Format(Resources.GetLineBoundingBoxFaild, i, res));
             }
             var boundingBox = Marshal.PtrToStructure<BoundingBox>(ptr);
             // 傾いた矩形の適切なサイズと位置を計算

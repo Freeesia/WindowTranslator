@@ -132,4 +132,29 @@
   <data name="SetLazyLoadFaild" xml:space="preserve">
     <value>Failed to set OCR model lazy loading. Error code: {0}</value>
   </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Failed to create OCR pipeline. Error code: {0}
+Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Failed to create OCR process options. Error code: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Failed to set OCR maximum recognition line count. Error code: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Failed to run OCR pipeline. Error code: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Failed to get OCR line count. Error code: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Failed to get OCR line. Line number: {0}, Error code: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Failed to get OCR line text content. Line number: {0}, Error code: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Failed to get OCR line bounding box. Line number: {0}, Error code: {1}</value>
+  </data>
 </root>

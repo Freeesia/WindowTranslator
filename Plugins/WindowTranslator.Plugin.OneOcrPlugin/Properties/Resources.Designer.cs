@@ -70,6 +70,61 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
+        ///   OCRパイプラインの作成に失敗しました。エラーコード: {0}
+        ///   「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CreatePipelineFaild {
+            get {
+                return ResourceManager.GetString("CreatePipelineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRプロセスオプションの作成に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CreateProcessOptionsFaild {
+            get {
+                return ResourceManager.GetString("CreateProcessOptionsFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行の取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineFaild {
+            get {
+                return ResourceManager.GetString("GetLineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行の境界ボックスの取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineBoundingBoxFaild {
+            get {
+                return ResourceManager.GetString("GetLineBoundingBoxFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行のテキスト内容の取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineContentFaild {
+            get {
+                return ResourceManager.GetString("GetLineContentFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行数の取得に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineCountFaild {
+            get {
+                return ResourceManager.GetString("GetLineCountFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   OCRの初期化オプション作成に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string InitFaild {
@@ -97,11 +152,29 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
-        ///   OCRモデル遅延読み込み設定に失敗しました。エラーコード: {res} に類似しているローカライズされた文字列を検索します。
+        ///   OCRパイプラインの実行に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string RunPipelineFaild {
+            get {
+                return ResourceManager.GetString("RunPipelineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRモデル遅延読み込み設定に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string SetLazyLoadFaild {
             get {
                 return ResourceManager.GetString("SetLazyLoadFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR最大認識行数の設定に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SetMaxRecognitionLineCountFaild {
+            get {
+                return ResourceManager.GetString("SetMaxRecognitionLineCountFaild", resourceCulture);
             }
         }
     }

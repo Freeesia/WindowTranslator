@@ -132,4 +132,29 @@
   <data name="SetLazyLoadFaild" xml:space="preserve">
     <value>Thiết lập tải mô hình OCR chậm thất bại. Mã lỗi: {0}</value>
   </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Tạo pipeline OCR thất bại. Mã lỗi: {0}
+Hãy thử cập nhật ứng dụng "Snipping Tool" hoặc "Microsoft Photos".</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Tạo tùy chọn xử lý OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Thiết lập số dòng nhận dạng tối đa OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Chạy pipeline OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Lấy số dòng OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Lấy dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Lấy nội dung văn bản dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Lấy hộp giới hạn dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
+  </data>
 </root>
