@@ -118,19 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CorrectMode_Image" xml:space="preserve">
-    <value>画像認識による補正</value>
+    <value>Hiệu chỉnh bằng nhận dạng hình ảnh</value>
   </data>
   <data name="CorrectMode_None" xml:space="preserve">
-    <value>補正なし</value>
+    <value>Không hiệu chỉnh</value>
   </data>
   <data name="CorrectMode_Text" xml:space="preserve">
-    <value>テキストのみの補正</value>
+    <value>Hiệu chỉnh chỉ văn bản</value>
   </data>
   <data name="CorrectMode" xml:space="preserve">
-    <value>認識補正</value>
+    <value>Hiệu chỉnh nhận dạng</value>
   </data>
   <data name="Model" xml:space="preserve">
-    <value>使用するモデル</value>
+    <value>Mô hình sử dụng</value>
   </data>
   <data name="ApiKey" xml:space="preserve">
     <value>Khóa API</value>
@@ -145,10 +145,10 @@
     <value>Thông tin bối cảnh sử dụng khi dịch</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>用語集パス</value>
+    <value>Đường dẫn thuật ngữ</value>
   </data>
   <data name="Endpoint_Desc" xml:space="preserve">
-    <value>OpenAIを利用する場合は空</value>
+    <value>Để trống khi sử dụng OpenAI</value>
   </data>
   <data name="LLMOptions" xml:space="preserve">
     <value>Cài đặt ChatGPT API</value>
@@ -158,5 +158,16 @@
   </data>
   <data name="WaitCorrect" xml:space="preserve">
     <value>Chờ hiệu chỉnh hoàn tất trước khi tiếp tục dịch</value>
+  </data>
+  <data name="NeedSettings" xml:space="preserve">
+    <value>Chức năng LLM chưa được khởi tạo. Vui lòng cấu hình tùy chọn LLM trong hộp thoại cài đặt</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>"Dịch ChatGPT API" được chọn làm mô-đun dịch hoặc hiệu chỉnh nhận dạng được bật.
+
+Sử dụng API ChatGPT yêu cầu khóa API.
+Vui lòng đặt khóa API trong "Cài đặt mục tiêu" → tab "Cài đặt API ChatGPT".
+
+※ Khi sử dụng LLM cục bộ, khóa API cũng bắt buộc do hạn chế thư viện.</value>
   </data>
 </root>
