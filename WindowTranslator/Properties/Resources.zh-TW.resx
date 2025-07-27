@@ -303,4 +303,7 @@
   <data name="Apply" xml:space="preserve">
     <value>應用</value>
   </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>顯示忙碌圖標</value>
+  </data>
 </root>
