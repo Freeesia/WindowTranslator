@@ -1,4 +1,5 @@
-using WindowTranslator.Modules;
+﻿using WindowTranslator.Modules;
+using WindowTranslator.Plugin.OneOcrPlugin.Properties;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -21,7 +22,7 @@ public class OneOcrValidator : ITargetSettingsValidator
         var oneOcrPath = await Utility.FindOneOcrPath().ConfigureAwait(false);
         if (oneOcrPath == null)
         {
-            return ValidateResult.Invalid("OneOcr", "依存モジュールが見つかりません。この環境では利用できません。");
+            return ValidateResult.Invalid("OneOcr", Resources.NotFoundModule);
         }
 
         // DLLをコピー
@@ -31,7 +32,7 @@ public class OneOcrValidator : ITargetSettingsValidator
         }
         catch (Exception ex)
         {
-            return ValidateResult.Invalid("OneOcr", $"OneOcrのDLLのコピーに失敗しました。{ex.Message}");
+            return ValidateResult.Invalid("OneOcr", string.Format(Resources.CopyFaild, ex.Message));
         }
 
         return ValidateResult.Valid;

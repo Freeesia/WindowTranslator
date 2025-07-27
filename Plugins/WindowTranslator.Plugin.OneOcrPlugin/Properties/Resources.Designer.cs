@@ -61,11 +61,120 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
+        ///   OneOcrのDLLのコピーに失敗しました。{0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CopyFaild {
+            get {
+                return ResourceManager.GetString("CopyFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRパイプラインの作成に失敗しました。エラーコード: {0}
+        ///   「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CreatePipelineFaild {
+            get {
+                return ResourceManager.GetString("CreatePipelineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRプロセスオプションの作成に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CreateProcessOptionsFaild {
+            get {
+                return ResourceManager.GetString("CreateProcessOptionsFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行の取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineFaild {
+            get {
+                return ResourceManager.GetString("GetLineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行の境界ボックスの取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineBoundingBoxFaild {
+            get {
+                return ResourceManager.GetString("GetLineBoundingBoxFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行のテキスト内容の取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineContentFaild {
+            get {
+                return ResourceManager.GetString("GetLineContentFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR行数の取得に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineCountFaild {
+            get {
+                return ResourceManager.GetString("GetLineCountFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRの初期化オプション作成に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InitFaild {
+            get {
+                return ResourceManager.GetString("InitFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   依存モジュールが見つかりません。この環境では利用できません。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NotFoundModule {
+            get {
+                return ResourceManager.GetString("NotFoundModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   新Windows文字認識(ベータ) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string OneOcr {
             get {
                 return ResourceManager.GetString("OneOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRパイプラインの実行に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string RunPipelineFaild {
+            get {
+                return ResourceManager.GetString("RunPipelineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCRモデル遅延読み込み設定に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SetLazyLoadFaild {
+            get {
+                return ResourceManager.GetString("SetLazyLoadFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OCR最大認識行数の設定に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SetMaxRecognitionLineCountFaild {
+            get {
+                return ResourceManager.GetString("SetMaxRecognitionLineCountFaild", resourceCulture);
             }
         }
     }

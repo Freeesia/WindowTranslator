@@ -142,6 +142,20 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         }
         
         /// <summary>
+        ///   翻訳モジュールに「ChatGPT API翻訳」が選択もしくは認識補正が有効化されています。
+        ///
+        ///ChatGPT APIの利用にはAPIキーが必要です。
+        ///「対象ごとの設定」→「ChatGPT API設定」タブのAPIキーを設定してください。
+        ///
+        ///※ローカルLLMを利用する場合もライブラリの制約のためAPIキーが必要です。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidOptions {
+            get {
+                return ResourceManager.GetString("InvalidOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   ChatGPT API設定 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LLMOptions {
@@ -165,6 +179,15 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         internal static string Model {
             get {
                 return ResourceManager.GetString("Model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NeedSettings {
+            get {
+                return ResourceManager.GetString("NeedSettings", resourceCulture);
             }
         }
         

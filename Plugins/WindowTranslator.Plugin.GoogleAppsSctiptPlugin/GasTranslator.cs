@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ValueTaskSupplement;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.GoogleAppsSctiptPlugin.Properties;
 
 namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
@@ -63,10 +64,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
             if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
             {
                 await this.authStore.ClearAsync().ConfigureAwait(false);
-                throw new("""
-                    翻訳モジュールが要求する権限の一部もしくは全てが付与されませんでした。
-                    再度翻訳を試みた際に、再度権限の付与を求められます。
-                    """);
+                throw new(Resources.PermissionDenied);
             }
             res.EnsureSuccessStatusCode();
             var translatedTexts = await res.Content.ReadFromJsonAsync<string[]>(JsonSerializerOptions).ConfigureAwait(false);
@@ -76,11 +74,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         catch (JsonException e)
         {
             this.logger.LogWarning("Google翻訳から予期しないレスポンスが返されました");
-            throw new InvalidOperationException("""
-                Google翻訳から予期しないレスポンスが返されています。
-                時間あたりの翻訳可能量を超えた可能性があります。
-                しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。
-                """, e);
+            throw new InvalidOperationException(Resources.UnexpectedResponse, e);
         }
     }
 

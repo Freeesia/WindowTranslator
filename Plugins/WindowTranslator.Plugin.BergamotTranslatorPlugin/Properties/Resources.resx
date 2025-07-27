@@ -59,46 +59,46 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string"/>
-              <xsd:attribute name="type" type="xsd:string"/>
-              <xsd:attribute name="mimetype" type="xsd:string"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string"/>
-              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -117,44 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="OneOcr" xml:space="preserve">
-    <value>新的 Windows 字元辨識 (beta)</value>
+  <data name="ModelNotFound" xml:space="preserve">
+    <value>Bergamot モデルが存在しないため、翻訳できません。</value>
   </data>
-  <data name="NotFoundModule" xml:space="preserve">
-    <value>找不到相依模組。此環境無法使用。</value>
+  <data name="NotAvailableArch" xml:space="preserve">
+    <value>ご利用のPCではBergamotを利用できません</value>
   </data>
-  <data name="CopyFaild" xml:space="preserve">
-    <value>OneOcr DLL 複製失敗。{0}</value>
+  <data name="NotFoundToModel" xml:space="preserve">
+    <value>{0}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。</value>
   </data>
-  <data name="InitFaild" xml:space="preserve">
-    <value>OCR 初始化選項建立失敗。錯誤代碼：{0}</value>
+  <data name="NotFoundFromModel" xml:space="preserve">
+    <value>{0}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。</value>
   </data>
-  <data name="SetLazyLoadFaild" xml:space="preserve">
-    <value>OCR 模型延遲載入設定失敗。錯誤代碼：{0}</value>
+  <data name="DownloadFaild" xml:space="preserve">
+    <value>モデルファイルのダウンロードに失敗しました。
+{0}</value>
   </data>
-  <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>OCR 管線建立失敗。錯誤代碼：{0}
-請嘗試更新「剪取工具」或「Microsoft 相片」應用程式。</value>
-  </data>
-  <data name="CreateProcessOptionsFaild" xml:space="preserve">
-    <value>OCR 處理選項建立失敗。錯誤代碼：{0}</value>
-  </data>
-  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
-    <value>OCR 最大辨識行數設定失敗。錯誤代碼：{0}</value>
-  </data>
-  <data name="RunPipelineFaild" xml:space="preserve">
-    <value>OCR 管線執行失敗。錯誤代碼：{0}</value>
-  </data>
-  <data name="GetLineCountFaild" xml:space="preserve">
-    <value>OCR 行數取得失敗。錯誤代碼：{0}</value>
-  </data>
-  <data name="GetLineFaild" xml:space="preserve">
-    <value>OCR 行取得失敗。行號：{0}，錯誤代碼：{1}</value>
-  </data>
-  <data name="GetLineContentFaild" xml:space="preserve">
-    <value>OCR 行文字內容取得失敗。行號：{0}，錯誤代碼：{1}</value>
-  </data>
-  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
-    <value>OCR 行邊界框取得失敗。行號：{0}，錯誤代碼：{1}</value>
+  <data name="NotFoundCompatModel" xml:space="preserve">
+    <value>{0}から{1}への翻訳可能なモデルデータは見つかりませんでした。この言語ペアでの翻訳は利用できません。</value>
   </data>
 </root>

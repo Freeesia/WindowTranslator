@@ -183,4 +183,10 @@
   <data name="Gemini25FlashLite" xml:space="preserve">
     <value>Gemini 2.5 Flash Lite</value>
   </data>
+  <data name="GeminiNotInitialized" xml:space="preserve">
+    <value>Gemini functionality is not initialized. Please configure Google AI options from the settings dialog</value>
+  </data>
+  <data name="InvalidApiKey" xml:space="preserve">
+    <value>Gemini API key is invalid. Please configure Google AI options from the settings dialog</value>
+  </data>
 </root>

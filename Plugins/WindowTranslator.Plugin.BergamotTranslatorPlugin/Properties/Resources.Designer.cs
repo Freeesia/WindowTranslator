@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin.Properties {
+namespace WindowTranslator.Plugin.BergamotTranslatorPlugin.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.GoogleAppsSctiptPlugin.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.BergamotTranslatorPlugin.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,50 +61,57 @@ namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin.Properties {
         }
         
         /// <summary>
-        ///   スクリプトのデプロイID に類似しているローカライズされた文字列を検索します。
+        ///   モデルファイルのダウンロードに失敗しました。
+        ///{0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string DeployId {
+        internal static string DownloadFaild {
             get {
-                return ResourceManager.GetString("DeployId", resourceCulture);
+                return ResourceManager.GetString("DownloadFaild", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Google翻訳 に類似しているローカライズされた文字列を検索します。
+        ///   Bergamot モデルが存在しないため、翻訳できません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string GasOptions {
+        internal static string ModelNotFound {
             get {
-                return ResourceManager.GetString("GasOptions", resourceCulture);
+                return ResourceManager.GetString("ModelNotFound", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Google翻訳 に類似しているローカライズされた文字列を検索します。
+        ///   ご利用のPCではBergamotを利用できません に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string GasTranslator {
+        internal static string NotAvailableArch {
             get {
-                return ResourceManager.GetString("GasTranslator", resourceCulture);
+                return ResourceManager.GetString("NotAvailableArch", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   翻訳モジュールが要求する権限の一部もしくは全てが付与されませんでした。
-        ///再度翻訳を試みた際に、再度権限の付与を求められます。 に類似しているローカライズされた文字列を検索します。
+        ///   {0}から{1}への翻訳可能なモデルデータは見つかりませんでした。この言語ペアでの翻訳は利用できません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string PermissionDenied {
+        internal static string NotFoundCompatModel {
             get {
-                return ResourceManager.GetString("PermissionDenied", resourceCulture);
+                return ResourceManager.GetString("NotFoundCompatModel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Google翻訳から予期しないレスポンスが返されています。
-        ///時間あたりの翻訳可能量を超えた可能性があります。
-        ///しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。 に類似しているローカライズされた文字列を検索します。
+        ///   {0}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string UnexpectedResponse {
+        internal static string NotFoundFromModel {
             get {
-                return ResourceManager.GetString("UnexpectedResponse", resourceCulture);
+                return ResourceManager.GetString("NotFoundFromModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NotFoundToModel {
+            get {
+                return ResourceManager.GetString("NotFoundToModel", resourceCulture);
             }
         }
     }

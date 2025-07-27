@@ -120,4 +120,41 @@
   <data name="OneOcr" xml:space="preserve">
     <value>新Windows文字認識(ベータ)</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>依存モジュールが見つかりません。この環境では利用できません。</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>OneOcrのDLLのコピーに失敗しました。{0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>OCRの初期化オプション作成に失敗しました。エラーコード: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>OCRモデル遅延読み込み設定に失敗しました。エラーコード: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>OCRパイプラインの作成に失敗しました。エラーコード: {0}
+「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>OCRプロセスオプションの作成に失敗しました。エラーコード: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>OCR最大認識行数の設定に失敗しました。エラーコード: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>OCRパイプラインの実行に失敗しました。エラーコード: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>OCR行数の取得に失敗しました。エラーコード: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>OCR行の取得に失敗しました。行番号: {0}, エラーコード: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>OCR行のテキスト内容の取得に失敗しました。行番号: {0}, エラーコード: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>OCR行の境界ボックスの取得に失敗しました。行番号: {0}, エラーコード: {1}</value>
+  </data>
 </root>

@@ -159,4 +159,15 @@
   <data name="WaitCorrect" xml:space="preserve">
     <value>Wait for correction to complete before proceeding with translation</value>
   </data>
+  <data name="NeedSettings" xml:space="preserve">
+    <value>LLM functionality is not initialized. Please configure LLM options in the settings dialog</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>"ChatGPT API Translation" is selected as the translation module or recognition correction is enabled.
+
+Using the ChatGPT API requires an API key.
+Please set the API key in "Target Settings" → "ChatGPT API Settings" tab.
+
+※ When using a local LLM, an API key is also required due to library constraints.</value>
+  </data>
 </root>

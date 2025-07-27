@@ -118,6 +118,43 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="OneOcr" xml:space="preserve">
-    <value>新Windows文字認識(ベータ)</value>
+    <value>Nhận dạng ký tự Windows mới (Beta)</value>
+  </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Không tìm thấy mô-đun phụ thuộc. Không khả dụng trong môi trường này.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Sao chép OneOcr DLL thất bại. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Tạo tùy chọn khởi tạo OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Thiết lập tải mô hình OCR chậm thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Tạo pipeline OCR thất bại. Mã lỗi: {0}
+Hãy thử cập nhật ứng dụng "Snipping Tool" hoặc "Microsoft Photos".</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Tạo tùy chọn xử lý OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Thiết lập số dòng nhận dạng tối đa OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Chạy pipeline OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Lấy số dòng OCR thất bại. Mã lỗi: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Lấy dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Lấy nội dung văn bản dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Lấy hộp giới hạn dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
   </data>
 </root>
