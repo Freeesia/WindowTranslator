@@ -118,12 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeployId" xml:space="preserve">
-    <value>腳本部署 ID。</value>
+    <value>腳本部署 ID</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
     <value>Google 翻譯</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
     <value>Google 翻譯</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>Google 翻譯返回了意外的回應。
+可能已經超出每小時翻譯量限制。
+請等一段時間後重試，或使用其他翻譯模組。</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>翻譯模組要求的部分或全部權限未被授予。
+當您再次嘗試翻譯時，將再次提示您授予權限。</value>
   </data>
 </root>
