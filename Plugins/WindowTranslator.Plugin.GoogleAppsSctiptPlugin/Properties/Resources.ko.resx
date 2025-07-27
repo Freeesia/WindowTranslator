@@ -121,9 +121,18 @@
     <value>스크립트 배포 ID</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
-    <value>구글 번역</value>
+    <value>Google 번역</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
-    <value>구글 번역</value>
+    <value>Google 번역</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>Google 번역에서 예상치 못한 응답이 반환되고 있습니다.
+시간당 번역 가능량을 초과했을 수 있습니다.
+잠시 기다렸다가 다시 시도하거나 다른 번역 모듈을 이용해 주세요.</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>번역 모듈이 요구하는 권한의 일부 또는 전부가 부여되지 않았습니다.
+다시 번역을 시도했을 때 다시 권한 부여를 요청받습니다.</value>
   </data>
 </root>

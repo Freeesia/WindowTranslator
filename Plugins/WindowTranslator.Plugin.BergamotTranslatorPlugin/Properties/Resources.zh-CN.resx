@@ -58,22 +58,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DeployId" xml:space="preserve">
-    <value>Script Deploy ID</value>
+  <data name="ModelNotFound" xml:space="preserve">
+    <value>因为 Bergamot 模型不存在，无法翻译。</value>
   </data>
-  <data name="GasOptions" xml:space="preserve">
-    <value>Google Translate</value>
+  <data name="NotAvailableArch" xml:space="preserve">
+    <value>您的电脑无法使用 Bergamot</value>
   </data>
-  <data name="GasTranslator" xml:space="preserve">
-    <value>Google Translate</value>
+  <data name="NotFoundToModel" xml:space="preserve">
+    <value>找不到可翻译到 {0} 的模型数据。无法使用此语言的翻译。</value>
   </data>
-  <data name="UnexpectedResponse" xml:space="preserve">
-    <value>An unexpected response is being returned from Google Translate.
-You may have exceeded the hourly translation limit.
-Please wait a while and try again, or use another translation module.</value>
+  <data name="NotFoundFromModel" xml:space="preserve">
+    <value>找不到可从 {0} 翻译的模型数据。无法使用此语言的翻译。</value>
   </data>
-  <data name="PermissionDenied" xml:space="preserve">
-    <value>Some or all of the permissions required by the translation module were not granted.
-When you try to translate again, you will be prompted for permission again.</value>
+  <data name="DownloadFaild" xml:space="preserve">
+    <value>模型文件下载失败。
+{0}</value>
+  </data>
+  <data name="NotFoundCompatModel" xml:space="preserve">
+    <value>找不到从 {0} 到 {1} 的可翻译模型数据。此语言对的翻译无法使用。</value>
   </data>
 </root>

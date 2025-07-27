@@ -120,4 +120,16 @@
   <data name="OneOcr" xml:space="preserve">
     <value>新的 Windows 字符识别功能（测试版）</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>找不到依赖模块。此环境无法使用。</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>OneOcr DLL 复制失败。{0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>OCR 初始化选项创建失败。错误代码：{0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>OCR 模型延迟加载设置失败。错误代码：{0}</value>
+  </data>
 </root>

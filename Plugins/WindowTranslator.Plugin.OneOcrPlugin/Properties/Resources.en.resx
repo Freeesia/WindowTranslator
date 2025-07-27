@@ -120,4 +120,16 @@
   <data name="OneOcr" xml:space="preserve">
     <value>New Windows Character Recognition (Beta)</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Dependent modules not found. Not available in this environment.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Failed to copy OneOcr DLL. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Failed to create OCR initialization options. Error code: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Failed to set OCR model lazy loading. Error code: {0}</value>
+  </data>
 </root>

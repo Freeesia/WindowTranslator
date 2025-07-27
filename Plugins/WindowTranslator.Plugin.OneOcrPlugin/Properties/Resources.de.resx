@@ -120,4 +120,16 @@
   <data name="OneOcr" xml:space="preserve">
     <value>Neue Windows-Zeichenerkennung (Beta)</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Abhängige Module nicht gefunden. Nicht verfügbar in dieser Umgebung.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Fehler beim Kopieren der OneOcr-DLL. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Fehler beim Erstellen der OCR-Initialisierungsoptionen. Fehlercode: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Fehler beim Festlegen des verzögerten Ladens des OCR-Modells. Fehlercode: {0}</value>
+  </data>
 </root>

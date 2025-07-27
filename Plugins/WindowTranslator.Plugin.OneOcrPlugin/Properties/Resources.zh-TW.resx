@@ -120,4 +120,16 @@
   <data name="OneOcr" xml:space="preserve">
     <value>新的 Windows 字元辨識 (beta)</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>找不到相依模組。此環境無法使用。</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>OneOcr DLL 複製失敗。{0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>OCR 初始化選項建立失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>OCR 模型延遲載入設定失敗。錯誤代碼：{0}</value>
+  </data>
 </root>
