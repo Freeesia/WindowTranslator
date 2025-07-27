@@ -120,4 +120,41 @@
   <data name="OneOcr" xml:space="preserve">
     <value>Neue Windows-Zeichenerkennung (Beta)</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Abhängige Module nicht gefunden. Nicht verfügbar in dieser Umgebung.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Fehler beim Kopieren der OneOcr-DLL. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Fehler beim Erstellen der OCR-Initialisierungsoptionen. Fehlercode: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Fehler beim Festlegen des verzögerten Ladens des OCR-Modells. Fehlercode: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Fehler beim Erstellen der OCR-Pipeline. Fehlercode: {0}
+Bitte versuchen Sie, die Apps "Ausschneiden und skizzieren" oder "Microsoft Fotos" zu aktualisieren.</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Fehler beim Erstellen der OCR-Verarbeitungsoptionen. Fehlercode: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Fehler beim Festlegen der maximalen OCR-Erkennungszeilen. Fehlercode: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Fehler beim Ausführen der OCR-Pipeline. Fehlercode: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Fehler beim Abrufen der OCR-Zeilenzahl. Fehlercode: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Fehler beim Abrufen der OCR-Zeile. Zeilennummer: {0}, Fehlercode: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Fehler beim Abrufen des OCR-Zeileninhalts. Zeilennummer: {0}, Fehlercode: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Fehler beim Abrufen der OCR-Zeilen-Begrenzungsbox. Zeilennummer: {0}, Fehlercode: {1}</value>
+  </data>
 </root>
