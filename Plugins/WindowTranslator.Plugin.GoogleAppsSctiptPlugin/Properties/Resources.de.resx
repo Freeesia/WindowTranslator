@@ -118,12 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeployId" xml:space="preserve">
-    <value>ID der Skriptbereitstellung.</value>
+    <value>Skript-Deploy-ID</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
-    <value>Google Übersetzen</value>
+    <value>Google Übersetzer</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
-    <value>Google Übersetzen</value>
+    <value>Google Übersetzer</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>Von Google Übersetzer wird eine unerwartete Antwort zurückgegeben.
+Möglicherweise haben Sie das stündliche Übersetzungslimit überschritten.
+Bitte warten Sie eine Weile und versuchen Sie es erneut oder verwenden Sie ein anderes Übersetzungsmodul.</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>Einige oder alle vom Übersetzungsmodul benötigten Berechtigungen wurden nicht gewährt.
+Wenn Sie erneut versuchen zu übersetzen, werden Sie erneut zur Berechtigung aufgefordert.</value>
   </data>
 </root>
