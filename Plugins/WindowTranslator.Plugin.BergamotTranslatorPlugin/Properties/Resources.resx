@@ -117,19 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="OneOcr" xml:space="preserve">
-    <value>新Windows文字認識(ベータ)</value>
+  <data name="ModelNotFound" xml:space="preserve">
+    <value>Bergamot モデルが存在しないため、翻訳できません。</value>
   </data>
-  <data name="NotFoundModule" xml:space="preserve">
-    <value>依存モジュールが見つかりません。この環境では利用できません。</value>
+  <data name="NotAvailableArch" xml:space="preserve">
+    <value>ご利用のPCではBergamotを利用できません</value>
   </data>
-  <data name="CopyFaild" xml:space="preserve">
-    <value>OneOcrのDLLのコピーに失敗しました。{0}</value>
+  <data name="NotFoundToModel" xml:space="preserve">
+    <value>{0}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。</value>
   </data>
-  <data name="InitFaild" xml:space="preserve">
-    <value>OCRの初期化オプション作成に失敗しました。エラーコード: {0}</value>
+  <data name="NotFoundFromModel" xml:space="preserve">
+    <value>{0}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。</value>
   </data>
-  <data name="SetLazyLoadFaild" xml:space="preserve">
-    <value>OCRモデル遅延読み込み設定に失敗しました。エラーコード: {res}</value>
+  <data name="DownloadFaild" xml:space="preserve">
+    <value>モデルファイルのダウンロードに失敗しました。
+{0}</value>
+  </data>
+  <data name="NotFoundCompatModel" xml:space="preserve">
+    <value>{0}から{1}への翻訳可能なモデルデータは見つかりませんでした。この言語ペアでの翻訳は利用できません。</value>
   </data>
 </root>

@@ -86,5 +86,26 @@ namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin.Properties {
                 return ResourceManager.GetString("GasTranslator", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   翻訳モジュールが要求する権限の一部もしくは全てが付与されませんでした。
+        ///再度翻訳を試みた際に、再度権限の付与を求められます。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string PermissionDenied {
+            get {
+                return ResourceManager.GetString("PermissionDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Google翻訳から予期しないレスポンスが返されています。
+        ///時間あたりの翻訳可能量を超えた可能性があります。
+        ///しばらく時間をおいてから再試行するか、他の翻訳モジュールをご利用ください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string UnexpectedResponse {
+            get {
+                return ResourceManager.GetString("UnexpectedResponse", resourceCulture);
+            }
+        }
     }
 }

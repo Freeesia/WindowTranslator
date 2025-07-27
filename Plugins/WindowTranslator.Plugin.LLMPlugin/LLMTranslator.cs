@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Chat;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.LLMPlugin.Properties;
 
 namespace WindowTranslator.Plugin.LLMPlugin;
 
@@ -110,7 +111,7 @@ public class LLMTranslator : ITranslateModule
     {
         if (this.client is null)
         {
-            throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+            throw new InvalidOperationException(Resources.NeedSettings);
         }
         var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
         var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
@@ -149,7 +150,7 @@ public class LLMTranslator : ITranslateModule
 
     private async ValueTask<string[]> TranslateFromOpenAi(string system, IEnumerable<TextInfo> srcs)
     {
-        var client = this.client ?? throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+        var client = this.client ?? throw new InvalidOperationException(Resources.NeedSettings);
         ChatCompletion completion = await client.CompleteChatAsync([
                 ChatMessage.CreateSystemMessage(system),
                 ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.SourceText, s.Context }).ToArray(), jsonOptions)),
@@ -161,7 +162,7 @@ public class LLMTranslator : ITranslateModule
 
     private async ValueTask<string[]> TranslateFromOther(string system, IEnumerable<TextInfo> srcs)
     {
-        var client = this.client ?? throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+        var client = this.client ?? throw new InvalidOperationException(Resources.NeedSettings);
         var retry = 0;
         while (true)
         {

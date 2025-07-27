@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
+namespace WindowTranslator.Plugin.BergamotTranslatorPlugin.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.OneOcrPlugin.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WindowTranslator.Plugin.BergamotTranslatorPlugin.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,47 +61,57 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
-        ///   OneOcrのDLLのコピーに失敗しました。{0} に類似しているローカライズされた文字列を検索します。
+        ///   モデルファイルのダウンロードに失敗しました。
+        ///{0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string CopyFaild {
+        internal static string DownloadFaild {
             get {
-                return ResourceManager.GetString("CopyFaild", resourceCulture);
+                return ResourceManager.GetString("DownloadFaild", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   OCRの初期化オプション作成に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
+        ///   Bergamot モデルが存在しないため、翻訳できません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string InitFaild {
+        internal static string ModelNotFound {
             get {
-                return ResourceManager.GetString("InitFaild", resourceCulture);
+                return ResourceManager.GetString("ModelNotFound", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   依存モジュールが見つかりません。この環境では利用できません。 に類似しているローカライズされた文字列を検索します。
+        ///   ご利用のPCではBergamotを利用できません に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string NotFoundModule {
+        internal static string NotAvailableArch {
             get {
-                return ResourceManager.GetString("NotFoundModule", resourceCulture);
+                return ResourceManager.GetString("NotAvailableArch", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   新Windows文字認識(ベータ) に類似しているローカライズされた文字列を検索します。
+        ///   {0}から{1}への翻訳可能なモデルデータは見つかりませんでした。この言語ペアでの翻訳は利用できません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string OneOcr {
+        internal static string NotFoundCompatModel {
             get {
-                return ResourceManager.GetString("OneOcr", resourceCulture);
+                return ResourceManager.GetString("NotFoundCompatModel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   OCRモデル遅延読み込み設定に失敗しました。エラーコード: {res} に類似しているローカライズされた文字列を検索します。
+        ///   {0}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string SetLazyLoadFaild {
+        internal static string NotFoundFromModel {
             get {
-                return ResourceManager.GetString("SetLazyLoadFaild", resourceCulture);
+                return ResourceManager.GetString("NotFoundFromModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NotFoundToModel {
+            get {
+                return ResourceManager.GetString("NotFoundToModel", resourceCulture);
             }
         }
     }

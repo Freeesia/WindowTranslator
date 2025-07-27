@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Octokit;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.BergamotTranslatorPlugin.Properties;
 
 namespace WindowTranslator.Plugin.BergamotTranslatorPlugin;
 
@@ -20,7 +21,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     {
         if (!SystemUtility.IsX64Machine())
         {
-            throw new Exception($"ご利用のPCではBergamotを利用できません");
+            throw new Exception(Resources.NotAvailableArch);
         }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
@@ -37,7 +38,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
             this.service = new BlockingService(path1, path2);
             return;
         }
-        throw new Exception("Bergamot モデルが存在しないため、翻訳できません。");
+        throw new Exception(Resources.ModelNotFound);
     }
 
     public void Dispose()
@@ -73,7 +74,7 @@ public class BergamotValidator(IGitHubClient client) : ITargetSettingsValidator
 
         if (!SystemUtility.IsX64Machine())
         {
-            return ValidateResult.Invalid("対象外のPC", $"ご利用のPCではBergamotを利用できません");
+            return ValidateResult.Invalid("Bergamot", Resources.NotAvailableArch);
         }
 
         var src = settings.Language.Source[..2];
@@ -89,26 +90,25 @@ public class BergamotValidator(IGitHubClient client) : ITargetSettingsValidator
             {
                 var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
                 var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
-                return ValidateResult.Invalid("Bergamot モデル", $"No model data was found that can be translated from {srcLang} to {dstLang}. Translation is not available for this language pair.");
+                return ValidateResult.Invalid("Bergamot", string.Format(Resources.NotFoundCompatModel, srcLang, dstLang));
             }
 
             if (!await DownloadIfNotExists(src, "en").ConfigureAwait(false))
             {
                 var srcLang = CultureInfo.GetCultureInfo(settings.Language.Source).DisplayName;
-                return ValidateResult.Invalid("Bergamot モデル", $"{srcLang}から翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+                return ValidateResult.Invalid("Bergamot", string.Format(Resources.NotFoundFromModel, srcLang));
             }
             if (!await DownloadIfNotExists("en", dst).ConfigureAwait(false))
             {
                 var dstLang = CultureInfo.GetCultureInfo(settings.Language.Target).DisplayName;
-                return ValidateResult.Invalid("Bergamot モデル", $"{dstLang}へ翻訳できるモデルデータが見つかりませんでした。この言語の翻訳は利用できません。");
+                return ValidateResult.Invalid("Bergamot", string.Format(Resources.NotFoundToModel, dstLang));
             }
 
             return ValidateResult.Valid;
         }
         catch (Exception ex)
         {
-            return ValidateResult.Invalid("Bergamot モデル",
-                $"モデルファイルのダウンロードに失敗しました。\n{ex.Message}");
+            return ValidateResult.Invalid("Bergamot", string.Format(Resources.DownloadFaild, ex.Message));
         }
     }
 

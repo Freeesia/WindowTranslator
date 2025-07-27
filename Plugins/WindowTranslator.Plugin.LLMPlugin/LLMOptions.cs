@@ -61,13 +61,6 @@ public class LLMOptionsValidator : ITargetSettingsValidator
             return ValueTask.FromResult(ValidateResult.Valid);
         }
 
-        return ValueTask.FromResult(ValidateResult.Invalid("LLM", """
-            翻訳モジュールに「ChatGPT API翻訳」が選択もしくは認識補正が有効化されています。
-            
-            ChatGPT APIの利用にはAPIキーが必要です。
-            「対象ごとの設定」→「ChatGPT API設定」タブのAPIキーを設定してください。
-
-            ※ローカルLLMを利用する場合もライブラリの制約のためAPIキーが必要です。
-            """));
+        return ValueTask.FromResult(ValidateResult.Invalid("ChatGPT API", Resources.InvalidOptions));
     }
 }

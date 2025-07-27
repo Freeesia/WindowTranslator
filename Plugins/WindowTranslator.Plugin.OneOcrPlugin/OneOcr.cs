@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Collections;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.OneOcrPlugin.Properties;
 using WinRT;
 using static WindowTranslator.LanguageUtility;
 using static WindowTranslator.OcrUtility;
@@ -68,7 +69,7 @@ public class OneOcr : IOcrModule
         var res = CreateOcrInitOptions(out this.context);
         if (res != 0)
         {
-            throw new InvalidOperationException($"OCRの初期化オプション作成に失敗しました。エラーコード: {res}");
+            throw new InvalidOperationException(string.Format(Resources.InitFaild, res));
         }
 
         // モデル遅延読み込みの設定
@@ -76,7 +77,7 @@ public class OneOcr : IOcrModule
         res = OcrInitOptionsSetUseModelDelayLoad(this.context, 0);
         if (res != 0)
         {
-            throw new InvalidOperationException($"OCRモデル遅延読み込み設定に失敗しました。エラーコード: {res}");
+            throw new InvalidOperationException(string.Format(Resources.SetLazyLoadFaild, res));
         }
 
         // OCRパイプラインを作成
