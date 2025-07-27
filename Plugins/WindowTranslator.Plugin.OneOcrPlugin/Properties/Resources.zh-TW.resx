@@ -120,4 +120,41 @@
   <data name="OneOcr" xml:space="preserve">
     <value>新的 Windows 字元辨識 (beta)</value>
   </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>找不到相依模組。此環境無法使用。</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>OneOcr DLL 複製失敗。{0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>OCR 初始化選項建立失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>OCR 模型延遲載入設定失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>OCR 管線建立失敗。錯誤代碼：{0}
+請嘗試更新「剪取工具」或「Microsoft 相片」應用程式。</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>OCR 處理選項建立失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>OCR 最大辨識行數設定失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>OCR 管線執行失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>OCR 行數取得失敗。錯誤代碼：{0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>OCR 行取得失敗。行號：{0}，錯誤代碼：{1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>OCR 行文字內容取得失敗。行號：{0}，錯誤代碼：{1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>OCR 行邊界框取得失敗。行號：{0}，錯誤代碼：{1}</value>
+  </data>
 </root>
