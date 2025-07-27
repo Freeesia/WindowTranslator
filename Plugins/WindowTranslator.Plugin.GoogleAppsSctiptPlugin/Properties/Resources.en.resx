@@ -118,12 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeployId" xml:space="preserve">
-    <value>Script Deployment ID</value>
+    <value>Script Deploy ID</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
     <value>Google Translate</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
     <value>Google Translate</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>An unexpected response is being returned from Google Translate.
+You may have exceeded the hourly translation limit.
+Please wait a while and try again, or use another translation module.</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>Some or all of the permissions required by the translation module were not granted.
+When you try to translate again, you will be prompted for permission again.</value>
   </data>
 </root>
