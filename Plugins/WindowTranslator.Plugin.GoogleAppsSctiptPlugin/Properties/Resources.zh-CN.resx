@@ -118,12 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeployId" xml:space="preserve">
-    <value>脚本部署 ID。</value>
+    <value>脚本部署 ID</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
-    <value>谷歌翻译</value>
+    <value>Google 翻译</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
-    <value>谷歌翻译</value>
+    <value>Google 翻译</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>Google 翻译返回了意外的响应。
+可能已经超出每小时翻译量限制。
+请等一段时间后重试，或使用其他翻译模块。</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>翻译模块要求的部分或全部权限未被授予。
+当您再次尝试翻译时，将再次提示您授予权限。</value>
   </data>
 </root>
