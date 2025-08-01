@@ -206,8 +206,9 @@
                                 <CheckBox
                                     Grid.Row="3"
                                     Grid.Column="1"
-                                    Content="処理中アイコンを表示する"
-                                    IsChecked="{Binding DisplayBusy}" />
+                                    Content="{x:Static properties:Resources.IsOverlayPointSwap}"
+                                    IsChecked="{Binding IsOverlayPointSwap}"
+                                    IsEnabled="{Binding IsCheckableCapture}" />
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="{x:Static properties:Resources.AutoTargets}">

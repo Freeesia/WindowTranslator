@@ -271,16 +271,16 @@
     <value>Không dịch</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>キャッシュ設定</value>
+    <value>Cài đặt bộ nhớ đệm</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>近いテキストの閾値</value>
+    <value>Ngưỡng văn bản gần</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>キャッシュしない</value>
+    <value>Không lưu cache</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Windows標準文字認識</value>
+    <value>Nhận dạng ký tự chuẩn Windows</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Tên ứng dụng</value>
@@ -305,5 +305,8 @@
   </data>
   <data name="DisplayBusy" xml:space="preserve">
     <value>Hiển thị biểu tượng bận</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>
   </data>
 </root>

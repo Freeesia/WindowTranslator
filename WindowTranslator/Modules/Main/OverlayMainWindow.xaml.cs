@@ -10,6 +10,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
+using WindowTranslator.Controls;
 using WindowTranslator.Extensions;
 using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
@@ -52,6 +53,16 @@ public partial class OverlayMainWindow : Window
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayMainWindow), new PropertyMetadata(1.0));
 
+    public bool IsSwapVisibility
+    {
+        get => (bool)GetValue(IsSwapVisibilityProperty);
+        set => SetValue(IsSwapVisibilityProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="IsSwapVisibility"/> dependency property.</summary>
+    public static readonly DependencyProperty IsSwapVisibilityProperty =
+        DependencyProperty.Register(nameof(IsSwapVisibility), typeof(bool), typeof(OverlayMainWindow), new PropertyMetadata(false));
+
     public OverlayMainWindow(
         IOptionsSnapshot<CommonSettings> settings,
         IOptionsSnapshot<TargetSettings> targetSettings,
@@ -62,6 +73,7 @@ public partial class OverlayMainWindow : Window
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
+        this.IsSwapVisibility = settings.Value.IsOverlayPointSwap;
         this.processInfo = processInfo;
         this.desktopManager = desktopManager;
         this.logger = logger;

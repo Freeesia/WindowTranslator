@@ -306,4 +306,7 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>処理中アイコンを表示する</value>
   </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>マウスポインター位置のテキストのみオーバレイ翻訳を表示する</value>
+  </data>
 </root>

@@ -37,6 +37,11 @@ public class CommonSettings
     public OverlaySwitch OverlaySwitch { get; set; } = OverlaySwitch.Hold;
 
     /// <summary>
+    /// オーバレイのポインター挙動を逆にするか
+    /// </summary>
+    public bool IsOverlayPointSwap { get; set; }
+
+    /// <summary>
     /// 自動的に翻訳を発動するか
     /// </summary>
     public bool IsEnableAutoTarget { get; set; }

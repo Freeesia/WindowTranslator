@@ -306,4 +306,7 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>처리 중 아이콘을 표시합니다</value>
   </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>마우스 포인터 위치의 텍스트에만 오버레이 번역을 표시</value>
+  </data>
 </root>
