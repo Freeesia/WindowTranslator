@@ -11,12 +11,12 @@ public sealed class TextOverlayVisibilityConverter : IMultiValueConverter
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values is not [TextRect rect, Point pos, double scale])
+        if (values is not [TextRect rect, Point pos, double scale, bool isSwap])
         {
             return Visibility.Visible;
         }
         var r = new Rect(rect.X * scale, rect.Y * scale, rect.Width * scale, rect.Height * scale);
-        return r.Contains(pos) ? Visibility.Collapsed : Visibility.Visible;
+        return r.Contains(pos) ^ isSwap ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

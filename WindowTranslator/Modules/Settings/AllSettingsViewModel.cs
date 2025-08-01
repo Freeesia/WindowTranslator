@@ -75,6 +75,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private OverlaySwitch overlaySwitch;
 
     [ObservableProperty]
+    private bool isOverlayPointSwap;
+
+    [ObservableProperty]
     private bool isEnableAutoTarget;
 
     [ObservableProperty]
@@ -116,6 +119,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.ViewMode = common.ViewMode;
         this.IsEnableCaptureOverlay = common.IsEnableCaptureOverlay;
         this.OverlaySwitch = common.OverlaySwitch;
+        this.IsOverlayPointSwap = common.IsOverlayPointSwap;
         this.IsEnableAutoTarget = common.IsEnableAutoTarget;
         this.AutoTargets = [.. autoTargetStore.AutoTargets];
 
@@ -222,6 +226,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 ViewMode = this.ViewMode,
                 IsEnableAutoTarget = this.IsEnableAutoTarget,
                 OverlaySwitch = this.OverlaySwitch,
+                IsOverlayPointSwap = this.IsOverlayPointSwap,
                 IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
             },
             Targets = this.Targets.ToDictionary(t => t.Name, t => new TargetSettings()

@@ -44,6 +44,16 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty MousePosProperty =
         DependencyProperty.Register(nameof(MousePos), typeof(Point), typeof(OverlayTextsControl), new PropertyMetadata(new Point(double.NaN, double.NaN)));
 
+    public bool IsSwapVisibility
+    {
+        get => (bool)GetValue(IsSwapVisibilityProperty);
+        set => SetValue(IsSwapVisibilityProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="IsSwapVisibility"/> dependency property.</summary>
+    public static readonly DependencyProperty IsSwapVisibilityProperty =
+        DependencyProperty.Register(nameof(IsSwapVisibility), typeof(bool), typeof(OverlayTextsControl), new PropertyMetadata(false));
+
     public double Scale
     {
         get => (double)GetValue(ScaleProperty);
