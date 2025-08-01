@@ -79,7 +79,7 @@ public class DeepLTranslator : ITranslateModule
     {
         foreach (var (key, value) in glossary)
         {
-            this.glossary.TryAdd(key, value);
+            this.glossary.TryAdd(key.ReplaceLineEndings(string.Empty), value.ReplaceLineEndings(string.Empty));
         }
         this.glossaryId = new(RegisterGlossaryAsync);
         return default;
@@ -150,7 +150,17 @@ public class DeepLValidator : ITargetSettingsValidator
         }
 
         using var client = new Translator(op.AuthKey);
-        SupportedSourceLanguages ??= (await client.GetSourceLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code).ToArray();
+        try
+        {
+            SupportedSourceLanguages ??= (await client.GetSourceLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code).ToArray();
+        }
+        catch (AuthorizationException e)
+        {
+            return ValidateResult.Invalid("DeepL", """
+            設定されているDeepLのAPIキーが無効です。
+            APIキーはDeepLの[アカウントページ](https://www.deepl.com/ja/your-account/keys)からご確認ください。
+            """);
+        }
         if (!SupportedSourceLanguages.Contains(settings.Language.Source.GetSourceLangCode()))
         {
             return ValidateResult.Invalid("DeepL", $"Translation to {settings.Language.Source} is currently not supported.");
