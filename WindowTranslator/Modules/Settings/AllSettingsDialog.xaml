@@ -206,7 +206,7 @@
                                 <CheckBox
                                     Grid.Row="3"
                                     Grid.Column="1"
-                                    Content="マウスポインター位置のテキストのみオーバレイ翻訳を表示する"
+                                    Content="{x:Static properties:Resources.IsOverlayPointSwap}"
                                     IsChecked="{Binding IsOverlayPointSwap}"
                                     IsEnabled="{Binding IsCheckableCapture}" />
                             </Grid>

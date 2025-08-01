@@ -331,6 +331,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   マウスポインター位置のテキストのみオーバレイ翻訳を表示する に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string IsOverlayPointSwap {
+            get {
+                return ResourceManager.GetString("IsOverlayPointSwap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   言語設定 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Language {
