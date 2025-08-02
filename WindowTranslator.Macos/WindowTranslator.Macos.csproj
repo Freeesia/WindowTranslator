@@ -26,6 +26,7 @@
     <PackageReference Include="Sentry.Extensions.Logging" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
   </ItemGroup>
 
   <ItemGroup>
