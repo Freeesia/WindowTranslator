@@ -160,10 +160,10 @@ public class GoogleAITranslator : ITranslateModule
 
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
     {
-        this.common = glossary.Where(kv => kv.Key == kv.Value).Select(kv => kv.Key).ToArray();
+        this.common = glossary.Where(kv => kv.Key == kv.Value).Select(kv => kv.Key.ReplaceLineEndings(string.Empty)).ToArray();
         foreach (var (key, value) in glossary.Where(kv => kv.Key != kv.Value))
         {
-            this.glossary.TryAdd(key, value);
+            this.glossary.TryAdd(key.ReplaceLineEndings(string.Empty), value.ReplaceLineEndings(string.Empty));
         }
         return default;
     }
