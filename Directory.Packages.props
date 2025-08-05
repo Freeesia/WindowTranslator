@@ -44,7 +44,7 @@
     <PackageVersion Include="ValueTaskSupplement" Version="1.1.0" />
     <PackageVersion Include="Wacton.Unicolour" Version="6.1.0" />
     <PackageVersion Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
-    <PackageVersion Include="WixSharp_wix4" Version="2.7.5" />
+    <PackageVersion Include="WixSharp_wix4" Version="2.7.6" />
     <PackageVersion Include="WPF-UI" Version="4.0.0" />
     <PackageVersion Include="WPF-UI.Tray" Version="3.0.5" />
     <PackageVersion Include="WpfAnalyzers" Version="4.1.1" />
