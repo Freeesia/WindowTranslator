@@ -22,8 +22,10 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
     private readonly CancellationTokenSource cts = new();
     private GraphicsCaptureSession? session;
     private SizeInt32 lastSize = new(1000, 1000);
+    private bool hasBeenStopped = false;
 
     public event AsyncEventHandler<CapturedEventArgs>? Captured;
+    public event AsyncEventHandler? CaptureStarted;
 
     public WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logger)
     {
@@ -55,6 +57,13 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
             this.session.IsBorderRequired = false;
         }
         this.session.StartCapture();
+        
+        // Fire CaptureStarted event if this is a restart (after StopCapture was called)
+        if (this.hasBeenStopped && this.CaptureStarted is { } handler)
+        {
+            this.logger.LogDebug("Firing CaptureStarted event (restart detected)");
+            handler.InvokeAsync(this, new()).Forget();
+        }
     }
 
     private async void FramePool_FrameArrived(Direct3D11CaptureFramePool sender, object args)
@@ -100,6 +109,7 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
     public void StopCapture()
     {
         this.logger.LogDebug("StopCapture");
+        this.hasBeenStopped = true;
         this.session?.Dispose();
         this.framePool?.Dispose();
     }
