@@ -78,6 +78,11 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
+    /// 常時認識OFF機能を有効にするか（最初のフレームのみ処理）
+    /// </summary>
+    public bool IsAlwaysRecognitionOff { get; set; } = false;
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);

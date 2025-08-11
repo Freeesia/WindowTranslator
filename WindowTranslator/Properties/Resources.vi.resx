@@ -306,6 +306,9 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Hiển thị biểu tượng bận</value>
   </data>
+  <data name="IsAlwaysRecognitionOff" xml:space="preserve">
+    <value>Kích hoạt tính năng tắt nhận dạng luôn luôn</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>
   </data>

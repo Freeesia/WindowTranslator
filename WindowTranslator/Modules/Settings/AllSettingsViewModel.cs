@@ -247,6 +247,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
+                IsAlwaysRecognitionOff = t.IsAlwaysRecognitionOff,
             }),
         };
 
@@ -440,7 +441,12 @@ public partial class TargetSettingsViewModel(
     [property: Category("SettingsViewModel|Misc")]
     [property: SortIndex(7)]
     [ObservableProperty]
-    private bool displayBusy;
+    private bool displayBusy = settings.DisplayBusy;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(8)]
+    [ObservableProperty]
+    private bool isAlwaysRecognitionOff = settings.IsAlwaysRecognitionOff;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {
