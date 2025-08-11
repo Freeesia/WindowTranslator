@@ -31,7 +31,9 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
     private readonly double fontScale;
+    private readonly bool isAlwaysRecognitionOffEnabled;
     private TextRect[]? lastRequested;
+    private bool isFirstCapture = true;
 
     [ObservableProperty]
     private string title;
@@ -69,9 +71,11 @@ public abstract partial class MainViewModelBase : IDisposable
         this.presentationService = presentationService;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
+        this.isAlwaysRecognitionOffEnabled = options.Value.IsAlwaysRecognitionOff;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
+        this.capture.CaptureStarted += Capture_CaptureStartedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -79,9 +83,23 @@ public abstract partial class MainViewModelBase : IDisposable
         this.filters = filters.ToArray();
         this.logger = logger;
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
+        this.isFirstCapture = this.isAlwaysRecognitionOffEnabled; // Only set to true if feature is enabled
         this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
+    }
+
+    /// <summary>
+    /// Reset the first capture flag to enable OCR and translation on the next frame.
+    /// Call this when capture is restarted.
+    /// </summary>
+    public void ResetFirstCaptureFlag()
+    {
+        if (this.isAlwaysRecognitionOffEnabled)
+        {
+            this.isFirstCapture = true;
+            this.logger.LogDebug("First capture flag reset - OCR and translation will be performed on next frame (always recognition OFF enabled)");
+        }
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -96,6 +114,18 @@ public abstract partial class MainViewModelBase : IDisposable
         this.Height = newBmp.PixelHeight;
         CreateTextOverlayAsync().Forget();
         sbmp?.Dispose();
+    }
+
+    private async Task Capture_CaptureStartedAsync(object? sender, EventArgs args)
+    {
+        await Task.Run(() =>
+        {
+            if (this.isAlwaysRecognitionOffEnabled)
+            {
+                this.isFirstCapture = true;
+                this.logger.LogDebug("Capture restarted - first capture flag reset (always recognition OFF enabled)");
+            }
+        });
     }
 
     private async Task CreateTextOverlayAsync()
@@ -123,6 +153,20 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
+        
+        // Check if always recognition OFF is enabled and this is not the first capture
+        if (this.isAlwaysRecognitionOffEnabled && !this.isFirstCapture)
+        {
+            this.logger.LogDebug("Skipping OCR and translation (always recognition OFF enabled, not first capture)");
+            return;
+        }
+        
+        // Mark that first capture processing is complete if always recognition OFF is enabled
+        if (this.isAlwaysRecognitionOffEnabled)
+        {
+            this.isFirstCapture = false;
+        }
+        
         IEnumerable<TextRect> texts = [];
         using (this.Recognizing.EnterBusy())
         {
@@ -257,6 +301,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             if (this.capture is IDisposable captureDisposable)
             {
+                this.capture.CaptureStarted -= Capture_CaptureStartedAsync;
                 captureDisposable.Dispose();
             }
             this.timer?.Dispose();

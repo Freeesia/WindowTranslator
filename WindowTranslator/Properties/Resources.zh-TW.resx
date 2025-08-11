@@ -306,6 +306,9 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>顯示忙碌圖標</value>
   </data>
+  <data name="IsAlwaysRecognitionOff" xml:space="preserve">
+    <value>啟用常時識別OFF功能</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>僅在滑鼠指標位置的文字上顯示重疊翻譯</value>
   </data>

@@ -306,6 +306,9 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>処理中アイコンを表示する</value>
   </data>
+  <data name="IsAlwaysRecognitionOff" xml:space="preserve">
+    <value>常時認識OFF機能を有効にする</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>マウスポインター位置のテキストのみオーバレイ翻訳を表示する</value>
   </data>

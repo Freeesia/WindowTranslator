@@ -306,6 +306,9 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Zeige das Beschäftigt-Symbol</value>
   </data>
+  <data name="IsAlwaysRecognitionOff" xml:space="preserve">
+    <value>Aktiviere die Funktion "Erkennung immer AUS"</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Overlay-Übersetzung nur für Text an der Mauszeiger-Position anzeigen</value>
   </data>
