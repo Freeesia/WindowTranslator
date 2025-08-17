@@ -78,9 +78,9 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
-    /// 翻訳タイミングの手動化を有効にするか（ユーザー操作の初回のみ処理）
+    /// ワンショットモードを有効にするか（ユーザー操作の初回のみ処理）
     /// </summary>
-    public bool IsManualTranslationTiming { get; set; } = false;
+    public bool IsOneShotMode { get; set; } = false;
 
     /// <summary>
     /// プラグインの選択

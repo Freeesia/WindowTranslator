@@ -306,8 +306,8 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Hiển thị biểu tượng bận</value>
   </data>
-  <data name="IsManualTranslationTiming" xml:space="preserve">
-    <value>Kích hoạt thời điểm dịch thủ công</value>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Kích hoạt chế độ một lần</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>

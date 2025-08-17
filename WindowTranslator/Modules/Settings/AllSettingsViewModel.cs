@@ -247,7 +247,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
-                IsManualTranslationTiming = t.IsManualTranslationTiming,
+                IsOneShotMode = t.IsOneShotMode,
             }),
         };
 
@@ -446,7 +446,7 @@ public partial class TargetSettingsViewModel(
     [property: Category("SettingsViewModel|Misc")]
     [property: SortIndex(8)]
     [ObservableProperty]
-    private bool isManualTranslationTiming = settings.IsManualTranslationTiming;
+    private bool isOneShotMode = settings.IsOneShotMode;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

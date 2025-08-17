@@ -306,8 +306,8 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Show busy icon</value>
   </data>
-  <data name="IsManualTranslationTiming" xml:space="preserve">
-    <value>Enable manual translation timing</value>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Enable one-shot mode</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
