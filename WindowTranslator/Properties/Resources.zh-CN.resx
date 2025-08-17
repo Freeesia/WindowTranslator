@@ -306,8 +306,8 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>显示忙碌图标</value>
   </data>
-  <data name="IsAlwaysRecognitionOff" xml:space="preserve">
-    <value>启用常时识别OFF功能</value>
+  <data name="IsManualTranslationTiming" xml:space="preserve">
+    <value>启用手动翻译时机</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>仅在鼠标指针位置的文本上显示覆盖翻译</value>

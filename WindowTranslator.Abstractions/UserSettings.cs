@@ -78,9 +78,9 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
-    /// 常時認識OFF機能を有効にするか（最初のフレームのみ処理）
+    /// 翻訳タイミングの手動化を有効にするか（ユーザー操作の初回のみ処理）
     /// </summary>
-    public bool IsAlwaysRecognitionOff { get; set; } = false;
+    public bool IsManualTranslationTiming { get; set; } = false;
 
     /// <summary>
     /// プラグインの選択
