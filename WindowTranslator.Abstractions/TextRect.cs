@@ -33,6 +33,11 @@ public record TextRect(string SourceText, double X, double Y, double Width, doub
     public double MaxWidth { get; init; } = double.NaN;
 
     /// <summary>
+    /// 表示順序（小さい値ほど前面に表示される）
+    /// </summary>
+    public int ZOrder { get; init; }
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="text">テキスト</param>

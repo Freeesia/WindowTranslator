@@ -64,4 +64,18 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(1.0));
 
+    /// <summary>Identifies the attached <see cref="ZOrder"/> dependency property.</summary>
+    public static readonly DependencyProperty ZOrderProperty =
+        DependencyProperty.RegisterAttached("ZOrder", typeof(int), typeof(OverlayTextsControl), new PropertyMetadata(0));
+
+    /// <summary>Gets the ZOrder value for the specified element.</summary>
+    /// <param name="element">The element from which to read the property value.</param>
+    /// <returns>The ZOrder value of the element.</returns>
+    public static int GetZOrder(DependencyObject element) => (int)element.GetValue(ZOrderProperty);
+
+    /// <summary>Sets the ZOrder value for the specified element.</summary>
+    /// <param name="element">The element to which to write the attached property.</param>
+    /// <param name="value">The ZOrder value to set.</param>
+    public static void SetZOrder(DependencyObject element, int value) => element.SetValue(ZOrderProperty, value);
+
 }

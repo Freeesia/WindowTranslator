@@ -112,6 +112,7 @@
                             <Style TargetType="ContentPresenter">
                                 <Setter Property="Canvas.Top" Value="{Binding Y}" />
                                 <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                <Setter Property="Panel.ZIndex" Value="{Binding ZOrder}" />
                                 <Setter Property="Visibility">
                                     <Setter.Value>
                                         <MultiBinding Converter="{x:Static data:TextOverlayVisibilityConverter.Default}">
