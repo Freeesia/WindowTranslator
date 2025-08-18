@@ -187,12 +187,6 @@ public abstract partial class MainViewModelBase : IDisposable
                 using var t = this.logger.LogDebugTime("PostTranslate");
                 texts = await tmp.ToArrayAsync();
             }
-            
-            // 面積の小さい順にソートしてZOrderを設定（小さい面積ほど前面に表示）
-            texts = texts
-                .OrderBy(t => t.Width * t.Height)
-                .Select((t, index) => t with { ZOrder = index })
-                .ToArray();
         }
 
         var hash = texts.ToHashSet();

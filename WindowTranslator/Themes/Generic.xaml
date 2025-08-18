@@ -29,6 +29,7 @@
                                 MaxValue="10"
                                 MinValue="2"
                                 ScaleFactor="0.15" />
+                            <data:AreaToZIndexConverter x:Key="a2zConv" />
                         </ItemsControl.Resources>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -112,7 +113,7 @@
                             <Style TargetType="ContentPresenter">
                                 <Setter Property="Canvas.Top" Value="{Binding Y}" />
                                 <Setter Property="Canvas.Left" Value="{Binding X}" />
-                                <Setter Property="Panel.ZIndex" Value="{Binding ZOrder}" />
+                                <Setter Property="Panel.ZIndex" Value="{Binding Converter={StaticResource a2zConv}}" />
                                 <Setter Property="Visibility">
                                     <Setter.Value>
                                         <MultiBinding Converter="{x:Static data:TextOverlayVisibilityConverter.Default}">
