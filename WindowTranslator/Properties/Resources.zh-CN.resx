@@ -307,7 +307,7 @@
     <value>显示忙碌图标</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>仅处理首次捕获</value>
+    <value>仅在启用覆盖层时翻译</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>仅在鼠标指针位置的文本上显示覆盖翻译</value>

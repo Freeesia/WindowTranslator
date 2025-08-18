@@ -307,7 +307,7 @@
     <value>処理中アイコンを表示する</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>初回キャプチャのみ処理を実行する</value>
+    <value>オーバレイを有効にしたタイミングのみ翻訳する</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>マウスポインター位置のテキストのみオーバレイ翻訳を表示する</value>
