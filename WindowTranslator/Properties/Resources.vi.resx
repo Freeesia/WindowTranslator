@@ -307,7 +307,7 @@
     <value>Hiển thị biểu tượng bận</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Kích hoạt chế độ một lần</value>
+    <value>Chỉ xử lý lần chụp đầu tiên</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>

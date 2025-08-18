@@ -307,7 +307,7 @@
     <value>Show busy icon</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Enable one-shot mode</value>
+    <value>Process only the first capture</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>

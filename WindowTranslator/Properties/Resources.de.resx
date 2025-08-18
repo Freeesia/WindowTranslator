@@ -307,7 +307,7 @@
     <value>Zeige das Beschäftigt-Symbol</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Ein-Schuss-Modus aktivieren</value>
+    <value>Nur die erste Aufnahme verarbeiten</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Overlay-Übersetzung nur für Text an der Mauszeiger-Position anzeigen</value>
