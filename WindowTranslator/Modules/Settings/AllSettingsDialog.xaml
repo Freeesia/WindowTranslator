@@ -304,7 +304,7 @@
                         </pt:PropertyGrid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="{x:Static properties:Resources.About}">
+                <TabItem Header="{x:Static properties:Resources.About}" Visibility="{Binding IsVisibleAbout, Converter={StaticResource b2vConv}}">
                     <pt:PropertyGrid
                         Grid.Column="2"
                         Margin="8"

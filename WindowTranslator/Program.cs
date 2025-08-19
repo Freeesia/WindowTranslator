@@ -134,6 +134,9 @@ app.Loaded += (_, e) =>
     d.Dispose();
     e.Window.Activate();
 };
+
+AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
+
 await app.RunAsync();
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)

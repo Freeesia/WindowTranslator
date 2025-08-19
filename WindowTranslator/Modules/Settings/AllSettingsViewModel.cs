@@ -97,6 +97,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool ApplyMode { get; }
 
+    public bool IsVisibleAbout { get; } = !AppInfo.SuppressMode;
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
