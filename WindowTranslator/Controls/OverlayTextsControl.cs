@@ -64,4 +64,21 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(1.0));
 
+    public bool IsVisible
+    {
+        get => (bool)GetValue(IsVisibleProperty);
+        set => SetValue(IsVisibleProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="IsVisible"/> dependency property.</summary>
+    public static readonly DependencyProperty IsVisibleProperty =
+        DependencyProperty.Register(nameof(IsVisible), typeof(bool), typeof(OverlayTextsControl), new PropertyMetadata(true, OnIsVisibleChanged));
+
+    private static void OnIsVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is OverlayTextsControl control)
+        {
+            control.Visibility = (bool)e.NewValue ? Visibility.Visible : Visibility.Hidden;
+        }
+    }
 }

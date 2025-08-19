@@ -30,6 +30,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly string name;
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
+    private readonly IProcessInfoStore processInfoStore;
     private readonly double fontScale;
     private readonly bool isOneShotModeEnabled;
     private TextRect[]? lastRequested;
@@ -42,6 +43,9 @@ public abstract partial class MainViewModelBase : IDisposable
     private double width = double.NaN;
     [ObservableProperty]
     private double height = double.NaN;
+
+    [ObservableProperty]
+    private bool overlayVisible = true;
 
     public bool DisplayBusy { get; }
 
@@ -69,36 +73,45 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         this.name = processInfoStore.Name;
         this.presentationService = presentationService;
+        this.processInfoStore = processInfoStore;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
         this.isOneShotModeEnabled = options.Value.IsOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
-        this.capture.CaptureStarted += Capture_CaptureStartedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
-        this.capture.StartCapture(processInfoStore.MainWindowHandle);
+        // Capture will be started/stopped based on OverlayVisible property changes
         this.isFirstCapture = this.isOneShotModeEnabled; // Only set to true if feature is enabled
         this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
     }
 
-    /// <summary>
-    /// Reset the first capture flag to enable OCR and translation on the next frame.
-    /// Call this when capture is restarted.
-    /// </summary>
-    public void ResetFirstCaptureFlag()
+    partial void OnOverlayVisibleChanged(bool value)
     {
-        if (this.isOneShotModeEnabled)
+        if (value)
         {
-            this.isFirstCapture = true;
-            this.logger.LogDebug("First capture flag reset - OCR and translation will be performed on next frame (one shot mode enabled)");
+            // Start capture when overlay becomes visible
+            this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
+            
+            // Reset first capture flag for one-shot mode
+            if (this.isOneShotModeEnabled)
+            {
+                this.isFirstCapture = true;
+                this.logger.LogDebug("Overlay became visible - first capture flag reset (one shot mode enabled)");
+            }
+        }
+        else
+        {
+            // Stop capture when overlay becomes hidden
+            this.capture.StopCapture();
+            this.logger.LogDebug("Overlay became hidden - capture stopped");
         }
     }
 
@@ -114,18 +127,6 @@ public abstract partial class MainViewModelBase : IDisposable
         this.Height = newBmp.PixelHeight;
         CreateTextOverlayAsync().Forget();
         sbmp?.Dispose();
-    }
-
-    private async Task Capture_CaptureStartedAsync(object? sender, EventArgs args)
-    {
-        await Task.Run(() =>
-        {
-            if (this.isOneShotModeEnabled)
-            {
-                this.isFirstCapture = true;
-                this.logger.LogDebug("Capture restarted - first capture flag reset (one shot mode enabled)");
-            }
-        });
     }
 
     private async Task CreateTextOverlayAsync()
@@ -301,7 +302,6 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             if (this.capture is IDisposable captureDisposable)
             {
-                this.capture.CaptureStarted -= Capture_CaptureStartedAsync;
                 captureDisposable.Dispose();
             }
             this.timer?.Dispose();

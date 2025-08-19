@@ -5,7 +5,6 @@ namespace WindowTranslator.Modules.Capture;
 public interface ICaptureModule
 {
     event AsyncEventHandler<CapturedEventArgs>? Captured;
-    event AsyncEventHandler? CaptureStarted;
     void StartCapture(IntPtr targetWindow);
     void StopCapture();
 }

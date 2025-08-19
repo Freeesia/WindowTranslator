@@ -157,6 +157,10 @@ public partial class OverlayMainWindow : Window
         if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
         {
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+            if (this.DataContext is OverlayMainViewModel viewModel)
+            {
+                viewModel.OverlayVisible = false;
+            }
             return;
         }
 
@@ -169,11 +173,19 @@ public partial class OverlayMainWindow : Window
         if (windowAtPoint != this.processInfo.MainWindowHandle && !IsChild(new(this.processInfo.MainWindowHandle), windowAtPoint))
         {
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+            if (this.DataContext is OverlayMainViewModel viewModel)
+            {
+                viewModel.OverlayVisible = false;
+            }
             return;
         }
 
         // 上記のすべてのチェックに合格した場合、オーバーレイを表示
         this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+        if (this.DataContext is OverlayMainViewModel viewModel2)
+        {
+            viewModel2.OverlayVisible = true;
+        }
 
         // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
         var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
@@ -219,25 +231,28 @@ public partial class OverlayMainWindow : Window
         {
             return 0;
         }
-        if (this.overlaySwitch == OverlaySwitch.Hold)
+        if (this.DataContext is OverlayMainViewModel viewModel)
         {
-            HoldHideOverlay();
-        }
-        else
-        {
-            this.overlay.SetCurrentValue(VisibilityProperty, this.overlay.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
+            if (this.overlaySwitch == OverlaySwitch.Hold)
+            {
+                HoldHideOverlay(viewModel);
+            }
+            else
+            {
+                viewModel.OverlayVisible = !viewModel.OverlayVisible;
+            }
         }
         return 0;
     }
 
-    private async void HoldHideOverlay()
+    private async void HoldHideOverlay(OverlayMainViewModel viewModel)
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
-        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        viewModel.OverlayVisible = false;
         await Task.Delay(500);
         if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
         {
-            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            viewModel.OverlayVisible = true;
         }
     }
 }
