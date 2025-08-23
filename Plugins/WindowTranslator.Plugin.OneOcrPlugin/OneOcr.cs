@@ -5,6 +5,7 @@ using System.Runtime.Loader;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Panlingo.LanguageIdentification.FastText;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Collections;
 using WindowTranslator.Modules;
@@ -16,12 +17,14 @@ using static WindowTranslator.Plugin.OneOcrPlugin.NativeMethods;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
-public class OneOcr : IOcrModule
+public sealed class OneOcr : IOcrModule, IDisposable
 {
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
     const int maxLineCount = 1000;
+    private readonly FastTextDetector fastText;
     private readonly ILogger<OneOcr> logger;
     private readonly string source;
+    private readonly HashSet<string> targets;
     private readonly long pipeline;
     private readonly long opt;
     private readonly long context;
@@ -54,8 +57,16 @@ public class OneOcr : IOcrModule
 
     public OneOcr(ILogger<OneOcr> logger, IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BasicOcrParam> ocrParam)
     {
+        this.fastText = new FastTextDetector();
+        this.fastText.LoadDefaultModel();
         this.logger = logger;
         this.source = langOptions.Value.Source;
+        this.targets = [langOptions.Value.Target[..2]];
+        if (this.targets.Overlaps(["ja", "zh"]) && this.source[..2] is not "ja" and not "zh")
+        {
+            // 日本語と中国語の判定は難しいので、お互いの翻訳でないときは、どちらも翻訳対象外となる翻訳先言語とする
+            this.targets.UnionWith(["ja", "zh"]);
+        }
         // 閾値パラメータの設定
         this.xPosThrethold = ocrParam.Value.XPosThrethold;
         this.yPosThrethold = ocrParam.Value.YPosThrethold;
@@ -106,6 +117,11 @@ public class OneOcr : IOcrModule
         }
     }
 
+    public void Dispose()
+    {
+        this.fastText.Dispose();
+    }
+
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
         // 拡大率に基づくリサイズ処理
@@ -129,10 +145,15 @@ public class OneOcr : IOcrModule
             .Where(r => IsSpecialLang(this.source) || r.SourceText.Length > 2)
             // 全部数字なら対象外
             .Where(r => !AllSymbolOrSpace().IsMatch(r.SourceText))
+            // 翻訳後言語のテキストは対象外
+            .Where(r => !IsTargetLangText(r.SourceText))
             // 若干太らせる
             .Select(r => r with { X = r.X - wFat, Width = r.Width + (wFat * 2), Y = r.Y - (r.Height * 0.04), Height = r.Height * 1.08 })
             .ToArray();
     }
+
+    private bool IsTargetLangText(string text)
+        => this.fastText.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..]));
 
     private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap)
     {
