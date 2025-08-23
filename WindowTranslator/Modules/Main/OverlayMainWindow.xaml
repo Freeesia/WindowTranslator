@@ -24,18 +24,19 @@
         <data:BoolAndConverter x:Key="b2vConv">
             <BooleanToVisibilityConverter />
         </data:BoolAndConverter>
+        <data:VisibilityToBooleanConverter x:Key="v2bConv" />
     </Window.Resources>
     <Canvas>
         <control:OverlayTextsControl
             x:Name="overlay"
             FontFamily="{Binding Font, Mode=OneWay}"
             IsSwapVisibility="{Binding IsSwapVisibility, ElementName=host, Mode=OneWay}"
-            IsVisible="{Binding OverlayVisible, Mode=OneWayToSource}"
             MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"
             Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
-            Texts="{Binding OcrTexts}" />
+            Texts="{Binding OcrTexts}"
+            Visibility="{Binding OverlayVisible, Mode=OneWayToSource, Converter={StaticResource v2bConv}}" />
         <ui:ProgressRing
             Canvas.Right="0"
             Canvas.Bottom="0"

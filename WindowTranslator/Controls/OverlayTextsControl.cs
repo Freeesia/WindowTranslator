@@ -64,28 +64,5 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(1.0));
 
-    public bool IsVisible
-    {
-        get => (bool)GetValue(IsVisibleProperty);
-        set => SetValue(IsVisibleProperty, value);
-    }
 
-    /// <summary>Identifies the <see cref="IsVisible"/> dependency property.</summary>
-    public static readonly DependencyProperty IsVisibleProperty =
-        DependencyProperty.Register(nameof(IsVisible), typeof(bool), typeof(OverlayTextsControl), new PropertyMetadata(true));
-
-    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-    {
-        base.OnPropertyChanged(e);
-        
-        if (e.Property == VisibilityProperty)
-        {
-            // Update IsVisible when Visibility changes (for OneWayToSource binding)
-            bool newIsVisible = Visibility == Visibility.Visible;
-            if (IsVisible != newIsVisible)
-            {
-                SetValue(IsVisibleProperty, newIsVisible);
-            }
-        }
-    }
 }
