@@ -30,7 +30,7 @@
             x:Name="overlay"
             FontFamily="{Binding Font, Mode=OneWay}"
             IsSwapVisibility="{Binding IsSwapVisibility, ElementName=host, Mode=OneWay}"
-            IsVisible="{Binding OverlayVisible, Mode=TwoWay}"
+            IsVisible="{Binding OverlayVisible, Mode=OneWayToSource}"
             MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"

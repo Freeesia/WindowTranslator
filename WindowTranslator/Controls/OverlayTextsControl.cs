@@ -72,13 +72,20 @@ public class OverlayTextsControl : Control
 
     /// <summary>Identifies the <see cref="IsVisible"/> dependency property.</summary>
     public static readonly DependencyProperty IsVisibleProperty =
-        DependencyProperty.Register(nameof(IsVisible), typeof(bool), typeof(OverlayTextsControl), new PropertyMetadata(true, OnIsVisibleChanged));
+        DependencyProperty.Register(nameof(IsVisible), typeof(bool), typeof(OverlayTextsControl), new PropertyMetadata(true));
 
-    private static void OnIsVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
-        if (d is OverlayTextsControl control)
+        base.OnPropertyChanged(e);
+        
+        if (e.Property == VisibilityProperty)
         {
-            control.Visibility = (bool)e.NewValue ? Visibility.Visible : Visibility.Hidden;
+            // Update IsVisible when Visibility changes (for OneWayToSource binding)
+            bool newIsVisible = Visibility == Visibility.Visible;
+            if (IsVisible != newIsVisible)
+            {
+                SetValue(IsVisibleProperty, newIsVisible);
+            }
         }
     }
 }
