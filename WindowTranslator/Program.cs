@@ -33,7 +33,7 @@ using MessageBoxImage = Kamishibai.MessageBoxImage;
 #if DEBUG
 var createdNew = true;
 #else
-using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+using var mutex = new Mutex(true, @"Global\WindowTranslator", out var createdNew);
 #endif
 if (!createdNew)
 {
