@@ -33,7 +33,7 @@ using MessageBoxImage = Kamishibai.MessageBoxImage;
 #if DEBUG
 var createdNew = true;
 #else
-using var mutex = new Mutex(false, "WindowTranslator", out var createdNew);
+using var mutex = new Mutex(true, @"Global\WindowTranslator", out var createdNew);
 #endif
 if (!createdNew)
 {
@@ -134,6 +134,9 @@ app.Loaded += (_, e) =>
     d.Dispose();
     e.Window.Activate();
 };
+
+AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
+
 await app.RunAsync();
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)

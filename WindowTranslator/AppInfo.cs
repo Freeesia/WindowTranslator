@@ -9,6 +9,8 @@ namespace WindowTranslator;
 
 public partial class AppInfo
 {
+    public static bool SuppressMode { get; set; }
+
     public static AppInfo Instance { get; } = new();
 
     [Category("Application")]

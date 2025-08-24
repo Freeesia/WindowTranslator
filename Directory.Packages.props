@@ -31,6 +31,7 @@
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
+    <PackageVersion Include="Panlingo.LanguageIdentification.FastText" Version="0.6.0" />
     <PackageVersion Include="PInvoke.User32" Version="0.7.124" />
     <PackageVersion Include="PropertyTools" Version="3.1.0" />
     <PackageVersion Include="PropertyTools.Wpf" Version="3.1.0" />
@@ -44,7 +45,7 @@
     <PackageVersion Include="ValueTaskSupplement" Version="1.1.0" />
     <PackageVersion Include="Wacton.Unicolour" Version="6.1.0" />
     <PackageVersion Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
-    <PackageVersion Include="WixSharp_wix4" Version="2.7.6" />
+    <PackageVersion Include="WixSharp_wix4" Version="2.7.7" />
     <PackageVersion Include="WPF-UI" Version="4.0.0" />
     <PackageVersion Include="WPF-UI.Tray" Version="3.0.5" />
     <PackageVersion Include="WpfAnalyzers" Version="4.1.1" />
