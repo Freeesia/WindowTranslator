@@ -308,7 +308,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         {
             foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
             {
-                w.Close();
+                await w.CloseAsync();
                 await this.mainWindowModule.OpenTargetAsync(handle, target);
             }
         }
