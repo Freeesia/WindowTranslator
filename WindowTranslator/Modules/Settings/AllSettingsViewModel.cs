@@ -249,6 +249,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
+                IsOneShotMode = t.IsOneShotMode,
             }),
         };
 
@@ -270,12 +271,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
-            }
-            var (m, _) = target.OverlayShortcut.ToShortcutKey();
-            if (m == ModifierKeys.None)
-            {
-                r.Add(ValidateResult.Invalid("オーバーレイショートカット",
-                "少なくとも1つの修飾キー（Ctrl、Alt、Shift）を選択してください。"));
             }
             foreach (var validator in this.validators)
             {
@@ -442,7 +437,12 @@ public partial class TargetSettingsViewModel(
     [property: Category("SettingsViewModel|Misc")]
     [property: SortIndex(7)]
     [ObservableProperty]
-    private bool displayBusy;
+    private bool displayBusy = settings.DisplayBusy;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(8)]
+    [ObservableProperty]
+    private bool isOneShotMode = settings.IsOneShotMode;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

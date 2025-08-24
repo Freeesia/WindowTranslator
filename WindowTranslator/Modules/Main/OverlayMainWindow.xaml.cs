@@ -174,6 +174,7 @@ public partial class OverlayMainWindow : Window
 
         // 上記のすべてのチェックに合格した場合、オーバーレイを表示
         this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+        this.overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
 
         // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
         var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);

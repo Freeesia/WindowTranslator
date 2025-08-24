@@ -7,11 +7,12 @@ using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Ocr;
 
-public class OcrBufferFilter(IOptionsSnapshot<BasicOcrParam> options, ILogger<OcrBufferFilter> logger) : IFilterModule
+public class OcrBufferFilter(IOptionsSnapshot<TargetSettings> target, IOptionsSnapshot<BasicOcrParam> options, ILogger<OcrBufferFilter> logger) : IFilterModule
 {
     private static readonly ObjectPool<List<TextRect>> listPool = ObjectPool.Create(new ListPolicy());
     private readonly ILogger<OcrBufferFilter> logger = logger;
     private readonly Queue<List<TextRect>> buffer = new();
+    private readonly bool isOneShotMode = target.Value.IsOneShotMode;
     private readonly int bufferSize = options.Value.BufferSize;
     private readonly bool isSuppressVibe = options.Value.IsSuppressVibe;
     private readonly bool isEnableRecover = options.Value.IsEnableRecover;
@@ -20,7 +21,7 @@ public class OcrBufferFilter(IOptionsSnapshot<BasicOcrParam> options, ILogger<Oc
 
     public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
     {
-        if (this.bufferSize <= 0)
+        if (this.bufferSize <= 0 || this.isOneShotMode)
         {
             await foreach (var text in texts.ConfigureAwait(false))
             {

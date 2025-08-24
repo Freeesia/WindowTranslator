@@ -30,8 +30,11 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly string name;
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
+    private readonly IProcessInfoStore processInfoStore;
     private readonly double fontScale;
+    private readonly bool isOneShotModeEnabled;
     private TextRect[]? lastRequested;
+    private bool isFirstCapture = true;
 
     [ObservableProperty]
     private string title;
@@ -40,6 +43,9 @@ public abstract partial class MainViewModelBase : IDisposable
     private double width = double.NaN;
     [ObservableProperty]
     private double height = double.NaN;
+
+    [ObservableProperty]
+    private bool overlayVisible = true;
 
     public bool DisplayBusy { get; }
 
@@ -67,8 +73,10 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         this.name = processInfoStore.Name;
         this.presentationService = presentationService;
+        this.processInfoStore = processInfoStore;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
+        this.isOneShotModeEnabled = options.Value.IsOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
@@ -78,10 +86,34 @@ public abstract partial class MainViewModelBase : IDisposable
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
+        // Capture will be started/stopped based on OverlayVisible property changes
+        this.isFirstCapture = this.isOneShotModeEnabled; // Only set to true if feature is enabled
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
         this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
+    }
+
+    partial void OnOverlayVisibleChanged(bool value)
+    {
+        if (value)
+        {
+            // Start capture when overlay becomes visible
+            this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
+
+            // Reset first capture flag for one-shot mode
+            if (this.isOneShotModeEnabled)
+            {
+                this.isFirstCapture = true;
+                this.logger.LogDebug("Overlay became visible - first capture flag reset (one shot mode enabled)");
+            }
+        }
+        else
+        {
+            // Stop capture when overlay becomes hidden
+            this.capture.StopCapture();
+            this.logger.LogDebug("Overlay became hidden - capture stopped");
+        }
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -123,39 +155,56 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
+
         IEnumerable<TextRect> texts = [];
-        using (this.Recognizing.EnterBusy())
+
+        if (!this.isOneShotModeEnabled || isFirstCapture)
         {
-            try
+            if (this.isOneShotModeEnabled)
             {
-                texts = await this.ocr.RecognizeAsync(sbmp);
+                this.logger.LogDebug("OCRトリガー実行");
+                this.isFirstCapture = false;
             }
-            catch (ObjectDisposedException)
+
+            using (this.Recognizing.EnterBusy())
             {
-                // すでに破棄されている場合は何もしない
-                this.timer.DisposeAsync().Forget();
-                this.capture.StopCapture();
-                return;
+                try
+                {
+                    texts = await this.ocr.RecognizeAsync(sbmp);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // すでに破棄されている場合は何もしない
+                    this.timer.DisposeAsync().Forget();
+                    this.capture.StopCapture();
+                    return;
+                }
+                catch (OperationCanceledException)
+                {
+                    // キャンセルされた場合は何もしない
+                    this.timer.DisposeAsync().Forget();
+                    this.capture.StopCapture();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    this.timer.DisposeAsync().Forget();
+                    this.capture.StopCapture();
+                    this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
+                    StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+                    return;
+                }
             }
-            catch (OperationCanceledException)
-            {
-                // キャンセルされた場合は何もしない
-                this.timer.DisposeAsync().Forget();
-                this.capture.StopCapture();
-                return;
-            }
-            catch (Exception e)
-            {
-                this.timer.DisposeAsync().Forget();
-                this.capture.StopCapture();
-                this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
-                StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-                return;
-            }
+            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
         }
+        else
+        {
+            texts = this.OcrTexts.ToArray();
+        }
+
+        // フィルター&翻訳処理は必ず通す
         using (this.Filtering.EnterBusy())
         {
-            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
             texts = await this.color.ConvertColorAsync(sbmp, texts);
 
             var context = new FilterContext()

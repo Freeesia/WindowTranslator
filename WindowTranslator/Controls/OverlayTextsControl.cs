@@ -64,4 +64,5 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(1.0));
 
+
 }

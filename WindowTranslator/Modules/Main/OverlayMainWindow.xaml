@@ -24,6 +24,7 @@
         <data:BoolAndConverter x:Key="b2vConv">
             <BooleanToVisibilityConverter />
         </data:BoolAndConverter>
+        <BooleanToVisibilityConverter x:Key="v2bConv" />
     </Window.Resources>
     <Canvas>
         <control:OverlayTextsControl
@@ -34,7 +35,8 @@
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"
             Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
-            Texts="{Binding OcrTexts}" />
+            Texts="{Binding OcrTexts}"
+            Visibility="{Binding OverlayVisible, Mode=OneWayToSource, Converter={StaticResource v2bConv}}" />
         <ui:ProgressRing
             Canvas.Right="0"
             Canvas.Bottom="0"

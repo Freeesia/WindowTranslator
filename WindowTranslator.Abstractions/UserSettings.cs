@@ -78,6 +78,11 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
+    /// ワンショットモードを有効にするか（ユーザー操作の初回のみ処理）
+    /// </summary>
+    public bool IsOneShotMode { get; set; }
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
