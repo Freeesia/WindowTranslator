@@ -272,12 +272,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
             }
-            var (m, _) = target.OverlayShortcut.ToShortcutKey();
-            if (m == ModifierKeys.None)
-            {
-                r.Add(ValidateResult.Invalid("オーバーレイショートカット",
-                "少なくとも1つの修飾キー（Ctrl、Alt、Shift）を選択してください。"));
-            }
             foreach (var validator in this.validators)
             {
                 r.Add(await validator.Validate(target));
