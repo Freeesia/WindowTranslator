@@ -8,30 +8,25 @@ using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
 using WindowTranslator.ComponentModel;
+using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Modules.Capture;
 
 [DefaultModule]
 [DisplayName("Windows標準キャプチャー")]
-public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
+public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logger) : ICaptureModule, IDisposable
 {
-    private readonly Direct3D11CaptureFramePool framePool;
-    private readonly IDirect3DDevice device;
+    private readonly IDirect3DDevice device = Direct3D11Helper.GetOrCreateDevice()!;
     private readonly SemaphoreSlim processing = new(1, 1);
-    private readonly ILogger<WindowsGraphicsCapture> logger;
+    private readonly ILogger<WindowsGraphicsCapture> logger = logger;
     private readonly CancellationTokenSource cts = new();
+    private nint targetWindow;
+    private Direct3D11CaptureFramePool? framePool;
     private GraphicsCaptureSession? session;
     private SizeInt32 lastSize = new(1000, 1000);
+    private bool lastMaximized;
 
     public event AsyncEventHandler<CapturedEventArgs>? Captured;
-
-    public WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logger)
-    {
-        this.device = Direct3D11Helper.GetOrCreateDevice()!;
-        this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
-        this.logger = logger;
-    }
-
 
     public void Dispose()
     {
@@ -44,9 +39,11 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
     public void StartCapture(IntPtr targetWindow)
     {
         this.logger.LogDebug("StartCapture");
+        this.targetWindow = targetWindow;
         var item = CaptureHelper.CreateItemForWindow(targetWindow)!;
         this.lastSize = item.Size;
-        this.framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, this.lastSize);
+        this.lastMaximized = IsZoomed(new(targetWindow));
+        this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
         this.framePool.FrameArrived += FramePool_FrameArrived;
         this.session = this.framePool.CreateCaptureSession(item);
         this.session.IsCursorCaptureEnabled = false;
@@ -81,11 +78,18 @@ public sealed partial class WindowsGraphicsCapture : ICaptureModule, IDisposable
             {
                 return;
             }
+            if (this.lastMaximized != IsZoomed(new(targetWindow)))
+            {
+                this.lastMaximized = !this.lastMaximized;
+                this.logger.LogDebug("セッション再作成");
+                StopCapture();
+                StartCapture(targetWindow);
+                return;
+            }
+            this.cts.Token.ThrowIfCancellationRequested();
             this.lastSize = frame.ContentSize;
             this.logger.LogDebug($"フレームプール再生成:({this.lastSize.Width}, {this.lastSize.Height})");
-            this.cts.Token.ThrowIfCancellationRequested();
             framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
-            this.logger.LogDebug($"フレームプール再生成後:({this.lastSize.Width}, {this.lastSize.Height})");
         }
         catch (ObjectDisposedException)
         {
