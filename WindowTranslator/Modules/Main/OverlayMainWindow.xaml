@@ -24,7 +24,7 @@
         <data:BoolAndConverter x:Key="b2vConv">
             <BooleanToVisibilityConverter />
         </data:BoolAndConverter>
-        <data:VisibilityToBooleanConverter x:Key="v2bConv" />
+        <BooleanToVisibilityConverter x:Key="v2bConv" />
     </Window.Resources>
     <Canvas>
         <control:OverlayTextsControl

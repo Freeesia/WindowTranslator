@@ -157,7 +157,6 @@ public partial class OverlayMainWindow : Window
         if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
         {
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
-            this.overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
             return;
         }
 
@@ -170,7 +169,6 @@ public partial class OverlayMainWindow : Window
         if (windowAtPoint != this.processInfo.MainWindowHandle && !IsChild(new(this.processInfo.MainWindowHandle), windowAtPoint))
         {
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
-            this.overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
             return;
         }
 
@@ -228,9 +226,7 @@ public partial class OverlayMainWindow : Window
         }
         else
         {
-            var currentVisibility = this.overlay.Visibility;
-            var newVisibility = currentVisibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-            this.overlay.SetCurrentValue(UIElement.VisibilityProperty, newVisibility);
+            this.overlay.SetCurrentValue(VisibilityProperty, this.overlay.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
         }
         return 0;
     }
@@ -238,11 +234,11 @@ public partial class OverlayMainWindow : Window
     private async void HoldHideOverlay()
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
-        this.overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
+        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
         await Task.Delay(500);
         if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
         {
-            this.overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         }
     }
 }
