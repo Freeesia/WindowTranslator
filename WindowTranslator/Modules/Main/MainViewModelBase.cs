@@ -88,6 +88,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.logger = logger;
         // Capture will be started/stopped based on OverlayVisible property changes
         this.isFirstCapture = this.isOneShotModeEnabled; // Only set to true if feature is enabled
+        this.capture.StartCapture(processInfoStore.MainWindowHandle);
         this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
@@ -99,7 +100,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
-            
+
             // Reset first capture flag for one-shot mode
             if (this.isOneShotModeEnabled)
             {
@@ -154,53 +155,56 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
-        
-        // Check if one shot mode is enabled and this is not the first capture
-        if (this.isOneShotModeEnabled && !this.isFirstCapture)
-        {
-            this.logger.LogDebug("Skipping OCR and translation (one shot mode enabled, not first capture)");
-            return;
-        }
-        
-        // Mark that first capture processing is complete if one shot mode is enabled
-        if (this.isOneShotModeEnabled)
-        {
-            this.isFirstCapture = false;
-        }
-        
+
         IEnumerable<TextRect> texts = [];
-        using (this.Recognizing.EnterBusy())
+
+        if (!this.isOneShotModeEnabled || isFirstCapture)
         {
-            try
+            if (this.isOneShotModeEnabled)
             {
-                texts = await this.ocr.RecognizeAsync(sbmp);
+                this.logger.LogDebug("OCRトリガー実行");
+                this.isFirstCapture = false;
             }
-            catch (ObjectDisposedException)
+
+            using (this.Recognizing.EnterBusy())
             {
-                // すでに破棄されている場合は何もしない
-                this.timer.DisposeAsync().Forget();
-                this.capture.StopCapture();
-                return;
+                try
+                {
+                    texts = await this.ocr.RecognizeAsync(sbmp);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // すでに破棄されている場合は何もしない
+                    this.timer.DisposeAsync().Forget();
+                    this.capture.StopCapture();
+                    return;
+                }
+                catch (OperationCanceledException)
+                {
+                    // キャンセルされた場合は何もしない
+                    this.timer.DisposeAsync().Forget();
+                    this.capture.StopCapture();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    this.timer.DisposeAsync().Forget();
+                    this.capture.StopCapture();
+                    this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
+                    StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+                    return;
+                }
             }
-            catch (OperationCanceledException)
-            {
-                // キャンセルされた場合は何もしない
-                this.timer.DisposeAsync().Forget();
-                this.capture.StopCapture();
-                return;
-            }
-            catch (Exception e)
-            {
-                this.timer.DisposeAsync().Forget();
-                this.capture.StopCapture();
-                this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
-                StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-                return;
-            }
+            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
         }
+        else
+        {
+            texts = this.OcrTexts.ToArray();
+        }
+
+        // フィルター&翻訳処理は必ず通す
         using (this.Filtering.EnterBusy())
         {
-            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
             texts = await this.color.ConvertColorAsync(sbmp, texts);
 
             var context = new FilterContext()
