@@ -38,3 +38,6 @@ GetWindowThreadProcessId
 // WindowMonitor
 EnumWindows
 IsWindowVisible
+
+// WindowsGraphicsCapture
+IsZoomed

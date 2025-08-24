@@ -192,7 +192,7 @@ public partial class OverlayMainWindow : Window
         GetWindowPlacement(new(this.processInfo.MainWindowHandle), ref p);
 
         var left = clientRect.left;
-        var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? clientRect.top : windowRect.top;
+        var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? monitorInfo.monitorInfo.rcWork.top : windowRect.top;
         var width = clientRect.right - left;
         var height = clientRect.bottom - top;
 
