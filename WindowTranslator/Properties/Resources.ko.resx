@@ -312,4 +312,7 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>마우스 포인터 위치의 텍스트에만 오버레이 번역을 표시</value>
   </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>오버레이 배경 불투명도</value>
+  </data>
 </root>
