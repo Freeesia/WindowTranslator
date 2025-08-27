@@ -312,4 +312,8 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>僅在滑鼠指標位置的文字上顯示重疊翻譯</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>覆蓋層背景不透明度</value>
+  </data>
 </root>

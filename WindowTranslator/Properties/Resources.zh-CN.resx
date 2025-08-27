@@ -312,4 +312,8 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>仅在鼠标指针位置的文本上显示覆盖翻译</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>覆盖层背景不透明度</value>
+  </data>
 </root>

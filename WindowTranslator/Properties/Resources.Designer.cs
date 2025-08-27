@@ -331,6 +331,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   オーバレイを有効にしたタイミングのみ翻訳する に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string IsOneShotMode {
+            get {
+                return ResourceManager.GetString("IsOneShotMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   マウスポインター位置のテキストのみオーバレイ翻訳を表示する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string IsOverlayPointSwap {
@@ -453,6 +462,15 @@ namespace WindowTranslator.Properties {
         public static string Overlay {
             get {
                 return ResourceManager.GetString("Overlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   オーバーレイ背景の不透明度 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OverlayOpacity {
+            get {
+                return ResourceManager.GetString("OverlayOpacity", resourceCulture);
             }
         }
         
