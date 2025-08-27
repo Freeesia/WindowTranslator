@@ -7,7 +7,7 @@ namespace WindowTranslator.Plugin.DummyPlugin;
 public class TranslateEmptyModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
-        => ValueTask.FromResult((string[])Array.CreateInstance(typeof(string), srcTexts.Length));
+        => ValueTask.FromResult(Enumerable.Repeat(string.Empty, srcTexts.Length).ToArray());
 }
 
 
