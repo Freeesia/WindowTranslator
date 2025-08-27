@@ -312,4 +312,7 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
   </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Overlay background opacity</value>
+  </data>
 </root>
