@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
@@ -32,6 +33,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly ICaptureModule capture;
     private readonly IProcessInfoStore processInfoStore;
     private readonly double fontScale;
+    private readonly double overlayOpacity;
     private readonly bool isOneShotModeEnabled;
     private TextRect[]? lastRequested;
     private bool isFirstCapture = true;
@@ -76,6 +78,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.processInfoStore = processInfoStore;
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
+        this.overlayOpacity = options.Value.OverlayOpacity;
         this.isOneShotModeEnabled = options.Value.IsOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
@@ -236,6 +239,9 @@ public abstract partial class MainViewModelBase : IDisposable
                 using var t = this.logger.LogDebugTime("PostTranslate");
                 texts = await tmp.ToArrayAsync();
             }
+
+            // 背景色に不透明度を設定
+            texts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
         }
 
         var hash = texts.ToHashSet();

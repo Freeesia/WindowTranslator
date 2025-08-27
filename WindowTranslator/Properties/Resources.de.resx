@@ -312,4 +312,8 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Overlay-Übersetzung nur für Text an der Mauszeiger-Position anzeigen</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Overlay-Hintergrund-Deckkraft</value>
+  </data>
 </root>

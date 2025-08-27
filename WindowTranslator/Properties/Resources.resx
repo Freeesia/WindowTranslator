@@ -312,4 +312,7 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>マウスポインター位置のテキストのみオーバレイ翻訳を表示する</value>
   </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>オーバーレイ背景の不透明度</value>
+  </data>
 </root>

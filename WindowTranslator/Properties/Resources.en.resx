@@ -312,4 +312,8 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Overlay background opacity</value>
+  </data>
 </root>

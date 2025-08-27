@@ -250,6 +250,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
                 IsOneShotMode = t.IsOneShotMode,
+                OverlayOpacity = t.OverlayOpacity,
             }),
         };
 
@@ -436,11 +437,18 @@ public partial class TargetSettingsViewModel(
 
     [property: Category("SettingsViewModel|Misc")]
     [property: SortIndex(7)]
+    [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
+    [property: FormatString("P1")]
+    [ObservableProperty]
+    private double overlayOpacity = settings.OverlayOpacity;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(8)]
     [ObservableProperty]
     private bool displayBusy = settings.DisplayBusy;
 
     [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(8)]
+    [property: SortIndex(9)]
     [ObservableProperty]
     private bool isOneShotMode = settings.IsOneShotMode;
 

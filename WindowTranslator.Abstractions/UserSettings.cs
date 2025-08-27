@@ -73,6 +73,11 @@ public class TargetSettings
     public string OverlayShortcut { get; set; } = "Ctrl + Alt + O";
 
     /// <summary>
+    /// オーバーレイの背景不透明度
+    /// </summary>
+    public double OverlayOpacity { get; set; } = 0.94;
+
+    /// <summary>
     /// 処理中の表示を行うか
     /// </summary>
     public bool DisplayBusy { get; set; } = true;
