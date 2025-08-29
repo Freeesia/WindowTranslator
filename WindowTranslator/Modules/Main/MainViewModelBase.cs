@@ -193,7 +193,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 {
                     this.timer.DisposeAsync().Forget();
                     this.capture.StopCapture();
-                    this.presentationService.ShowMessage(e.Message, $"{this.ocr.Name} - {this.name}", icon: MessageBoxImage.Error);
+                    await this.presentationService.OpenErrorReportDialogAsync("OCRに失敗しました", e, this.name);
                     StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
                     return;
                 }
@@ -293,7 +293,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            this.presentationService.ShowMessage(e.Message, $"{this.translator.Name} - {this.name}", icon: MessageBoxImage.Error);
+            await this.presentationService.OpenErrorReportDialogAsync("翻訳に失敗しました", e, this.name);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
         finally

@@ -1,0 +1,106 @@
+﻿using System.Globalization;
+using System.Text;
+using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Kamishibai;
+using Microsoft.Extensions.Options;
+
+namespace WindowTranslator.Modules.ErrorReport;
+
+[OpenDialog]
+public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings> options, string message, Exception ex, string target) : ObservableObject
+{
+    private readonly UserSettings settings = options.Value;
+    private readonly Exception ex = ex;
+    private readonly string target = target;
+
+    [ObservableProperty]
+    private bool copied = false;
+
+    public string Message { get; } = message;
+
+    public string Info { get; } = GetInfo(ex, options.Value, target);
+
+    [RelayCommand]
+    private async Task CopyAsync()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(CultureInfo.CurrentCulture, $"Version: {AppInfo.Instance.Version}");
+        sb.AppendLine(CultureInfo.CurrentCulture, $"Message: {this.Message}");
+        sb.AppendLine(this.Info);
+
+        Clipboard.SetText(sb.ToString());
+        this.Copied = true;
+        await Task.Delay(1000);
+        this.Copied = false;
+    }
+
+    private static string GetInfo(Exception ex, UserSettings settings, string target)
+    {
+        if (ex == null)
+            return string.Empty;
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("=== Exception Information ===");
+
+        var currentException = ex;
+        var depth = 0;
+
+        while (currentException != null)
+        {
+            if (depth > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine(CultureInfo.CurrentCulture, $"--- Inner Exception {depth} ---");
+            }
+
+            // 例外の型
+            sb.AppendLine(CultureInfo.CurrentCulture, $"Type: {currentException.GetType().FullName}");
+
+            // メッセージ
+            if (!string.IsNullOrEmpty(currentException.Message))
+            {
+                sb.AppendLine(CultureInfo.CurrentCulture, $"Message: {currentException.Message}");
+            }
+
+            // スタックトレース
+            if (!string.IsNullOrEmpty(currentException.StackTrace))
+            {
+                sb.AppendLine("StackTrace:");
+                sb.AppendLine(currentException.StackTrace);
+            }
+
+            currentException = currentException.InnerException;
+            depth++;
+        }
+
+        // TargetSettingsの情報を追加
+        if (settings.Targets.TryGetValue(target, out TargetSettings? value))
+        {
+            sb.AppendLine();
+            sb.AppendLine("=== Settings Information ===");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"Target: {target}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"Language Source: {value.Language?.Source ?? "N/A"}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"Language Target: {value.Language?.Target ?? "N/A"}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"Font: {value.Font ?? "N/A"}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"FontScale: {value.FontScale}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"OverlayShortcut: {value.OverlayShortcut ?? "N/A"}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"OverlayOpacity: {value.OverlayOpacity}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"DisplayBusy: {value.DisplayBusy}");
+            sb.AppendLine(CultureInfo.CurrentCulture, $"IsOneShotMode: {value.IsOneShotMode}");
+
+            if (value.SelectedPlugins?.Count > 0)
+            {
+                sb.AppendLine("Selected Plugins:");
+                foreach (var plugin in value.SelectedPlugins)
+                {
+                    sb.AppendLine(CultureInfo.CurrentCulture, $"  {plugin.Key}: {plugin.Value}");
+                }
+            }
+        }
+
+        return sb.ToString();
+    }
+}
