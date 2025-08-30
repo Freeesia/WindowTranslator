@@ -315,4 +315,32 @@
   <data name="OverlayOpacity" xml:space="preserve">
     <value>覆盖层背景不透明度</value>
   </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>向报告系统发送错误信息。将发送以下信息：
+* 应用程序信息
+* PC规格和环境信息
+* 翻译目标应用程序名称
+* 翻译目标图像
+* 翻译目标设置
+
+&gt; %{color:red}**不会发送个人信息，但请确保翻译目标屏幕中不包含个人信息。**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>发送信息</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>发送完成</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>复制信息</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>已复制</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>提交</value>
+  </data>
 </root>
