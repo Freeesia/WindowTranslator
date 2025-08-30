@@ -315,4 +315,32 @@
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay-Hintergrund-Deckkraft</value>
   </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Fehlerinformationen an das Berichtssystem senden. Die folgenden Informationen werden gesendet:
+* Anwendungsinformationen
+* PC-Spezifikationen und Umgebungsinformationen
+* Name der Übersetzungszielsanwendung
+* Übersetzungszielbild
+* Übersetzungszieleinstellungen
+
+&gt; %{color:red}**Persönliche Informationen werden nicht gesendet, aber stellen Sie sicher, dass keine persönlichen Informationen im Übersetzungszielbildschirm enthalten sind.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Informationen senden</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Gesendet</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Informationen kopieren</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Kopiert</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Bestätigen</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Senden</value>
+  </data>
 </root>
