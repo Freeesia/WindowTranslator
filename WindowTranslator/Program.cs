@@ -11,12 +11,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Octokit;
+using Sentry.Extensions.Logging;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.AspNetCore;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.TypeFinding;
 using WindowTranslator;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Logging;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.LogView;
@@ -54,11 +56,19 @@ Directory.SetCurrentDirectory(exeDir);
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
-#if !DEBUG
-// Sentryを無効化するために空のDSNを設定する必要があるけど、環境変数からは空文字を設定できないので、ここで設定する
-// 環境変数でDNSが設定されているときはそちらが優先されるはず
-builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry(op => op.Dsn = ""));
+builder.Host.ConfigureLogging((c, l) => 
+{
+    l.AddConfiguration(c.Configuration);
+#if DEBUG
+    // Sentryを無効化するために空のDSNを設定する必要があるけど、環境変数からは空文字を設定できないので、ここで設定する
+    // 環境変数でDNSが設定されているときはそちらが優先されるはず
+    l.AddSentry(op => op.Dsn = "");
 #endif
+
+    // InMemoryLoggerProviderを追加
+    l.Services.AddSingleton<ILogStore, InMemoryLogStore>();
+    l.Services.AddSingleton<ILoggerProvider, InMemoryLoggerProvider>();
+});
 
 TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
 {
