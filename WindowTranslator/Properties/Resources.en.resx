@@ -315,4 +315,32 @@
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay background opacity</value>
   </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Send error information to the report system. The following information will be sent:
+* Application information
+* PC specifications and environment information
+* Translation target application name
+* Translation target image
+* Translation target settings
+
+&gt; %{color:red}**Personal information will not be sent, but please ensure that personal information is not included in the translation target screen.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Send Information</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy Information</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copied</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
 </root>
