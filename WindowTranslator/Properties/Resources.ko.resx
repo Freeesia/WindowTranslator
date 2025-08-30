@@ -315,4 +315,32 @@
   <data name="OverlayOpacity" xml:space="preserve">
     <value>오버레이 배경 불투명도</value>
   </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>오류 정보를 보고서 시스템에 전송합니다. 다음 정보가 전송됩니다:
+* 애플리케이션 정보
+* PC 사양 및 환경 정보
+* 번역 대상 애플리케이션 이름
+* 번역 대상 이미지
+* 번역 대상 설정
+
+&gt; %{color:red}**개인 정보는 전송되지 않지만, 번역 대상 화면에 개인 정보가 포함되지 않도록 하십시오.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>정보 전송</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>전송 완료</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>정보 복사</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>복사했습니다</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>전송</value>
+  </data>
 </root>
