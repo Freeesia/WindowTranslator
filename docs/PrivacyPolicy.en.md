@@ -7,15 +7,24 @@ This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred 
 
 ## Introduction
 The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application itself does not collect any personal information or usage data from its users, nor does it collect error logs or crash reports.
+The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
 
 ## Collection of Personal Information
 
 ### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information.
+The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
+However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
 
 ### Error Logs and Crash Reports  
-The Application does not automatically collect any error logs or crash reports.
+The Application collects the following information only when users explicitly perform error report submission:
+
+- Application operation information
+- PC hardware specification information
+- OS environment information
+- Error occurrence circumstances
+
+This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
+Error report submission is completely voluntary and will never be sent automatically without user consent.
 
 ## Handling of Google User Data  
 When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
