@@ -38,6 +38,7 @@ public partial class StartupViewModel
             new MenuItemViewModel(Resources.Attach, this.RunCommand, []),
             new MenuItemViewModel("アタッチ中", null, this.attachingWindows),
             new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
+            new MenuItemViewModel("ログ", this.OpenLogWindowCommand, []),
             new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
         ];
     }
@@ -137,6 +138,10 @@ public partial class StartupViewModel
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
     }
+
+    [RelayCommand]
+    private async Task OpenLogWindowAsync()
+        => await this.presentationService.OpenLogWindowAsync(Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
 
     [RelayCommand]
     public static void Exit()
