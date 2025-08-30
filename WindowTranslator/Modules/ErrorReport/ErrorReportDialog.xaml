@@ -10,8 +10,8 @@
     xmlns:sentry="clr-namespace:Sentry;assembly=Sentry"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
-    Width="600"
-    Height="450"
+    Width="580"
+    Height="600"
     d:DataContext="{d:DesignInstance {x:Type local:ErrorReportViewModel}}"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -19,6 +19,9 @@
     WindowBackdropType="Mica"
     WindowCornerPreference="Default"
     mc:Ignorable="d">
+    <ui:FluentWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="b2vConv" />
+    </ui:FluentWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -29,11 +32,12 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <ui:TitleBar
             Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
             Grid.Row="0"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             ShowMaximize="False"
             ShowMinimize="False">
             <ui:TitleBar.Icon>
@@ -58,9 +62,21 @@
             FontSize="24"
             Text="{Binding Message, Mode=OneWay}"
             TextWrapping="Wrap" />
+
+        <ui:Image
+            Grid.Row="1"
+            Grid.Column="2"
+            MaxWidth="200"
+            Margin="4"
+            CornerRadius="4"
+            Source="{Binding ImagePath}"
+            Stretch="Uniform"
+            StretchDirection="DownOnly"
+            Visibility="{Binding HasImage, Converter={StaticResource b2vConv}}" />
+
         <ui:TextBox
             Grid.Row="2"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             Margin="4"
             FontFamily="Consolas"
             HorizontalScrollBarVisibility="Hidden"
@@ -70,7 +86,7 @@
             VerticalScrollBarVisibility="Visible" />
         <StackPanel
             Grid.Row="3"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             Margin="8"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
@@ -79,7 +95,6 @@
                     <Setter Property="MinWidth" Value="120" />
                     <Setter Property="Margin" Value="4,0" />
                 </Style>
-                <BooleanToVisibilityConverter x:Key="b2vConv" />
             </StackPanel.Resources>
             <ui:Flyout
                 Content="{x:Static properties:Resources.Copied}"
@@ -93,7 +108,6 @@
                 Command="{Binding SendReportCommand}"
                 Content="{x:Static properties:Resources.SendRerpot}"
                 Icon="{ui:SymbolIcon Symbol=Send24}"
-                ToolTip="{x:Static properties:Resources.SendReportToolTip}"
                 Visibility="{Binding IsSentryEnabled, Converter={StaticResource b2vConv}}" />
             <ui:Flyout
                 Content="{x:Static properties:Resources.Sent}"
@@ -101,5 +115,10 @@
                 Placement="Top" />
             <ui:Button Content="閉じる" IsCancel="True" />
         </StackPanel>
+        <ContentPresenter
+            x:Name="RootContentDialog"
+            Grid.Row="1"
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="3" />
     </Grid>
 </ui:FluentWindow>

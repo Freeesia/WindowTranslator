@@ -1,4 +1,8 @@
-﻿using Wpf.Ui.Controls;
+﻿using System.Globalization;
+using System.Windows.Markup;
+using Wpf.Ui;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace WindowTranslator.Modules.ErrorReport;
 /// <summary>
@@ -6,6 +10,11 @@ namespace WindowTranslator.Modules.ErrorReport;
 /// </summary>
 public partial class ErrorReportDialog : FluentWindow
 {
-    public ErrorReportDialog()
-        => InitializeComponent();
+    public ErrorReportDialog(IContentDialogService contentDialogService)
+    {
+        SystemThemeWatcher.Watch(this);
+        InitializeComponent();
+        this.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
+        contentDialogService.SetDialogHost(this.RootContentDialog);
+    }
 }

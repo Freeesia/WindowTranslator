@@ -6,13 +6,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Options;
+using WindowTranslator.Properties;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Modules.ErrorReport;
 
 [OpenDialog]
-public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings> options, string message, Exception ex, string target, string? lastIamgePath = null) : ObservableObject
+public partial class ErrorReportViewModel([Inject] IContentDialogService dialogService, [Inject] IOptionsSnapshot<UserSettings> options, string message, Exception ex, string target, string? lastIamgePath = null) : ObservableObject
 {
     private readonly UserSettings settings = options.Value;
+    private readonly IContentDialogService dialogService = dialogService;
     private readonly Exception ex = ex;
     private readonly string target = target;
     private readonly string? lastIamgePath = lastIamgePath;
@@ -29,6 +34,10 @@ public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings
     public string Info { get; } = GetInfo(ex, options.Value, target);
 
     public bool IsSentryEnabled { get; } = SentrySdk.IsEnabled;
+
+    public bool HasImage => File.Exists(this.lastIamgePath);
+
+    public string? ImagePath => this.HasImage ? this.lastIamgePath : null;
 
     [RelayCommand]
     private async Task CopyAsync()
@@ -48,6 +57,17 @@ public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings
     private async Task SendReportAsync()
     {
         if (this.sendFinished)
+        {
+            return;
+        }
+        var result = await this.dialogService.ShowSimpleDialogAsync(new()
+        {
+            Title = Resources.Confirm,
+            Content = Resources.SendReportToolTip,
+            CloseButtonText = Resources.Cancel,
+            PrimaryButtonText = Resources.Submit,
+        });
+        if (result != ContentDialogResult.Primary)
         {
             return;
         }

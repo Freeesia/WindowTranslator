@@ -196,6 +196,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   確認 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Confirm {
+            get {
+                return ResourceManager.GetString("Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   コピーしました に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Copied {
@@ -535,7 +544,8 @@ namespace WindowTranslator.Properties {
         ///* 翻訳対象のアプリ名
         ///* 翻訳対象の画像
         ///* 翻訳対象の設定
-        ///個人情報は送信されません に類似しているローカライズされた文字列を検索します。
+        ///
+        ///&gt; %{color:red}**個人情報は送信されませんが、翻訳対象の画面に個人情報が含まれないようにしてください。**% に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SendReportToolTip {
             get {
@@ -603,6 +613,15 @@ namespace WindowTranslator.Properties {
         public static string SteamWishlist {
             get {
                 return ResourceManager.GetString("SteamWishlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   送信 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Submit {
+            get {
+                return ResourceManager.GetString("Submit", resourceCulture);
             }
         }
         
