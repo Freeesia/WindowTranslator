@@ -6,14 +6,23 @@ description: Chính sách riêng tư của WindowTranslator
 Chính sách riêng tư này quy định về việc xử lý thông tin cá nhân và dữ liệu của người dùng khi sử dụng "WindowTranslator" (sau đây gọi là "Ứng dụng").
 
 ## Giới thiệu
-Ứng dụng này được công khai dưới dạng mã nguồn mở trên GitHub (https://github.com/Freeesia/WindowTranslator) và bản thân ứng dụng không có cơ chế thu thập thông tin cá nhân hoặc trạng thái sử dụng của người dùng. Ngoài ra, chúng tôi không thu thập nhật ký lỗi hoặc báo cáo sự cố.
+Ứng dụng này được công khai dưới dạng mã nguồn mở trên GitHub (https://github.com/Freeesia/WindowTranslator) và bản thân ứng dụng về cơ bản không thu thập thông tin cá nhân hoặc trạng thái sử dụng của người dùng. Tuy nhiên, chỉ khi người dùng rõ ràng chọn gửi báo cáo lỗi, chúng tôi mới thu thập thông tin tối thiểu cần thiết để giải quyết vấn đề kỹ thuật.
 
 ## Về việc thu thập thông tin cá nhân
 ### Thu thập thông tin từ chính ứng dụng
-Ứng dụng này không trực tiếp thu thập thông tin cá nhân như thông tin đầu vào của người dùng, lịch sử thao tác, thông tin thiết bị.
+Ứng dụng này không trực tiếp thu thập thông tin cá nhân như thông tin đầu vào của người dùng, lịch sử thao tác, thông tin thiết bị trong quá trình sử dụng bình thường.
+Tuy nhiên, chỉ khi người dùng rõ ràng chọn gửi báo cáo lỗi, chúng tôi mới thu thập thông tin cần thiết để giải quyết vấn đề kỹ thuật.
 
 ### Nhật ký lỗi và báo cáo sự cố
-Chúng tôi không thực hiện việc tự động thu thập dữ liệu liên quan đến người dùng như nhật ký lỗi hoặc báo cáo sự cố.
+Ứng dụng này chỉ thu thập thông tin sau đây khi người dùng thực hiện thao tác gửi báo cáo lỗi một cách rõ ràng:
+
+- Thông tin hoạt động của ứng dụng
+- Thông tin thông số kỹ thuật phần cứng PC
+- Thông tin môi trường hệ điều hành
+- Tình huống xảy ra lỗi
+
+Những thông tin này chỉ được sử dụng để giải quyết vấn đề kỹ thuật và cải thiện chất lượng ứng dụng, và không bao gồm thông tin có thể nhận dạng cá nhân.
+Việc gửi báo cáo lỗi hoàn toàn tự nguyện và sẽ không bao giờ được gửi tự động mà không có sự đồng ý của người dùng.
 
 ## Xử lý dữ liệu người dùng Google
 Ứng dụng này chỉ lấy quyền truy cập liên quan đến dữ liệu người dùng Google như sau khi truy cập vào dịch vụ Google Apps Script.

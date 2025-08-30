@@ -5,15 +5,24 @@ description: Datenschutzerklärung für WindowTranslator
 
 Diese Datenschutzerklärung regelt die Nutzung von "WindowTranslator" (im Folgenden "die Anwendung" genannt).  
 Die Anwendung ist Open Source und auf GitHub ( https://github.com/Freeesia/WindowTranslator ) verfügbar.  
-Die Anwendung selbst sammelt keine personenbezogenen Daten oder Nutzungsdaten der Benutzer und erhebt auch keine Fehlerprotokolle oder Absturzberichte.
+Die Anwendung sammelt grundsätzlich keine personenbezogenen Daten oder Nutzungsdaten der Benutzer. Jedoch werden bei ausdrücklicher Wahl der Benutzer zur Übermittlung von Fehlerberichten minimale Informationen zur technischen Problemlösung gesammelt.
 
 ## Erhebung personenbezogener Daten
 
 ### Von der Anwendung erhobene Informationen  
-Die Anwendung sammelt keine personenbezogenen Daten wie Benutzereingaben, Interaktionshistorien oder Geräteinformationen.
+Die Anwendung sammelt bei normaler Nutzung keine personenbezogenen Daten wie Benutzereingaben, Interaktionshistorien oder Geräteinformationen.
+Jedoch werden bei ausdrücklicher Wahl der Benutzer zur Übermittlung von Fehlerberichten notwendige Informationen zur technischen Problemlösung gesammelt.
 
 ### Fehlerprotokolle und Absturzberichte  
-Die Anwendung sammelt nicht automatisch Fehlerprotokolle oder Absturzberichte.
+Die Anwendung sammelt die folgenden Informationen nur dann, wenn Benutzer ausdrücklich eine Fehlerbericht-Übermittlung durchführen:
+
+- Anwendungsbetriebsinformationen
+- PC-Hardware-Spezifikationsinformationen
+- Betriebssystem-Umgebungsinformationen
+- Umstände des Fehlerauftretens
+
+Diese Informationen werden ausschließlich zur technischen Problemlösung und Verbesserung der Anwendungsqualität verwendet und enthalten keine personenidentifizierenden Informationen.
+Die Übermittlung von Fehlerberichten ist vollständig freiwillig und wird niemals automatisch ohne Benutzerzustimmung gesendet.
 
 ## Umgang mit Google-Nutzerdaten  
 Beim Zugriff auf Google Apps Script-Dienste erhält die Anwendung nur die minimal erforderlichen Authentifizierungs-Tokens.  

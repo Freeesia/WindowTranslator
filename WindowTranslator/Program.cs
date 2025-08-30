@@ -19,6 +19,7 @@ using WindowTranslator;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
+using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
@@ -56,7 +57,24 @@ var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 #if !DEBUG
 // Sentryを無効化するために空のDSNを設定する必要があるけど、環境変数からは空文字を設定できないので、ここで設定する
 // 環境変数でDNSが設定されているときはそちらが優先されるはず
-builder.Host.ConfigureLogging((c, l) => l.AddConfiguration(c.Configuration).AddSentry(op => op.Dsn = ""));
+builder.Host.ConfigureLogging((c, l) =>
+{
+    l.AddConfiguration(c.Configuration)
+        .AddSentry(op =>
+        {
+            op.Dsn = "";
+#if DEBUG
+            op.Debug = true;
+#endif
+            op.UseAsyncFileIO = true;
+            op.SendDefaultPii = false;
+            op.SendClientReports = false;
+            op.AutoSessionTracking = false;
+            op.AttachStacktrace = false;
+            op.CaptureFailedRequests = false;
+            op.MinimumEventLevel = LogLevel.None;
+        });
+});
 #endif
 
 TypeFinderOptions.Defaults.TypeFinderCriterias.Add(new()
@@ -111,6 +129,7 @@ builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
 builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
+builder.Services.AddPresentation<ErrorReportDialog, ErrorReportViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
