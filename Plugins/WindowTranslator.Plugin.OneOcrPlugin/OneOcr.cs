@@ -181,7 +181,6 @@ public sealed class OneOcr : IOcrModule, IDisposable
                 this.logger.LogDebug("画像が小さすぎるので認識出来なかった");
                 return [];
             }
-            bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
             throw new InvalidOperationException(string.Format(Resources.RunPipelineFaild, res));
         }
 
@@ -189,7 +188,6 @@ public sealed class OneOcr : IOcrModule, IDisposable
         res = GetOcrLineCount(instance, out var lineCount);
         if (res != 0)
         {
-            bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
             throw new InvalidOperationException(string.Format(Resources.GetLineCountFaild, res));
         }
 
@@ -202,7 +200,6 @@ public sealed class OneOcr : IOcrModule, IDisposable
             res = GetOcrLine(instance, i, out var line);
             if (res != 0 || line == 0)
             {
-                bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
                 throw new InvalidOperationException(string.Format(Resources.GetLineFaild, i, res));
             }
 
@@ -210,7 +207,6 @@ public sealed class OneOcr : IOcrModule, IDisposable
             res = GetOcrLineContent(line, out var lineContent);
             if (res != 0)
             {
-                bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
                 throw new InvalidOperationException(string.Format(Resources.GetLineContentFaild, i, res));
             }
 
@@ -223,7 +219,6 @@ public sealed class OneOcr : IOcrModule, IDisposable
             res = GetOcrLineBoundingBox(line, out var ptr);
             if (res != 0)
             {
-                bitmap.TrySaveImage(Path.Combine(Utility.OneOcrPath, "ocr_error.bmp")).ConfigureAwait(false);
                 throw new InvalidOperationException(string.Format(Resources.GetLineBoundingBoxFaild, i, res));
             }
             var boundingBox = Marshal.PtrToStructure<BoundingBox>(ptr);
