@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Drawing;
+using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
@@ -12,7 +13,6 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Stores;
-using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -193,7 +193,9 @@ public abstract partial class MainViewModelBase : IDisposable
                 {
                     this.timer.DisposeAsync().Forget();
                     this.capture.StopCapture();
-                    await this.presentationService.OpenErrorReportDialogAsync("OCRに失敗しました", e, this.name);
+                    var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
+                    await sbmp.TrySaveImage(path);
+                    await this.presentationService.OpenErrorReportDialogAsync("OCRに失敗しました", e, this.name, path);
                     StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
                     return;
                 }
@@ -293,7 +295,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            await this.presentationService.OpenErrorReportDialogAsync("翻訳に失敗しました", e, this.name);
+            await this.presentationService.OpenErrorReportDialogAsync("翻訳に失敗しました", e, this.name, string.Empty);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
         finally

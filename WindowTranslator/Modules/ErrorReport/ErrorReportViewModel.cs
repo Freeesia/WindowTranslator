@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,18 +10,25 @@ using Microsoft.Extensions.Options;
 namespace WindowTranslator.Modules.ErrorReport;
 
 [OpenDialog]
-public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings> options, string message, Exception ex, string target) : ObservableObject
+public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings> options, string message, Exception ex, string target, string? lastIamgePath = null) : ObservableObject
 {
     private readonly UserSettings settings = options.Value;
     private readonly Exception ex = ex;
     private readonly string target = target;
+    private readonly string? lastIamgePath = lastIamgePath;
+    private bool sendFinished;
 
     [ObservableProperty]
     private bool copied = false;
 
+    [ObservableProperty]
+    private bool sent = false;
+
     public string Message { get; } = message;
 
     public string Info { get; } = GetInfo(ex, options.Value, target);
+
+    public bool IsSentryEnabled { get; } = SentrySdk.IsEnabled;
 
     [RelayCommand]
     private async Task CopyAsync()
@@ -34,6 +42,37 @@ public partial class ErrorReportViewModel([Inject] IOptionsSnapshot<UserSettings
         this.Copied = true;
         await Task.Delay(1000);
         this.Copied = false;
+    }
+
+    [RelayCommand]
+    private async Task SendReportAsync()
+    {
+        if (this.sendFinished)
+        {
+            return;
+        }
+        SentrySdk.CaptureException(this.ex, scope =>
+        {
+            if (File.Exists(this.lastIamgePath))
+            {
+                scope.AddAttachment(this.lastIamgePath);
+            }
+            if (settings.Targets.TryGetValue(target, out TargetSettings? setting))
+            {
+                setting.PluginParams.Clear();
+                scope.Contexts["Target"] = new
+                {
+                    target,
+                    setting,
+                };
+            }
+        });
+        await SentrySdk.FlushAsync();
+
+        this.sendFinished = true;
+        this.Sent = true;
+        await Task.Delay(1000);
+        this.Sent = false;
     }
 
     private static string GetInfo(Exception ex, UserSettings settings, string target)

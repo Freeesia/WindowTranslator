@@ -196,6 +196,24 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   コピーしました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Copied {
+            get {
+                return ResourceManager.GetString("Copied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   情報をコピー に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Copy {
+            get {
+                return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   デタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Detach {
@@ -507,6 +525,39 @@ namespace WindowTranslator.Properties {
         public static string PublishPage {
             get {
                 return ResourceManager.GetString("PublishPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   エラー情報をレポートシステムに送信します。以下の情報が送信されます。
+        ///* アプリ情報
+        ///* PCのスペック、環境情報
+        ///* 翻訳対象のアプリ名
+        ///* 翻訳対象の画像
+        ///* 翻訳対象の設定
+        ///個人情報は送信されません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SendReportToolTip {
+            get {
+                return ResourceManager.GetString("SendReportToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   情報を送信 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SendRerpot {
+            get {
+                return ResourceManager.GetString("SendRerpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   送信完了 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Sent {
+            get {
+                return ResourceManager.GetString("Sent", resourceCulture);
             }
         }
         

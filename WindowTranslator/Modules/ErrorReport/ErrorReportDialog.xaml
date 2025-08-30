@@ -5,7 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:WindowTranslator.Modules.ErrorReport"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:properties="clr-namespace:WindowTranslator.Properties"
     xmlns:root="clr-namespace:WindowTranslator"
+    xmlns:sentry="clr-namespace:Sentry;assembly=Sentry"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="{Binding Title, Source={x:Static root:AppInfo.Instance}}"
     Width="600"
@@ -77,15 +79,26 @@
                     <Setter Property="MinWidth" Value="120" />
                     <Setter Property="Margin" Value="4,0" />
                 </Style>
+                <BooleanToVisibilityConverter x:Key="b2vConv" />
             </StackPanel.Resources>
             <ui:Flyout
-                Content="コピーしました"
+                Content="{x:Static properties:Resources.Copied}"
                 IsOpen="{Binding Copied, Mode=OneWay}"
                 Placement="Top" />
             <ui:Button
                 Command="{Binding CopyCommand}"
-                Content="情報をコピー"
+                Content="{x:Static properties:Resources.Copy}"
                 Icon="{ui:SymbolIcon Symbol=DocumentCopy24}" />
+            <ui:Button
+                Command="{Binding SendReportCommand}"
+                Content="{x:Static properties:Resources.SendRerpot}"
+                Icon="{ui:SymbolIcon Symbol=Send24}"
+                ToolTip="{x:Static properties:Resources.SendReportToolTip}"
+                Visibility="{Binding IsSentryEnabled, Converter={StaticResource b2vConv}}" />
+            <ui:Flyout
+                Content="{x:Static properties:Resources.Sent}"
+                IsOpen="{Binding Sent, Mode=OneWay}"
+                Placement="Top" />
             <ui:Button Content="閉じる" IsCancel="True" />
         </StackPanel>
     </Grid>

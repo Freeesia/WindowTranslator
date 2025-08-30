@@ -119,7 +119,7 @@ public partial class StartupViewModel
         }
         catch (Exception ex)
         {
-            await this.presentationService.OpenErrorReportDialogAsync("ウィンドウの埋め込みに失敗しました。", ex, p.Name);
+            await this.presentationService.OpenErrorReportDialogAsync("ウィンドウの埋め込みに失敗しました。", ex, p.Name, string.Empty);
         }
         if (!beforeVisible)
         {
