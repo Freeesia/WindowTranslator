@@ -76,6 +76,8 @@ builder.Host.ConfigureLogging((c, l) =>
         op.AttachStacktrace = false;
         op.CaptureFailedRequests = false;
         op.MinimumEventLevel = LogLevel.None;
+        op.DisableAppDomainUnhandledExceptionCapture();
+        op.DisableUnobservedTaskExceptionCapture();
     });
 #endif
 
