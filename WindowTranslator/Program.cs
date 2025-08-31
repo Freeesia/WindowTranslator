@@ -163,6 +163,10 @@ app.Loaded += (_, e) =>
     e.Window.Activate();
 };
 
+if (SentrySdk.IsEnabled)
+{
+    app.Logger.LogInformation("Sentry is enabled.");
+}
 AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
 
 await app.RunAsync();
