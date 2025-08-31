@@ -38,9 +38,9 @@ public partial class StartupViewModel
         this.TaskBarIconMenus =
         [
             new MenuItemViewModel(Resources.Attach, this.RunCommand, []),
-            new MenuItemViewModel("アタッチ中", null, this.attachingWindows),
+            new MenuItemViewModel(Resources.Attaching, null, this.attachingWindows),
             new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
-            new MenuItemViewModel("ログ", this.OpenLogWindowCommand, []),
+            new MenuItemViewModel(Resources.Log, this.OpenLogWindowCommand, []),
             new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
         ];
     }

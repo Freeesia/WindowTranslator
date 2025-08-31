@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using WindowTranslator.Extensions;
+using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 
@@ -16,6 +17,7 @@ namespace WindowTranslator.Modules.LogView;
 [OpenWindow]
 public sealed partial class LogViewModel : ObservableObject, IDisposable
 {
+    private static readonly CompositeFormat ExportLogsSuccessDetail = CompositeFormat.Parse(Resources.ExportLogsSuccessDetail);
     private readonly ILogStore store;
     private readonly IPresentationService presentationService;
     private readonly ISnackbarService snackbarService;
@@ -93,9 +95,9 @@ public sealed partial class LogViewModel : ObservableObject, IDisposable
     {
         var context = new SaveFileDialogContext()
         {
-            Title = "ログのエクスポート",
+            Title = Resources.ExportLogs,
             DefaultExtension = "txt",
-            Filters = [new("テキストファイル", "txt")],
+            Filters = [new(Resources.ExportLogsFilterText, "txt")],
             DefaultFileName = $"WindowTranslator_Log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
         };
         var result = this.presentationService.SaveFile(context);
@@ -114,11 +116,11 @@ public sealed partial class LogViewModel : ObservableObject, IDisposable
             }
 
             File.WriteAllText(context.FileName, sb.ToString(), Encoding.UTF8);
-            this.snackbarService.ShowSuccess("エクスポート完了", $"ログを`{context.FileName}`にエクスポートしました。");
+            this.snackbarService.ShowSuccess(Resources.ExportLogsSuccess, string.Format(CultureInfo.CurrentCulture, ExportLogsSuccessDetail, context.FileName));
         }
         catch (Exception ex)
         {
-            this.snackbarService.ShowError("エクスポート失敗", ex.Message);
+            this.snackbarService.ShowError(Resources.ExportLogsFailed, ex.Message);
         }
     }
 }

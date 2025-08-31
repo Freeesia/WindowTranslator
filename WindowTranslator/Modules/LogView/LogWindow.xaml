@@ -7,8 +7,9 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:WindowTranslator.Modules.LogView"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:properties="clr-namespace:WindowTranslator.Properties"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="ログ"
+    Title="{x:Static properties:Resources.Log}"
     Width="800"
     Height="450"
     d:DataContext="{d:DesignInstance {x:Type local:LogViewModel}}"
@@ -36,11 +37,11 @@
                         </Menu.Resources>
                         <ui:MenuItem
                             Command="{Binding ExportLogsCommand}"
-                            Header="エクスポート"
+                            Header="{x:Static properties:Resources.Export}"
                             Icon="{ui:SymbolIcon Symbol=Save24}" />
                         <ui:MenuItem
                             Command="{Binding ClearLogsCommand}"
-                            Header="クリア"
+                            Header="{x:Static properties:Resources.Clear}"
                             Icon="{ui:SymbolIcon Symbol=Eraser24}" />
                     </Menu>
                 </ui:TitleBar.Header>
@@ -48,7 +49,7 @@
                     <ui:ToggleSwitch
                         x:Name="IsAutoScrollEnabled"
                         Margin="4"
-                        Content="自動スクロール"
+                        Content="{x:Static properties:Resources.AutoScroll}"
                         IsChecked="True" />
                 </ui:TitleBar.TrailingContent>
             </ui:TitleBar>

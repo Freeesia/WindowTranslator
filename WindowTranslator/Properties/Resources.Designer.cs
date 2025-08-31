@@ -106,6 +106,24 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   アタッチ中 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Attaching {
+            get {
+                return ResourceManager.GetString("Attaching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   自動スクロール に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AutoScroll {
+            get {
+                return ResourceManager.GetString("AutoScroll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   PC起動時に自動起動 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AutoStartWithPC {
@@ -183,6 +201,15 @@ namespace WindowTranslator.Properties {
         public static string CheckUpdateNotes {
             get {
                 return ResourceManager.GetString("CheckUpdateNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   クリア に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Clear {
+            get {
+                return ResourceManager.GetString("Clear", resourceCulture);
             }
         }
         
@@ -273,6 +300,60 @@ namespace WindowTranslator.Properties {
         public static string Exit {
             get {
                 return ResourceManager.GetString("Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   エクスポート に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Export {
+            get {
+                return ResourceManager.GetString("Export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ログのエクスポート に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ExportLogs {
+            get {
+                return ResourceManager.GetString("ExportLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   エクスポート失敗 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ExportLogsFailed {
+            get {
+                return ResourceManager.GetString("ExportLogsFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   テキストファイル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ExportLogsFilterText {
+            get {
+                return ResourceManager.GetString("ExportLogsFilterText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   エクスポート完了 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ExportLogsSuccess {
+            get {
+                return ResourceManager.GetString("ExportLogsSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ログを`{0}`にエクスポートしました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ExportLogsSuccessDetail {
+            get {
+                return ResourceManager.GetString("ExportLogsSuccessDetail", resourceCulture);
             }
         }
         
@@ -399,6 +480,15 @@ namespace WindowTranslator.Properties {
         public static string LocalCache {
             get {
                 return ResourceManager.GetString("LocalCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ログ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Log {
+            get {
+                return ResourceManager.GetString("Log", resourceCulture);
             }
         }
         

@@ -312,7 +312,6 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>마우스 포인터 위치의 텍스트에만 오버레이 번역을 표시</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="OverlayOpacity" xml:space="preserve">
     <value>오버레이 배경 불투명도</value>
   </data>
@@ -343,5 +342,35 @@
   </data>
   <data name="Submit" xml:space="preserve">
     <value>전송</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>로그</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>연결 중</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>내보내기</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>지우기</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>자동 스크롤</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>로그 내보내기</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>내보내기 실패</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>내보내기 완료</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>로그를 `{0}`에 내보냈습니다.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>텍스트 파일</value>
   </data>
 </root>
