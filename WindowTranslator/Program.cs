@@ -124,6 +124,7 @@ builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
 builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
 builder.Services.AddPresentation<LogWindow, LogViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
+builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));

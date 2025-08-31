@@ -1,4 +1,5 @@
-﻿using Wpf.Ui.Controls;
+﻿using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 namespace WindowTranslator.Modules.LogView;
 /// <summary>
@@ -6,6 +7,9 @@ namespace WindowTranslator.Modules.LogView;
 /// </summary>
 public partial class LogWindow : FluentWindow
 {
-    public LogWindow()
-        => InitializeComponent();
+    public LogWindow(ISnackbarService snackbarService)
+    {
+        InitializeComponent();
+        snackbarService.SetSnackbarPresenter(this.SnackbarPresenter);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Channels;
@@ -6,8 +7,9 @@ using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
-using Microsoft.Win32;
+using WindowTranslator.Extensions;
 using WindowTranslator.Stores;
+using Wpf.Ui;
 
 namespace WindowTranslator.Modules.LogView;
 
@@ -15,15 +17,19 @@ namespace WindowTranslator.Modules.LogView;
 public sealed partial class LogViewModel : ObservableObject, IDisposable
 {
     private readonly ILogStore store;
+    private readonly IPresentationService presentationService;
+    private readonly ISnackbarService snackbarService;
     private readonly ObservableCollection<LogEntry> logs = [];
     private readonly Channel<LogEntry> channel = Channel.CreateUnbounded<LogEntry>(new() { SingleReader = true });
     private readonly Task task;
 
     public ObservableCollection<LogEntry> Logs => logs;
 
-    public LogViewModel([Inject] ILogStore loggerService)
+    public LogViewModel([Inject] ILogStore logStore, [Inject] IPresentationService presentationService, [Inject] ISnackbarService snackbarService)
     {
-        this.store = loggerService;
+        this.store = logStore;
+        this.presentationService = presentationService;
+        this.snackbarService = snackbarService;
 
         // 既存のログを読み込み
         foreach (var log in this.store.GetLogs())
@@ -85,34 +91,34 @@ public sealed partial class LogViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ExportLogs()
     {
-        // TODO: 実装整理
-        var saveFileDialog = new SaveFileDialog
+        var context = new SaveFileDialogContext()
         {
-            Filter = "テキストファイル (*.txt)|*.txt|すべてのファイル (*.*)|*.*",
-            FileName = $"WindowTranslator_Log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
+            Title = "ログのエクスポート",
+            DefaultExtension = "txt",
+            Filters = [new("テキストファイル", "txt")],
+            DefaultFileName = $"WindowTranslator_Log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
         };
+        var result = this.presentationService.SaveFile(context);
 
-        if (saveFileDialog.ShowDialog() == true)
+        if (result != DialogResult.Ok)
         {
-            try
+            return;
+        }
+
+        try
+        {
+            var sb = new StringBuilder();
+            foreach (var log in logs)
             {
-                var sb = new StringBuilder();
-                sb.AppendLine("WindowTranslator ログエクスポート");
-                sb.AppendLine($"エクスポート日時: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
-                sb.AppendLine(new string('=', 50));
-                sb.AppendLine();
-
-                foreach (var log in logs)
-                {
-                    sb.AppendLine($"[{log.Timestamp:yyyy/MM/dd HH:mm:ss}] [{log.Level}] {log.Category}  {log.FormattedMessage}");
-                }
-
-                File.WriteAllText(saveFileDialog.FileName, sb.ToString(), Encoding.UTF8);
-
+                sb.AppendLine(CultureInfo.CurrentCulture, $"{log.Timestamp:s} | {log.Level, -12} | {log.Category} | {log.FormattedMessage}");
             }
-            catch (Exception ex)
-            {
-            }
+
+            File.WriteAllText(context.FileName, sb.ToString(), Encoding.UTF8);
+            this.snackbarService.ShowSuccess("エクスポート完了", $"ログを`{context.FileName}`にエクスポートしました。");
+        }
+        catch (Exception ex)
+        {
+            this.snackbarService.ShowError("エクスポート失敗", ex.Message);
         }
     }
 }

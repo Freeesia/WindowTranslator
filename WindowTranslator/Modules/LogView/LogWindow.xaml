@@ -21,82 +21,86 @@
     <ui:FluentWindow.Resources>
         <SolidColorBrush x:Key="SystemFillColorAttentionBrush" Color="{DynamicResource SystemFillColorAttention}" />
     </ui:FluentWindow.Resources>
-    <DockPanel>
-        <ui:TitleBar DockPanel.Dock="Top">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="/wt.ico" />
-            </ui:TitleBar.Icon>
-            <ui:TitleBar.Header>
-                <Menu DockPanel.Dock="Top">
-                    <Menu.Resources>
-                        <Style BasedOn="{StaticResource {x:Type ui:MenuItem}}" TargetType="ui:MenuItem">
-                            <Setter Property="MinWidth" Value="120" />
-                        </Style>
-                    </Menu.Resources>
-                    <ui:MenuItem
-                        Command="{Binding ExportLogsCommand}"
-                        Header="エクスポート"
-                        Icon="{ui:SymbolIcon Symbol=Save24}" />
-                    <ui:MenuItem
-                        Command="{Binding ClearLogsCommand}"
-                        Header="クリア"
-                        Icon="{ui:SymbolIcon Symbol=Eraser24}" />
-                </Menu>
-            </ui:TitleBar.Header>
-            <ui:TitleBar.TrailingContent>
-                <ui:ToggleSwitch
-                    x:Name="IsAutoScrollEnabled"
-                    Content="自動スクロール"
-                    IsChecked="True" />
-            </ui:TitleBar.TrailingContent>
-        </ui:TitleBar>
-        <ui:ListView
-            x:Name="LogListView"
-            ItemsSource="{Binding Logs}"
-            VirtualizingStackPanel.IsVirtualizing="True"
-            VirtualizingStackPanel.VirtualizationMode="Recycling">
-            <i:Interaction.Behaviors>
-                <behaviors:ScrollToEndBehavior IsAutoScrollEnabled="{Binding IsChecked, ElementName=IsAutoScrollEnabled, Mode=OneWay}" />
-            </i:Interaction.Behaviors>
-            <ui:ListView.View>
-                <ui:GridView>
-                    <GridViewColumn
-                        Width="140"
-                        DisplayMemberBinding="{Binding Timestamp, StringFormat='{}{0:yyyy/MM/dd HH:mm:ss}'}"
-                        Header="時刻" />
-                    <GridViewColumn
-                        Width="70"
-                        DisplayMemberBinding="{Binding Level}"
-                        Header="レベル" />
-                    <GridViewColumn
-                        Width="200"
-                        DisplayMemberBinding="{Binding Category}"
-                        Header="カテゴリ" />
-                    <GridViewColumn
-                        Width="400"
-                        DisplayMemberBinding="{Binding FormattedMessage}"
-                        Header="メッセージ" />
-                </ui:GridView>
-            </ui:ListView.View>
-            <ui:ListView.ItemContainerStyle>
-                <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Level}" Value="Error">
-                            <Setter Property="Foreground" Value="{ui:ThemeResource SystemFillColorCriticalBrush}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Level}" Value="Critical">
-                            <Setter Property="Foreground" Value="DarkRed" />
-                            <Setter Property="FontWeight" Value="Bold" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Level}" Value="Warning">
-                            <Setter Property="Foreground" Value="{ui:ThemeResource SystemFillColorCautionBrush}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Level}" Value="Information">
-                            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorAttentionBrush}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ui:ListView.ItemContainerStyle>
-        </ui:ListView>
-    </DockPanel>
+    <Grid>
+        <DockPanel>
+            <ui:TitleBar DockPanel.Dock="Top">
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon Source="/wt.ico" />
+                </ui:TitleBar.Icon>
+                <ui:TitleBar.Header>
+                    <Menu DockPanel.Dock="Top">
+                        <Menu.Resources>
+                            <Style BasedOn="{StaticResource {x:Type ui:MenuItem}}" TargetType="ui:MenuItem">
+                                <Setter Property="MinWidth" Value="120" />
+                            </Style>
+                        </Menu.Resources>
+                        <ui:MenuItem
+                            Command="{Binding ExportLogsCommand}"
+                            Header="エクスポート"
+                            Icon="{ui:SymbolIcon Symbol=Save24}" />
+                        <ui:MenuItem
+                            Command="{Binding ClearLogsCommand}"
+                            Header="クリア"
+                            Icon="{ui:SymbolIcon Symbol=Eraser24}" />
+                    </Menu>
+                </ui:TitleBar.Header>
+                <ui:TitleBar.TrailingContent>
+                    <ui:ToggleSwitch
+                        x:Name="IsAutoScrollEnabled"
+                        Margin="4"
+                        Content="自動スクロール"
+                        IsChecked="True" />
+                </ui:TitleBar.TrailingContent>
+            </ui:TitleBar>
+            <ui:ListView
+                x:Name="LogListView"
+                ItemsSource="{Binding Logs}"
+                VirtualizingStackPanel.IsVirtualizing="True"
+                VirtualizingStackPanel.VirtualizationMode="Recycling">
+                <i:Interaction.Behaviors>
+                    <behaviors:ScrollToEndBehavior IsAutoScrollEnabled="{Binding IsChecked, ElementName=IsAutoScrollEnabled, Mode=OneWay}" />
+                </i:Interaction.Behaviors>
+                <ui:ListView.View>
+                    <ui:GridView>
+                        <GridViewColumn
+                            Width="140"
+                            DisplayMemberBinding="{Binding Timestamp, StringFormat='{}{0:yyyy/MM/dd HH:mm:ss}'}"
+                            Header="時刻" />
+                        <GridViewColumn
+                            Width="70"
+                            DisplayMemberBinding="{Binding Level}"
+                            Header="レベル" />
+                        <GridViewColumn
+                            Width="200"
+                            DisplayMemberBinding="{Binding Category}"
+                            Header="カテゴリ" />
+                        <GridViewColumn
+                            Width="400"
+                            DisplayMemberBinding="{Binding FormattedMessage}"
+                            Header="メッセージ" />
+                    </ui:GridView>
+                </ui:ListView.View>
+                <ui:ListView.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Level}" Value="Error">
+                                <Setter Property="Foreground" Value="{ui:ThemeResource SystemFillColorCriticalBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Critical">
+                                <Setter Property="Foreground" Value="DarkRed" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Warning">
+                                <Setter Property="Foreground" Value="{ui:ThemeResource SystemFillColorCautionBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Information">
+                                <Setter Property="Foreground" Value="{DynamicResource SystemFillColorAttentionBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:ListView.ItemContainerStyle>
+            </ui:ListView>
+        </DockPanel>
+        <ui:SnackbarPresenter x:Name="SnackbarPresenter" />
+    </Grid>
 </ui:FluentWindow>

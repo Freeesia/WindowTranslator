@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Composition.WindowsRuntimeHelpers;
+using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -23,6 +24,7 @@ public partial class StartupViewModel
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
     private readonly ObservableCollection<MenuItemViewModel> attachingWindows;
+    private IWindow? logView;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
@@ -141,7 +143,17 @@ public partial class StartupViewModel
 
     [RelayCommand]
     private async Task OpenLogWindowAsync()
-        => await this.presentationService.OpenLogWindowAsync(Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+    {
+        if (this.logView?.IsClosed ?? true)
+        {
+            this.logView = await this.presentationService.OpenLogWindowAsync(Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        }
+        if (this.logView.WindowState == Kamishibai.WindowState.Minimized)
+        {
+            this.logView.Restore();
+        }
+        this.logView.Activate();
+    }
 
     [RelayCommand]
     public static void Exit()
