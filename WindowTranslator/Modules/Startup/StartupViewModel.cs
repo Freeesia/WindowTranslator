@@ -122,10 +122,7 @@ public partial class StartupViewModel
         }
         catch (Exception ex)
         {
-            this.presentationService.ShowMessage($"""
-                ウィンドウの埋め込みに失敗しました。
-                エラー：{ex.Message}
-                """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
+            await this.presentationService.OpenErrorReportDialogAsync("ウィンドウの埋め込みに失敗しました。", ex, p.Name, string.Empty);
         }
         if (!beforeVisible)
         {

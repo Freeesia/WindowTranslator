@@ -316,4 +316,32 @@
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Độ mờ nền lớp phủ</value>
   </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Gửi thông tin lỗi đến hệ thống báo cáo. Các thông tin sau sẽ được gửi:
+* Thông tin ứng dụng
+* Thông số kỹ thuật và thông tin môi trường PC
+* Tên ứng dụng mục tiêu dịch
+* Hình ảnh mục tiêu dịch
+* Cài đặt mục tiêu dịch
+
+&gt; %{color:red}**Thông tin cá nhân sẽ không được gửi, nhưng hãy đảm bảo rằng thông tin cá nhân không được bao gồm trong màn hình mục tiêu dịch.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Gửi thông tin</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Gửi hoàn tất</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Sao chép thông tin</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Đã sao chép</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xác nhận</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Gửi</value>
+  </data>
 </root>

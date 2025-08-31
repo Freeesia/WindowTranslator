@@ -154,6 +154,14 @@ jobs:
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
           path: publish\
+      - uses: getsentry/action-release@v3
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          environment: production
   installer:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     needs: build
