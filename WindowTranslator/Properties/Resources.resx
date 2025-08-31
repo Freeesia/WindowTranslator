@@ -343,4 +343,34 @@
   <data name="Submit" xml:space="preserve">
     <value>送信</value>
   </data>
+  <data name="Log" xml:space="preserve">
+    <value>ログ</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>アタッチ中</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>エクスポート</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>自動スクロール</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>ログのエクスポート</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>エクスポート失敗</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>エクスポート完了</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>ログを`{0}`にエクスポートしました。</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>テキストファイル</value>
+  </data>
 </root>

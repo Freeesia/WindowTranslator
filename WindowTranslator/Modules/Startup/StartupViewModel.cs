@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Composition.WindowsRuntimeHelpers;
+using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -23,6 +24,7 @@ public partial class StartupViewModel
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
     private readonly ObservableCollection<MenuItemViewModel> attachingWindows;
+    private IWindow? logView;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
@@ -36,8 +38,9 @@ public partial class StartupViewModel
         this.TaskBarIconMenus =
         [
             new MenuItemViewModel(Resources.Attach, this.RunCommand, []),
-            new MenuItemViewModel("アタッチ中", null, this.attachingWindows),
+            new MenuItemViewModel(Resources.Attaching, null, this.attachingWindows),
             new MenuItemViewModel(Resources.Settings, this.OpenSettingsDialogCommand, []),
+            new MenuItemViewModel(Resources.Log, this.OpenLogWindowCommand, []),
             new MenuItemViewModel(Resources.Exit, this.ExitCommand, []),
         ];
     }
@@ -133,6 +136,20 @@ public partial class StartupViewModel
         using var scope = this.serviceProvider.CreateScope();
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+    }
+
+    [RelayCommand]
+    private async Task OpenLogWindowAsync()
+    {
+        if (this.logView?.IsClosed ?? true)
+        {
+            this.logView = await this.presentationService.OpenLogWindowAsync(Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        }
+        if (this.logView.WindowState == Kamishibai.WindowState.Minimized)
+        {
+            this.logView.Restore();
+        }
+        this.logView.Activate();
     }
 
     [RelayCommand]

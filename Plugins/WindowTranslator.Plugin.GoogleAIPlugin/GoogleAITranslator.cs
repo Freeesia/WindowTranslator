@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -128,9 +127,10 @@ public class GoogleAITranslator : ITranslateModule
         {
             try
             {
-                //return await this.client.GenerateObjectAsync<string[]>(req).ConfigureAwait(false) ?? [];
-                var res = await this.client.GenerateContentAsync<string[]>(req).ConfigureAwait(false);
-                return res.ToObject<string[]>() ?? [];
+                var translateTask = this.client.GenerateContentAsync<string[]>(req);
+                _ = LogResponseWaitingAsync(translateTask);
+                var res = await translateTask.ConfigureAwait(false);
+                return res.ExtractJsonBlocks().SelectMany(b => JsonSerializer.Deserialize<string[]>(b.Json, DefaultSerializerOptions.GenerateObjectJsonOptions) ?? []).ToArray();
             }
             catch (ApiException e) when (e.ErrorCode == 400)
             {
@@ -153,10 +153,26 @@ public class GoogleAITranslator : ITranslateModule
             // Jsonエラーということは指定した以外のレスポンスが返ってきたのでもう一度
             catch (JsonException)
             {
+                this.logger.LogWarning("Geminiのレスポンスの解析に失敗しました。500ミリ秒待機して再試行します。");
+                await Task.Delay(500).ConfigureAwait(false);
                 continue;
             }
         }
+
     }
+
+    private async Task LogResponseWaitingAsync(Task translateTask)
+    {
+        var now = DateTime.Now;
+        await Task.Delay(5000).ConfigureAwait(false);
+        while (!translateTask.IsCompleted)
+        {
+            var seconds = (DateTime.Now - now).TotalSeconds;
+            this.logger.LogWarning($"Google AI APIのレスポンス待ち中... ({seconds:F2}秒経過)");
+            await Task.Delay(1000).ConfigureAwait(false);
+        }
+    }
+
 
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
     {

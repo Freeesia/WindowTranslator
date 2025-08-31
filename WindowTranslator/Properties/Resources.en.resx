@@ -312,7 +312,6 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay background opacity</value>
   </data>
@@ -343,5 +342,35 @@
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Attaching</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Auto Scroll</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Export Logs</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Export Failed</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Export Completed</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>Logs exported to `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Text Files</value>
   </data>
 </root>
