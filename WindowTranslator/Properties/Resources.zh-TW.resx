@@ -343,4 +343,34 @@
   <data name="Submit" xml:space="preserve">
     <value>提交</value>
   </data>
+  <data name="Log" xml:space="preserve">
+    <value>日誌</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>連接中</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>匯出</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>自動捲動</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>匯出日誌</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>匯出失敗</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>匯出完成</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>日誌已匯出到 `{0}`。</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>文字檔案</value>
+  </data>
 </root>
