@@ -51,7 +51,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
                 new(){ Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
             ],
             systemInstruction: GetSystem(langOptions.Value, options));
-        Task.Run(Correct, this.cts.Token);
+        Task.Run(LoopCorrect, this.cts.Token);
     }
 
     protected abstract string GetSystem(LanguageOptions languageOptions, GoogleAIOptions googleAIOptions);
@@ -98,7 +98,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
             // WaitCorrectが有効な場合：補正処理を完了してから結果を返す
             if (this.waitCorrect)
             {
-                await CorrectCore(queueData, this.cts.Token).ConfigureAwait(false);
+                await Correct(queueData, this.cts.Token).ConfigureAwait(false);
                 // 補正後のテキストをキャッシュから返す
                 foreach (var text in targets)
                 {
@@ -118,40 +118,45 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
 
     protected abstract ValueTask<IReadOnlyList<T>> GetQueueData(IEnumerable<TextRect> targets, FilterContext context);
 
-    private async Task Correct()
+    private async Task LoopCorrect()
     {
         await foreach (var texts in this.queue.Reader.ReadAllAsync(this.cts.Token))
         {
-            while (true)
+            await Correct(texts, this.cts.Token).ConfigureAwait(false);
+        }
+    }
+
+    private async Task Correct(IReadOnlyList<T> texts, CancellationToken token)
+    {
+        while (true)
+        {
+            try
             {
-                try
-                {
-                    await CorrectCore(texts, this.cts.Token).ConfigureAwait(false);
-                    break;
-                }
-                catch (ApiException e) when (e.ErrorCode == 400)
-                {
-                    throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
-                }
-                // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
-                catch (ApiException e) when (e.ErrorCode == 503)
-                {
-                    this.Logger.LogWarning("Geminiのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
-                    await Task.Delay(500).ConfigureAwait(false);
-                    continue;
-                }
-                // レート制限を超えました。
-                catch (ApiException e) when (e.ErrorCode == 429)
-                {
-                    this.Logger.LogWarning("Geminiのレート制限を超えました。10秒待機して再試行します。");
-                    await Task.Delay(10000).ConfigureAwait(false);
-                    continue;
-                }
-                // Jsonエラーということは指定した以外のレスポンスが返ってきたのでもう一度
-                catch (JsonException)
-                {
-                    continue;
-                }
+                await CorrectCore(texts, token).ConfigureAwait(false);
+                break;
+            }
+            catch (ApiException e) when (e.ErrorCode == 400)
+            {
+                throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+            }
+            // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
+            catch (ApiException e) when (e.ErrorCode == 503)
+            {
+                this.Logger.LogWarning("Geminiのサービスが一時的に過負荷になっているか、ダウンしている可能性があります。500ミリ秒待機して再試行します。");
+                await Task.Delay(500, token).ConfigureAwait(false);
+                continue;
+            }
+            // レート制限を超えました。
+            catch (ApiException e) when (e.ErrorCode == 429)
+            {
+                this.Logger.LogWarning("Geminiのレート制限を超えました。10秒待機して再試行します。");
+                await Task.Delay(10000, token).ConfigureAwait(false);
+                continue;
+            }
+            // Jsonエラーということは指定した以外のレスポンスが返ってきたのでもう一度
+            catch (JsonException)
+            {
+                continue;
             }
         }
     }

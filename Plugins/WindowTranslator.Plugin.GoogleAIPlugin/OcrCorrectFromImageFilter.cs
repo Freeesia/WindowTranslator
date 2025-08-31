@@ -82,20 +82,20 @@ public sealed class OcrCorrectFromImageFilter(
     protected override async Task CorrectCore(IReadOnlyList<TextTarget> texts, CancellationToken cancellationToken)
     {
         var sw = Stopwatch.StartNew();
-        await Parallel.ForEachAsync(texts.Chunk(4), cancellationToken, async (chunk, ct) =>
+        try
         {
-            var req = new GenerateContentRequest();
-            var original = chunk.Select(t => t.Original).ToArray();
-            var json = JsonSerializer.Serialize(original, DefaultSerializerOptions.GenerateObjectJsonOptions);
-            req.AddText(json);
-            foreach (var (text, base64) in chunk)
+            await Parallel.ForEachAsync(texts.Chunk(4), cancellationToken, async (chunk, ct) =>
             {
-                this.Cache.TryAdd(text, null);
-                req.AddInlineData(base64, "image/jpeg");
-            }
-            RecognizedText[] corrected;
-            try
-            {
+                var req = new GenerateContentRequest();
+                var original = chunk.Select(t => t.Original).ToArray();
+                var json = JsonSerializer.Serialize(original, DefaultSerializerOptions.GenerateObjectJsonOptions);
+                req.AddText(json);
+                foreach (var (text, base64) in chunk)
+                {
+                    this.Cache.TryAdd(text, null);
+                    req.AddInlineData(base64, "image/jpeg");
+                }
+                RecognizedText[] corrected;
                 corrected = await this.Client.GenerateObjectAsync<RecognizedText[]>(req, cancellationToken)
                     .ConfigureAwait(false) ?? [];
                 cancellationToken.ThrowIfCancellationRequested();
@@ -104,13 +104,13 @@ public sealed class OcrCorrectFromImageFilter(
                 {
                     this.Cache[original[i]] = corrected[i].OcrText;
                 }
-            }
-            catch (Exception e)
-            {
-                this.Logger.LogError(e, $"Failed to correct");
-            }
-        }).ConfigureAwait(false);
-        this.Logger.LogDebug($"Correct: {sw.Elapsed}");
+            }).ConfigureAwait(false);
+            this.Logger.LogDebug($"Correct: {sw.Elapsed}");
+        }
+        catch (AggregateException ae) when (ae.InnerExceptions is [var inner, ..])
+        {
+            throw inner;
+        }
     }
 
     protected override void Dropped(IReadOnlyList<TextTarget> texts)
