@@ -343,4 +343,34 @@
   <data name="Submit" xml:space="preserve">
     <value>Senden</value>
   </data>
+  <data name="Log" xml:space="preserve">
+    <value>Protokoll</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Wird angehängt</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportieren</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Automatisches Scrollen</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Protokolle exportieren</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Export fehlgeschlagen</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Export abgeschlossen</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>Protokolle wurden nach `{0}` exportiert.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Textdateien</value>
+  </data>
 </root>
