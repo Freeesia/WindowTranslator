@@ -46,20 +46,13 @@ public sealed class OcrCorrectFromTextFilter(
         {
             this.Cache.TryAdd(text, null);
         }
-        try
+        var json = JsonSerializer.Serialize(texts, DefaultSerializerOptions.GenerateObjectJsonOptions);
+        var corrected = await this.Client.GenerateObjectAsync<string[]>(json, cancellationToken)
+            .ConfigureAwait(false) ?? [];
+        cancellationToken.ThrowIfCancellationRequested();
+        for (var i = 0; i < texts.Count; i++)
         {
-            var json = JsonSerializer.Serialize(texts, DefaultSerializerOptions.GenerateObjectJsonOptions);
-            var corrected = await this.Client.GenerateObjectAsync<string[]>(json, cancellationToken)
-                .ConfigureAwait(false) ?? [];
-            cancellationToken.ThrowIfCancellationRequested();
-            for (var i = 0; i < texts.Count; i++)
-            {
-                this.Cache[texts[i]] = corrected[i];
-            }
-        }
-        catch (Exception e)
-        {
-            this.Logger.LogError(e, $"Failed to correct `{texts}`");
+            this.Cache[texts[i]] = corrected[i];
         }
     }
 
