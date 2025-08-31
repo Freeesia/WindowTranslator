@@ -343,4 +343,34 @@
   <data name="Submit" xml:space="preserve">
     <value>Gửi</value>
   </data>
+  <data name="Log" xml:space="preserve">
+    <value>Nhật ký</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Đang kết nối</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Xuất</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Cuộn tự động</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Xuất nhật ký</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Xuất thất bại</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Xuất hoàn tất</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>Nhật ký đã được xuất ra `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Tệp văn bản</value>
+  </data>
 </root>
