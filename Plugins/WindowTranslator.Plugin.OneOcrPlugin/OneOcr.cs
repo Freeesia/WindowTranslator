@@ -21,7 +21,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 {
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
     const int maxLineCount = 1000;
-    private readonly FastTextDetector fastText;
+    private readonly FastTextDetector? fastText;
     private readonly ILogger<OneOcr> logger;
     private readonly string source;
     private readonly HashSet<string> targets;
@@ -57,9 +57,16 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     public OneOcr(ILogger<OneOcr> logger, IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BasicOcrParam> ocrParam)
     {
-        this.fastText = new FastTextDetector();
-        this.fastText.LoadDefaultModel();
         this.logger = logger;
+        try
+        {
+            this.fastText = new FastTextDetector();
+            this.fastText.LoadDefaultModel();
+        }
+        catch (DllNotFoundException)
+        {
+            this.logger.LogError("FastTextのDLLが見つからないため、言語判定処理は利用出来ません");
+        }
         this.source = langOptions.Value.Source;
         this.targets = [langOptions.Value.Target[..2]];
         if (this.targets.Overlaps(["ja", "zh"]) && this.source[..2] is not "ja" and not "zh")
@@ -119,7 +126,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     public void Dispose()
     {
-        this.fastText.Dispose();
+        this.fastText?.Dispose();
     }
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
@@ -153,7 +160,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
     }
 
     private bool IsTargetLangText(string text)
-        => this.fastText.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..]));
+        => this.fastText?.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..])) ?? false;
 
     private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap)
     {
