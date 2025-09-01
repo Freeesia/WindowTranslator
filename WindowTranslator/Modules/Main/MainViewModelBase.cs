@@ -101,6 +101,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         if (value)
         {
+            this.OcrTexts.Clear();
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
 
