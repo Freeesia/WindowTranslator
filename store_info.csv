@@ -1,13 +1,25 @@
 ﻿Field,Type,韓国語,ベトナム語,ドイツ語,繁体中国語,簡体中国語,英語,日本語
-ProductName,Text,,,,,,,WindowTranslator
-Description,Text,,,,,,,"WindowTranslator は、PC 上で動作するゲームやアプリの画面テキストをそのまま読み取り、訳文をオーバーレイ表示する Windows 向けの翻訳ツールです。対象のウィンドウを選ぶだけで、プレイ中・作業中の体験を壊さずに翻訳結果を重ねて表示できます。
+ProductName,Text,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator
+Description,Text,"WindowTranslator는 PC에서 실행되는 게임이나 앱의 화면 텍스트를 그대로 읽어서 번역문을 오버레이로 표시하는 Windows용 번역 도구입니다. 대상 창을 선택하기만 하면 플레이 중이나 작업 중의 경험을 방해하지 않고 번역 결과를 겹쳐서 표시할 수 있습니다.
+
+DeepL API나 Google AI 등 원하는 번역 엔진을 선택해서 사용할 수 있으며, 필요에 따라 OCR(화면 문자 자동 인식)도 연동 가능합니다. 복잡한 설정 없이 게임 UI나 대화창, 브라우저나 문서 등 앱에 관계없이 폭넓게 활용할 수 있습니다.","WindowTranslator là một công cụ dịch thuật cho Windows có thể đọc văn bản trên màn hình của các game hoặc ứng dụng chạy trên PC và hiển thị bản dịch dưới dạng overlay. Chỉ cần chọn cửa sổ mục tiêu, bạn có thể hiển thị kết quả dịch thuật chồng lên mà không làm gián đoạn trải nghiệm chơi game hoặc làm việc.
+
+Bạn có thể chọn và sử dụng công cụ dịch thuật yêu thích như DeepL API hoặc Google AI, và kết hợp với OCR (nhận dạng ký tự tự động trên màn hình) khi cần thiết. Không cần cài đặt phức tạp, có thể sử dụng rộng rãi cho UI game, hộp thoại, trình duyệt, tài liệu và các ứng dụng khác.","WindowTranslator ist ein Übersetzungstool für Windows, das Bildschirmtext von auf dem PC laufenden Spielen und Apps direkt liest und die Übersetzung als Overlay anzeigt. Durch einfaches Auswählen des Zielfensters können Sie Übersetzungsergebnisse überlagert anzeigen, ohne das Spiel- oder Arbeitserlebnis zu unterbrechen.
+
+Sie können Ihre bevorzugte Übersetzungsengine wie DeepL API oder Google AI auswählen und nutzen, und bei Bedarf auch OCR (automatische Bildschriftzeichenerkennung) integrieren. Ohne komplexe Einstellungen kann es breit für Spiele-UI, Dialoge, Browser, Dokumente und andere Apps verwendet werden.","WindowTranslator 是一款 Windows 翻譯工具，可直接讀取在 PC 上運行的遊戲或應用程式的畫面文字，並以覆蓋層方式顯示譯文。只需選擇目標視窗，就能在不破壞遊戲或工作體驗的情況下，將翻譯結果疊加顯示。
+
+您可以選擇並使用喜歡的翻譯引擎，如 DeepL API 或 Google AI，必要時也可搭配 OCR（畫面文字自動識別）功能。無需複雜設定，即可廣泛應用於遊戲 UI、對話框、瀏覽器、文件等各種應用程式。","WindowTranslator 是一款 Windows 翻译工具，可直接读取在 PC 上运行的游戏或应用程序的屏幕文本，并以覆盖层方式显示译文。只需选择目标窗口，就能在不破坏游戏或工作体验的情况下，将翻译结果叠加显示。
+
+您可以选择并使用喜欢的翻译引擎，如 DeepL API 或 Google AI，必要时也可搭配 OCR（屏幕文字自动识别）功能。无需复杂设置，即可广泛应用于游戏 UI、对话框、浏览器、文档等各种应用程序。","WindowTranslator is a Windows translation tool that directly reads screen text from games and apps running on PC and displays translations as an overlay. Simply select the target window to display translation results overlaid without disrupting your gaming or working experience.
+
+You can choose and use your preferred translation engine such as DeepL API or Google AI, and integrate OCR (automatic screen text recognition) when needed. Without complex setup, it can be used broadly for game UI, dialogs, browsers, documents, and various other applications.","WindowTranslator は、PC 上で動作するゲームやアプリの画面テキストをそのまま読み取り、訳文をオーバーレイ表示する Windows 向けの翻訳ツールです。対象のウィンドウを選ぶだけで、プレイ中・作業中の体験を壊さずに翻訳結果を重ねて表示できます。
 
 DeepL API や Google AI など、お好みの翻訳エンジンを選んで利用でき、必要に応じて OCR（画面文字の自動認識）も連携。複雑な設定なしに、ゲームの UI やダイアログ、ブラウザーやドキュメントなど、アプリを問わず幅広く扱えます。"
 WhatsNew,Text,,,,,,,
-ProductFeatures1,Text,,,,,,,対象ウィンドウを指定するだけのかんたん翻訳開始
-ProductFeatures2,Text,,,,,,,訳文をゲーム／アプリ画面に重ねるオーバーレイ表示
-ProductFeatures3,Text,,,,,,,DeepL API・Google AI など複数エンジンを選択可能
-ProductFeatures4,Text,,,,,,,ホットキー操作
+ProductFeatures1,Text,대상 창을 지정하기만 하면 간단하게 번역 시작,Bắt đầu dịch thuật đơn giản chỉ bằng cách chỉ định cửa sổ mục tiêu,Einfacher Übersetzungsstart durch Auswahl des Zielfensters,只需指定目標視窗即可輕鬆開始翻譯,只需指定目标窗口即可轻松开始翻译,Easy translation start by simply selecting target window,対象ウィンドウを指定するだけのかんたん翻訳開始
+ProductFeatures2,Text,번역문을 게임/앱 화면에 겹쳐 표시하는 오버레이,Hiển thị overlay bản dịch chồng lên màn hình game/ứng dụng,Overlay-Anzeige mit Übersetzungstext über Spiel-/App-Bildschirm,將譯文疊加顯示在遊戲/應用程式畫面上,将译文叠加显示在游戏/应用程序屏幕上,Overlay display of translations over game/app screen,訳文をゲーム／アプリ画面に重ねるオーバーレイ表示
+ProductFeatures3,Text,DeepL API・Google AI 등 다양한 엔진 선택 가능,Có thể chọn nhiều engine như DeepL API・Google AI,DeepL API・Google AI und weitere Engines wählbar,可選擇 DeepL API・Google AI 等多種引擎,可选择 DeepL API・Google AI 等多种引擎,Multiple engines selectable including DeepL API・Google AI,DeepL API・Google AI など複数エンジンを選択可能
+ProductFeatures4,Text,핫키 조작,Thao tác bằng phím tắt,Hotkey-Bedienung,熱鍵操作,热键操作,Hotkey operation,ホットキー操作
 ProductFeatures5,Text,,,,,,,
 ProductFeatures6,Text,,,,,,,
 ProductFeatures7,Text,,,,,,,
@@ -24,15 +36,201 @@ ProductFeatures17,Text,,,,,,,
 ProductFeatures18,Text,,,,,,,
 ProductFeatures19,Text,,,,,,,
 ProductFeatures20,Text,,,,,,,
-ShortDescription,Text,,,,,,,WindowTranslator は、PCゲームやアプリのテキストをOCRで読み取り、DeepL/Googleなどで翻訳、訳文を画面に重ねて表示するツールです。セットアップ簡単、低遅延。ホットキー・プロファイル・表示調整対応。
-SearchTerms1,Text,,,,,,,翻訳ツール
-SearchTerms2,Text,,,,,,,ウィンドウ翻訳
-SearchTerms3,Text,,,,,,,ゲーム翻訳ツール
-SearchTerms4,Text,,,,,,,アプリ画面翻訳
-SearchTerms5,Text,,,,,,,画面テキスト翻訳
-SearchTerms6,Text,,,,,,,pc向け翻訳ソフト
-SearchTerms7,Text,,,,,,,ocr連携翻訳ツール
-Applicable license terms,Text,,,,,,,"適用範囲
+ShortDescription,Text,WindowTranslator는 PC 게임이나 앱의 텍스트를 OCR로 읽어서 DeepL/Google 등으로 번역하고 화면에 겹쳐 표시하는 도구입니다. 설정 간편하고 저지연. 핫키·프로필·표시 조정 지원.,WindowTranslator là công cụ đọc văn bản từ game hoặc ứng dụng PC bằng OCR, dịch bằng DeepL/Google và hiển thị chồng lên màn hình. Cài đặt đơn giản, độ trễ thấp. Hỗ trợ phím tắt·profile·điều chỉnh hiển thị.,WindowTranslator ist ein Tool das Text aus PC-Spielen und Apps per OCR liest, mit DeepL/Google übersetzt und auf dem Bildschirm überlagert. Einfache Einrichtung, niedrige Latenz. Unterstützt Hotkeys·Profile·Anzeigeeinstellungen.,WindowTranslator 是一款利用 OCR 讀取 PC 遊戲或應用程式文字，通過 DeepL/Google 等翻譯並疊加顯示在螢幕上的工具。設定簡單、低延遲。支援熱鍵·設定檔·顯示調整。,WindowTranslator 是一款利用 OCR 读取 PC 游戏或应用程序文本，通过 DeepL/Google 等翻译并叠加显示在屏幕上的工具。设置简单、低延迟。支持热键·配置文件·显示调整。,WindowTranslator is a tool that reads text from PC games and apps using OCR, translates with DeepL/Google and displays overlaid on screen. Easy setup, low latency. Supports hotkeys·profiles·display adjustment.,WindowTranslator は、PCゲームやアプリのテキストをOCRで読み取り、DeepL/Googleなどで翻訳、訳文を画面に重ねて表示するツールです。セットアップ簡単、低遅延。ホットキー・プロファイル・表示調整対応。
+SearchTerms1,Text,번역 도구,công cụ dịch thuật,Übersetzungstool,翻譯工具,翻译工具,translation tool,翻訳ツール
+SearchTerms2,Text,윈도우 번역,dịch cửa sổ,Fenster-Übersetzung,視窗翻譯,窗口翻译,window translation,ウィンドウ翻訳
+SearchTerms3,Text,게임 번역 도구,công cụ dịch game,Spiel-Übersetzungstool,遊戲翻譯工具,游戏翻译工具,game translation tool,ゲーム翻訳ツール
+SearchTerms4,Text,앱 화면 번역,dịch màn hình ứng dụng,App-Bildschirm-Übersetzung,應用程式畫面翻譯,应用程序屏幕翻译,app screen translation,アプリ画面翻訳
+SearchTerms5,Text,화면 텍스트 번역,dịch văn bản màn hình,Bildschirmtext-Übersetzung,畫面文字翻譯,屏幕文本翻译,screen text translation,画面テキスト翻訳
+SearchTerms6,Text,PC용 번역 소프트,phần mềm dịch cho pc,PC-Übersetzungssoftware,PC向け翻譯軟體,pc向け翻译软件,pc translation software,pc向け翻訳ソフト
+SearchTerms7,Text,OCR 연동 번역 도구,công cụ dịch kết hợp OCR,OCR-integriertes Übersetzungstool,OCR整合翻譯工具,OCR集成翻译工具,OCR integrated translation tool,ocr連携翻訳ツール
+Applicable license terms,Text,"적용 범위
+본 조항은 Microsoft Store에서 취득한 본 앱(실행 파일)의 이용에 적용됩니다. 소스코드의 이용·개변·재배포는 MIT 라이선스에 따르며, 본 조항의 대상 외입니다.
+
+사용 허락·상용 이용
+비독점적, 양도 불가의 형태로, 본 앱을 개인·상용 목적으로 이용할 수 있습니다. 지원이나 유지보수의 제공 의무는 없습니다.
+
+사용자의 책임·금지 사항
+본 앱의 이용은 자기 책임입니다. 법령·공서양속에 반하는 행위, 제3자의 권리 침해, 부정 이용은 금지합니다. 개변이나 리버스 엔지니어링 등을 행하는 경우, 그 배포·이용을 포함하여 일절을 자신의 책임으로 행해주시기 바랍니다.
+
+제3자 서비스의 이용
+본 앱은 DeepL, Google 등 제3자 서비스/라이브러리와 연동합니다. 이들의 이용 조건·프라이버시 정책을 준수하며, 발생할 수 있는 손해·트러블에 대해 당방은 책임을 지지 않습니다.
+
+프라이버시
+본 앱 자체는 개인정보나 이용 상황을 수집하지 않습니다(에러 로그나 크래시 리포트도 수집하지 않습니다). 단, 사용자가 선택한 번역 엔진 등의 제3자 서비스는 각 회사의 방침에 따릅니다. 자세한 내용은 프라이버시 정책을 참조해 주십시오.
+
+보증의 부인(무보증)
+본 앱은 '현상 유지(AS IS)'로 제공되며, 상품성·특정 목적 적합성·권리 비침해 등 어떠한 보증도 행하지 않습니다.
+
+책임의 제한
+당방은 본 앱의 이용 또는 제3자 서비스와의 연동에 기인 또는 관련하여 발생하는 직접·간접·결과적·특별 손해, 일실이익, 데이터 손실 등에 대해 법령으로 면책이 인정되지 않는 경우를 제외하고 책임을 지지 않습니다.
+
+업데이트
+당방은 본 앱의 갱신·기능 추가·수정을 행하는 경우가 있지만, 그 실시나 계속을 보증하지 않습니다.
+
+규약의 변경
+당방은 본 조항을 수시로 변경할 수 있으며, 변경 후는 공표 시점에서 효력을 발생합니다. 변경 후에도 이용을 계속하는 경우, 사용자는 변경에 동의한 것으로 간주됩니다.
+
+준거법·관할
+본 조항은 일본법에 준거하며, 분쟁은 일본국내의 관할 법원을 전속적 관할로 합니다.
+
+연락처
+문의는 GitHub 계정(Freeesia)까지 연락해 주십시오.","Phạm vi áp dụng
+Các điều khoản này áp dụng cho việc sử dụng ứng dụng (tệp thực thi) được tải từ Microsoft Store. Việc sử dụng, chỉnh sửa và phân phối mã nguồn tuân theo giấy phép MIT và không thuộc phạm vi các điều khoản này.
+
+Giấy phép sử dụng·Sử dụng thương mại
+Bạn có thể sử dụng ứng dụng này cho mục đích cá nhân và thương mại dưới hình thức không độc quyền, không thể chuyển nhượng. Chúng tôi không có nghĩa vụ cung cấp hỗ trợ hoặc bảo trì.
+
+Trách nhiệm của người dùng·Các hành vi bị cấm
+Việc sử dụng ứng dụng này là trách nhiệm của bản thân. Các hành vi vi phạm pháp luật, trật tự công cộng, xâm phạm quyền của bên thứ ba, sử dụng bất hợp pháp đều bị cấm. Khi thực hiện chỉnh sửa hoặc kỹ thuật đảo ngược, bao gồm cả việc phân phối và sử dụng, hãy tự chịu trách nhiệm về mọi việc.
+
+Sử dụng dịch vụ bên thứ ba
+Ứng dụng này liên kết với các dịch vụ/thư viện bên thứ ba như DeepL, Google. Hãy tuân thủ các điều khoản sử dụng và chính sách bảo mật của họ, chúng tôi không chịu tr책nhiệm về các thiệt hại hoặc rắc rối có thể xảy ra.
+
+Quyền riêng tư
+Ứng dụng này không thu thập thông tin cá nhân hoặc tình trạng sử dụng (cũng không thu thập nhật ký lỗi hoặc báo cáo sự cố). Tuy nhiên, các dịch vụ bên thứ ba như công cụ dịch thuật mà người dùng chọn tuân theo chính sách của từng công ty. Vui lòng tham khảo chính sách bảo mật để biết chi tiết.
+
+Từ chối bảo đảm (Không bảo đảm)
+Ứng dụng này được cung cấp 'nguyên trạng (AS IS)' và không đưa ra bất kỳ bảo đảm nào như tính thương mại, phù hợp với mục đích cụ thể, không vi phạm quyền.
+
+Giới hạn trách nhiệm
+Chúng tôi không chịu trách nhiệm về các thiệt hại trực tiếp, gián tiếp, hệ quả, đặc biệt, mất lợi nhuận, mất dữ liệu xảy ra do hoặc liên quan đến việc sử dụng ứng dụng hoặc liên kết với dịch vụ bên thứ ba, trừ khi pháp luật không cho phép miễn trách.
+
+Cập nhật
+Chúng tôi có thể thực hiện cập nhật, bổ sung tính năng, sửa chữa ứng dụng nhưng không bảo đảm việc thực hiện hoặc tiếp tục.
+
+Thay đổi điều khoản
+Chúng tôi có thể thay đổi các điều khoản này bất cứ lúc nào và có hiệu lực kể từ thời điểm công bố sau khi thay đổi. Nếu tiếp tục sử dụng sau khi thay đổi, người dùng được coi là đồng ý với thay đổi.
+
+Luật áp dụng·Thẩm quyền
+Các điều khoản này tuân theo luật Nhật Bản và tranh chấp thuộc thẩm quyền độc quyền của tòa án có thẩm quyền tại Nhật Bản.
+
+Liên hệ
+Vui lòng liên hệ tài khoản GitHub (Freeesia) để biết thêm thông tin.","Anwendungsbereich
+Diese Bestimmungen gelten für die Nutzung dieser App (ausführbare Datei), die über den Microsoft Store bezogen wurde. Die Nutzung, Änderung und Weiterverteilung des Quellcodes unterliegt der MIT-Lizenz und ist nicht Gegenstand dieser Bestimmungen.
+
+Nutzungserlaubnis·Kommerzielle Nutzung
+Sie können diese App in nicht-exklusiver, nicht-übertragbarer Form für private und kommerzielle Zwecke nutzen. Es besteht keine Verpflichtung zur Bereitstellung von Support oder Wartung.
+
+Benutzerverantwortung·Verbotene Handlungen
+Die Nutzung dieser App erfolgt auf eigene Verantwortung. Handlungen, die gegen Gesetze und öffentliche Ordnung verstoßen, Verletzung von Rechten Dritter und missbräuchliche Nutzung sind verboten. Bei Änderungen oder Reverse Engineering führen Sie bitte alles, einschließlich Verteilung und Nutzung, auf eigene Verantwortung durch.
+
+Nutzung von Drittanbieterdiensten
+Diese App ist mit Drittanbieterdiensten/-bibliotheken wie DeepL, Google verbunden. Befolgen Sie deren Nutzungsbedingungen und Datenschutzrichtlinien; wir übernehmen keine Verantwortung für mögliche Schäden oder Probleme.
+
+Datenschutz
+Diese App sammelt selbst keine persönlichen Informationen oder Nutzungsdaten (sammelt auch keine Fehlerprotokolle oder Absturzberichte). Jedoch folgen vom Benutzer gewählte Übersetzungsengines und andere Drittanbieterdienste den jeweiligen Unternehmensrichtlinien. Details finden Sie in der Datenschutzrichtlinie.
+
+Gewährleistungsausschluss (Keine Garantie)
+Diese App wird 'wie besehen (AS IS)' bereitgestellt und es werden keine Garantien jeglicher Art gewährt, einschließlich Marktfähigkeit, Eignung für bestimmte Zwecke oder Nichtverletzung von Rechten.
+
+Haftungsbeschränkung
+Wir übernehmen keine Verantwortung für direkte, indirekte, Folge- oder besondere Schäden, entgangene Gewinne, Datenverluste usw., die durch oder in Verbindung mit der Nutzung dieser App oder der Integration mit Drittanbieterdiensten entstehen, außer in Fällen, in denen eine gesetzliche Haftungsbefreiung nicht anerkannt wird.
+
+Updates
+Wir können Updates, Funktionserweiterungen und Korrekturen dieser App durchführen, garantieren aber deren Umsetzung oder Fortsetzung nicht.
+
+Änderung der Bestimmungen
+Wir können diese Bestimmungen jederzeit ändern, und Änderungen werden zum Zeitpunkt der Veröffentlichung wirksam. Wenn Sie nach Änderungen weiterhin nutzen, gilt dies als Zustimmung zu den Änderungen.
+
+Anwendbares Recht·Gerichtsstand
+Diese Bestimmungen unterliegen japanischem Recht, und Streitigkeiten fallen unter die ausschließliche Zuständigkeit der zuständigen Gerichte in Japan.
+
+Kontakt
+Für Anfragen wenden Sie sich bitte an das GitHub-Konto (Freeesia).","適用範圍
+本條項適用於從 Microsoft Store 取得的本應用程式（執行檔）的使用。原始碼的使用、修改、重新發佈依照 MIT 授權，不在本條項的對象範圍內。
+
+使用許可・商用利用
+以非獨佔、不可轉讓的形式，可將本應用程式用於個人・商用目的。沒有提供支援或維護的義務。
+
+使用者的責任・禁止事項
+本應用程式的使用屬自負責任。禁止違反法令・公序良俗的行為、侵害第三方權利、不當使用。進行修改或逆向工程等時，包括其發佈・使用在內的一切請自負責任進行。
+
+第三方服務的使用
+本應用程式與 DeepL、Google 等第三方服務／函式庫連動。請遵守這些服務的使用條件・隱私政策，對於可能發生的損害・問題，本方不負責任。
+
+隱私
+本應用程式本身不收集個人資料或使用狀況（也不收集錯誤記錄或當機報告）。但是，使用者選擇的翻譯引擎等第三方服務依照各公司的方針。詳情請參考隱私政策。
+
+保證的否認（無保證）
+本應用程式以「現狀（AS IS）」提供，不提供商品性・特定目的適合性・權利不侵害等任何保證。
+
+責任的限制
+本方對於因本應用程式的使用或與第三方服務的連動而引起或相關發生的直接・間接・結果性・特殊損害、失去利益、資料遺失等，除了法令不允許免責的情況外，不負責任。
+
+更新
+本方可能進行本應用程式的更新・功能追加・修正，但不保證其實施或持續。
+
+規約的變更
+本方可隨時變更本條項，變更後自公表時點生效。變更後仍繼續使用的情況，使用者視為同意變更。
+
+準據法・管轄
+本條項準據日本法，爭議以日本國內的管轄法院為專屬管轄。
+
+聯絡方式
+詢問請聯絡 GitHub 帳號（Freeesia）。","适用范围
+本条款适用于从 Microsoft Store 获取的本应用程序（执行文件）的使用。源代码的使用、修改、重新发布遵循 MIT 许可证，不在本条款的对象范围内。
+
+使用许可・商用利用
+以非独占、不可转让的形式，可将本应用程序用于个人・商用目的。没有提供支持或维护的义务。
+
+用户的责任・禁止事项
+本应用程序的使用属自负责任。禁止违反法令・公序良俗的行为、侵害第三方权利、不当使用。进行修改或逆向工程等时，包括其发布・使用在内的一切请自负责任进行。
+
+第三方服务的使用
+本应用程序与 DeepL、Google 等第三方服务／库连动。请遵守这些服务的使用条件・隐私政策，对于可能发生的损害・问题，本方不负责任。
+
+隐私
+本应用程序本身不收集个人信息或使用状况（也不收集错误日志或崩溃报告）。但是，用户选择的翻译引擎等第三方服务按照各公司的方针。详情请参考隐私政策。
+
+保证的否认（无保证）
+本应用程序以"现状（AS IS）"提供，不提供商品性・特定目的适合性・权利不侵害等任何保证。
+
+责任的限制
+本方对于因本应用程序的使用或与第三方服务的联动而引起或相关发生的直接・间接・结果性・特殊损害、失去利益、数据丢失等，除了法令不允许免责的情况外，不负责任。
+
+更新
+本方可能进行本应用程序的更新・功能追加・修正，但不保证其实施或持续。
+
+规约的变更
+本方可随时变更本条款，变更后自公表时点生效。变更后仍继续使用的情况，用户视为同意变更。
+
+准据法・管辖
+本条款准据日本法，争议以日本国内的管辖法院为专属管辖。
+
+联系方式
+咨询请联系 GitHub 账号（Freeesia）。","Scope of Application
+These terms apply to the use of this app (executable file) obtained from the Microsoft Store. Use, modification, and redistribution of the source code follow the MIT License and are not subject to these terms.
+
+License to Use・Commercial Use
+You may use this app for personal and commercial purposes in a non-exclusive, non-transferable manner. There is no obligation to provide support or maintenance.
+
+User Responsibilities・Prohibited Acts
+Use of this app is at your own risk. Acts that violate laws and public order, infringement of third-party rights, and improper use are prohibited. When performing modifications or reverse engineering, please do so entirely at your own responsibility, including distribution and use.
+
+Use of Third-Party Services
+This app integrates with third-party services/libraries such as DeepL and Google. Please comply with their terms of use and privacy policies; we are not responsible for any damages or troubles that may occur.
+
+Privacy
+This app itself does not collect personal information or usage data (does not collect error logs or crash reports either). However, third-party services such as translation engines chosen by users follow each company's policies. Please refer to the privacy policy for details.
+
+Disclaimer of Warranties (No Warranty)
+This app is provided 'AS IS' and no warranties of any kind are made, including merchantability, fitness for particular purpose, or non-infringement of rights.
+
+Limitation of Liability
+We are not liable for direct, indirect, consequential, or special damages, lost profits, data loss, etc., arising from or related to the use of this app or integration with third-party services, except where liability exemption is not permitted by law.
+
+Updates
+We may perform updates, feature additions, and fixes to this app, but do not guarantee their implementation or continuation.
+
+Changes to Terms
+We may change these terms at any time, and changes take effect upon publication. If you continue to use after changes, you are deemed to have agreed to the changes.
+
+Governing Law・Jurisdiction
+These terms are governed by Japanese law, and disputes are subject to the exclusive jurisdiction of competent courts in Japan.
+
+Contact
+For inquiries, please contact the GitHub account (Freeesia).","適用範囲
 本条項は、Microsoft Store から入手した本アプリ（実行ファイル）の利用に適用されます。ソースコードの利用・改変・再配布は MIT ライセンスに従い、本条項の対象外です。
 
 使用許諾・商用利用
@@ -65,7 +263,7 @@ Applicable license terms,Text,,,,,,,"適用範囲
 連絡先
 お問い合わせは GitHub アカウント（Freeesia）までご連絡ください。"
 Copyright,Text,,,,,,,
-DevelopedBy,Text,,,,,,,StudioFreesia
+DevelopedBy,Text,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia
 RequirementsMinimum1,Text,,,,,,,
 RequirementsMinimum2,Text,,,,,,,
 RequirementsMinimum3,Text,,,,,,,
