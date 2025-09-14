@@ -1,17 +1,31 @@
 ﻿Field,ID,Type (種類),default,ja,en,de,ko,vi,zh-cn,zh-tw
-Description,2,テキスト,,,,,,,,
+Description,2,テキスト,,"WindowTranslator は、PC 上で動作するゲームやアプリの画面テキストをそのまま読み取り、訳文をオーバーレイ表示する Windows 向けの翻訳ツールです。対象のウィンドウを選ぶだけで、プレイ中・作業中の体験を壊さずに翻訳結果を重ねて表示できます。
+
+DeepL API や Google AI など、お好みの翻訳エンジンを選んで利用でき、必要に応じて OCR（画面文字の自動認識）も連携。複雑な設定なしに、ゲームの UI やダイアログ、ブラウザーやドキュメントなど、アプリを問わず幅広く扱えます。","WindowTranslator is a Windows translation tool that directly reads screen text from games and apps running on PC and displays translations as an overlay. Simply select the target window to display translation results overlaid without disrupting your gaming or working experience.
+
+You can choose and use your preferred translation engine such as DeepL API or Google AI, and integrate OCR (automatic screen text recognition) when needed. Without complex setup, it can be used broadly for game UI, dialogs, browsers, documents, and various other applications.","WindowTranslator ist ein Übersetzungstool für Windows, das Bildschirmtext von auf dem PC laufenden Spielen und Apps direkt liest und die Übersetzung als Overlay anzeigt. Durch einfaches Auswählen des Zielfensters können Sie Übersetzungsergebnisse überlagert anzeigen, ohne das Spiel- oder Arbeitserlebnis zu unterbrechen.
+
+Sie können Ihre bevorzugte Übersetzungsengine wie DeepL API oder Google AI auswählen und nutzen, und bei Bedarf auch OCR (automatische Bildschriftzeichenerkennung) integrieren. Ohne komplexe Einstellungen kann es breit für Spiele-UI, Dialoge, Browser, Dokumente und andere Apps verwendet werden.","WindowTranslator는 PC에서 실행되는 게임이나 앱의 화면 텍스트를 그대로 읽어서 번역문을 오버레이로 표시하는 Windows용 번역 도구입니다. 대상 창을 선택하기만 하면 플레이 중이나 작업 중의 경험을 방해하지 않고 번역 결과를 겹쳐서 표시할 수 있습니다.
+
+DeepL API나 Google AI 등 원하는 번역 엔진을 선택해서 사용할 수 있으며, 필요에 따라 OCR(화면 문자 자동 인식)도 연동 가능합니다. 복잡한 설정 없이 게임 UI나 대화창, 브라우저나 문서 등 앱에 관계없이 폭넓게 활용할 수 있습니다.","WindowTranslator là một công cụ dịch thuật cho Windows có thể đọc văn bản trên màn hình của các game hoặc ứng dụng chạy trên PC và hiển thị bản dịch dưới dạng overlay. Chỉ cần chọn cửa sổ mục tiêu, bạn có thể hiển thị kết quả dịch thuật chồng lên mà không làm gián đoạn trải nghiệm chơi game hoặc làm việc.
+
+Bạn có thể chọn và sử dụng công cụ dịch thuật yêu thích như DeepL API hoặc Google AI, và kết hợp với OCR (nhận dạng ký tự tự động trên màn hình) khi cần thiết. Không cần cài đặt phức tạp, có thể sử dụng rộng rãi cho UI game, hộp thoại, trình duyệt, tài liệu và các ứng dụng khác.","WindowTranslator 是一款 Windows 翻译工具，可直接读取在 PC 上运行的游戏或应用程序的屏幕文本，并以覆盖层方式显示译文。只需选择目标窗口，就能在不破坏游戏或工作体验的情况下，将翻译结果叠加显示。
+
+您可以选择并使用喜欢的翻译引擎，如 DeepL API 或 Google AI，必要时也可搭配 OCR（屏幕文字自动识别）功能。无需复杂设置，即可广泛应用于游戏 UI、对话框、浏览器、文档等各种应用程序。","WindowTranslator 是一款 Windows 翻譯工具，可直接讀取在 PC 上運行的遊戲或應用程式的畫面文字，並以覆蓋層方式顯示譯文。只需選擇目標視窗，就能在不破壞遊戲或工作體驗的情況下，將翻譯結果疊加顯示。
+
+您可以選擇並使用喜歡的翻譯引擎，如 DeepL API 或 Google AI，必要時也可搭配 OCR（畫面文字自動識別）功能。無需複雜設定，即可廣泛應用於遊戲 UI、對話框、瀏覽器、文件等各種應用程式。"
 ReleaseNotes,3,テキスト,,,,,,,,
 Title,4,テキスト,,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator,WindowTranslator
 ShortTitle,5,テキスト,,,,,,,,
 SortTitle,6,テキスト,,,,,,,,
 VoiceTitle,7,テキスト,,,,,,,,
-ShortDescription,8,テキスト,,,,,,,,
-DevStudio,9,テキスト,,,,,,,,
+ShortDescription,8,テキスト,,"WindowTranslator は、PCゲームやアプリのテキストをOCRで読み取り、DeepL/Googleなどで翻訳、訳文を画面に重ねて表示するツールです。セットアップ簡単、低遅延。ホットキー・プロファイル・表示調整対応。","WindowTranslator is a tool that reads text from PC games and apps using OCR, translates with DeepL/Google and displays overlaid on screen. Easy setup, low latency. Supports hotkeys·profiles·display adjustment.","WindowTranslator ist ein Tool das Text aus PC-Spielen und Apps per OCR liest, mit DeepL/Google übersetzt und auf dem Bildschirm überlagert. Einfache Einrichtung, niedrige Latenz. Unterstützt Hotkeys·Profile·Anzeigeeinstellungen.","WindowTranslator는 PC 게임이나 앱의 텍스트를 OCR로 읽어서 DeepL/Google 등으로 번역하고 화면에 겹쳐 표시하는 도구입니다. 설정 간편하고 저지연. 핫키·프로필·표시 조정 지원.","WindowTranslator là công cụ đọc văn bản từ game hoặc ứng dụng PC bằng OCR, dịch bằng DeepL/Google và hiển thị chồng lên màn hình. Cài đặt đơn giản, độ trễ thấp. Hỗ trợ phím tắt·profile·điều chỉnh hiển thị.","WindowTranslator 是一款利用 OCR 读取 PC 游戏或应用程序文本，通过 DeepL/Google 等翻译并叠加显示在屏幕上的工具。设置简单、低延迟。支持热键·配置文件·显示调整。","WindowTranslator 是一款利用 OCR 讀取 PC 遊戲或應用程式文字，通過 DeepL/Google 等翻譯並疊加顯示在螢幕上的工具。設定簡單、低延遲。支援熱鍵·設定檔·顯示調整。"
+DevStudio,9,テキスト,,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia,StudioFreesia
 CopyrightTrademarkInformation,12,テキスト,,,,,,,,
 AdditionalLicenseTerms,13,テキスト,,,,,,,,
-DesktopScreenshot1,100,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
-DesktopScreenshot2,101,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
-DesktopScreenshot3,102,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
+DesktopScreenshot1,100,相対パス (またはパートナー センターにあるファイルへの URL),,store_ss_01.png,store_ss_01.png,store_ss_01.png,store_ss_01.png,store_ss_01.png,store_ss_01.png,store_ss_01.png
+DesktopScreenshot2,101,相対パス (またはパートナー センターにあるファイルへの URL),,store_ss_02.png,store_ss_02.png,store_ss_02.png,store_ss_02.png,store_ss_02.png,store_ss_02.png,store_ss_02.png
+DesktopScreenshot3,102,相対パス (またはパートナー センターにあるファイルへの URL),,store_ss_03.png,store_ss_03.png,store_ss_03.png,store_ss_03.png,store_ss_03.png,store_ss_03.png,store_ss_03.png
 DesktopScreenshot4,103,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 DesktopScreenshot5,104,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 DesktopScreenshot6,105,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
@@ -290,7 +304,7 @@ SurfaceHubScreenshotCaption28,577,テキスト,,,,,,,,
 SurfaceHubScreenshotCaption29,578,テキスト,,,,,,,,
 SurfaceHubScreenshotCaption30,579,テキスト,,,,,,,,
 StoreLogo720x1080,600,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
-StoreLogo1080x1080,601,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
+StoreLogo1080x1080,601,相対パス (またはパートナー センターにあるファイルへの URL),,logo.png,logo.png,logo.png,logo.png,logo.png,logo.png,logo.png
 StoreLogo300x300,602,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 OverrideLogosForWin10,603,True/False,,False,False,False,False,False,False,False
 StoreLogoOverride150x150,604,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
@@ -303,10 +317,10 @@ XboxFeaturedPromo1080x1080,610,相対パス (またはパートナー センタ�
 OptionalPromo358x358,611,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 OptionalPromo1000x800,612,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 OptionalPromo414x180,613,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
-Feature1,700,テキスト,,,,,,,,
-Feature2,701,テキスト,,,,,,,,
-Feature3,702,テキスト,,,,,,,,
-Feature4,703,テキスト,,,,,,,,
+Feature1,700,テキスト,,対象ウィンドウを指定するだけのかんたん翻訳開始,Easy translation start by simply selecting target window,Einfacher Übersetzungsstart durch Auswahl des Zielfensters,대상 창을 지정하기만 하면 간단하게 번역 시작,Bắt đầu dịch thuật đơn giản chỉ bằng cách chỉ định cửa sổ mục tiêu,只需指定目标窗口即可轻松开始翻译,只需指定目標視窗即可輕鬆開始翻譯
+Feature2,701,テキスト,,訳文をゲーム／アプリ画面に重ねるオーバーレイ表示,Overlay display of translations over game/app screen,Overlay-Anzeige mit Übersetzungstext über Spiel-/App-Bildschirm,번역문을 게임/앱 화면에 겹쳐 표시하는 오버레이,Hiển thị overlay bản dịch chồng lên màn hình game/ứng dụng,将译文叠加显示在游戏/应用程序屏幕上,將譯文疊加顯示在遊戲/應用程式畫面上
+Feature3,702,テキスト,,DeepL API・Google AI など複数エンジンを選択可能,Multiple engines selectable including DeepL API・Google AI,DeepL API・Google AI und weitere Engines wählbar,DeepL API・Google AI 등 다양한 엔진 선택 가능,Có thể chọn nhiều engine như DeepL API・Google AI,可选择 DeepL API・Google AI 等多种引擎,可選擇 DeepL API・Google AI 等多種引擎
+Feature4,703,テキスト,,ホットキー操作,Hotkey operation,Hotkey-Bedienung,핫키 조작,Thao tác bằng phím tắt,热键操作,熱鍵操作
 Feature5,704,テキスト,,,,,,,,
 Feature6,705,テキスト,,,,,,,,
 Feature7,706,テキスト,,,,,,,,
@@ -345,13 +359,13 @@ RecommendedHardwareReq8,857,テキスト,,,,,,,,
 RecommendedHardwareReq9,858,テキスト,,,,,,,,
 RecommendedHardwareReq10,859,テキスト,,,,,,,,
 RecommendedHardwareReq11,860,テキスト,,,,,,,,
-SearchTerm1,900,テキスト,,,,,,,,
-SearchTerm2,901,テキスト,,,,,,,,
-SearchTerm3,902,テキスト,,,,,,,,
-SearchTerm4,903,テキスト,,,,,,,,
-SearchTerm5,904,テキスト,,,,,,,,
-SearchTerm6,905,テキスト,,,,,,,,
-SearchTerm7,906,テキスト,,,,,,,,
+SearchTerm1,900,テキスト,,翻訳ツール,translation tool,Übersetzungstool,번역 도구,công cụ dịch thuật,翻译工具,翻譯工具
+SearchTerm2,901,テキスト,,ウィンドウ翻訳,window translation,Fenster-Übersetzung,윈도우 번역,dịch cửa sổ,窗口翻译,視窗翻譯
+SearchTerm3,902,テキスト,,ゲーム翻訳ツール,game translation tool,Spiel-Übersetzungstool,게임 번역 도구,công cụ dịch game,游戏翻译工具,遊戲翻譯工具
+SearchTerm4,903,テキスト,,アプリ画面翻訳,app screen translation,App-Bildschirm-Übersetzung,앱 화면 번역,dịch màn hình ứng dụng,应用程序屏幕翻译,應用程式畫面翻譯
+SearchTerm5,904,テキスト,,画面テキスト翻訳,screen text translation,Bildschirmtext-Übersetzung,화면 텍스트 번역,dịch văn bản màn hình,屏幕文本翻译,畫面文字翻譯
+SearchTerm6,905,テキスト,,PC向け翻訳ソフト,pc translation software,PC-Übersetzungssoftware,PC용 번역 소프트,phần mềm dịch cho pc,pc向け翻译软件,PC向け翻譯軟體
+SearchTerm7,906,テキスト,,OCR連携翻訳ツール,OCR integrated translation tool,OCR-integriertes Übersetzungstool,OCR 연동 번역 도구,công cụ dịch kết hợp OCR,OCR集成翻译工具,OCR整合翻譯工具
 TrailerToPlayAtTopOfListing,999,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 Trailer1,1000,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
 Trailer2,1001,相対パス (またはパートナー センターにあるファイルへの URL),,,,,,,,
