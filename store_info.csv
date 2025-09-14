@@ -1,0 +1,104 @@
+﻿Field,Type,韓国語,ベトナム語,ドイツ語,繁体中国語,簡体中国語,英語,日本語
+ProductName,Text,,,,,,,WindowTranslator
+Description,Text,,,,,,,"WindowTranslator は、PC 上で動作するゲームやアプリの画面テキストをそのまま読み取り、訳文をオーバーレイ表示する Windows 向けの翻訳ツールです。対象のウィンドウを選ぶだけで、プレイ中・作業中の体験を壊さずに翻訳結果を重ねて表示できます。
+
+DeepL API や Google AI など、お好みの翻訳エンジンを選んで利用でき、必要に応じて OCR（画面文字の自動認識）も連携。複雑な設定なしに、ゲームの UI やダイアログ、ブラウザーやドキュメントなど、アプリを問わず幅広く扱えます。"
+WhatsNew,Text,,,,,,,
+ProductFeatures1,Text,,,,,,,対象ウィンドウを指定するだけのかんたん翻訳開始
+ProductFeatures2,Text,,,,,,,訳文をゲーム／アプリ画面に重ねるオーバーレイ表示
+ProductFeatures3,Text,,,,,,,DeepL API・Google AI など複数エンジンを選択可能
+ProductFeatures4,Text,,,,,,,ホットキー操作
+ProductFeatures5,Text,,,,,,,
+ProductFeatures6,Text,,,,,,,
+ProductFeatures7,Text,,,,,,,
+ProductFeatures8,Text,,,,,,,
+ProductFeatures9,Text,,,,,,,
+ProductFeatures10,Text,,,,,,,
+ProductFeatures11,Text,,,,,,,
+ProductFeatures12,Text,,,,,,,
+ProductFeatures13,Text,,,,,,,
+ProductFeatures14,Text,,,,,,,
+ProductFeatures15,Text,,,,,,,
+ProductFeatures16,Text,,,,,,,
+ProductFeatures17,Text,,,,,,,
+ProductFeatures18,Text,,,,,,,
+ProductFeatures19,Text,,,,,,,
+ProductFeatures20,Text,,,,,,,
+ShortDescription,Text,,,,,,,WindowTranslator は、PCゲームやアプリのテキストをOCRで読み取り、DeepL/Googleなどで翻訳、訳文を画面に重ねて表示するツールです。セットアップ簡単、低遅延。ホットキー・プロファイル・表示調整対応。
+SearchTerms1,Text,,,,,,,翻訳ツール
+SearchTerms2,Text,,,,,,,ウィンドウ翻訳
+SearchTerms3,Text,,,,,,,ゲーム翻訳ツール
+SearchTerms4,Text,,,,,,,アプリ画面翻訳
+SearchTerms5,Text,,,,,,,画面テキスト翻訳
+SearchTerms6,Text,,,,,,,pc向け翻訳ソフト
+SearchTerms7,Text,,,,,,,ocr連携翻訳ツール
+Applicable license terms,Text,,,,,,,"適用範囲
+本条項は、Microsoft Store から入手した本アプリ（実行ファイル）の利用に適用されます。ソースコードの利用・改変・再配布は MIT ライセンスに従い、本条項の対象外です。
+
+使用許諾・商用利用
+非独占的、譲渡不可の形で、本アプリを個人・商用目的で利用できます。サポートや保守の提供義務はありません。
+
+ユーザーの責任・禁止事項
+本アプリの利用は自己責任です。法令・公序良俗に反する行為、第三者の権利侵害、不正利用は禁止します。改変やリバースエンジニアリング等を行う場合、その配布・利用を含め一切を自己の責任で行ってください。
+
+第三者サービスの利用
+本アプリは DeepL、Google など第三者サービス／ライブラリと連携します。これらの利用条件・プライバシーポリシーを遵守し、発生し得る損害・トラブルについて当方は責任を負いません。
+
+プライバシー
+本アプリ自体は個人情報や利用状況を収集しません（エラーログやクラッシュレポートも収集しません）。ただし、ユーザーが選択した翻訳エンジン等の第三者サービスは各社の方針に従います。詳細はプライバシーポリシーをご参照ください。
+
+保証の否認（無保証）
+本アプリは「現状有姿（AS IS）」で提供され、商品性・特定目的適合性・権利非侵害などいかなる保証も行いません。
+
+責任の制限
+当方は、本アプリの利用または第三者サービスとの連携に起因または関連して発生する直接・間接・結果的・特別損害、逸失利益、データ損失等について、法令で免責が認められない場合を除き、責任を負いません。
+
+アップデート
+当方は本アプリの更新・機能追加・修正を行う場合がありますが、その実施や継続を保証しません。
+
+規約の変更
+当方は本条項を随時変更でき、変更後は公表時点で効力を生じます。変更後も利用を継続する場合、ユーザーは変更に同意したものとみなされます。
+
+準拠法・管轄
+本条項は日本法に準拠し、紛争は日本国内の管轄裁判所を専属的管轄とします。
+
+連絡先
+お問い合わせは GitHub アカウント（Freeesia）までご連絡ください。"
+Copyright,Text,,,,,,,
+DevelopedBy,Text,,,,,,,StudioFreesia
+RequirementsMinimum1,Text,,,,,,,
+RequirementsMinimum2,Text,,,,,,,
+RequirementsMinimum3,Text,,,,,,,
+RequirementsMinimum4,Text,,,,,,,
+RequirementsMinimum5,Text,,,,,,,
+RequirementsMinimum6,Text,,,,,,,
+RequirementsMinimum7,Text,,,,,,,
+RequirementsMinimum8,Text,,,,,,,
+RequirementsMinimum9,Text,,,,,,,
+RequirementsMinimum10,Text,,,,,,,
+RequirementsMinimum11,Text,,,,,,,
+RequirementsRecommended1,Text,,,,,,,
+RequirementsRecommended2,Text,,,,,,,
+RequirementsRecommended3,Text,,,,,,,
+RequirementsRecommended4,Text,,,,,,,
+RequirementsRecommended5,Text,,,,,,,
+RequirementsRecommended6,Text,,,,,,,
+RequirementsRecommended7,Text,,,,,,,
+RequirementsRecommended8,Text,,,,,,,
+RequirementsRecommended9,Text,,,,,,,
+RequirementsRecommended10,Text,,,,,,,
+RequirementsRecommended11,Text,,,,,,,
+StoreLogos1,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+StoreLogos2,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots1,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots2,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots3,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots4,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots5,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots6,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots7,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots8,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots9,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+Screenshots10,Provide the file name only if it is in the same folder. Provide relative path to image starting with the subfolder name otherwise,,,,,,,
+HeroArts,Text,,,,,,,
+Trailers,Text,,,,,,,
