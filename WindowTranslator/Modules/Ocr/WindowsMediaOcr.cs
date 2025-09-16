@@ -407,7 +407,7 @@ file static class Utility
         }
         // 3文字以上かつ同じ文字で構成されている場合は無視
         // `•`は大抵の場合は認識ミスなので無視
-        words = words.Where(w => w.Text.Length < 3 || !IsAllSameChar(w.Text.Replace("•", string.Empty)));
+        words = words.Where(w => w.Text.Replace("•", string.Empty) is { } t && (t.Length < 3 || !IsAllSameChar(t)));
         return words;
     }
 
