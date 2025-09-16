@@ -129,9 +129,17 @@ builder.Configuration
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
 builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
 builder.Services.AddHostedService<WindowMonitor>();
-builder.Services.AddSingleton<UpdateChecker>()
-    .AddSingleton<IUpdateChecker>(sp => sp.GetRequiredService<UpdateChecker>())
-    .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
+if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
+{
+    builder.Services.AddSingleton<IUpdateChecker, IgnoreUpdateChecker>();
+}
+else
+{
+    builder.Services.AddSingleton<UpdateChecker>()
+        .AddSingleton<IUpdateChecker>(sp => sp.GetRequiredService<UpdateChecker>())
+        .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
+}
+
 builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
     .AddScoped<IProcessInfoStore>(sp => sp.GetRequiredService<IProcessInfoStoreInternal>());
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();

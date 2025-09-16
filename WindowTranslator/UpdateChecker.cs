@@ -294,3 +294,25 @@ interface IUpdateChecker
 }
 
 record UpdateInfo(string Version, string Url, string? Path, DateTime CheckedAt, bool Skip);
+
+internal class IgnoreUpdateChecker : IUpdateChecker
+{
+    public bool HasUpdate => false;
+    public string? LatestVersion => null;
+
+    public event EventHandler? UpdateAvailable
+    {
+        add { }
+        remove { }
+    }
+
+    public Task CheckAsync(CancellationToken token = default)
+        => Task.CompletedTask;
+    public void OpenChangelog()
+    {
+    }
+
+    public void Update()
+    {
+    }
+}
