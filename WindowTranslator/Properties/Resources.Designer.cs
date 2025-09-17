@@ -358,6 +358,24 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   OCRに失敗しました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FaildOcr {
+            get {
+                return ResourceManager.GetString("FaildOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   翻訳に失敗しました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FaildTranslate {
+            get {
+                return ResourceManager.GetString("FaildTranslate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   近いテキストの閾値 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string FuzzyMatchThreshold {

@@ -373,4 +373,10 @@
   <data name="ExportLogsFilterText" xml:space="preserve">
     <value>Text Files</value>
   </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>OCR failed</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>Translation failed</value>
+  </data>
 </root>

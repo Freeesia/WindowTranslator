@@ -12,6 +12,7 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
+using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Main;
@@ -196,7 +197,7 @@ public abstract partial class MainViewModelBase : IDisposable
                     this.capture.StopCapture();
                     var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                     await sbmp.TrySaveImage(path);
-                    await this.presentationService.OpenErrorReportDialogAsync("OCRに失敗しました", e, this.name, path);
+                    await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildOcr, e, this.name, path);
                     StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
                     return;
                 }
@@ -296,7 +297,7 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            await this.presentationService.OpenErrorReportDialogAsync("翻訳に失敗しました", e, this.name, string.Empty);
+            await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildTranslate, e, this.name, string.Empty);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
         finally
