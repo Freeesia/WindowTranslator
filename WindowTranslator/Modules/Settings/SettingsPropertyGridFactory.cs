@@ -20,25 +20,39 @@ using TextBox = System.Windows.Controls.TextBox;
 namespace WindowTranslator.Modules.Settings;
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 {
+    private static readonly EnableAttribute enableAttribute = new(true);
+    private static readonly EnableAttribute disableAttribute = new(false);
+
     public override FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options)
     {
+        FrameworkElement? fe = null;
         if (property.Is(typeof(ICommand)))
         {
-            var button = new Button();
-            button.SetBinding(ButtonBase.CommandProperty, property.CreateOneWayBinding());
-            button.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
-            button.SetValue(FrameworkElement.HorizontalAlignmentProperty, System.Windows.HorizontalAlignment.Stretch);
-            return button;
+            fe = new Button();
+            fe.SetBinding(ButtonBase.CommandProperty, property.CreateOneWayBinding());
+            fe.SetCurrentValue(ContentControl.ContentProperty, property.DisplayName);
+            fe.SetValue(FrameworkElement.HorizontalAlignmentProperty, System.Windows.HorizontalAlignment.Stretch);
         }
 
         // MEMO: 本当は属性とか介して判定した方がいい
         if (property.PropertyName == nameof(TargetSettingsViewModel.OverlayShortcut))
         {
-            var shortcutBox = new ShortcutBox();
-            shortcutBox.SetBinding(TextBox.TextProperty, property.CreateBinding());
-            return shortcutBox;
+            fe = new ShortcutBox();
+            fe.SetBinding(TextBox.TextProperty, property.CreateBinding());
         }
-        return base.CreateControl(property, options);
+
+        fe ??= base.CreateControl(property, options);
+
+        if (property.Descriptor.Attributes.Matches(enableAttribute))
+        {
+            fe.IsEnabled = true;
+        }
+        else if (property.Descriptor.Attributes.Matches(disableAttribute))
+        {
+            fe.IsEnabled = false;
+        }
+
+        return fe;
     }
 
     protected override FrameworkElement CreateBoolControl(PropertyItem property)
