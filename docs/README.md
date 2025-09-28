@@ -5,6 +5,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
 [![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
+[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
 
 WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻訳するためのツールです。
 
@@ -39,8 +40,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 
 1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
    ![翻訳ボタン](images/translate.png)
-2. 翻訳したいアプリのウィンドウを選択し、「OK」ボタンを押下します。  
-   ![ウィンドウ選択](images/select.png)
+v   ![ウィンドウ選択](images/select.png)
 3. 「全体設定」タブの「言語設定」から翻訳元・翻訳先を選択します。  
    ![言語設定](images/language.png)
 4. 設定完了後、「OK」ボタンを押下して設定画面を閉じます。  
