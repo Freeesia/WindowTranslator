@@ -1,16 +1,16 @@
-﻿using System.Diagnostics;
-using WindowTranslator.Modules;
-using WindowTranslator.Stores;
+﻿using System.Collections.Concurrent;
+using System.Collections.Frozen;
+using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Unicode;
-using System.Collections.Frozen;
-using Microsoft.Extensions.Logging;
-using Quickenshtein;
-using System.Collections.Concurrent;
-using Microsoft.Extensions.Options;
-using System.Threading.Channels;
 using System.Text.RegularExpressions;
+using System.Text.Unicode;
+using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Quickenshtein;
+using WindowTranslator.Modules;
+using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
@@ -230,6 +230,43 @@ public partial class FoMFilterModule : IFilterModule
                 性別はプレイヤーが選択できるので、中性的な言葉遣いをします。
                 """,
     };
+    private static readonly Dictionary<string, string> names = new()
+    {
+        ["npcs/adeline/name"] = "アデライン",
+        ["npcs/balor/name"] = "バロル",
+        ["npcs/caldarus/name"] = "カルダロス",
+        ["npcs/celine/name"] = "セリーヌ",
+        ["npcs/darcy/name"] = "ダルシー",
+        ["npcs/dell/name"] = "デル",
+        ["npcs/dozy/name"] = "ドージー",
+        ["npcs/eiland/name"] = "エイラント",
+        ["npcs/elsie/name"] = "エルシー",
+        ["npcs/errol/name"] = "エロール",
+        ["npcs/hayden/name"] = "ヘイデン",
+        ["npcs/hemlock/name"] = "ヘムロック",
+        ["npcs/henrietta/name"] = "ヘンリエッタ",
+        ["npcs/holt/name"] = "ホルト",
+        ["npcs/josephine/name"] = "ジョセフィン",
+        ["npcs/juniper/name"] = "ジュニパー",
+        ["npcs/landen/name"] = "ランデン",
+        ["npcs/louis/name"] = "ルイ",
+        ["npcs/luc/name"] = "ルーク",
+        ["npcs/maple/name"] = "メープル",
+        ["npcs/march/name"] = "マルク",
+        ["npcs/merri/name"] = "メリー",
+        ["npcs/nora/name"] = "ノラ",
+        ["npcs/olric/name"] = "オルリック",
+        ["npcs/reina/name"] = "レイナ",
+        ["npcs/ryis/name"] = "リース",
+        ["npcs/seridia/name"] = "巫女",
+        ["npcs/stillwell/name"] = "スティルウェル",
+        ["npcs/taliferro/name"] = "タリフェロ",
+        ["npcs/terithia/name"] = "テリシア",
+        ["npcs/valen/name"] = "ヴァレン",
+        ["npcs/vera/name"] = "ヴェラ",
+        ["npcs/wheedle/name"] = "ウィードル",
+        ["npcs/zorel/name"] = "ゾレル",
+    };
 
     public double Priority => -1;
 
@@ -250,7 +287,15 @@ public partial class FoMFilterModule : IFilterModule
             this.useJpn = options.Value.UseJpn;
             var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
             using var fs = File.OpenRead(path);
-            var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions);
+            var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions) ?? new([], []);
+            if (loc.Eng is null)
+            {
+                loc = loc with { Eng = [] };
+            }
+            if (loc.Jpn is null)
+            {
+                loc = loc with { Jpn = names };
+            }
             var player = options.Value.PlayerName;
             var farm = options.Value.FarmName;
             this.exclude = options.Value.ExcludeUnspecifiedText;
@@ -312,13 +357,13 @@ public partial class FoMFilterModule : IFilterModule
                     """);
 
             var sample = loc.Jpn
-                .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
-                .Select(p => (p.Key,
-                    Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
-                    En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
-                .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
-                .ToDictionary(
-                    g => g.Key,
+                    .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
+                    .Select(p => (p.Key,
+                        Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
+                        En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
+                    .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
+                    .ToDictionary(
+                        g => g.Key,
                     g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}日本語: {p.Ja}")));
 
             this.context = charContext
@@ -531,7 +576,7 @@ public partial class FoMFilterModule : IFilterModule
         => keys is ["Conversations" or "Cutscenes", _, var c, ..] ? GetCharContext(c) : string.Empty;
 }
 
-record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
+record Localization(Dictionary<string, string> Eng, Dictionary<string, string>? Jpn);
 record LocInto(string Key, string Text);
 
 record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
