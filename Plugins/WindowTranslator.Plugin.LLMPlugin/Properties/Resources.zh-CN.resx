@@ -170,4 +170,7 @@
 
 ※ 使用本地 LLM 时，由于库限制也需要 API 密钥。</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>需要输入 API 密钥。请在设置对话框中设置 API 密钥。</value>
+  </data>
 </root>

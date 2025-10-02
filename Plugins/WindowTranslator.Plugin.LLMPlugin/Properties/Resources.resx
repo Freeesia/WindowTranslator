@@ -170,4 +170,7 @@ ChatGPT APIの利用にはAPIキーが必要です。
 
 ※ローカルLLMを利用する場合もライブラリの制約のためAPIキーが必要です。</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>APIキーの入力が必要です。設定ダイアログからAPIキーを設定してください。</value>
+  </data>
 </root>

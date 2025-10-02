@@ -93,6 +93,10 @@ public class LLMTranslator : ITranslateModule
                 this.client = new(model, apiKey);
             }
         }
+        else
+        {
+            throw new AppUserException(Resources.NeedApiKey);
+        }
 
         if (File.Exists(llmOptions.Value.GlossaryPath))
         {

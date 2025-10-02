@@ -183,6 +183,15 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         }
         
         /// <summary>
+        ///   APIキーの入力が必要です。設定ダイアログからAPIキーを設定してください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NeedApiKey {
+            get {
+                return ResourceManager.GetString("NeedApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string NeedSettings {
