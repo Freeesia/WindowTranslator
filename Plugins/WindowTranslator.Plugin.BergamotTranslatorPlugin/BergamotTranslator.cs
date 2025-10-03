@@ -21,7 +21,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     {
         if (!SystemUtility.IsX64Machine())
         {
-            throw new Exception(Resources.NotAvailableArch);
+            throw new AppUserException(Resources.NotAvailableArch);
         }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
@@ -38,7 +38,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
             this.service = new BlockingService(path1, path2);
             return;
         }
-        throw new Exception(Resources.ModelNotFound);
+        throw new AppUserException(Resources.ModelNotFound);
     }
 
     public void Dispose()
