@@ -390,4 +390,22 @@
 Màn hình không được hỗ trợ.
 </value>
   </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Lỗi xác thực cài đặt</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Lưu và đóng</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Cài đặt mặc định</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Khởi động tự động</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} đã được đăng ký khởi động tự động.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>Khởi động tự động cho {0} đã bị hủy.</value>
+  </data>
 </root>

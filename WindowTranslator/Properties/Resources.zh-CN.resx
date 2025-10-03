@@ -386,8 +386,26 @@
     <value>请选择WindowTranslator以外的窗口</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>选择的窗口"{0}"无法确定进程，无法捕获。
+    <value>选择的窗口"{0}"无法确定进程,无法捕获。
 不支持显示器。
 </value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>设置验证错误</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>保存并关闭</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>默认设置</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>自动启动</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}已注册为自动启动。</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}的自动启动已取消。</value>
   </data>
 </root>

@@ -124,6 +124,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   自動起動 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AutoStart {
+            get {
+                return ResourceManager.GetString("AutoStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   PC起動時に自動起動 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AutoStartWithPC {
@@ -246,6 +255,15 @@ namespace WindowTranslator.Properties {
         public static string Copy {
             get {
                 return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   デフォルト設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DefaultSetting {
+            get {
+                return ResourceManager.GetString("DefaultSetting", resourceCulture);
             }
         }
         
@@ -655,6 +673,24 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   {0}を自動起動に登録しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RegisterAutoStart {
+            get {
+                return ResourceManager.GetString("RegisterAutoStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   保存して閉じる に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SaveAndClose {
+            get {
+                return ResourceManager.GetString("SaveAndClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   WindowTranslator以外のウィンドウを選択してください に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SelectOtherWindow {
@@ -703,6 +739,15 @@ namespace WindowTranslator.Properties {
         public static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   設定検証エラー に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SettingsInvalid {
+            get {
+                return ResourceManager.GetString("SettingsInvalid", resourceCulture);
             }
         }
         
@@ -813,6 +858,15 @@ namespace WindowTranslator.Properties {
         public static string UnknownWindow {
             get {
                 return ResourceManager.GetString("UnknownWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}の自動起動を解除しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnregisterAutoStart {
+            get {
+                return ResourceManager.GetString("UnregisterAutoStart", resourceCulture);
             }
         }
         

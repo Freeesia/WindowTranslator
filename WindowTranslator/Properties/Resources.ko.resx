@@ -390,4 +390,22 @@
 모니터는 지원 대상 외입니다.
 </value>
   </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>설정 검증 오류</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>저장 후 닫기</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>기본 설정</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>자동 시작</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}을(를) 자동 시작에 등록했습니다.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}의 자동 시작을 해제했습니다.</value>
+  </data>
 </root>

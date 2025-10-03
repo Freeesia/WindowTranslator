@@ -390,4 +390,22 @@
 Monitore werden nicht unterstützt.
 </value>
   </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Einstellungsvalidierungsfehler</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Speichern und schließen</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Standardeinstellungen</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Automatischer Start</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} wurde für den automatischen Start registriert.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>Automatischer Start für {0} wurde deaktiviert.</value>
+  </data>
 </root>

@@ -390,4 +390,22 @@
 モニターはサポート対象外です。
 </value>
   </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>設定検証エラー</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>保存して閉じる</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>デフォルト設定</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>自動起動</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}を自動起動に登録しました。</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}の自動起動を解除しました。</value>
+  </data>
 </root>

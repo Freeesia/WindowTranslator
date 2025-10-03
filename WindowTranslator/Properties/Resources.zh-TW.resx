@@ -390,4 +390,22 @@
 不支援顯示器。
 </value>
   </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>設定驗證錯誤</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>儲存並關閉</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>預設設定</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>自動啟動</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}已註冊為自動啟動。</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}的自動啟動已取消。</value>
+  </data>
 </root>
