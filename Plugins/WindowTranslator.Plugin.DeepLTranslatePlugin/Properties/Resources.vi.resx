@@ -118,9 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AuthKey" xml:space="preserve">
-    <value>APIキー</value>
+    <value>Khóa API</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>用語集パス</value>
+    <value>Đường dẫn thuật ngữ</value>
+  </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>Khóa API DeepL chưa được thiết lập. Vui lòng đặt khóa API DeepL từ hộp thoại cài đặt.</value>
   </data>
 </root>
