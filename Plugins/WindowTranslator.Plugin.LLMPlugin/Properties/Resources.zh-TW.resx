@@ -170,4 +170,9 @@
 
 ※ 使用本機 LLM 時，由於程式庫限制也需要 API 金鑰。</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>使用 ChatGPT 功能需要輸入 API 金鑰。請在設定對話方塊中設定 API 金鑰。
+
+※ 使用本機 LLM 時,由於程式庫限制也需要 API 金鑰。</value>
+  </data>
 </root>
