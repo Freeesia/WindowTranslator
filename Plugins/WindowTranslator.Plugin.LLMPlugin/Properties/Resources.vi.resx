@@ -170,4 +170,9 @@ Vui lòng đặt khóa API trong "Cài đặt mục tiêu" → tab "Cài đặt 
 
 ※ Khi sử dụng LLM cục bộ, khóa API cũng bắt buộc do hạn chế thư viện.</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>Cần nhập khóa API để sử dụng các tính năng ChatGPT. Vui lòng đặt khóa API từ hộp thoại cài đặt.
+
+※ Khi sử dụng LLM cục bộ, khóa API cũng bắt buộc do hạn chế thư viện.</value>
+  </data>
 </root>
