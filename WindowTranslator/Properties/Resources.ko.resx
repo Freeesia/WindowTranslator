@@ -379,4 +379,39 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>번역 실패</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>윈도우 임베딩에 실패했습니다.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>WindowTranslator 이외의 윈도우를 선택해 주세요</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>선택한 윈도우 "{0}"는 프로세스를 특정할 수 없어 캡처할 수 없습니다.
+모니터는 지원 대상 외입니다.
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>설정 검증 오류</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>저장 후 닫기</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>기본 설정</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>자동 시작</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}을(를) 자동 시작에 등록했습니다.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}의 자동 시작을 해제했습니다.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>언어 설정</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>번역 원본 언어와 대상 언어가 동일합니다. 다른 언어를 지정하세요.</value>
+  </data>
 </root>
