@@ -123,4 +123,7 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>glossary path</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>DeepL API key is not set. Please set the DeepL API key from the settings dialog.</value>
+  </data>
 </root>
