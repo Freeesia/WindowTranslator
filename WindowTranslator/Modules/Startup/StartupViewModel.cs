@@ -102,16 +102,11 @@ public partial class StartupViewModel
             p = FindProcessByWindowTitle(item.DisplayName);
             if (p is null)
             {
-                this.presentationService.ShowMessage($"""
-                選択したウィンドウ「{item.DisplayName}」はプロセスを特定できないため、キャプチャー出来ません。
-                モニターはサポート対象外です。
-                """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
+                this.presentationService.ShowMessage(string.Format(Resources.UnknownWindow, item.DisplayName), icon: Kamishibai.MessageBoxImage.Error, owner: window);
             }
             else if (p.PID == Environment.ProcessId)
             {
-                this.presentationService.ShowMessage($"""
-                WindowTranslator以外のウィンドウを選択してください
-                """, icon: Kamishibai.MessageBoxImage.Error, owner: window);
+                this.presentationService.ShowMessage(Resources.SelectOtherWindow, icon: Kamishibai.MessageBoxImage.Error, owner: window);
                 p = null;
             }
         }
@@ -122,7 +117,14 @@ public partial class StartupViewModel
         }
         catch (Exception ex)
         {
-            await this.presentationService.OpenErrorReportDialogAsync("ウィンドウの埋め込みに失敗しました。", ex, p.Name, string.Empty);
+            if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
+            {
+                this.presentationService.ShowMessage(ex.Message, icon: Kamishibai.MessageBoxImage.Exclamation, owner: window);
+            }
+            else
+            {
+                await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildOverlay, ex, p.Name, string.Empty, owner: window);
+            }
         }
         if (!beforeVisible)
         {

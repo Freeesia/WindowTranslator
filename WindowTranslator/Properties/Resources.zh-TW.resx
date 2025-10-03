@@ -379,4 +379,39 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>翻譯失敗</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>視窗嵌入失敗。</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>請選擇WindowTranslator以外的視窗</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>選擇的視窗「{0}」無法確定程序，無法擷取。
+不支援顯示器。
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>設定驗證錯誤</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>儲存並關閉</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>預設設定</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>自動啟動</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}已註冊為自動啟動。</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}的自動啟動已取消。</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>語言設定</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>來源語言和目標語言相同。請指定不同的語言。</value>
+  </data>
 </root>

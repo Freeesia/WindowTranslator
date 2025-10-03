@@ -123,4 +123,7 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>用語集パス</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>DeepLのAPIキーが設定されていません。設定ダイアログからDeepLのAPIキーを設定してください。</value>
+  </data>
 </root>

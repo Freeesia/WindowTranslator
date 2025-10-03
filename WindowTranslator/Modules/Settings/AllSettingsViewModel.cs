@@ -1,12 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
@@ -20,6 +18,7 @@ using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -187,12 +186,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         if (value)
         {
             key.SetValue(name, path);
-            await this.dialogService.ShowAlertAsync("自動起動", $"{name}を自動起動に登録しました。", "OK");
+            await this.dialogService.ShowAlertAsync(Resources.AutoStart, string.Format(Resources.RegisterAutoStart, name), "OK");
         }
         else
         {
             key.DeleteValue(name, false);
-            await this.dialogService.ShowAlertAsync("自動起動", $"{name}の自動起動を解除しました。", "OK");
+            await this.dialogService.ShowAlertAsync(Resources.AutoStart, string.Format(Resources.UnregisterAutoStart, name), "OK");
         }
     }
 
@@ -259,16 +258,21 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
             var r = new List<ValidateResult>();
+            if (target.Language.Source == target.Language.Target)
+            {
+                r.Add(ValidateResult.Invalid(Resources.TranslateLanguage, Resources.SameSourceTargetLanguage));
+            }
+
             if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
             {
-                r.Add(ValidateResult.Invalid("翻訳モジュール", """
+                r.Add(ValidateResult.Invalid(Resources.TranslateModule, """
                     翻訳モジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
                     """));
             }
             if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
             {
-                r.Add(ValidateResult.Invalid("キャッシュモジュール", """
+                r.Add(ValidateResult.Invalid(Resources.CacheModule, """
                     キャッシュモジュールが選択されていません。
                     「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
                     """));
@@ -286,10 +290,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         {
             var r = await this.dialogService.ShowSimpleDialogAsync(new()
             {
-                Title = "設定検証エラー",
-                Content = string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : "デフォルト設定")}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
-                PrimaryButtonText = "保存して閉じる",
-                CloseButtonText = "キャンセル",
+                Title = Resources.SettingsInvalid,
+                Content = string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : Resources.DefaultSetting)}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
+                PrimaryButtonText = Resources.SaveAndClose,
+                CloseButtonText = Resources.Cancel,
             });
             if (r != ContentDialogResult.Primary)
             {

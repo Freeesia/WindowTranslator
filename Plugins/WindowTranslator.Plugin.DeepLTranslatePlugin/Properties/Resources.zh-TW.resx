@@ -123,4 +123,7 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>詞彙路徑</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>未設定 DeepL API 金鑰。請在設定對話方塊中設定 DeepL API 金鑰。</value>
+  </data>
 </root>

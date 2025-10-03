@@ -33,6 +33,10 @@ public class DeepLTranslator : ITranslateModule
         IOptionsSnapshot<LanguageOptions> langOptions,
         ILogger<DeepLTranslator> logger)
     {
+        if (string.IsNullOrWhiteSpace(deeplOptions.Value.AuthKey))
+        {
+            throw new AppUserException(Properties.Resources.NeedApiKey);
+        }
         this.translator = new(deeplOptions.Value.AuthKey);
         this.sourceLang = langOptions.Value.Source.GetSourceLangCode();
         this.targetLang = langOptions.Value.Target.GetTargetLangCode();
@@ -152,9 +156,9 @@ public class DeepLValidator : ITargetSettingsValidator
         using var client = new Translator(op.AuthKey);
         try
         {
-            SupportedSourceLanguages ??= (await client.GetSourceLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code).ToArray();
+            SupportedSourceLanguages ??= [.. (await client.GetSourceLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code)];
         }
-        catch (AuthorizationException e)
+        catch (AuthorizationException)
         {
             return ValidateResult.Invalid("DeepL", """
             設定されているDeepLのAPIキーが無効です。
@@ -165,7 +169,7 @@ public class DeepLValidator : ITargetSettingsValidator
         {
             return ValidateResult.Invalid("DeepL", $"Translation to {settings.Language.Source} is currently not supported.");
         }
-        SupportedTargetLanguages ??= (await client.GetTargetLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code).ToArray();
+        SupportedTargetLanguages ??= [.. (await client.GetTargetLanguagesAsync().ConfigureAwait(false)).Select(l => l.Code)];
         if (!SupportedTargetLanguages.Contains(settings.Language.Target.GetTargetLangCode()))
         {
             return ValidateResult.Invalid("DeepL", $"Translation to {settings.Language.Target} is currently not supported.");

@@ -379,4 +379,39 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>翻訳に失敗しました</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>ウィンドウの埋め込みに失敗しました。</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>WindowTranslator以外のウィンドウを選択してください</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。
+モニターはサポート対象外です。
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>設定検証エラー</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>保存して閉じる</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>デフォルト設定</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>自動起動</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0}を自動起動に登録しました。</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>{0}の自動起動を解除しました。</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>言語設定</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+  </data>
 </root>

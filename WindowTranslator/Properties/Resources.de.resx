@@ -379,4 +379,39 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>Übersetzung fehlgeschlagen</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Einbettung in das Fenster ist fehlgeschlagen.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Bitte wählen Sie ein anderes Fenster als WindowTranslator aus</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>Das ausgewählte Fenster "{0}" kann den Prozess nicht bestimmen und kann nicht erfasst werden.
+Monitore werden nicht unterstützt.
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Einstellungsvalidierungsfehler</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Speichern und schließen</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Standardeinstellungen</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Automatischer Start</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} wurde für den automatischen Start registriert.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>Automatischer Start für {0} wurde deaktiviert.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Spracheinstellungen</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Quell- und Zielsprache sind identisch. Bitte geben Sie unterschiedliche Sprachen an.</value>
+  </data>
 </root>

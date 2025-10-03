@@ -123,4 +123,7 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>Glossarpfad</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>Der DeepL-API-Schlüssel ist nicht festgelegt. Bitte setzen Sie den DeepL-API-Schlüssel im Einstellungsdialog.</value>
+  </data>
 </root>

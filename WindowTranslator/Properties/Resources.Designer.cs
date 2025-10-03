@@ -124,6 +124,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   自動起動 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AutoStart {
+            get {
+                return ResourceManager.GetString("AutoStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   PC起動時に自動起動 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AutoStartWithPC {
@@ -250,6 +259,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   デフォルト設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DefaultSetting {
+            get {
+                return ResourceManager.GetString("DefaultSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   デタッチ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Detach {
@@ -363,6 +381,15 @@ namespace WindowTranslator.Properties {
         public static string FaildOcr {
             get {
                 return ResourceManager.GetString("FaildOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ウィンドウの埋め込みに失敗しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FaildOverlay {
+            get {
+                return ResourceManager.GetString("FaildOverlay", resourceCulture);
             }
         }
         
@@ -646,6 +673,42 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   {0}を自動起動に登録しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RegisterAutoStart {
+            get {
+                return ResourceManager.GetString("RegisterAutoStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SameSourceTargetLanguage {
+            get {
+                return ResourceManager.GetString("SameSourceTargetLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   保存して閉じる に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SaveAndClose {
+            get {
+                return ResourceManager.GetString("SaveAndClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   WindowTranslator以外のウィンドウを選択してください に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SelectOtherWindow {
+            get {
+                return ResourceManager.GetString("SelectOtherWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   エラー情報をレポートシステムに送信します。以下の情報が送信されます。
         ///* アプリ情報
         ///* PCのスペック、環境情報
@@ -685,6 +748,15 @@ namespace WindowTranslator.Properties {
         public static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   設定検証エラー に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SettingsInvalid {
+            get {
+                return ResourceManager.GetString("SettingsInvalid", resourceCulture);
             }
         }
         
@@ -779,11 +851,40 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   言語設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TranslateLanguage {
+            get {
+                return ResourceManager.GetString("TranslateLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   翻訳モジュール に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string TranslateModule {
             get {
                 return ResourceManager.GetString("TranslateModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。
+        ///モニターはサポート対象外です。
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnknownWindow {
+            get {
+                return ResourceManager.GetString("UnknownWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}の自動起動を解除しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnregisterAutoStart {
+            get {
+                return ResourceManager.GetString("UnregisterAutoStart", resourceCulture);
             }
         }
         

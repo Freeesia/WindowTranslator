@@ -77,5 +77,14 @@ namespace WindowTranslator.Plugin.DeepLTranslatePlugin.Properties {
                 return ResourceManager.GetString("GlossaryPath", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   DeepLのAPIキーが設定されていません。設定ダイアログからDeepLのAPIキーを設定してください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NeedApiKey {
+            get {
+                return ResourceManager.GetString("NeedApiKey", resourceCulture);
+            }
+        }
     }
 }

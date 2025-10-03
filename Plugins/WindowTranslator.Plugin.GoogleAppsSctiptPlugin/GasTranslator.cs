@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Util.Store;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -75,6 +76,11 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         {
             this.logger.LogWarning("Google翻訳から予期しないレスポンスが返されました");
             throw new InvalidOperationException(Resources.UnexpectedResponse, e);
+        }
+        catch (TokenResponseException e) when (e.Error.Error == "access_denied")
+        {
+            this.logger.LogWarning("Google翻訳の認証に失敗しました");
+            throw new AppUserException(Resources.PermissionDenied);
         }
     }
 

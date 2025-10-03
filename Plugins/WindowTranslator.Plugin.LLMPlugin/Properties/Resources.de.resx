@@ -170,4 +170,9 @@ Bitte setzen Sie den API-Schlüssel unter "Einstellungen für jedes Ziel" → "C
 
 ※ Bei Verwendung einer lokalen LLM ist aufgrund von Bibliotheksbeschränkungen auch ein API-Schlüssel erforderlich.</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>Die Eingabe eines API-Schlüssels ist erforderlich, um ChatGPT-Funktionen zu nutzen. Bitte setzen Sie den API-Schlüssel im Einstellungsdialog.
+
+※ Bei Verwendung einer lokalen LLM ist aufgrund von Bibliotheksbeschränkungen auch ein API-Schlüssel erforderlich.</value>
+  </data>
 </root>
