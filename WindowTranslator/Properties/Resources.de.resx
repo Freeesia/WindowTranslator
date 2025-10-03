@@ -379,4 +379,15 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>Übersetzung fehlgeschlagen</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Einbettung in das Fenster ist fehlgeschlagen.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Bitte wählen Sie ein anderes Fenster als WindowTranslator aus</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>Das ausgewählte Fenster "{0}" kann den Prozess nicht bestimmen und kann nicht erfasst werden.
+Monitore werden nicht unterstützt.
+</value>
+  </data>
 </root>

@@ -379,4 +379,15 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>翻訳に失敗しました</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>ウィンドウの埋め込みに失敗しました。</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>WindowTranslator以外のウィンドウを選択してください</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。
+モニターはサポート対象外です。
+</value>
+  </data>
 </root>

@@ -367,6 +367,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   ウィンドウの埋め込みに失敗しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FaildOverlay {
+            get {
+                return ResourceManager.GetString("FaildOverlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   翻訳に失敗しました に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string FaildTranslate {
@@ -646,6 +655,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   WindowTranslator以外のウィンドウを選択してください に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SelectOtherWindow {
+            get {
+                return ResourceManager.GetString("SelectOtherWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   エラー情報をレポートシステムに送信します。以下の情報が送信されます。
         ///* アプリ情報
         ///* PCのスペック、環境情報
@@ -784,6 +802,17 @@ namespace WindowTranslator.Properties {
         public static string TranslateModule {
             get {
                 return ResourceManager.GetString("TranslateModule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。
+        ///モニターはサポート対象外です。
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnknownWindow {
+            get {
+                return ResourceManager.GetString("UnknownWindow", resourceCulture);
             }
         }
         

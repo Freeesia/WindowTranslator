@@ -379,4 +379,15 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>翻譯失敗</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>視窗嵌入失敗。</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>請選擇WindowTranslator以外的視窗</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>選擇的視窗「{0}」無法確定程序，無法擷取。
+不支援顯示器。
+</value>
+  </data>
 </root>

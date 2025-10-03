@@ -43,6 +43,8 @@ dotnet_diagnostic.VSTHRD100.severity = suggestion
 dotnet_diagnostic.CA1050.severity = none
 dotnet_diagnostic.CA1860.severity = none
 dotnet_diagnostic.CA1852.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1863.severity = none
 
 [*.cs]
 csharp_indent_labels = one_less_than_current
@@ -149,6 +151,10 @@ dotnet_diagnostic.CA2254.severity = none
 dotnet_code_quality.ca1711.allowed_suffixes = EventArgs
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:suggestion
+csharp_prefer_system_threading_lock = true:suggestion
+csharp_prefer_static_anonymous_function = true:suggestion
+csharp_style_prefer_readonly_struct = true:suggestion
+csharp_style_prefer_readonly_struct_member = true:suggestion
 
 [*.{csproj,props}]
 indent_size = 2

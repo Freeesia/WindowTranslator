@@ -379,4 +379,15 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>Dịch thất bại</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Nhúng vào cửa sổ thất bại.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Vui lòng chọn cửa sổ khác ngoài WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>Cửa sổ đã chọn "{0}" không thể xác định tiến trình và không thể chụp.
+Màn hình không được hỗ trợ.
+</value>
+  </data>
 </root>

@@ -379,4 +379,15 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>Translation failed</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Failed to embed into window.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Please select a window other than WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>The selected window "{0}" cannot determine the process and cannot be captured.
+Monitors are not supported.
+</value>
+  </data>
 </root>
