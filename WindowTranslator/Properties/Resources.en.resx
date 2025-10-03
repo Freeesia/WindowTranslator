@@ -379,4 +379,39 @@
   <data name="FaildTranslate" xml:space="preserve">
     <value>Translation failed</value>
   </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Failed to embed into window.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Please select a window other than WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>The selected window "{0}" cannot determine the process and cannot be captured.
+Monitors are not supported.
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Settings Validation Error</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Save and Close</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Default Settings</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Auto Start</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} has been registered for auto-start.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>Auto-start for {0} has been disabled.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Language Settings</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Source and target languages are the same. Please specify different languages.</value>
+  </data>
 </root>
