@@ -408,4 +408,10 @@
   <data name="UnregisterAutoStart" xml:space="preserve">
     <value>{0}の自動起動を解除しました。</value>
   </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>言語設定</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+  </data>
 </root>

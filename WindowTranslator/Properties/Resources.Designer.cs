@@ -682,6 +682,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SameSourceTargetLanguage {
+            get {
+                return ResourceManager.GetString("SameSourceTargetLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   保存して閉じる に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SaveAndClose {
@@ -838,6 +847,15 @@ namespace WindowTranslator.Properties {
         public static string Toggle {
             get {
                 return ResourceManager.GetString("Toggle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   言語設定 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TranslateLanguage {
+            get {
+                return ResourceManager.GetString("TranslateLanguage", resourceCulture);
             }
         }
         

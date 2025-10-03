@@ -258,6 +258,11 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
             var r = new List<ValidateResult>();
+            if (target.Language.Source == target.Language.Target)
+            {
+                r.Add(ValidateResult.Invalid(Resources.TranslateLanguage, Resources.SameSourceTargetLanguage));
+            }
+
             if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
             {
                 r.Add(ValidateResult.Invalid(Resources.TranslateModule, """

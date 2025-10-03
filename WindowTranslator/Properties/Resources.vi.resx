@@ -408,4 +408,10 @@ Màn hình không được hỗ trợ.
   <data name="UnregisterAutoStart" xml:space="preserve">
     <value>Khởi động tự động cho {0} đã bị hủy.</value>
   </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Cài đặt ngôn ngữ</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Ngôn ngữ nguồn và ngôn ngữ đích giống nhau. Vui lòng chỉ định các ngôn ngữ khác nhau.</value>
+  </data>
 </root>

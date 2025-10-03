@@ -408,4 +408,10 @@
   <data name="UnregisterAutoStart" xml:space="preserve">
     <value>{0}的自动启动已取消。</value>
   </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>语言设置</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>源语言和目标语言相同。请指定不同的语言。</value>
+  </data>
 </root>

@@ -408,4 +408,10 @@
   <data name="UnregisterAutoStart" xml:space="preserve">
     <value>{0}의 자동 시작을 해제했습니다.</value>
   </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>언어 설정</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>번역 원본 언어와 대상 언어가 동일합니다. 다른 언어를 지정하세요.</value>
+  </data>
 </root>

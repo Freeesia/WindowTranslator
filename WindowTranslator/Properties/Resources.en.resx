@@ -408,4 +408,10 @@ Monitors are not supported.
   <data name="UnregisterAutoStart" xml:space="preserve">
     <value>Auto-start for {0} has been disabled.</value>
   </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Language Settings</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Source and target languages are the same. Please specify different languages.</value>
+  </data>
 </root>
