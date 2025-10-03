@@ -183,7 +183,9 @@ namespace WindowTranslator.Plugin.LLMPlugin.Properties {
         }
         
         /// <summary>
-        ///   APIキーの入力が必要です。設定ダイアログからAPIキーを設定してください。 に類似しているローカライズされた文字列を検索します。
+        ///   ChatGPT機能を利用するにはAPIキーの入力が必要です。設定ダイアログからAPIキーを設定してください。
+        ///
+        ///※ローカルLLMを利用する場合もライブラリの制約のためAPIキーが必要です。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string NeedApiKey {
             get {

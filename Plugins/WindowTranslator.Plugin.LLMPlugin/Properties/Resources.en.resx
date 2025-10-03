@@ -171,6 +171,8 @@ Please set the API key in "Target Settings" → "ChatGPT API Settings" tab.
 ※ When using a local LLM, an API key is also required due to library constraints.</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
-    <value>API key input is required. Please set the API key from the settings dialog.</value>
+    <value>API key input is required to use ChatGPT features. Please set the API key from the settings dialog.
+
+※ When using a local LLM, an API key is also required due to library constraints.</value>
   </data>
 </root>
