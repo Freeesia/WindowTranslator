@@ -123,4 +123,7 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>용어집 패스</value>
   </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>DeepL API 키가 설정되지 않았습니다. 설정 대화상자에서 DeepL API 키를 설정해 주세요.</value>
+  </data>
 </root>
