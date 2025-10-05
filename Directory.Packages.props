@@ -53,5 +53,7 @@
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
     <PackageVersion Include="OpenAI" Version="2.1.0" />
+    <PackageVersion Include="LLamaSharp" Version="0.23.0" />
+    <PackageVersion Include="LLamaSharp.Backend.Cpu" Version="0.23.0" />
   </ItemGroup>
 </Project>
