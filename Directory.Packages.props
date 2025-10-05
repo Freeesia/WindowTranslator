@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
-    <PackageVersion Include="BergamotTranslatorSharp" Version="0.3.3" />
+    <PackageVersion Include="BergamotTranslatorSharp" Version="0.3.4" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.4.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
