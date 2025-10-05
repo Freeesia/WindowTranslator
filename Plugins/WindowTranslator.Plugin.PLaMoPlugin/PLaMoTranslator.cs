@@ -18,8 +18,8 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
     private readonly string preSystem;
     private readonly string? userContext;
     private readonly string postSystem;
-    private readonly LLamaWeights? model;
-    private readonly LLamaContext? context;
+    private readonly LLamaWeights? weights;
+    private readonly ModelParams? modelParams;
     private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
     private IReadOnlyList<string> common = [];
     private string? contextText;
@@ -62,14 +62,13 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             throw new AppUserException(Resources.ModelFileNotFound);
         }
 
-        var parameters = new ModelParams(options.ModelPath)
+        this.modelParams = new ModelParams(options.ModelPath)
         {
             ContextSize = (uint)options.ContextSize,
             GpuLayerCount = options.GpuLayerCount,
         };
 
-        this.model = LLamaWeights.LoadFromFile(parameters);
-        this.context = this.model.CreateContext(parameters);
+        this.weights = LLamaWeights.LoadFromFile(this.modelParams);
 
         if (File.Exists(options.GlossaryPath))
         {
@@ -86,7 +85,7 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
-        if (this.model is null || this.context is null)
+        if (this.weights is null || this.modelParams is null)
         {
             throw new InvalidOperationException(Resources.ModelNotInitialized);
         }
@@ -126,16 +125,18 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         {userMessage}
         """;
 
-        var ex = new InferenceParams
+        using var context = this.weights.CreateContext(this.modelParams);
+        var executor = new StatelessExecutor(this.weights, this.modelParams);
+        
+        var inferenceParams = new InferenceParams
         {
             MaxTokens = 2048,
-            AntiPrompts = ["}"]
+            AntiPrompts = ["}"],
         };
 
-        var executor = new StatelessExecutor(this.model, parameters: ex);
         var responseBuilder = new StringBuilder();
         
-        await foreach (var token in executor.InferAsync(prompt, ex))
+        await foreach (var token in executor.InferAsync(prompt, inferenceParams))
         {
             responseBuilder.Append(token);
             if (token.Contains("}"))
@@ -192,7 +193,6 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
 
     public void Dispose()
     {
-        this.context?.Dispose();
-        this.model?.Dispose();
+        this.weights?.Dispose();
     }
 }
