@@ -414,4 +414,7 @@
   <data name="SameSourceTargetLanguage" xml:space="preserve">
     <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>{0}のOCR機能が使えません。対象の言語機能をインストールしてください</value>
+  </data>
 </root>

@@ -592,6 +592,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   {0}のOCR機能が使えません。対象の言語機能をインストールしてください に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OcrLanguageNotAvailable {
+            get {
+                return ResourceManager.GetString("OcrLanguageNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   OK に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OK {
