@@ -174,4 +174,7 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>振動抑制</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>無法使用{0}的OCR功能。請安裝目標語言功能</value>
+  </data>
 </root>

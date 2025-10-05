@@ -174,4 +174,7 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>Vibration suppression</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>OCR functionality for {0} is not available. Please install the target language feature</value>
+  </data>
 </root>

@@ -174,4 +174,7 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>Ngăn chặn rung động</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>Chức năng OCR cho {0} không khả dụng. Vui lòng cài đặt tính năng ngôn ngữ mục tiêu</value>
+  </data>
 </root>
