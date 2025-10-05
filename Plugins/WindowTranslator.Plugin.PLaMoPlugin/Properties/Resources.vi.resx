@@ -76,10 +76,4 @@
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>Kích thước ngữ cảnh. Mặc định là 2048.</value>
   </data>
-  <data name="TranslateContext_Desc" xml:space="preserve">
-    <value>Bạn có thể chỉ định thông tin ngữ cảnh bổ sung cho dịch thuật.</value>
-  </data>
-  <data name="GlossaryPath_Desc" xml:space="preserve">
-    <value>Đường dẫn tệp CSV bảng thuật ngữ. Nó sẽ được tham chiếu trong quá trình dịch.</value>
-  </data>
 </root>

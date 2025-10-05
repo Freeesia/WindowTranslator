@@ -76,10 +76,4 @@
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>Kontextgröße. Standard ist 2048.</value>
   </data>
-  <data name="TranslateContext_Desc" xml:space="preserve">
-    <value>Sie können zusätzliche Kontextinformationen für die Übersetzung angeben.</value>
-  </data>
-  <data name="GlossaryPath_Desc" xml:space="preserve">
-    <value>Pfad zur Glossar-CSV-Datei. Sie wird während der Übersetzung referenziert.</value>
-  </data>
 </root>

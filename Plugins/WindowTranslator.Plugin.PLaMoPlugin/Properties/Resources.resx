@@ -135,10 +135,4 @@
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>コンテキストサイズ。デフォルトは2048です。</value>
   </data>
-  <data name="TranslateContext_Desc" xml:space="preserve">
-    <value>翻訳時の追加コンテキスト情報を指定できます。</value>
-  </data>
-  <data name="GlossaryPath_Desc" xml:space="preserve">
-    <value>用語集のCSVファイルパス。翻訳時に参照されます。</value>
-  </data>
 </root>

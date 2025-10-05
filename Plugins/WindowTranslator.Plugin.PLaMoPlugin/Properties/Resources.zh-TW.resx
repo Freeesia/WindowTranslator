@@ -76,10 +76,4 @@
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>上下文大小。預設值為2048。</value>
   </data>
-  <data name="TranslateContext_Desc" xml:space="preserve">
-    <value>可以指定翻譯的附加上下文資訊。</value>
-  </data>
-  <data name="GlossaryPath_Desc" xml:space="preserve">
-    <value>詞彙表CSV檔案路徑。在翻譯過程中將被引用。</value>
-  </data>
 </root>

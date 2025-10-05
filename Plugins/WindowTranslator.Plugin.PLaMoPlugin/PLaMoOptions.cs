@@ -19,16 +19,6 @@ public class PLaMoOptions : IPluginParam
     [LocalizedDescription(typeof(Resources), $"{nameof(ContextSize)}_Desc")]
     [Range(512, 32768)]
     public int ContextSize { get; set; } = 2048;
-
-    [Height(120)]
-    [DataType(DataType.MultilineText)]
-    [LocalizedDescription(typeof(Resources), $"{nameof(TranslateContext)}_Desc")]
-    public string? TranslateContext { get; set; }
-
-    [FileExtensions(Extensions = ".csv")]
-    [InputFilePath(".csv", "CSV (.csv)|*.csv")]
-    [LocalizedDescription(typeof(Resources), $"{nameof(GlossaryPath)}_Desc")]
-    public string? GlossaryPath { get; set; }
 }
 
 public class PLaMoOptionsValidator : ITargetSettingsValidator

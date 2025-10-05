@@ -2,8 +2,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using CsvHelper;
-using CsvHelper.Configuration;
 using LLama;
 using LLama.Common;
 using Microsoft.Extensions.Options;
@@ -15,42 +13,18 @@ namespace WindowTranslator.Plugin.PLaMoPlugin;
 [DisplayName("PLaMo")]
 public sealed class PLaMoTranslator : ITranslateModule, IDisposable
 {
-    private readonly string preSystem;
-    private readonly string? userContext;
-    private readonly string postSystem;
+    private readonly string sourceLang;
+    private readonly string targetLang;
     private readonly LLamaWeights? weights;
     private readonly ModelParams? modelParams;
-    private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
-    private IReadOnlyList<string> common = [];
-    private string? contextText;
 
     public PLaMoTranslator(IOptionsSnapshot<PLaMoOptions> plamoOptions, IOptionsSnapshot<LanguageOptions> langOptions)
     {
-        var srcLang = CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName;
-        var targetLang = CultureInfo.GetCultureInfo(langOptions.Value.Target).DisplayName;
         var options = plamoOptions.Value;
-
-        this.preSystem = $$"""
-        あなたは{{srcLang}}から{{targetLang}}へ翻訳するの専門家です。
-        入力テキストは{{srcLang}}のテキストであり、翻訳が必要です。
-        渡されたテキストを{{targetLang}}へ翻訳して出力してください。
-        """;
-        this.userContext = options.TranslateContext;
-        this.postSystem = """
-        入力テキストは以下のJsonフォーマットになっています。
-        各textの内容はペアとなるcontextの文脈を考慮して翻訳してください。
-        contextに一人称が指定されている場合は、漢字、ひらがな、カタカナの表記を変更せずに一人称をそのまま使ってください。
-        翻訳対象のテキストが判別できない場合は、翻訳を行わずにそのままの表記を利用してください。
-        <入力テキストのJsonフォーマット>
-        [{"text":"翻訳対象のテキスト1", "context": "翻訳対象のテキスト1の文脈"}, {"text":"翻訳対象のテキスト2", "context": "翻訳対象のテキスト2の文脈"}]
-        </入力テキストのJsonフォーマット>
         
-        出力は以下の文字列型の配列を持ったJsonフォーマットです。
-        入力されたテキストの順序を維持して翻訳したテキストを出力してください。
-        <出力テキストのJsonフォーマット>
-        {"translated": ["翻訳したテキスト1", "翻訳したテキスト2"]}
-        </出力テキストのJsonフォーマット>
-        """;
+        // PLaMoモデル用の言語名を取得
+        this.sourceLang = GetLanguageName(langOptions.Value.Source);
+        this.targetLang = GetLanguageName(langOptions.Value.Target);
 
         if (string.IsNullOrEmpty(options.ModelPath))
         {
@@ -69,19 +43,29 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         };
 
         this.weights = LLamaWeights.LoadFromFile(this.modelParams);
-
-        if (File.Exists(options.GlossaryPath))
-        {
-            using var reader = new StreamReader(options.GlossaryPath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
-            foreach (var (src, dst) in csv.GetRecords<Glossary>())
-            {
-                this.glossary[src] = dst;
-            }
-        }
     }
 
-    private record Glossary(string Source, string Target);
+    private static string GetLanguageName(string cultureCode)
+    {
+        // PLaMoモデルが認識する言語名に変換
+        var culture = CultureInfo.GetCultureInfo(cultureCode);
+        return culture.TwoLetterISOLanguageName switch
+        {
+            "ja" => "Japanese",
+            "en" => "English",
+            "zh" => "Chinese",
+            "ko" => "Korean",
+            "de" => "German",
+            "fr" => "French",
+            "es" => "Spanish",
+            "it" => "Italian",
+            "pt" => "Portuguese",
+            "ru" => "Russian",
+            "ar" => "Arabic",
+            "vi" => "Vietnamese",
+            _ => culture.EnglishName.Split(' ')[0] // フォールバック: 英語名の最初の単語
+        };
+    }
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
@@ -90,48 +74,27 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             throw new InvalidOperationException(Resources.ModelNotInitialized);
         }
 
-        var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
-        var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
-        var sb = new StringBuilder();
-        
-        if (glossary.Length > 0)
-        {
-            sb.AppendLine($"""
-            翻訳する際に以下の用語集を参照して、一貫した翻訳を行ってください。
-            <用語集>
-            {string.Join(Environment.NewLine, glossary.Select(kv => $"<用語>{kv.Key}</用語><翻訳>{kv.Value}</翻訳>"))}
-            </用語集>
+        // JSON形式で入力テキストをまとめる
+        var inputJson = JsonSerializer.Serialize(srcTexts.Select(s => s.SourceText).ToArray());
 
-            """);
-        }
-        
-        if (common.Length > 0)
-        {
-            sb.AppendLine($"""
-            翻訳するテキストに以下の共通の用語が含まれている場合は、その用語のみは必ず翻訳せずにそのままの表記を利用してください。
-            <共通の用語>
-            {string.Join(Environment.NewLine, common)}
-            </共通の用語>
-
-            """);
-        }
-
-        var system = string.Join(Environment.NewLine, [this.preSystem, this.contextText, sb, this.userContext, this.postSystem]);
-        var userMessage = JsonSerializer.Serialize(srcTexts.Select(s => new { s.SourceText, s.Context }).ToArray());
-
+        // PLaMo専用のプロンプトフォーマット
         var prompt = $"""
-        {system}
+<|plamo:op|>dataset
+translation
+<|plamo:op|>input lang={this.sourceLang}
+{inputJson}
+<|plamo:op|>output lang={this.targetLang}
 
-        {userMessage}
-        """;
+""";
 
         using var context = this.weights.CreateContext(this.modelParams);
         var executor = new StatelessExecutor(this.weights, this.modelParams);
         
         var inferenceParams = new InferenceParams
         {
-            MaxTokens = 2048,
-            AntiPrompts = ["}"],
+            MaxTokens = 1024,
+            AntiPrompts = ["<|plamo:op|>"],
+            Temperature = 0,
         };
 
         var responseBuilder = new StringBuilder();
@@ -139,28 +102,15 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         await foreach (var token in executor.InferAsync(prompt, inferenceParams))
         {
             responseBuilder.Append(token);
-            if (token.Contains("}"))
-            {
-                break;
-            }
         }
 
-        var response = responseBuilder.ToString();
+        var response = responseBuilder.ToString().Trim();
         
-        // JSONの補完
-        if (!response.TrimStart().StartsWith('{'))
-        {
-            response = "{\"translated\": [" + response;
-        }
-        if (!response.TrimEnd().EndsWith('}'))
-        {
-            response += "]}";
-        }
-
         try
         {
-            var result = JsonSerializer.Deserialize<Response>(response);
-            return result?.Translated ?? [];
+            // レスポンスをJSON配列としてパース
+            var result = JsonSerializer.Deserialize<string[]>(response);
+            return result ?? [];
         }
         catch (JsonException)
         {
@@ -169,27 +119,14 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         }
     }
 
-    private record Response(string[] Translated);
-
+    // PLaMoモデルは用語集をサポートしないため、何もしない
     public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
-    {
-        this.common = glossary.Where(kv => kv.Key == kv.Value).Select(kv => kv.Key.ReplaceLineEndings(string.Empty)).ToArray();
-        foreach (var (key, value) in glossary.Where(kv => kv.Key != kv.Value))
-        {
-            this.glossary.TryAdd(key.ReplaceLineEndings(string.Empty), value.ReplaceLineEndings(string.Empty));
-        }
+        => default;
 
-        return default;
-    }
-
+    // PLaMoモデルはコンテキストをサポートしないため、何もしない
     public void RegisterContext(string context)
-        => this.contextText = $"""
-        翻訳するテキストは全体を通して、以下の背景や文脈があるものして翻訳してください。
-        <背景>
-        {context}
-        </背景>
-
-        """;
+    {
+    }
 
     public void Dispose()
     {

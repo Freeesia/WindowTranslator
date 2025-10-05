@@ -76,10 +76,4 @@
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>컨텍스트 크기입니다. 기본값은 2048입니다.</value>
   </data>
-  <data name="TranslateContext_Desc" xml:space="preserve">
-    <value>번역을 위한 추가 컨텍스트 정보를 지정할 수 있습니다.</value>
-  </data>
-  <data name="GlossaryPath_Desc" xml:space="preserve">
-    <value>용어집 CSV 파일 경로입니다. 번역 중에 참조됩니다.</value>
-  </data>
 </root>

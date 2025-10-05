@@ -113,23 +113,5 @@ namespace WindowTranslator.Plugin.PLaMoPlugin.Properties {
                 return ResourceManager.GetString("ContextSize_Desc", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   翻訳時の追加コンテキスト情報を指定できます。 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string TranslateContext_Desc {
-            get {
-                return ResourceManager.GetString("TranslateContext_Desc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   用語集のCSVファイルパス。翻訳時に参照されます。 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string GlossaryPath_Desc {
-            get {
-                return ResourceManager.GetString("GlossaryPath_Desc", resourceCulture);
-            }
-        }
     }
 }
