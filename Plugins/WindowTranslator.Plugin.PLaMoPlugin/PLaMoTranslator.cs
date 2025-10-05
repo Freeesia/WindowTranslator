@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -36,11 +36,7 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             throw new AppUserException(Resources.ModelFileNotFound);
         }
 
-        this.modelParams = new ModelParams(options.ModelPath)
-        {
-            ContextSize = (uint)options.ContextSize,
-            GpuLayerCount = options.GpuLayerCount,
-        };
+        this.modelParams = new ModelParams(options.ModelPath);
 
         this.weights = LLamaWeights.LoadFromFile(this.modelParams);
     }
@@ -79,13 +75,13 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
 
         // PLaMo専用のプロンプトフォーマット
         var prompt = $"""
-<|plamo:op|>dataset
-translation
-<|plamo:op|>input lang={this.sourceLang}
-{inputJson}
-<|plamo:op|>output lang={this.targetLang}
+            <|plamo:op|>dataset
+            translation
+            <|plamo:op|>input lang={this.sourceLang}
+            {inputJson}
+            <|plamo:op|>output lang={this.targetLang}
 
-""";
+            """;
 
         using var context = this.weights.CreateContext(this.modelParams);
         var executor = new StatelessExecutor(this.weights, this.modelParams);
@@ -94,7 +90,6 @@ translation
         {
             MaxTokens = 1024,
             AntiPrompts = ["<|plamo:op|>"],
-            Temperature = 0,
         };
 
         var responseBuilder = new StringBuilder();

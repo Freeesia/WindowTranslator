@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.Col
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.ColorThiefPlugin.Tests", "Plugins\WindowTranslator.Plugin.ColorThiefPlugin.Tests\WindowTranslator.Plugin.ColorThiefPlugin.Tests.csproj", "{04FE6097-262E-4B93-91A5-7F202EB7E0BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowTranslator.Plugin.PLaMoPlugin", "Plugins\WindowTranslator.Plugin.PLaMoPlugin\WindowTranslator.Plugin.PLaMoPlugin.csproj", "{78228A45-3706-C4E0-6538-EE62A8D9F743}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -328,6 +330,18 @@ Global
 		{04FE6097-262E-4B93-91A5-7F202EB7E0BE}.Release|x64.Build.0 = Release|Any CPU
 		{04FE6097-262E-4B93-91A5-7F202EB7E0BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{04FE6097-262E-4B93-91A5-7F202EB7E0BE}.Release|x86.Build.0 = Release|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Debug|x64.Build.0 = Debug|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Debug|x86.Build.0 = Debug|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Release|x64.ActiveCfg = Release|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Release|x64.Build.0 = Release|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Release|x86.ActiveCfg = Release|Any CPU
+		{78228A45-3706-C4E0-6538-EE62A8D9F743}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -349,11 +363,11 @@ Global
 		{F07F7533-4447-4A74-BB99-4FB1FA108C3A} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{49F44365-A6F5-4378-B8A5-79B9A05872B9} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 		{04FE6097-262E-4B93-91A5-7F202EB7E0BE} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
+		{78228A45-3706-C4E0-6538-EE62A8D9F743} = {2123A8A4-05BB-4D10-AA07-E02207E55B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8ED22421-F4EA-4FE3-BBF6-62DFCDD195CB}
 		RESX_AutoCreateNewLanguageFiles = True
 		RESX_ConfirmAddLanguageFile = True
-		RESX_NeutralResourcesLanguage = ja-JP
 	EndGlobalSection
 EndGlobal
