@@ -414,4 +414,7 @@ Monitors are not supported.
   <data name="SameSourceTargetLanguage" xml:space="preserve">
     <value>Source and target languages are the same. Please specify different languages.</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>OCR functionality for {0} is not available. Please install the target language feature</value>
+  </data>
 </root>
