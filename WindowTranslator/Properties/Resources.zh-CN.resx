@@ -414,4 +414,7 @@
   <data name="SameSourceTargetLanguage" xml:space="preserve">
     <value>源语言和目标语言相同。请指定不同的语言。</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>无法使用{0}的OCR功能。请安装目标语言功能</value>
+  </data>
 </root>
