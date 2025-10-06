@@ -169,15 +169,6 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   {0}のOCR機能が使えません。対象の言語機能をインストールしてください に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string OcrLanguageNotAvailable {
-            get {
-                return ResourceManager.GetString("OcrLanguageNotAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   オーバレイ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Overlay {
