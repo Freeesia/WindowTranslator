@@ -1,110 +1,52 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -118,205 +60,205 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Source" xml:space="preserve">
-    <value>Source (recognized) language</value>
+    <value>स्रोत (पहचानी गई) भाषा</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>Target (display) language</value>
+    <value>लक्ष्य (प्रदर्शन) भाषा</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>Translation Module Selection</value>
+    <value>अनुवाद मॉड्यूल चयन</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>Cache Module Selection</value>
+    <value>कैश मॉड्यूल चयन</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
-    <value>Translation result display mode</value>
+    <value>अनुवाद परिणाम प्रदर्शन मोड</value>
   </data>
   <data name="AutoTargets" xml:space="preserve">
-    <value>Automatic translation target</value>
+    <value>स्वचालित अनुवाद लक्ष्य</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Translate automatically when a process is launched once selected for translation</value>
+    <value>अनुवाद के लिए चुने जाने पर एक बार प्रक्रिया लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
-    <value>Overall setting</value>
+    <value>समग्र सेटिंग</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>Other</value>
+    <value>अन्य</value>
   </data>
   <data name="Plugin" xml:space="preserve">
-    <value>Plug-in Settings</value>
+    <value>प्लग-इन सेटिंग्स</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Language Settings</value>
+    <value>भाषा सेटिंग्स</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>overlay</value>
+    <value>ओवरले</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>capture window</value>
+    <value>विंडो कैप्चर करें</value>
   </data>
   <data name="InMemoryCache" xml:space="preserve">
-    <value>In-memory cache</value>
+    <value>इन-मेमोरी कैश</value>
   </data>
   <data name="LocalCache" xml:space="preserve">
-    <value>Local file cache</value>
+    <value>स्थानीय फ़ाइल कैश</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Setting</value>
+    <value>सेटिंग</value>
   </data>
   <data name="Attach" xml:space="preserve">
-    <value>Attach</value>
+    <value>अटैच करें</value>
   </data>
   <data name="Detach" xml:space="preserve">
-    <value>detach</value>
+    <value>डिटैच करें</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>End</value>
+    <value>समाप्त</value>
   </data>
   <data name="MutexError" xml:space="preserve">
-    <value>WindowTranslator is already running.</value>
+    <value>WindowTranslator पहले से ही चल रहा है।</value>
   </data>
   <data name="About" xml:space="preserve">
-    <value>About</value>
+    <value>के बारे में</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>Check third party licenses</value>
+    <value>तृतीय-पक्ष लाइसेंस जांचें</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>Updates available: {0}</value>
+    <value>अपडेट उपलब्ध: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
-    <value>You are using the latest version.</value>
+    <value>आप नवीनतम संस्करण का उपयोग कर रहे हैं।</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>Update Information</value>
+    <value>जानकारी अपडेट करें</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
-    <value>Update to latest version</value>
+    <value>नवीनतम संस्करण में अपडेट करें</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Check details</value>
+    <value>विवरण जांचें</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>Only while you're pressing</value>
+    <value>केवल दबाते समय</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Press to turn ON/OFF</value>
+    <value>ON/OFF टॉगल करने के लिए दबाएं</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Toggle overlay display</value>
+    <value>ओवरले प्रदर्शन टॉगल करें</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>Make overlay displays captureable</value>
+    <value>ओवरले प्रदर्शन को कैप्चर करने योग्य बनाएं</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>Translated Process</value>
+    <value>अनुवादित प्रक्रिया</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>Recognition module</value>
+    <value>पहचान मॉड्यूल</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>Shortcuts</value>
+    <value>शॉर्टकट</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>Overlay switch</value>
+    <value>ओवरले स्विच</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>A new version, {0}, has been released</value>
+    <value>एक नया संस्करण, {0}, जारी किया गया है</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>New version {0} installation</value>
+    <value>नया संस्करण {0} इंस्टॉलेशन</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>Check for updates</value>
+    <value>अपडेट जांचें</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>New version check</value>
+    <value>नया संस्करण जांचें</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>रद्द करें</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>ठीक है</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>Automatically start at system boot</value>
+    <value>सिस्टम बूट पर स्वचालित रूप से प्रारंभ करें</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>General settings</value>
+    <value>सामान्य सेटिंग्स</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Display method</value>
+    <value>प्रदर्शन विधि</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>Per-item settings</value>
+    <value>प्रति-आइटम सेटिंग्स</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>संस्करण</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Build date</value>
+    <value>बिल्ड तारीख</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>developer</value>
+    <value>डेवलपर</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>Public page</value>
+    <value>सार्वजनिक पृष्ठ</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>license</value>
+    <value>लाइसेंस</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Do not translate</value>
+    <value>अनुवाद न करें</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>Cache setting</value>
+    <value>कैश सेटिंग</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>Threshold for close text</value>
+    <value>निकट टेक्स्ट के लिए थ्रेशोल्ड</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>Do not cache</value>
+    <value>कैश न करें</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Windows Standard Character Recognition</value>
+    <value>Windows मानक वर्ण पहचान</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Application Name</value>
+    <value>एप्लिकेशन नाम</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Gift games on Steam</value>
+    <value>Steam पर गेम गिफ्ट करें</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>Application Information</value>
+    <value>एप्लिकेशन जानकारी</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value>Contact Address</value>
+    <value>संपर्क पता</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value>Technical Information</value>
+    <value>तकनीकी जानकारी</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Close</value>
+    <value>बंद करें</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Apply</value>
+    <value>लागू करें</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Show busy icon</value>
+    <value>व्यस्त आइकन दिखाएं</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Translate only when overlay is enabled</value>
+    <value>केवल तब अनुवाद करें जब ओवरले सक्षम हो</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Display overlay translation only for text at mouse pointer position</value>
+    <value>केवल माउस पॉइंटर स्थिति पर टेक्स्ट के लिए ओवरले अनुवाद प्रदर्शित करें</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Overlay background opacity</value>
+    <value>ओवरले पृष्ठभूमि अस्पष्टता</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Send error information to the report system. The following information will be sent:
+    <value>रिपोर्ट सिस्टम को त्रुटि जानकारी भेजें। निम्नलिखित जानकारी भेजी जाएगी:
 * Application information
 * PC specifications and environment information
 * Translation target application name
@@ -326,92 +268,91 @@
 &gt; %{color:red}**Personal information will not be sent, but please ensure that personal information is not included in the translation target screen.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Send Information</value>
+    <value>जानकारी भेजें</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Sent</value>
+    <value>भेजा गया</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Copy Information</value>
+    <value>जानकारी कॉपी करें</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>Copied</value>
+    <value>कॉपी किया गया</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>पुष्टि करें</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>Submit</value>
+    <value>सबमिट करें</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>Log</value>
+    <value>लॉग</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>Attaching</value>
+    <value>अटैच हो रहा है</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Export</value>
+    <value>निर्यात</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>साफ़ करें</value>
   </data>
   <data name="AutoScroll" xml:space="preserve">
-    <value>Auto Scroll</value>
+    <value>स्वतः स्क्रॉल</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>Export Logs</value>
+    <value>लॉग निर्यात करें</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>Export Failed</value>
+    <value>निर्यात विफल</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>Export Completed</value>
+    <value>निर्यात पूर्ण</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>Logs exported to `{0}`.</value>
+    <value>लॉग `{0}` में निर्यात किए गए।</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
-    <value>Text Files</value>
+    <value>टेक्स्ट फ़ाइलें</value>
   </data>
   <data name="FaildOcr" xml:space="preserve">
-    <value>OCR failed</value>
+    <value>OCR विफल</value>
   </data>
   <data name="FaildTranslate" xml:space="preserve">
-    <value>Translation failed</value>
+    <value>अनुवाद विफल</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>Failed to embed into window.</value>
+    <value>विंडो में एम्बेड करने में विफल।</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
-    <value>Please select a window other than WindowTranslator</value>
+    <value>कृपया WindowTranslator के अलावा कोई अन्य विंडो चुनें</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>The selected window "{0}" cannot determine the process and cannot be captured.
-Monitors are not supported.
-</value>
+    <value>चयनित विंडो "{0}" प्रक्रिया निर्धारित नहीं कर सकती और कैप्चर नहीं की जा सकती।
+मॉनिटर समर्थित नहीं हैं।</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
-    <value>Settings Validation Error</value>
+    <value>सेटिंग्स सत्यापन त्रुटि</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>Save and Close</value>
+    <value>सहेजें और बंद करें</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
-    <value>Default Settings</value>
+    <value>डिफ़ॉल्ट सेटिंग्स</value>
   </data>
   <data name="AutoStart" xml:space="preserve">
-    <value>Auto Start</value>
+    <value>स्वतः प्रारंभ</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0} has been registered for auto-start.</value>
+    <value>{0} स्वतः-प्रारंभ के लिए पंजीकृत किया गया है।</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
-    <value>Auto-start for {0} has been disabled.</value>
+    <value>{0} के लिए स्वतः-प्रारंभ अक्षम कर दिया गया है।</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>Language Settings</value>
+    <value>भाषा सेटिंग्स</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>Source and target languages are the same. Please specify different languages.</value>
+    <value>स्रोत और लक्ष्य भाषाएँ समान हैं। कृपया विभिन्न भाषाएँ निर्दिष्ट करें।</value>
   </data>
 </root>
