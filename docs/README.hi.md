@@ -7,69 +7,69 @@
 [![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
 [![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
 
-WindowTranslator is a tool for translating windows of applications on Windows.
+WindowTranslator Windows पर एप्लिकेशन की विंडो का अनुवाद करने के लिए एक उपकरण है।
 
 [JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md)
 
-## Table of Contents
+## विषय सूची
 - [ WindowTranslator](#-windowtranslator)
-  - [Table of Contents](#table-of-contents)
-  - [Download](#download)
-    - [Installer Version ](#installer-version-)
-    - [Portable Version](#portable-version)
-  - [How to Use](#how-to-use)
+  - [विषय सूची](#विषय-सूची)
+  - [डाउनलोड](#डाउनलोड)
+    - [इंस्टॉलर संस्करण ](#इंस्टॉलर-संस्करण-)
+    - [पोर्टेबल संस्करण](#पोर्टेबल-संस्करण)
+  - [उपयोग कैसे करें](#उपयोग-कैसे-करें)
     - [Bergamot ](#bergamot-)
-  - [Other Features](#other-features)
+  - [अन्य सुविधाएँ](#अन्य-सुविधाएँ)
 
-## Download
-### Installer Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
+## डाउनलोड
+### इंस्टॉलर संस्करण ![अनुशंसित](https://img.shields.io/badge/अनुशंसित-brightgreen)
 
-Download `WindowTranslator-(version).msi` from the [GitHub release page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
-Installation guide video⬇️  
-[![Installation Guide Video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+[GitHub रिलीज़ पेज](https://github.com/Freeesia/WindowTranslator/releases/latest) से `WindowTranslator-(version).msi` डाउनलोड करें और इंस्टॉल करने के लिए इसे चलाएं।  
+इंस्टॉलेशन गाइड वीडियो⬇️  
+[![इंस्टॉलेशन गाइड वीडियो](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
-### Portable Version
+### पोर्टेबल संस्करण
 
-Download the zip file from the [GitHub release page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
-- `WindowTranslator-(version).zip` : Requires .NET environment  
-- `WindowTranslator-full-(version).zip` : .NET independent
+[GitHub रिलीज़ पेज](https://github.com/Freeesia/WindowTranslator/releases/latest) से zip फ़ाइल डाउनलोड करें और इसे किसी भी फ़ोल्डर में एक्सट्रैक्ट करें।  
+- `WindowTranslator-(version).zip` : .NET वातावरण की आवश्यकता है  
+- `WindowTranslator-full-(version).zip` : .NET स्वतंत्र
 
-## How to Use
+## उपयोग कैसे करें
 
-### Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
+### Bergamot ![डिफ़ॉल्ट](https://img.shields.io/badge/डिफ़ॉल्ट-brightgreen)
 
-1. Launch `WindowTranslator.exe` and click the translate button.  
-   ![Translate Button](images/translate.png)
-2. Select the window of the application you want to translate and click the "OK" button.  
-   ![Window Selection](images/select.png)
-3. From the "General Settings" tab, select the source and target languages in "Language Settings".  
-   ![Language Settings](images/language.png)
-4. After completing the settings, click the "OK" button to close the settings screen.  
-   > OCR function installation may be required.
-   > Please follow the instructions to install.
-5. After a while, the translation results will be displayed as an overlay.  
-   ![Translation Result](images/result.png)
+1. `WindowTranslator.exe` लॉन्च करें और अनुवाद बटन पर क्लिक करें।  
+   ![अनुवाद बटन](images/translate.png)
+2. जिस एप्लिकेशन का आप अनुवाद करना चाहते हैं उसकी विंडो चुनें और "OK" बटन पर क्लिक करें।  
+   ![विंडो चयन](images/select.png)
+3. "सामान्य सेटिंग्स" टैब से, "भाषा सेटिंग्स" में स्रोत और लक्ष्य भाषाएँ चुनें।  
+   ![भाषा सेटिंग्स](images/language.png)
+4. सेटिंग्स पूर्ण करने के बाद, सेटिंग्स स्क्रीन बंद करने के लिए "OK" बटन पर क्लिक करें।  
+   > OCR फ़ंक्शन इंस्टॉलेशन की आवश्यकता हो सकती है।
+   > कृपया इंस्टॉल करने के लिए निर्देशों का पालन करें।
+5. थोड़ी देर बाद, अनुवाद परिणाम ओवरले के रूप में प्रदर्शित होंगे।  
+   ![अनुवाद परिणाम](images/result.png)
 
 > [!NOTE]
-> Various translation modules are available in WindowTranslator.  
-> Google Translate has a low limit on the amount of text that can be translated. If you use it frequently, consider using other modules.  
-> You can check the list of available translation modules in the videos below or on the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳).
+> WindowTranslator में विभिन्न अनुवाद मॉड्यूल उपलब्ध हैं।  
+> Google अनुवाद में अनुवाद किए जा सकने वाले टेक्स्ट की मात्रा की सीमा कम है। यदि आप इसे बार-बार उपयोग करते हैं, तो अन्य मॉड्यूल का उपयोग करने पर विचार करें।  
+> आप नीचे दिए गए वीडियो में या [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳) पर उपलब्ध अनुवाद मॉड्यूल की सूची देख सकते हैं।
 > 
-> |                |                                                           How to Use Video                                                            | Advantages                    | Disadvantages                        |
+> |                |                                                           उपयोग वीडियो                                                            | लाभ                    | नुकसान                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
-> |   Bergamot     | | Completely free<br/>No translation limit<br/>Fast translation | Lower translation accuracy<br/>Requires more than 1GB of free memory |
-> |   Google Translate   | [![Google Translate Setup Video](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Completely free | Low translation limit<br/>Lower translation accuracy |
-> |     DeepL      |   [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Large free tier<br/>Fast translation | |
-> |     Gemini     | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High translation accuracy | Small fee required |
-> |    ChatGPT     | TBD | High translation accuracy | Small fee required |
-> | Local LLM | TBD | Service itself is free | High-spec PC required |
+> |   Bergamot     | | पूरी तरह से मुफ्त<br/>कोई अनुवाद सीमा नहीं<br/>तेज अनुवाद | कम अनुवाद सटीकता<br/>1GB से अधिक मुक्त मेमोरी की आवश्यकता |
+> |   Google अनुवाद   | [![Google अनुवाद सेटअप वीडियो](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | पूरी तरह से मुफ्त | कम अनुवाद सीमा<br/>कम अनुवाद सटीकता |
+> |     DeepL      |   [![DeepL सेटअप वीडियो](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | बड़ा मुफ्त टियर<br/>तेज अनुवाद | |
+> |     Gemini     | [![Google AI सेटअप वीडियो](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | उच्च अनुवाद सटीकता | छोटा शुल्क आवश्यक |
+> |    ChatGPT     | TBD | उच्च अनुवाद सटीकता | छोटा शुल्क आवश्यक |
+> | स्थानीय LLM | TBD | सेवा स्वयं मुफ्त है | उच्च-विशिष्टता PC आवश्यक |
 
-## Other Features
+## अन्य सुविधाएँ
 
-In addition to translation modules, WindowTranslator has various features.  
-If you want to learn more, please check the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
+अनुवाद मॉड्यूल के अलावा, WindowTranslator में विभिन्न सुविधाएँ हैं।  
+यदि आप और अधिक जानना चाहते हैं, तो कृपया [Wiki](https://github.com/Freeesia/WindowTranslator/wiki) देखें।
 
 ---
-[Privacy Policy](PrivacyPolicy.md)
+[गोपनीयता नीति](PrivacyPolicy.md)
 
-This document was translated from Japanese using machine translation.
+यह दस्तावेज़ मशीन अनुवाद का उपयोग करके जापानी से अनुवादित किया गया था।

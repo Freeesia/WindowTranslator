@@ -1,63 +1,63 @@
 ---
-title: Privacy Policy
-description: WindowTranslator Privacy Policy
+title: गोपनीयता नीति
+description: WindowTranslator गोपनीयता नीति
 ---
 
-This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+यह गोपनीयता नीति "WindowTranslator" (इसके बाद "एप्लिकेशन" के रूप में संदर्भित) के उपयोग को नियंत्रित करती है।
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## परिचय
+एप्लिकेशन ओपन सोर्स है और GitHub ( https://github.com/Freeesia/WindowTranslator ) पर उपलब्ध है।  
+एप्लिकेशन आमतौर पर अपने उपयोगकर्ताओं से व्यक्तिगत जानकारी या उपयोग डेटा एकत्र नहीं करता है। हालांकि, जब उपयोगकर्ता स्पष्ट रूप से त्रुटि रिपोर्ट भेजने का विकल्प चुनते हैं, तो तकनीकी समस्या समाधान के लिए आवश्यक न्यूनतम जानकारी एकत्र की जाती है।
 
-## Collection of Personal Information
+## व्यक्तिगत जानकारी का संग्रह
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### एप्लिकेशन द्वारा एकत्र की गई जानकारी  
+एप्लिकेशन सामान्य उपयोग के दौरान उपयोगकर्ता इनपुट, इंटरैक्शन इतिहास, या डिवाइस जानकारी जैसे व्यक्तिगत डेटा सीधे एकत्र नहीं करता है।
+हालांकि, जब उपयोगकर्ता स्पष्ट रूप से त्रुटि रिपोर्ट भेजने का विकल्प चुनते हैं, तो तकनीकी समस्या समाधान के लिए आवश्यक जानकारी एकत्र की जाती है।
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+### त्रुटि लॉग और क्रैश रिपोर्ट  
+एप्लिकेशन निम्नलिखित जानकारी केवल तब एकत्र करता है जब उपयोगकर्ता स्पष्ट रूप से त्रुटि रिपोर्ट सबमिशन करते हैं:
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+- एप्लिकेशन संचालन जानकारी
+- PC हार्डवेयर विनिर्देश जानकारी
+- OS वातावरण जानकारी
+- त्रुटि घटना परिस्थितियां
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+यह जानकारी केवल तकनीकी समस्या समाधान और एप्लिकेशन गुणवत्ता सुधार के लिए उपयोग की जाती है, और इसमें व्यक्तिगत रूप से पहचान योग्य जानकारी शामिल नहीं है।
+त्रुटि रिपोर्ट सबमिशन पूरी तरह से स्वैच्छिक है और उपयोगकर्ता की सहमति के बिना कभी भी स्वचालित रूप से नहीं भेजी जाएगी।
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+## Google उपयोगकर्ता डेटा का प्रबंधन  
+Google Apps Script सेवाओं तक पहुंचते समय, एप्लिकेशन केवल न्यूनतम आवश्यक प्रमाणीकरण टोकन प्राप्त करता है।  
+इस प्रमाणीकरण से परे उपयोगकर्ता की कोई व्यक्तिगत जानकारी का उपयोग नहीं किया जाता है।
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### एकत्रित डेटा का उपयोग  
+प्राप्त प्रमाणीकरण जानकारी का उपयोग केवल एप्लिकेशन के भीतर Google Apps Script को निष्पादित करने के लिए किया जाता है।  
+यह प्रमाणीकरण सख्ती से Google सेवाओं के उपयोग को सक्षम करने के उद्देश्य तक सीमित है।
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### डेटा साझाकरण या स्थानांतरण  
+एप्लिकेशन प्रदाता किसी भी प्रमाणीकरण जानकारी या अन्य Google उपयोगकर्ता डेटा को एकत्र, संग्रहीत, साझा या स्थानांतरित नहीं करता है।  
+सभी प्रमाणीकरण डेटा उपयोगकर्ता के PC पर संग्रहीत है और केवल Google सेवाओं तक पहुंचने के लिए उपयोग किया जाता है।
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### डेटा सुरक्षा  
+प्रमाणीकरण डेटा उपयोगकर्ता के PC पर सुरक्षित रूप से संग्रहीत है, और एप्लिकेशन प्रदाता के पास इस डेटा तक कोई पहुंच अधिकार नहीं है।  
+अतिरिक्त सुरक्षा उपाय उपयोगकर्ता के अपने PC सुरक्षा प्रबंधन पर निर्भर करते हैं।
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### डेटा प्रतिधारण और विलोपन  
+प्रमाणीकरण टोकन केवल उपयोगकर्ता के PC पर संग्रहीत होते हैं।  
+इन टोकन का विलोपन उपयोगकर्ता द्वारा `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin` पर स्थित फ़ोल्डर को हटाकर पूर्ण किया जाता है।
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## अनुवाद इंजन और तृतीय-पक्ष लाइब्रेरी का उपयोग  
+एप्लिकेशन को Google अनुवाद और DeepL सहित कई अनुवाद इंजन का समर्थन करने के लिए डिज़ाइन किया गया है।  
+ये अनुवाद इंजन और संबंधित लाइब्रेरी अपनी संबंधित गोपनीयता नीतियों के अनुसार उपयोगकर्ता डेटा या उपयोग जानकारी एकत्र कर सकते हैं।  
+उपयोगकर्ताओं को दृढ़ता से सलाह दी जाती है कि वे जिन अनुवाद सेवाओं का उपयोग करते हैं उनकी गोपनीयता नीतियों की समीक्षा करें।
 
-## Contact Information  
-For any questions or feedback regarding this Privacy Policy, please contact:  
-GitHub Account: [Freeesia](https://github.com/Freeesia)
+## संपर्क जानकारी  
+इस गोपनीयता नीति के संबंध में किसी भी प्रश्न या प्रतिक्रिया के लिए, कृपया संपर्क करें:  
+GitHub खाता: [Freeesia](https://github.com/Freeesia)
 
-## Changes to This Privacy Policy  
-This Privacy Policy may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+## इस गोपनीयता नीति में परिवर्तन  
+यह गोपनीयता नीति कानून या एप्लिकेशन कार्यक्षमता में परिवर्तन के कारण बिना पूर्व सूचना के संशोधित की जा सकती है।  
+किसी भी परिवर्तन को एप्लिकेशन या GitHub रिपॉजिटरी के माध्यम से तुरंत संप्रेषित किया जाएगा।
 
 > [!WARNING]
-> Note: This file is machine translated from the original Japanese version, which is the master version.
+> नोट: यह फ़ाइल मूल जापानी संस्करण से मशीन अनुवादित है, जो मास्टर संस्करण है।
