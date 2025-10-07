@@ -76,11 +76,11 @@
   </data>
   <data name="InstallingMessage" xml:space="preserve">
     <value>Visual C++ Redistributable इंस्टॉल हो रहा है...
-This may take a few minutes.
+इसमें कुछ मिनट लग सकते हैं।
 
-&gt; #### If installation does not complete
-&gt; Please try manual installation.
-&gt; [Download and install manually](https://aka.ms/vs/17/release/vc_redist.x64.exe)</value>
+&gt; #### यदि इंस्टॉलेशन पूर्ण नहीं होता है
+&gt; कृपया मैन्युअल इंस्टॉलेशन का प्रयास करें।
+&gt; [मैन्युअल रूप से डाउनलोड और इंस्टॉल करें](https://aka.ms/vs/17/release/vc_redist.x64.exe)</value>
   </data>
   <data name="NotInstalledVcRedist" xml:space="preserve">
     <value>Visual C++ Redistributable इंस्टॉल नहीं है</value>
