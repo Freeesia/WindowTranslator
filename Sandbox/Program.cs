@@ -187,7 +187,6 @@ static async Task PLaMoTest([Argument] string modelPath, [Argument] string sourc
     var modelParams = new ModelParams(modelPath)
     {
         ContextSize = 128,
-        GpuLayerCount = 0,
     };
 
     Console.WriteLine("Loading model...");
