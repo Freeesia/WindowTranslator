@@ -166,51 +166,15 @@ static async Task PLaMoTest([Argument] string modelPath)
         return;
     }
 
-    // テスト用の翻訳テキスト
-    var testTexts = new[]
-    {
-        "Hello, how are you?",
-        "This is a test.",
-        "Good morning!"
-    };
-
-    Console.WriteLine("Input texts:");
-    foreach (var text in testTexts)
-    {
-        Console.WriteLine($"  - {text}");
-    }
-    Console.WriteLine();
-
     // モデルパラメータの設定
     var modelParams = new ModelParams(modelPath)
     {
-        ContextSize = 128,
+        ContextSize = 4120,
     };
 
     Console.WriteLine("Loading model...");
     using var weights = LLamaWeights.LoadFromFile(modelParams);
     Console.WriteLine("Model loaded successfully.");
-    Console.WriteLine();
-
-    // JSON形式で入力テキストをまとめる
-    var inputJson = JsonSerializer.Serialize(testTexts);
-    Console.WriteLine($"Input JSON: {inputJson}");
-    Console.WriteLine();
-
-    // PLaMo専用のプロンプトフォーマット
-    var prompt = $"""
-<|plamo:op|>dataset
-translation
-<|plamo:op|>input lang=Japanese
-{inputJson}
-<|plamo:op|>output lang=English
-
-""";
-
-    Console.WriteLine("Prompt:");
-    Console.WriteLine("---");
-    Console.WriteLine(prompt);
-    Console.WriteLine("---");
     Console.WriteLine();
 
     // 推論の実行
@@ -219,50 +183,102 @@ translation
 
     var inferenceParams = new InferenceParams
     {
-        MaxTokens = 128,
+        MaxTokens = 4120,
         AntiPrompts = ["<|plamo:op|>"],
     };
 
-    Console.WriteLine("Generating translation...");
-    var responseBuilder = new StringBuilder();
-
-    await foreach (var token in executor.InferAsync(prompt, inferenceParams))
+    // 翻訳ループ
+    while (true)
     {
-        responseBuilder.Append(token);
-        Console.Write(token); // リアルタイムで出力
-    }
-    Console.WriteLine();
-    Console.WriteLine();
-
-    var response = responseBuilder.ToString().Trim();
-
-    Console.WriteLine("Raw response:");
-    Console.WriteLine("---");
-    Console.WriteLine(response);
-    Console.WriteLine("---");
-    Console.WriteLine();
-
-    try
-    {
-        // レスポンスをJSON配列としてパース
-        var result = JsonSerializer.Deserialize<string[]>(response);
-        if (result != null)
+        // 標準入力から翻訳テキストを受け付ける
+        Console.WriteLine("Enter texts to translate (one per line, empty line to finish):");
+        var testTexts = new List<string>();
+        while (true)
         {
-            Console.WriteLine("Parsed translations:");
-            for (int i = 0; i < result.Length; i++)
+            var line = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(line))
             {
-                Console.WriteLine($"  [{i}] {testTexts[i]} => {result[i]}");
+                break;
+            }
+            testTexts.Add(line);
+        }
+
+        if (testTexts.Count == 0)
+        {
+            Console.WriteLine("No input texts provided. Exiting...");
+            break;
+        }
+
+        Console.WriteLine();
+
+        // JSON形式で入力テキストをまとめる
+        var inputJson = JsonSerializer.Serialize(testTexts);
+        Console.WriteLine($"Input JSON: {inputJson}");
+        Console.WriteLine();
+
+        // PLaMo専用のプロンプトフォーマット
+        var prompt = $"""
+            <|plamo:op|>dataset
+            translation
+            <|plamo:op|>input lang=Japanese
+            {inputJson}
+            <|plamo:op|>output lang=English
+
+            """;
+
+        Console.WriteLine("Prompt:");
+        Console.WriteLine("---");
+        Console.WriteLine(prompt);
+        Console.WriteLine("---");
+        Console.WriteLine();
+
+        Console.WriteLine("Generating translation...");
+        var responseBuilder = new StringBuilder();
+
+        await foreach (var token in executor.InferAsync(prompt, inferenceParams))
+        {
+            responseBuilder.Append(token);
+            Console.Write(token); // リアルタイムで出力
+        }
+        Console.WriteLine();
+        Console.WriteLine();
+
+        var response = responseBuilder.ToString().Trim();
+
+        Console.WriteLine("Raw response:");
+        Console.WriteLine("---");
+        Console.WriteLine(response);
+        Console.WriteLine("---");
+        Console.WriteLine();
+
+        try
+        {
+            // レスポンスをJSON配列としてパース
+            var result = JsonSerializer.Deserialize<string[]>(response);
+            if (result != null)
+            {
+                Console.WriteLine("Parsed translations:");
+                for (int i = 0; i < result.Length; i++)
+                {
+                    Console.WriteLine($"  [{i}] {testTexts[i]} => {result[i]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Failed to parse response as JSON array.");
             }
         }
-        else
+        catch (JsonException ex)
         {
-            Console.WriteLine("Failed to parse response as JSON array.");
+            Console.WriteLine($"JSON parse error: {ex.Message}");
         }
+
+        Console.WriteLine();
+        Console.WriteLine("---");
+        Console.WriteLine();
     }
-    catch (JsonException ex)
-    {
-        Console.WriteLine($"JSON parse error: {ex.Message}");
-    }
+
+    Console.WriteLine("Translation test completed.");
 }
 
 
