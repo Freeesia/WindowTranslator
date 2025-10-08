@@ -15,6 +15,7 @@
     <PackageVersion Include="Google_GenerativeAI" Version="2.7.0" />
     <PackageVersion Include="Kamishibai.Hosting" Version="3.0.1" />
     <PackageVersion Include="ksemenenko.ColorThief" Version="1.1.1.4" />
+    <PackageVersion Include="LLamaSharp.Backend.Cuda12.Windows" Version="0.25.0" />
     <PackageVersion Include="MdXaml" Version="1.27.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.6" />

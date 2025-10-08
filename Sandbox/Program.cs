@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using ConsoleAppFramework;
 using DeepL;
@@ -212,7 +213,7 @@ static async Task PLaMoTest([Argument] string modelPath)
         Console.WriteLine();
 
         // JSON形式で入力テキストをまとめる
-        var inputJson = JsonSerializer.Serialize(testTexts);
+        var inputJson = JsonSerializer.Serialize(testTexts, new JsonSerializerOptions(JsonSerializerDefaults.Web) { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         Console.WriteLine($"Input JSON: {inputJson}");
         Console.WriteLine();
 
@@ -220,9 +221,9 @@ static async Task PLaMoTest([Argument] string modelPath)
         var prompt = $"""
             <|plamo:op|>dataset
             translation
-            <|plamo:op|>input lang=Japanese
+            <|plamo:op|>input lang=English
             {inputJson}
-            <|plamo:op|>output lang=English
+            <|plamo:op|>output lang=Japanese
 
             """;
 
