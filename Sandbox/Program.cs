@@ -186,8 +186,8 @@ static async Task PLaMoTest([Argument] string modelPath, [Argument] string sourc
     // モデルパラメータの設定
     var modelParams = new ModelParams(modelPath)
     {
-        ContextSize = 2048,
-        GpuLayerCount = 0, // CPU only
+        ContextSize = 128,
+        GpuLayerCount = 0,
     };
 
     Console.WriteLine("Loading model...");
@@ -222,9 +222,8 @@ translation
     
     var inferenceParams = new InferenceParams
     {
-        MaxTokens = 1024,
+        MaxTokens = 128,
         AntiPrompts = ["<|plamo:op|>"],
-        Temperature = 0,
     };
 
     Console.WriteLine("Generating translation...");
