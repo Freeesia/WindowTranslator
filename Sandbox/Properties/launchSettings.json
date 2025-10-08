@@ -7,6 +7,10 @@
     "GoogleAI": {
       "commandName": "Project",
       "commandLineArgs": "GoogleAI"
+    },
+    "PLaMo": {
+      "commandName": "Project",
+      "commandLineArgs": "PLaMo \"J:\\LLM\\Models\\mmnga\\plamo-2-translate-gguf\\plamo-2-translate-Q4_K_S.gguf\""
     }
   }
 }

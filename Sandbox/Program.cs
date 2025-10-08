@@ -154,12 +154,10 @@ static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogg
     Console.WriteLine($"合計 {textRects.Count()} 個のテキスト矩形を切り抜きました。");
 }
 
-static async Task PLaMoTest([Argument] string modelPath, [Argument] string sourceLang = "English", [Argument] string targetLang = "Japanese")
+static async Task PLaMoTest([Argument] string modelPath)
 {
     Console.WriteLine($"PLaMo Translation Test");
     Console.WriteLine($"Model: {modelPath}");
-    Console.WriteLine($"Source Language: {sourceLang}");
-    Console.WriteLine($"Target Language: {targetLang}");
     Console.WriteLine();
 
     if (!File.Exists(modelPath))
@@ -203,9 +201,9 @@ static async Task PLaMoTest([Argument] string modelPath, [Argument] string sourc
     var prompt = $"""
 <|plamo:op|>dataset
 translation
-<|plamo:op|>input lang={sourceLang}
+<|plamo:op|>input lang=Japanese
 {inputJson}
-<|plamo:op|>output lang={targetLang}
+<|plamo:op|>output lang=English
 
 """;
 
@@ -218,7 +216,7 @@ translation
     // 推論の実行
     using var context = weights.CreateContext(modelParams);
     var executor = new StatelessExecutor(weights, modelParams);
-    
+
     var inferenceParams = new InferenceParams
     {
         MaxTokens = 128,
@@ -227,7 +225,7 @@ translation
 
     Console.WriteLine("Generating translation...");
     var responseBuilder = new StringBuilder();
-    
+
     await foreach (var token in executor.InferAsync(prompt, inferenceParams))
     {
         responseBuilder.Append(token);
@@ -237,7 +235,7 @@ translation
     Console.WriteLine();
 
     var response = responseBuilder.ToString().Trim();
-    
+
     Console.WriteLine("Raw response:");
     Console.WriteLine("---");
     Console.WriteLine(response);
