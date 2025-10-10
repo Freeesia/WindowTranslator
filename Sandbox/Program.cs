@@ -188,6 +188,11 @@ static async Task PLaMoTest([Argument] string modelPath)
         AntiPrompts = ["<|plamo:op|>"],
     };
 
+    JsonSerializerOptions UnsafeWebJsonSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
     // 翻訳ループ
     while (true)
     {
@@ -213,7 +218,7 @@ static async Task PLaMoTest([Argument] string modelPath)
         Console.WriteLine();
 
         // JSON形式で入力テキストをまとめる
-        var inputJson = JsonSerializer.Serialize(testTexts, new JsonSerializerOptions(JsonSerializerDefaults.Web) { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+        var inputJson = JsonSerializer.Serialize(testTexts, UnsafeWebJsonSerializerOptions);
         Console.WriteLine($"Input JSON: {inputJson}");
         Console.WriteLine();
 
@@ -281,7 +286,6 @@ static async Task PLaMoTest([Argument] string modelPath)
 
     Console.WriteLine("Translation test completed.");
 }
-
 
 record Secret
 {
