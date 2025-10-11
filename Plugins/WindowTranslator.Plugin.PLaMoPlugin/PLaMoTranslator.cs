@@ -26,17 +26,18 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         this.sourceLang = GetLanguageName(langOptions.Value.Source);
         this.targetLang = GetLanguageName(langOptions.Value.Target);
 
-        if (string.IsNullOrEmpty(options.ModelPath))
-        {
-            throw new AppUserException(Resources.ModelPathNotSet);
-        }
+        // ダウンロードされたモデルのパスを取得
+        var modelPath = PLaMoValidator.GetModelPath();
 
-        if (!File.Exists(options.ModelPath))
+        if (!File.Exists(modelPath))
         {
             throw new AppUserException(Resources.ModelFileNotFound);
         }
 
-        this.modelParams = new ModelParams(options.ModelPath);
+        this.modelParams = new ModelParams(modelPath)
+        {
+            ContextSize = (uint)options.ContextSize,
+        };
 
         this.weights = LLamaWeights.LoadFromFile(this.modelParams);
     }

@@ -117,22 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ModelPathNotSet" xml:space="preserve">
-    <value>PLaMo モデルのパスが設定されていません。</value>
-  </data>
   <data name="ModelFileNotFound" xml:space="preserve">
     <value>PLaMo モデルファイルが見つかりません。</value>
   </data>
   <data name="ModelNotInitialized" xml:space="preserve">
     <value>PLaMo モデルが初期化されていません。</value>
   </data>
-  <data name="ModelPath_Desc" xml:space="preserve">
-    <value>PLaMo モデル（.gguf）のパスを指定してください。mmnga/plamo-2-translate-gguf を推奨します。</value>
-  </data>
-  <data name="GpuLayerCount_Desc" xml:space="preserve">
-    <value>GPUに読み込むレイヤー数。0の場合はCPUのみで実行します。</value>
-  </data>
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>コンテキストサイズ。デフォルトは2048です。</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>PLaMo モデルのダウンロードに失敗しました。
+{0}</value>
   </data>
 </root>

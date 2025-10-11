@@ -58,22 +58,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ModelPathNotSet" xml:space="preserve">
-    <value>PLaMo model path is not set.</value>
-  </data>
   <data name="ModelFileNotFound" xml:space="preserve">
     <value>PLaMo model file not found.</value>
   </data>
   <data name="ModelNotInitialized" xml:space="preserve">
     <value>PLaMo model is not initialized.</value>
   </data>
-  <data name="ModelPath_Desc" xml:space="preserve">
-    <value>Specify the path to the PLaMo model (.gguf). We recommend mmnga/plamo-2-translate-gguf.</value>
-  </data>
-  <data name="GpuLayerCount_Desc" xml:space="preserve">
-    <value>Number of layers to load on GPU. 0 means CPU only execution.</value>
-  </data>
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>Context size. Default is 2048.</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>Failed to download PLaMo model.
+{0}</value>
   </data>
 </root>

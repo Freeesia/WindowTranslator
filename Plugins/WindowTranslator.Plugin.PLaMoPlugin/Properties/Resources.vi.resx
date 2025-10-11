@@ -58,22 +58,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ModelPathNotSet" xml:space="preserve">
-    <value>Đường dẫn mô hình PLaMo chưa được đặt.</value>
-  </data>
   <data name="ModelFileNotFound" xml:space="preserve">
     <value>Không tìm thấy tệp mô hình PLaMo.</value>
   </data>
   <data name="ModelNotInitialized" xml:space="preserve">
     <value>Mô hình PLaMo chưa được khởi tạo.</value>
   </data>
-  <data name="ModelPath_Desc" xml:space="preserve">
-    <value>Vui lòng chỉ định đường dẫn đến mô hình PLaMo (.gguf). Chúng tôi khuyên dùng mmnga/plamo-2-translate-gguf.</value>
-  </data>
-  <data name="GpuLayerCount_Desc" xml:space="preserve">
-    <value>Số lớp sẽ tải lên GPU. 0 có nghĩa là chỉ thực thi trên CPU.</value>
-  </data>
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>Kích thước ngữ cảnh. Mặc định là 2048.</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>Tải xuống mô hình PLaMo thất bại.
+{0}</value>
   </data>
 </root>

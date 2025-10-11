@@ -58,22 +58,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ModelPathNotSet" xml:space="preserve">
-    <value>未設定PLaMo模型路徑。</value>
-  </data>
   <data name="ModelFileNotFound" xml:space="preserve">
     <value>找不到PLaMo模型檔案。</value>
   </data>
   <data name="ModelNotInitialized" xml:space="preserve">
     <value>PLaMo模型未初始化。</value>
   </data>
-  <data name="ModelPath_Desc" xml:space="preserve">
-    <value>請指定PLaMo模型(.gguf)的路徑。建議使用mmnga/plamo-2-translate-gguf。</value>
-  </data>
-  <data name="GpuLayerCount_Desc" xml:space="preserve">
-    <value>要載入到GPU的層數。0表示僅使用CPU執行。</value>
-  </data>
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>上下文大小。預設值為2048。</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>PLaMo模型下載失敗。
+{0}</value>
   </data>
 </root>

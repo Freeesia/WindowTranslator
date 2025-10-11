@@ -61,15 +61,6 @@ namespace WindowTranslator.Plugin.PLaMoPlugin.Properties {
         }
         
         /// <summary>
-        ///   PLaMo モデルのパスが設定されていません。 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string ModelPathNotSet {
-            get {
-                return ResourceManager.GetString("ModelPathNotSet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   PLaMo モデルファイルが見つかりません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ModelFileNotFound {
@@ -88,29 +79,21 @@ namespace WindowTranslator.Plugin.PLaMoPlugin.Properties {
         }
         
         /// <summary>
-        ///   PLaMo モデル（.gguf）のパスを指定してください。mmnga/plamo-2-translate-gguf を推奨します。 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string ModelPath_Desc {
-            get {
-                return ResourceManager.GetString("ModelPath_Desc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   GPUに読み込むレイヤー数。0の場合はCPUのみで実行します。 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string GpuLayerCount_Desc {
-            get {
-                return ResourceManager.GetString("GpuLayerCount_Desc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   コンテキストサイズ。デフォルトは2048です。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ContextSize_Desc {
             get {
                 return ResourceManager.GetString("ContextSize_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   PLaMo モデルのダウンロードに失敗しました。
+        ///{0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DownloadFailed {
+            get {
+                return ResourceManager.GetString("DownloadFailed", resourceCulture);
             }
         }
     }
