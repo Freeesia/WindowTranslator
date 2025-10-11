@@ -83,43 +83,35 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             throw new InvalidOperationException(Resources.ModelNotInitialized);
         }
 
-        // JSON形式で入力テキストをまとめる
-        var inputJson = JsonSerializer.Serialize(srcTexts.Select(s => s.SourceText).ToArray(), jsonOptions);
 
-        // PLaMo専用のプロンプトフォーマット
-        var prompt = $"""
-            <|plamo:op|>dataset
-            translation
-            <|plamo:op|>input lang={this.sourceLang}
-            {inputJson}
-            <|plamo:op|>output lang={this.targetLang}
-
-            """.ReplaceLineEndings("\n");
 
         using var context = this.weights.CreateContext(this.modelParams, this.logger);
         var executor = new StatelessExecutor(this.weights, this.modelParams);
-
         var responseBuilder = new StringBuilder();
+        var responses = new List<string>();
 
-        await foreach (var token in executor.InferAsync(prompt, this.inferenceParams))
+        foreach (var text in srcTexts)
         {
-            responseBuilder.Append(token);
+            // PLaMo専用のプロンプトフォーマット
+            var prompt = $"""
+                <|plamo:op|>dataset
+                translation
+                <|plamo:op|>input lang={this.sourceLang}
+                {text.SourceText}
+                <|plamo:op|>output lang={this.targetLang}
+
+                """.ReplaceLineEndings("\n");
+            responseBuilder.Clear();
+            await foreach (var token in executor.InferAsync(prompt, this.inferenceParams))
+            {
+                responseBuilder.Append(token);
+            }
+            var response = responseBuilder.ToString().Trim();
+            responses.Add(response);
+            this.logger.LogDebug("PLaMo translated: {Original} => {Translated}", text.SourceText, response);
         }
 
-        var response = responseBuilder.ToString().Trim();
-
-        try
-        {
-            // レスポンスをJSON配列としてパース
-            var result = JsonSerializer.Deserialize<string[]>(response);
-            return result ?? [];
-        }
-        catch (JsonException)
-        {
-            this.logger.LogError("Failed to parse PLaMo response: {Response}", response);
-            // JSONパースに失敗した場合は空配列を返す
-            return [];
-        }
+        return [.. responses];
     }
 
     // PLaMoモデルは用語集をサポートしないため、何もしない
