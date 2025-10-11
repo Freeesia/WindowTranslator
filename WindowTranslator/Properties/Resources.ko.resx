@@ -417,4 +417,7 @@
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
     <value>{0}의 OCR 기능을 사용할 수 없습니다. 대상 언어 기능을 설치하십시오</value>
   </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>설정 적용에 실패했습니다.</value>
+  </data>
 </root>

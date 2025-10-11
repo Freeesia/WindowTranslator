@@ -417,4 +417,7 @@
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
     <value>{0}のOCR機能が使えません。対象の言語機能をインストールしてください</value>
   </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>設定の適用に失敗しました。</value>
+  </data>
 </root>

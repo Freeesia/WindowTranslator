@@ -355,4 +355,7 @@
   <data name="SameSourceTargetLanguage" xml:space="preserve">
     <value>स्रोत और लक्ष्य भाषाएँ समान हैं। कृपया विभिन्न भाषाएँ निर्दिष्ट करें।</value>
   </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>सेटिंग्स लागू करने में विफल।</value>
+  </data>
 </root>
