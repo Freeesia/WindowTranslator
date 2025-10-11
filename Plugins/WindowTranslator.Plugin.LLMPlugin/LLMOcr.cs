@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.ClientModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Encodings.Web;
@@ -100,7 +101,7 @@ public sealed class LLMOcr : IOcrModule
         var clientOptions = options.Endpoint is { Length: > 0 } e ? new OpenAI.OpenAIClientOptions() { Endpoint = new(e) } : null;
         this.client = new(
             options.Model,
-            new(options.ApiKey),
+            new ApiKeyCredential(options.ApiKey),
             clientOptions);
     }
 

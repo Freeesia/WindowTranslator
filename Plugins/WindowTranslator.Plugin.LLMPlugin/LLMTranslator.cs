@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.ClientModel;
+using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -85,7 +86,7 @@ public class LLMTranslator : ITranslateModule
         {
             if (llmOptions.Value.Endpoint is { Length: > 0 } e)
             {
-                this.client = new(model, new(apiKey), new OpenAIClientOptions() { Endpoint = new(e) });
+                this.client = new(model, new ApiKeyCredential(apiKey), new OpenAIClientOptions() { Endpoint = new(e) });
             }
             else
             {
