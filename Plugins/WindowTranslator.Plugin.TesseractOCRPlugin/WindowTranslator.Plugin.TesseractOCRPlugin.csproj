@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VCRTForwarders.140" />
     <PackageReference Include="Octokit" ExcludeAssets="runtime" />
     <PackageReference Include="TesseractOCR" />
     <PackageReference Include="WPF-UI" ExcludeAssets="runtime" />

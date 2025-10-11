@@ -5,7 +5,6 @@
     <ImplicitUsings>true</ImplicitUsings>
     <Deterministic>true</Deterministic>
     <NeutralLanguage>ja-JP</NeutralLanguage>
-    <Platform>x64</Platform>
     <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
