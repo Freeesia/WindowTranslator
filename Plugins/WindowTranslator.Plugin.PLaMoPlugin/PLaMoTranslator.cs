@@ -1,33 +1,39 @@
-﻿using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using LLama;
 using LLama.Common;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.PLaMoPlugin.Properties;
 
 namespace WindowTranslator.Plugin.PLaMoPlugin;
 
-[DisplayName("PLaMo")]
 public sealed class PLaMoTranslator : ITranslateModule, IDisposable
 {
+    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
     private readonly string sourceLang;
     private readonly string targetLang;
     private readonly LLamaWeights? weights;
     private readonly ModelParams? modelParams;
+    private readonly ILogger<PLaMoTranslator> logger;
+    private readonly InferenceParams inferenceParams;
 
-    public PLaMoTranslator(IOptionsSnapshot<PLaMoOptions> plamoOptions, IOptionsSnapshot<LanguageOptions> langOptions)
+    public PLaMoTranslator(IOptionsSnapshot<PLaMoOptions> plamoOptions, IOptionsSnapshot<LanguageOptions> langOptions, ILogger<PLaMoTranslator> logger)
     {
         var options = plamoOptions.Value;
-        
+
         // PLaMoモデル用の言語名を取得
         this.sourceLang = GetLanguageName(langOptions.Value.Source);
         this.targetLang = GetLanguageName(langOptions.Value.Target);
 
         // ダウンロードされたモデルのパスを取得
-        var modelPath = PLaMoValidator.GetModelPath();
+        var modelPath = PLaMoOptions.ModelPath;
 
         if (!File.Exists(modelPath))
         {
@@ -38,8 +44,14 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         {
             ContextSize = (uint)options.ContextSize,
         };
+        this.inferenceParams = new InferenceParams
+        {
+            MaxTokens = 1024,
+            AntiPrompts = ["<|plamo:op|>"],
+        };
 
         this.weights = LLamaWeights.LoadFromFile(this.modelParams);
+        this.logger = logger;
     }
 
     private static string GetLanguageName(string cultureCode)
@@ -72,7 +84,7 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         }
 
         // JSON形式で入力テキストをまとめる
-        var inputJson = JsonSerializer.Serialize(srcTexts.Select(s => s.SourceText).ToArray());
+        var inputJson = JsonSerializer.Serialize(srcTexts.Select(s => s.SourceText).ToArray(), jsonOptions);
 
         // PLaMo専用のプロンプトフォーマット
         var prompt = $"""
@@ -82,26 +94,20 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             {inputJson}
             <|plamo:op|>output lang={this.targetLang}
 
-            """;
+            """.ReplaceLineEndings("\n");
 
-        using var context = this.weights.CreateContext(this.modelParams);
+        using var context = this.weights.CreateContext(this.modelParams, this.logger);
         var executor = new StatelessExecutor(this.weights, this.modelParams);
-        
-        var inferenceParams = new InferenceParams
-        {
-            MaxTokens = 1024,
-            AntiPrompts = ["<|plamo:op|>"],
-        };
 
         var responseBuilder = new StringBuilder();
-        
-        await foreach (var token in executor.InferAsync(prompt, inferenceParams))
+
+        await foreach (var token in executor.InferAsync(prompt, this.inferenceParams))
         {
             responseBuilder.Append(token);
         }
 
         var response = responseBuilder.ToString().Trim();
-        
+
         try
         {
             // レスポンスをJSON配列としてパース
@@ -110,6 +116,7 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         }
         catch (JsonException)
         {
+            this.logger.LogError("Failed to parse PLaMo response: {Response}", response);
             // JSONパースに失敗した場合は空配列を返す
             return [];
         }
