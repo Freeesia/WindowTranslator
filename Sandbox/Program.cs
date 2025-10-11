@@ -190,7 +190,7 @@ static async Task PLaMoTest([Argument] string modelPath)
 
     JsonSerializerOptions UnsafeWebJsonSerializerOptions = new(JsonSerializerDefaults.Web)
     {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
     // 翻訳ループ
@@ -230,7 +230,7 @@ static async Task PLaMoTest([Argument] string modelPath)
             {inputJson}
             <|plamo:op|>output lang=Japanese
 
-            """;
+            """.ReplaceLineEndings("\n");
 
         Console.WriteLine("Prompt:");
         Console.WriteLine("---");
