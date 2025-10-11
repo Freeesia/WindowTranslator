@@ -1,4 +1,4 @@
-* ウィンドウの取り込み
+﻿* ウィンドウの取り込み
 * ウィンドウのキャプチャ
 * ライブラリ
   * OCR
@@ -43,4 +43,9 @@ dotnet project-licenses -t -u --packages-filter /Analyzers$/ -m -i . --include-p
 ## GAS
 
 * `clasp push`でpush
-* 
+
+
+## PLaMo
+
+* CPUだけでもまあまあの速度出そう
+
