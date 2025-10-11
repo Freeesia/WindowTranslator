@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.ClientModel;
+using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,7 +42,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
         }
         this.client = new(
             options.Model,
-            new(options.ApiKey),
+            new ApiKeyCredential(options.ApiKey),
             options.Endpoint is { Length: > 0 } e ? new OpenAIClientOptions() { Endpoint = new(e) } : null);
         Task.Run(Correct, this.cts.Token);
     }

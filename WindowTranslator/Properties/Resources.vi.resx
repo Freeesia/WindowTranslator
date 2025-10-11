@@ -414,4 +414,7 @@ Màn hình không được hỗ trợ.
   <data name="SameSourceTargetLanguage" xml:space="preserve">
     <value>Ngôn ngữ nguồn và ngôn ngữ đích giống nhau. Vui lòng chỉ định các ngôn ngữ khác nhau.</value>
   </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>Chức năng OCR cho {0} không khả dụng. Vui lòng cài đặt tính năng ngôn ngữ mục tiêu</value>
+  </data>
 </root>

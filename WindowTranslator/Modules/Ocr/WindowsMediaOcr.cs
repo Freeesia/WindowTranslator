@@ -31,7 +31,7 @@ public sealed partial class WindowsMediaOcr(
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
-            ?? throw new InvalidOperationException($"{langOptions.Value.Source}のOCR機能が使えません。対象の言語機能をインストールしてください");
+            ?? throw new AppUserException(string.Format(Properties.Resources.OcrLanguageNotAvailable, langOptions.Value.Source));
     private readonly ILogger<WindowsMediaOcr> logger = logger;
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
