@@ -17,7 +17,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="runtimes\win-x64\native\cuda12\*.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(CUDA_PATH)\bin\cublas64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(CUDA_PATH)\bin\cublasLt64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(CUDA_PATH)\bin\cudart64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
