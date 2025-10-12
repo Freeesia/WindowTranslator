@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Logging;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.PLaMoPlugin.Properties;
 
@@ -23,8 +25,9 @@ public class PLaMoOptions : IPluginParam
     public int VRAM { get; set; } = -1;
 }
 
-public class PLaMoValidator : ITargetSettingsValidator
+public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsValidator
 {
+    private readonly ILogger<PLaMoValidator> logger = logger;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -45,7 +48,7 @@ public class PLaMoValidator : ITargetSettingsValidator
         }
     }
 
-    private static async ValueTask DownloadModelIfNotExists()
+    private async ValueTask DownloadModelIfNotExists()
     {
         var modelPath = PLaMoOptions.ModelPath;
         // すでにモデルファイルが存在する場合は処理をスキップ
@@ -57,11 +60,7 @@ public class PLaMoValidator : ITargetSettingsValidator
 
         // モデルファイルをダウンロード
         using var httpClient = new HttpClient();
-        using var response = await httpClient.GetAsync(PLaMoOptions.ModelUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-
-        await using var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-        await using var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 8192, useAsync: true);
-        await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
+        this.logger.LogInformation("Downloading PLaMo model...");
+        await httpClient.DownloadFile(PLaMoOptions.ModelUrl, modelPath, p => this.logger.LogInformation($"Downloading PLaMo model: {p:P2}")).ConfigureAwait(false);
     }
 }
