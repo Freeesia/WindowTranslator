@@ -311,10 +311,24 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
-            foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
+            try
             {
-                await w.CloseAsync();
-                await this.mainWindowModule.OpenTargetAsync(handle, target);
+                foreach (var (_, handle, w) in this.mainWindowModule.OpenedWindows.Where(w => w.Name == target).ToArray())
+                {
+                    await w.CloseAsync();
+                    await this.mainWindowModule.OpenTargetAsync(handle, target);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
+                {
+                    this.presentationService.ShowMessage(ex.Message, icon: Kamishibai.MessageBoxImage.Exclamation, owner: window);
+                }
+                else
+                {
+                    await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildApplySettings, ex, this.target, string.Empty, owner: window);
+                }
             }
         }
         else
