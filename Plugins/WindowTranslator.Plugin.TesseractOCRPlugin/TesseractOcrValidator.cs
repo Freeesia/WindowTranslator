@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Octokit;
 using TesseractOCR.Enums;
@@ -10,11 +11,12 @@ using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Plugin.TesseractOCRPlugin;
 
-public class TesseractOcrValidator(IGitHubClient client, IContentDialogService dialogService) : ITargetSettingsValidator
+public class TesseractOcrValidator(IGitHubClient client, IContentDialogService dialogService, ILogger<TesseractOcrValidator> logger) : ITargetSettingsValidator
 {
     private static readonly ValidateResult Invalid = ValidateResult.Invalid("TesseractOcr", Resources.NotInstalledVcRedist);
     private readonly IGitHubClient client = client;
     private readonly IContentDialogService dialogService = dialogService;
+    private readonly ILogger<TesseractOcrValidator> logger = logger;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -92,9 +94,11 @@ public class TesseractOcrValidator(IGitHubClient client, IContentDialogService d
         }
 
         // IGitHubClient を利用して `tesseract-ocr/tessdata_best` リポジトリからeng.traineddataをダウンロードする
+        this.logger.LogInformation("Downloading {LangData} from tessdata_best repository", langData);
         var contents = await client.Repository.Content.GetRawContent("tesseract-ocr", "tessdata_best", langData);
         await using var fs = File.Create(langDataPath);
         await fs.WriteAsync(contents).ConfigureAwait(false);
+        this.logger.LogInformation("Downloaded {LangData} to {Path}", langData, langDataPath);
         return ValidateResult.Valid;
     }
 

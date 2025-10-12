@@ -1,9 +1,14 @@
 ﻿using System.Reflection;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using ConsoleAppFramework;
 using DeepL;
 using GenerativeAI;
 using GenerativeAI.Types;
+using LLama;
+using LLama.Common;
+using LLama.Native;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,6 +18,7 @@ using WindowTranslator;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.OneOcrPlugin;
+using WindowTranslator.Plugin.PLaMoPlugin;
 
 var configuration = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
@@ -30,6 +36,7 @@ var app = ConsoleApp.Create();
 app.Add("DeepL", DeepLTest);
 app.Add("GoogleAI", GoogleAITranslateTest);
 app.Add("ClipTextRect", ClipTextRect);
+app.Add("PLaMo", PLaMoTest);
 app.Run(args);
 
 static async Task DeepLTest([FromServices] IOptions<Secret> secret)
@@ -150,6 +157,143 @@ static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogg
     Console.WriteLine($"合計 {textRects.Count()} 個のテキスト矩形を切り抜きました。");
 }
 
+static async Task PLaMoTest([Argument] string modelPath, [FromServices] ILogger logger)
+{
+    Console.WriteLine($"PLaMo Translation Test");
+    Console.WriteLine($"Model: {modelPath}");
+    Console.WriteLine();
+
+    if (!File.Exists(modelPath))
+    {
+        Console.WriteLine($"Error: Model file not found: {modelPath}");
+        return;
+    }
+
+    NativeLibraryConfig.All
+        .WithSelectingPolicy(LLamaSharpNativeLibrarySelectingPolicy.Instance)
+        .WithLogCallback((level, mesage) => Console.Write($"{level}:{mesage}"));
+
+    NativeLibraryConfig.LLama.DryRun(out var llama);
+    // モデルパラメータの設定
+    var modelParams = new ModelParams(modelPath)
+    {
+        GpuLayerCount = -1, // すべてのレイヤーをGPUに割り当て
+        ContextSize = 4120,
+    };
+
+    Console.WriteLine("Loading model...");
+    using var weights = LLamaWeights.LoadFromFile(modelParams);
+    Console.WriteLine("Model loaded successfully.");
+    Console.WriteLine();
+
+    // 推論の実行
+    using var context = weights.CreateContext(modelParams);
+    var executor = new StatelessExecutor(weights, modelParams);
+
+    var inferenceParams = new InferenceParams
+    {
+        MaxTokens = 4120,
+        AntiPrompts = ["<|plamo:op|>"],
+    };
+
+    JsonSerializerOptions UnsafeWebJsonSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
+    // 翻訳ループ
+    while (true)
+    {
+        // 標準入力から翻訳テキストを受け付ける
+        Console.WriteLine("Enter texts to translate (one per line, empty line to finish):");
+        var testTexts = new List<string>();
+        while (true)
+        {
+            var line = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                break;
+            }
+            testTexts.Add(line);
+        }
+
+        if (testTexts.Count == 0)
+        {
+            Console.WriteLine("No input texts provided. Exiting...");
+            break;
+        }
+
+        Console.WriteLine();
+
+        // JSON形式で入力テキストをまとめる
+        var inputJson = JsonSerializer.Serialize(testTexts, UnsafeWebJsonSerializerOptions);
+        Console.WriteLine($"Input JSON: {inputJson}");
+        Console.WriteLine();
+
+        // PLaMo専用のプロンプトフォーマット
+        var prompt = $"""
+            <|plamo:op|>dataset
+            translation
+            <|plamo:op|>input lang=English
+            {inputJson}
+            <|plamo:op|>output lang=Japanese
+
+            """.ReplaceLineEndings("\n");
+
+        Console.WriteLine("Prompt:");
+        Console.WriteLine("---");
+        Console.WriteLine(prompt);
+        Console.WriteLine("---");
+        Console.WriteLine();
+
+        Console.WriteLine("Generating translation...");
+        var responseBuilder = new StringBuilder();
+
+        await foreach (var token in executor.InferAsync(prompt, inferenceParams))
+        {
+            responseBuilder.Append(token);
+            Console.Write(token); // リアルタイムで出力
+        }
+        Console.WriteLine();
+        Console.WriteLine();
+
+        var response = responseBuilder.ToString().Trim();
+
+        Console.WriteLine("Raw response:");
+        Console.WriteLine("---");
+        Console.WriteLine(response);
+        Console.WriteLine("---");
+        Console.WriteLine();
+
+        try
+        {
+            // レスポンスをJSON配列としてパース
+            var result = JsonSerializer.Deserialize<string[]>(response);
+            if (result != null)
+            {
+                Console.WriteLine("Parsed translations:");
+                for (int i = 0; i < result.Length; i++)
+                {
+                    Console.WriteLine($"  [{i}] {testTexts[i]} => {result[i]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Failed to parse response as JSON array.");
+            }
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"JSON parse error: {ex.Message}");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("---");
+        Console.WriteLine();
+    }
+
+    Console.WriteLine("Translation test completed.");
+}
 
 record Secret
 {

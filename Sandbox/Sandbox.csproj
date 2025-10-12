@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OneOcrPlugin\WindowTranslator.Plugin.OneOcrPlugin.csproj" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.PLaMoPlugin\WindowTranslator.Plugin.PLaMoPlugin.csproj" />
   </ItemGroup>
 
 </Project>

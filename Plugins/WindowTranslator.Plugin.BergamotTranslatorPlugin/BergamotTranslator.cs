@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
 using BergamotTranslatorSharp;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Octokit;
 using WindowTranslator.ComponentModel;
@@ -58,11 +59,12 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     }
 }
 
-public class BergamotValidator(IGitHubClient client) : ITargetSettingsValidator
+public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> logger) : ITargetSettingsValidator
 {
     private const string RepoOwner = "mozilla";
     private const string RepoName = "firefox-translations-models";
     private readonly IGitHubClient client = client;
+    private readonly ILogger<BergamotValidator> logger = logger;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -162,7 +164,9 @@ public class BergamotValidator(IGitHubClient client) : ITargetSettingsValidator
         foreach (var content in contents)
         {
             var tmpPath = Path.Combine(tmpDir, content.Name);
+            this.logger.LogInformation("Downloading {FileName}...", content.Name);
             await this.client.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
+            this.logger.LogInformation("Downloaded {FileName}", content.Name);
 
             var fileName = await ExtractFileIfNeeded(tmpPath, modelDir);
             files.Add(fileName);
