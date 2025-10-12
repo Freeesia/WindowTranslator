@@ -414,6 +414,7 @@ public partial class TargetSettingsViewModel(
     [ItemsSourceProperty(nameof(OcrModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
+    [HelpUri("https://freeesia.github.io/WindowTranslator/OcrModule.html")]
     public string OcrModule { get; set; }
         = settings.SelectedPlugins.GetValueOrDefault(
             nameof(IOcrModule),
@@ -423,6 +424,7 @@ public partial class TargetSettingsViewModel(
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
+    [HelpUri("https://freeesia.github.io/WindowTranslator/TranslateModule.html")]
     public string TranslateModule { get; set; }
         = settings.SelectedPlugins.GetValueOrDefault(
             nameof(ITranslateModule),

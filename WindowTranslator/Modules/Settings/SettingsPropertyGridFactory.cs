@@ -52,7 +52,41 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             fe.IsEnabled = false;
         }
 
+        // HelpUriAttributeが定義されている場合、ヘルプボタンを追加
+        var helpUriAttr = property.Descriptor.Attributes.OfType<HelpUriAttribute>().FirstOrDefault();
+        if (helpUriAttr != null)
+        {
+            fe = WrapWithHelpButton(fe, helpUriAttr.Uri);
+        }
+
         return fe;
+    }
+
+    private FrameworkElement WrapWithHelpButton(FrameworkElement control, string helpUri)
+    {
+        var grid = new Grid();
+        grid.SetValue(Grid.IsSharedSizeScopeProperty, true);
+        
+        // 2列定義: コントロール列とボタン列
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), SharedSizeGroup = "ControlColumn" });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+        // コントロールを配置
+        control.SetValue(Grid.ColumnProperty, 0);
+        grid.Children.Add(control);
+
+        // ヘルプボタンを配置
+        var helpButton = new HyperlinkButton
+        {
+            Icon = new SymbolIcon(SymbolRegular.QuestionCircle24),
+            Margin = new Thickness(4, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            NavigateUri = new Uri(helpUri, UriKind.RelativeOrAbsolute)
+        };
+        helpButton.SetValue(Grid.ColumnProperty, 1);
+        grid.Children.Add(helpButton);
+
+        return grid;
     }
 
     protected override FrameworkElement CreateBoolControl(PropertyItem property)
