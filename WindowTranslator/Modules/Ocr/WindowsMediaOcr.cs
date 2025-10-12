@@ -30,6 +30,7 @@ public sealed partial class WindowsMediaOcr(
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
+    private readonly List<PriorityRect> priorityRects = ocrParam.Value.PriorityRects ?? [];
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new AppUserException(string.Format(Properties.Resources.OcrLanguageNotAvailable, langOptions.Value.Source));
     private readonly ILogger<WindowsMediaOcr> logger = logger;
@@ -37,6 +38,71 @@ public sealed partial class WindowsMediaOcr(
     private readonly CancellationTokenSource cts = new();
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    {
+        // 優先矩形が指定されている場合は、それらのみを認識
+        if (this.priorityRects.Count > 0)
+        {
+            return await RecognizePriorityRectsAsync(bitmap);
+        }
+
+        // 優先矩形がない場合は通常の全体認識
+        return await RecognizeFullScreenAsync(bitmap);
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
+    {
+        var allResults = new List<TextRect>();
+
+        // 拡大率に基づくリサイズ処理
+        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
+        this.cts.Token.ThrowIfCancellationRequested();
+
+        for (int i = 0; i < this.priorityRects.Count; i++)
+        {
+            var priorityRect = this.priorityRects[i];
+            var absRect = priorityRect.ToAbsoluteRect(workingBitmap.PixelWidth, workingBitmap.PixelHeight);
+
+            // 矩形が画像範囲外の場合はスキップ
+            if (absRect.X < 0 || absRect.Y < 0 ||
+                absRect.X + absRect.Width > workingBitmap.PixelWidth ||
+                absRect.Y + absRect.Height > workingBitmap.PixelHeight)
+            {
+                this.logger.LogWarning($"Priority rect {i} is out of image bounds, skipping");
+                continue;
+            }
+
+            try
+            {
+                // 指定矩形の画像を切り出してOCR
+                var croppedBitmap = await PriorityRectUtility.CropBitmapAsync(workingBitmap, absRect);
+                var rectResults = await RecognizeRegionAsync(croppedBitmap);
+                croppedBitmap.Dispose();
+
+                // 切り出した画像の座標を元の画像の座標に変換
+                foreach (var text in rectResults)
+                {
+                    var adjustedText = PriorityRectUtility.OffsetTextRect(text, absRect.X, absRect.Y, priorityRect.Keyword);
+                    allResults.Add(adjustedText);
+                    this.logger.LogDebug($"Priority rect {i} OCR: {adjustedText.SourceText} at ({adjustedText.X}, {adjustedText.Y})");
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, $"Failed to OCR priority rect {i}");
+            }
+        }
+
+        if (workingBitmap != bitmap)
+        {
+            workingBitmap.Dispose();
+        }
+
+        // スケールを戻す
+        return allResults.Select(r => ToTextRect(r, this.scale));
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
     {
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
@@ -49,6 +115,18 @@ public sealed partial class WindowsMediaOcr(
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
         this.cts.Token.ThrowIfCancellationRequested();
 
+        var results = await RecognizeRegionAsync(workingBitmap);
+
+        if (bitmap != workingBitmap)
+        {
+            workingBitmap.Dispose();
+        }
+
+        return results;
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
         this.cts.Token.ThrowIfCancellationRequested();
@@ -123,11 +201,6 @@ public sealed partial class WindowsMediaOcr(
                 } while (merged);
                 results.Add(temp);
             }
-        }
-
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
         }
 
         return results.Select(r => ToTextRect(r, this.scale, angle))
