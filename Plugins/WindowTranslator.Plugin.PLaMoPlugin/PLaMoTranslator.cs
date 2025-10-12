@@ -1,9 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using LLama;
 using LLama.Common;
+using LLama.Native;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
@@ -13,16 +12,15 @@ namespace WindowTranslator.Plugin.PLaMoPlugin;
 
 public sealed class PLaMoTranslator : ITranslateModule, IDisposable
 {
-    private static readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-    };
     private readonly string sourceLang;
     private readonly string targetLang;
     private readonly LLamaWeights? weights;
     private readonly ModelParams? modelParams;
     private readonly ILogger<PLaMoTranslator> logger;
     private readonly InferenceParams inferenceParams;
+
+    static PLaMoTranslator()
+        => NativeLibraryConfig.LLama.WithSelectingPolicy(LLamaSharpNativeLibrarySelectingPolicy.Instance);
 
     public PLaMoTranslator(IOptionsSnapshot<PLaMoOptions> plamoOptions, IOptionsSnapshot<LanguageOptions> langOptions, ILogger<PLaMoTranslator> logger)
     {
@@ -38,6 +36,11 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         if (!File.Exists(modelPath))
         {
             throw new AppUserException(Resources.ModelFileNotFound);
+        }
+
+        if (!NativeLibraryConfig.LLama.LibraryHasLoaded)
+        {
+            NativeLibraryConfig.LLama.WithLogCallback(logger);
         }
 
         this.modelParams = new ModelParams(modelPath)

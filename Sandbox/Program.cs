@@ -8,6 +8,7 @@ using GenerativeAI;
 using GenerativeAI.Types;
 using LLama;
 using LLama.Common;
+using LLama.Native;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ using WindowTranslator;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.OneOcrPlugin;
+using WindowTranslator.Plugin.PLaMoPlugin;
 
 var configuration = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
@@ -155,7 +157,7 @@ static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogg
     Console.WriteLine($"合計 {textRects.Count()} 個のテキスト矩形を切り抜きました。");
 }
 
-static async Task PLaMoTest([Argument] string modelPath)
+static async Task PLaMoTest([Argument] string modelPath, [FromServices] ILogger logger)
 {
     Console.WriteLine($"PLaMo Translation Test");
     Console.WriteLine($"Model: {modelPath}");
@@ -167,9 +169,15 @@ static async Task PLaMoTest([Argument] string modelPath)
         return;
     }
 
+    NativeLibraryConfig.All
+        .WithSelectingPolicy(LLamaSharpNativeLibrarySelectingPolicy.Instance)
+        .WithLogCallback((level, mesage) => Console.Write($"{level}:{mesage}"));
+
+    NativeLibraryConfig.LLama.DryRun(out var llama);
     // モデルパラメータの設定
     var modelParams = new ModelParams(modelPath)
     {
+        GpuLayerCount = -1, // すべてのレイヤーをGPUに割り当て
         ContextSize = 4120,
     };
 

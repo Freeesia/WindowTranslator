@@ -15,8 +15,6 @@
     </PackageReference>
     <PackageReference Include="DeepL.net" />
     <PackageReference Include="Google_GenerativeAI" />
-    <PackageReference Include="LLamaSharp" />
-    <PackageReference Include="LLamaSharp.Backend.Cpu" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
@@ -24,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OneOcrPlugin\WindowTranslator.Plugin.OneOcrPlugin.csproj" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.PLaMoPlugin\WindowTranslator.Plugin.PLaMoPlugin.csproj" />
   </ItemGroup>
 
 </Project>
