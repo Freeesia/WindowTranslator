@@ -417,4 +417,7 @@
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
     <value>无法使用{0}的OCR功能。请安装目标语言功能</value>
   </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>应用设置失败。</value>
+  </data>
 </root>
