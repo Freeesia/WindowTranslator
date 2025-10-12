@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Graphics.Imaging;
@@ -9,11 +10,11 @@ namespace WindowTranslator.Modules.Ocr;
 /// 優先矩形のOCR処理を行うフィルター
 /// </summary>
 public class PriorityRectFilter(
-    IOcrModule ocr,
+    IServiceProvider serviceProvider,
     IOptionsSnapshot<BasicOcrParam> options,
     ILogger<PriorityRectFilter> logger) : IFilterModule
 {
-    private readonly IOcrModule ocr = ocr;
+    private readonly IServiceProvider serviceProvider = serviceProvider;
     private readonly ILogger<PriorityRectFilter> logger = logger;
     private readonly List<PriorityRect> priorityRects = options.Value.PriorityRects ?? [];
 
@@ -37,6 +38,9 @@ public class PriorityRectFilter(
         // 元のOCR結果をリスト化
         var originalTexts = await texts.ToArrayAsync();
 
+        // IOcrModuleを取得
+        var ocr = this.serviceProvider.GetRequiredService<IOcrModule>();
+
         // 優先矩形ごとにOCRを実行
         var priorityTexts = new List<(TextRect rect, int priority)>();
         
@@ -58,7 +62,7 @@ public class PriorityRectFilter(
             {
                 // 指定矩形の画像を切り出してOCR
                 var croppedBitmap = await CropBitmapAsync(context.SoftwareBitmap, absRect);
-                var rectTexts = await this.ocr.RecognizeAsync(croppedBitmap);
+                var rectTexts = await ocr.RecognizeAsync(croppedBitmap);
                 croppedBitmap.Dispose();
 
                 // 切り出した画像の座標を元の画像の座標に変換

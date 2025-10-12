@@ -168,17 +168,8 @@ public partial class PriorityRectListViewModel : ObservableObject
             return;
         }
 
-        var dialog = new Microsoft.VisualBasic.Interaction();
-        var result = Microsoft.VisualBasic.Interaction.InputBox(
-            "キーワードを入力してください（翻訳のコンテキストとして使用されます）:",
-            "キーワード編集",
-            SelectedRect.Keyword
-        );
-
-        if (!string.IsNullOrEmpty(result) || result == string.Empty)
-        {
-            SelectedRect.Keyword = result;
-        }
+        // TODO: キーワード編集ダイアログを実装
+        // 現時点では、プロパティグリッドで直接編集可能
     }
 
     /// <summary>
