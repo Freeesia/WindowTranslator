@@ -417,4 +417,7 @@ Monitors are not supported.
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
     <value>OCR functionality for {0} is not available. Please install the target language feature</value>
   </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>Failed to apply settings.</value>
+  </data>
 </root>
