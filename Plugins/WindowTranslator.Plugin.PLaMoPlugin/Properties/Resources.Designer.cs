@@ -61,7 +61,16 @@ namespace WindowTranslator.Plugin.PLaMoPlugin.Properties {
         }
         
         /// <summary>
-        ///   コンテキストサイズ。デフォルトは2048です。 に類似しているローカライズされた文字列を検索します。
+        ///   コンテキスト長 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ContextSize {
+            get {
+                return ResourceManager.GetString("ContextSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   大きい値ほど長文を翻訳できます。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ContextSize_Desc {
             get {
@@ -94,6 +103,42 @@ namespace WindowTranslator.Plugin.PLaMoPlugin.Properties {
         internal static string ModelNotInitialized {
             get {
                 return ResourceManager.GetString("ModelNotInitialized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   PLaMo に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string PLaMoOptions {
+            get {
+                return ResourceManager.GetString("PLaMoOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   PLaMo翻訳 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string PLaMoTranslator {
+            get {
+                return ResourceManager.GetString("PLaMoTranslator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VRAM使用量 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string VRAM {
+            get {
+                return ResourceManager.GetString("VRAM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   利用するGPUのメモリ量。-1: GPUのみ利用。0: CPUのみ利用。(単位: GB) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string VRAM_Desc {
+            get {
+                return ResourceManager.GetString("VRAM_Desc", resourceCulture);
             }
         }
     }

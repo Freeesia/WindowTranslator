@@ -46,10 +46,11 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         this.modelParams = new ModelParams(modelPath)
         {
             ContextSize = (uint)options.ContextSize,
+            GpuLayerCount = CalcGpuLayersFromGB(options.VRAM, options.ContextSize),
         };
         this.inferenceParams = new InferenceParams
         {
-            MaxTokens = 1024,
+            MaxTokens = options.ContextSize / 2,
             AntiPrompts = ["<|plamo:op|>"],
         };
 
@@ -77,6 +78,17 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             "vi" => "Vietnamese",
             _ => culture.EnglishName.Split(' ')[0] // フォールバック: 英語名の最初の単語
         };
+    }
+
+    static int CalcGpuLayersFromGB(int vramGB, int ctx, double L = 0.17, double W = 1.30)
+    {
+        if (vramGB < 0) return -1;
+        if (vramGB == 0) return 0;
+        var kvGB = Math.Ceiling(40.0 * ctx / 1024.0) / 1024.0; // 40KB/token, safe
+        var n = (int)Math.Floor((vramGB - W - kvGB) / L);
+        if (n < 0) return 0;
+        if (n > 32) return -1;
+        return n;
     }
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.PLaMoPlugin.Properties;
@@ -15,6 +16,11 @@ public class PLaMoOptions : IPluginParam
     [LocalizedDescription(typeof(Resources), $"{nameof(ContextSize)}_Desc")]
     [Range(512, 32768)]
     public int ContextSize { get; set; } = 2048;
+
+    [Range(-1, 6)]
+    [Spinnable]
+    [LocalizedDescription(typeof(Resources), $"{nameof(VRAM)}_Desc")]
+    public int VRAM { get; set; } = -1;
 }
 
 public class PLaMoValidator : ITargetSettingsValidator
