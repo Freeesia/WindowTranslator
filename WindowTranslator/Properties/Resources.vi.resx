@@ -417,4 +417,7 @@ Màn hình không được hỗ trợ.
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
     <value>Chức năng OCR cho {0} không khả dụng. Vui lòng cài đặt tính năng ngôn ngữ mục tiêu</value>
   </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>Không áp dụng được cài đặt.</value>
+  </data>
 </root>
