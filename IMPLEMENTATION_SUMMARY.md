@@ -3,8 +3,22 @@
 ## 実装概要 (Implementation Overview)
 
 WindowTranslatorに特定の矩形を優先的にテキスト認識する機能を追加しました。
+**優先矩形が設定されている場合、全画面OCRは実行されず、指定された矩形のみがOCR処理されます。**
 
 A feature to prioritize text recognition for specific rectangles has been added to WindowTranslator.
+**When priority rectangles are configured, full-screen OCR is skipped and only the specified rectangles are processed.**
+
+## アーキテクチャ変更 (Architectural Changes)
+
+### 変更前 (Before)
+- フィルター処理として実装（PriorityRectFilter）
+- 全画面OCRと優先矩形OCRの両方を実行
+- 結果の重複を検出して優先矩形を採用
+
+### 変更後 (After) ✨
+- **各OCRモジュール内で実装**
+- **優先矩形が設定されている場合、全画面OCRをスキップ**
+- よりシンプルで効率的な実装
 
 ## 実装したファイル (Implemented Files)
 
@@ -14,17 +28,26 @@ A feature to prioritize text recognition for specific rectangles has been added 
    - 相対座標（0.0-1.0）での矩形定義
    - キーワード（翻訳コンテキスト）の設定
 
-2. **WindowTranslator.Abstractions/Modules/IOcrModule.cs**
+2. **WindowTranslator.Abstractions/PriorityRectUtility.cs** (新規)
+   - OCRモジュール共通のユーティリティクラス
+   - 画像クロッピング機能
+   - 座標オフセット機能
+
+3. **WindowTranslator.Abstractions/Modules/IOcrModule.cs**
    - BasicOcrParamクラスにPriorityRectsプロパティを追加
 
-3. **WindowTranslator/Modules/Ocr/PriorityRectFilter.cs**
-   - IFilterModule実装
-   - 優先矩形のOCR処理とフィルタリング
-   - 画像クロッピングと座標変換
-   - 重複検出と優先矩形の優先処理
+### OCRモジュール (OCR Modules)
+4. **WindowTranslator/Modules/Ocr/WindowsMediaOcr.cs**
+   - 優先矩形対応の実装
+   - RecognizePriorityRectsAsync, RecognizeFullScreenAsync, RecognizeRegionAsync
 
-4. **WindowTranslator/FilterPriority.cs**
-   - PriorityRectFilterの優先度定義（-120.0）
+5. **Plugins/WindowTranslator.Plugin.TesseractOCRPlugin/TesseractOcr.cs**
+   - 優先矩形対応の実装
+   - RecognizePriorityRectsAsync, RecognizeFullScreenAsync, RecognizeRegionAsync
+
+6. **Plugins/WindowTranslator.Plugin.OneOcrPlugin/OneOcr.cs**
+   - 優先矩形対応の実装
+   - RecognizePriorityRectsAsync, RecognizeFullScreenAsync, RecognizeRegionAsync
 
 ### UIファイル (UI Files)
 5. **WindowTranslator/Modules/Ocr/RectangleSelectionWindow.xaml**
@@ -72,25 +95,22 @@ A feature to prioritize text recognition for specific rectangles has been added 
    ↓
 3. 画面キャプチャ
    ↓
-4. メインOCR処理実行（全体画像）
+4. RecognizeAsync呼び出し
    ↓
-5. PriorityRectFilter発動
-   ├─ 優先矩形ごとに画像を切り出し
-   ├─ 切り出した画像をOCR処理
-   ├─ 座標を全体画像座標に変換
-   └─ キーワードをコンテキストとして設定
+5. 優先矩形の確認
+   ├─ 優先矩形あり
+   │   ├─ RecognizePriorityRectsAsync実行
+   │   ├─ 優先矩形ごとに画像を切り出し
+   │   ├─ 切り出した画像をOCR処理
+   │   ├─ 座標を全体画像座標に変換
+   │   └─ キーワードをコンテキストとして設定
+   │
+   └─ 優先矩形なし
+       └─ RecognizeFullScreenAsync実行（通常の全画面OCR）
    ↓
-6. 重複検出
-   ├─ 優先矩形の結果と元のOCR結果を比較
-   └─ 重複する元の結果を除外
+6. 翻訳処理
    ↓
-7. 結果のマージ
-   ├─ 優先矩形の結果（優先度順）
-   └─ 残りの元のOCR結果
-   ↓
-8. 翻訳処理
-   ↓
-9. オーバーレイ表示
+7. オーバーレイ表示
 ```
 
 ## 技術的な実装詳細 (Technical Implementation Details)
@@ -105,15 +125,16 @@ A feature to prioritize text recognition for specific rectangles has been added 
 - **安全な処理**: 画像範囲外の矩形は自動的にスキップ
 - **メモリ効率**: 切り出した画像は使用後すぐに破棄
 
-### 重複検出 (Overlap Detection)
-- **OverlapsWith()**: TextRectの既存メソッドを使用
-- **回転考慮**: GetRotatedBoundingBox()で回転を考慮した境界ボックスで判定
-- **優先度**: 重複時は常に優先矩形の結果を採用
+### OCRモジュール統合 (OCR Module Integration)
+- **RecognizeAsync**: エントリーポイント、優先矩形の有無で分岐
+- **RecognizePriorityRectsAsync**: 優先矩形のみを処理
+- **RecognizeFullScreenAsync**: 全画面OCR（優先矩形なし時）
+- **RecognizeRegionAsync**: 共通のOCR処理ロジック
 
-### 依存性注入 (Dependency Injection)
-- **IServiceProvider**: IOcrModuleの取得にIServiceProviderを使用
-- **プラグインシステム**: MainAssemblyPluginCatalogで自動検出・登録
-- **スコープ**: Scopedライフタイムで安全に動作
+### パフォーマンス最適化 (Performance Optimization)
+- **条件分岐**: 優先矩形が設定されている場合、全画面OCRをスキップ
+- **無駄な処理を削減**: フィルター層での重複検出・マージ処理が不要
+- **効率的**: 必要な領域のみを処理
 
 ## 使用方法 (Usage)
 
@@ -201,11 +222,17 @@ A feature to prioritize text recognition for specific rectangles has been added 
 ## 変更されたファイルの統計 (File Statistics)
 
 ```
-17 files changed, 1180 insertions(+)
+18 files changed, 1300+ insertions(+), 200 deletions(-)
 ```
 
-- C#コード: 5ファイル, 約600行
+- C#コード: 6ファイル, 約600行
 - XAMLコード: 1ファイル, 約35行
 - 翻訳リソース: 7ファイル, 約294行
-- ドキュメント: 3ファイル, 約250行
+- ドキュメント: 4ファイル, 約370行
 - 設定例: 1ファイル, 約80行
+
+### 主な変更 (Major Changes)
+- **削除**: PriorityRectFilter.cs
+- **追加**: PriorityRectUtility.cs
+- **変更**: WindowsMediaOcr.cs, TesseractOcr.cs, OneOcr.cs
+- **更新**: ドキュメント類
