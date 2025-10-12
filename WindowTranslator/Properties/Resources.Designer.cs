@@ -376,6 +376,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   設定の適用に失敗しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FaildApplySettings {
+            get {
+                return ResourceManager.GetString("FaildApplySettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   OCRに失敗しました に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string FaildOcr {
@@ -583,20 +592,20 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
-        ///   認識モジュール に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string OcrModule {
-            get {
-                return ResourceManager.GetString("OcrModule", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   {0}のOCR機能が使えません。対象の言語機能をインストールしてください に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OcrLanguageNotAvailable {
             get {
                 return ResourceManager.GetString("OcrLanguageNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   認識モジュール に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OcrModule {
+            get {
+                return ResourceManager.GetString("OcrModule", resourceCulture);
             }
         }
         
