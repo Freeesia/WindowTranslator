@@ -17,10 +17,11 @@ public class PLaMoOptions : IPluginParam
 
     [LocalizedDescription(typeof(Resources), $"{nameof(ContextSize)}_Desc")]
     [Range(512, 32768)]
+    [Slidable(512, 32768, 16, 128, true, 0.1)]
     public int ContextSize { get; set; } = 2048;
 
     [Range(-1, 6)]
-    [Spinnable]
+    [Spinnable(Minimum = -1, Maximum = 6)]
     [LocalizedDescription(typeof(Resources), $"{nameof(VRAM)}_Desc")]
     public int VRAM { get; set; } = -1;
 }
