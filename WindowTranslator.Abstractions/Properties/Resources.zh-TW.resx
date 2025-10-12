@@ -174,4 +174,46 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>振動抑制</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>優先矩形</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>優先 OCR 矩形</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>OCR 將優先處理配置的矩形。列表順序表示優先級。</value>
+  </data>
+  <data name="AddPriorityRect" xml:space="preserve">
+    <value>新增矩形</value>
+  </data>
+  <data name="RemovePriorityRect" xml:space="preserve">
+    <value>刪除矩形</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>上移</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>下移</value>
+  </data>
+  <data name="EditKeyword" xml:space="preserve">
+    <value>編輯關鍵字</value>
+  </data>
+  <data name="RectangleSelection" xml:space="preserve">
+    <value>矩形選擇</value>
+  </data>
+  <data name="SelectRectangle" xml:space="preserve">
+    <value>請選擇一個矩形（按 Esc 取消）</value>
+  </data>
+  <data name="Selecting" xml:space="preserve">
+    <value>選擇中</value>
+  </data>
+  <data name="RectangleTooSmall" xml:space="preserve">
+    <value>矩形太小。請重新選擇。</value>
+  </data>
+  <data name="EnterKeyword" xml:space="preserve">
+    <value>輸入關鍵字（將用作翻譯上下文）</value>
+  </data>
+  <data name="KeywordEdit" xml:space="preserve">
+    <value>關鍵字編輯</value>
+  </data>
 </root>

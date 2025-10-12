@@ -174,4 +174,46 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>Ngăn chặn rung động</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>Hình chữ nhật ưu tiên</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Hình chữ nhật OCR ưu tiên</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>OCR sẽ ưu tiên các hình chữ nhật được cấu hình. Thứ tự trong danh sách thể hiện mức độ ưu tiên.</value>
+  </data>
+  <data name="AddPriorityRect" xml:space="preserve">
+    <value>Thêm hình chữ nhật</value>
+  </data>
+  <data name="RemovePriorityRect" xml:space="preserve">
+    <value>Xóa hình chữ nhật</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Di chuyển lên</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Di chuyển xuống</value>
+  </data>
+  <data name="EditKeyword" xml:space="preserve">
+    <value>Chỉnh sửa từ khóa</value>
+  </data>
+  <data name="RectangleSelection" xml:space="preserve">
+    <value>Chọn hình chữ nhật</value>
+  </data>
+  <data name="SelectRectangle" xml:space="preserve">
+    <value>Vui lòng chọn một hình chữ nhật (Nhấn Esc để hủy)</value>
+  </data>
+  <data name="Selecting" xml:space="preserve">
+    <value>Đang chọn</value>
+  </data>
+  <data name="RectangleTooSmall" xml:space="preserve">
+    <value>Hình chữ nhật quá nhỏ. Vui lòng chọn lại.</value>
+  </data>
+  <data name="EnterKeyword" xml:space="preserve">
+    <value>Nhập từ khóa (sẽ được sử dụng làm ngữ cảnh dịch)</value>
+  </data>
+  <data name="KeywordEdit" xml:space="preserve">
+    <value>Chỉnh sửa từ khóa</value>
+  </data>
 </root>

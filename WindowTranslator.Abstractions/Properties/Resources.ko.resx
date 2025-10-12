@@ -174,4 +174,46 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>진동 억제</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>우선 사각형</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>우선 OCR 사각형</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>구성된 사각형을 우선적으로 OCR 처리합니다. 목록 순서가 우선순위를 나타냅니다.</value>
+  </data>
+  <data name="AddPriorityRect" xml:space="preserve">
+    <value>사각형 추가</value>
+  </data>
+  <data name="RemovePriorityRect" xml:space="preserve">
+    <value>사각형 제거</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>위로 이동</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>아래로 이동</value>
+  </data>
+  <data name="EditKeyword" xml:space="preserve">
+    <value>키워드 편집</value>
+  </data>
+  <data name="RectangleSelection" xml:space="preserve">
+    <value>사각형 선택</value>
+  </data>
+  <data name="SelectRectangle" xml:space="preserve">
+    <value>사각형을 선택하세요 (Esc로 취소)</value>
+  </data>
+  <data name="Selecting" xml:space="preserve">
+    <value>선택 중</value>
+  </data>
+  <data name="RectangleTooSmall" xml:space="preserve">
+    <value>사각형이 너무 작습니다. 다시 선택하세요.</value>
+  </data>
+  <data name="EnterKeyword" xml:space="preserve">
+    <value>키워드를 입력하세요 (번역 컨텍스트로 사용됩니다)</value>
+  </data>
+  <data name="KeywordEdit" xml:space="preserve">
+    <value>키워드 편집</value>
+  </data>
 </root>
