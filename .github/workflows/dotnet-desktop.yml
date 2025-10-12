@@ -122,6 +122,9 @@ jobs:
           versionSpec: "6.x"
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v4.1.0
+      - uses: Jimver/cuda-toolkit@v0.2.21
+        with:
+          cuda: '12.9.1'
       - env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
