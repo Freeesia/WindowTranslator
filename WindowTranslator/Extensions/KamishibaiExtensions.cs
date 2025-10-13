@@ -22,4 +22,17 @@ public static class KamishibaiExtensions
         window.Close();
         return taskSource.Task;
     }
+
+    public static async ValueTask OpenErrorDialogAsync(this IPresentationService presentationService, string err, Exception ex, string target, string imagePath, object? owner = null)
+    {
+        if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
+        {
+            presentationService.ShowMessage(ex.Message, target, icon: MessageBoxImage.Exclamation, owner: owner);
+        }
+        else
+        {
+            await presentationService.OpenErrorReportDialogAsync(err, ex, target, imagePath, owner, new() { WindowStartupLocation = WindowStartupLocation.CenterOwner });
+        }
+    }
+
 }

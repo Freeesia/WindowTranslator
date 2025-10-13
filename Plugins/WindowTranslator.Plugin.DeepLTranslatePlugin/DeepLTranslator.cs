@@ -62,20 +62,27 @@ public class DeepLTranslator : ITranslateModule
         var translated = srcTexts.Select(t => t.SourceText).ToArray();
         this.logger.LogDebug($"Translating {srcTexts.Length} texts.");
         var sw = Stopwatch.StartNew();
-        var glossaryId = await this.glossaryId.AsValueTask().ConfigureAwait(false);
-        await Parallel.ForEachAsync(srcTexts.GroupBy(t => t.Context).ToAsyncEnumerable(), async (g, ct) =>
+        try
         {
-            var context = string.Join('\n', this.context, g.Key);
-            var srcs = g.Select(t => t.SourceText).ToArray();
-            var results = await translator.TranslateTextAsync(srcs, this.sourceLang, this.targetLang, new() { Context = context, GlossaryId = glossaryId }, ct)
-                .ConfigureAwait(false);
-            foreach (var (s, t) in srcs.Zip(results))
+            var glossaryId = await this.glossaryId.AsValueTask().ConfigureAwait(false);
+            await Parallel.ForEachAsync(srcTexts.GroupBy(t => t.Context).ToAsyncEnumerable(), async (g, ct) =>
             {
-                var i = Array.IndexOf(translated, s);
-                translated[i] = t.Text;
-            }
-        }).ConfigureAwait(false);
-        this.logger.LogDebug($"Translated {srcTexts.Length} texts in {sw.Elapsed}");
+                var context = string.Join('\n', this.context, g.Key);
+                var srcs = g.Select(t => t.SourceText).ToArray();
+                var results = await translator.TranslateTextAsync(srcs, this.sourceLang, this.targetLang, new() { Context = context, GlossaryId = glossaryId }, ct)
+                    .ConfigureAwait(false);
+                foreach (var (s, t) in srcs.Zip(results))
+                {
+                    var i = Array.IndexOf(translated, s);
+                    translated[i] = t.Text;
+                }
+            }).ConfigureAwait(false);
+            this.logger.LogDebug($"Translated {srcTexts.Length} texts in {sw.Elapsed}");
+        }
+        catch (AuthorizationException)
+        {
+            throw new AppUserException(Properties.Resources.AuthError);
+        }
         return translated;
     }
 

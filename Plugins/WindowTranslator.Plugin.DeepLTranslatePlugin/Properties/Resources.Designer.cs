@@ -61,6 +61,15 @@ namespace WindowTranslator.Plugin.DeepLTranslatePlugin.Properties {
         }
         
         /// <summary>
+        ///   DeepLの認可エラーです。利用できないAPIキーが設定されています。APIキーの再作成などお試しください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string AuthError {
+            get {
+                return ResourceManager.GetString("AuthError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   APIキー に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string AuthKey {

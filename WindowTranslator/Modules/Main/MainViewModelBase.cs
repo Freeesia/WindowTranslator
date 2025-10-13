@@ -14,6 +14,7 @@ using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WindowTranslator.Modules.Main;
 
@@ -197,7 +198,7 @@ public abstract partial class MainViewModelBase : IDisposable
                     this.capture.StopCapture();
                     var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                     await sbmp.TrySaveImage(path);
-                    await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildOcr, e, this.name, path);
+                    await this.presentationService.OpenErrorDialogAsync(Resources.FaildOcr, e, this.name, path);
                     StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
                     return;
                 }
@@ -295,9 +296,12 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
+            this.logger.LogError(e, "翻訳中にエラーが発生");
             this.timer.DisposeAsync().Forget();
             this.capture.StopCapture();
-            await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildTranslate, e, this.name, string.Empty);
+            // 翻訳失敗してエラーで閉じる場合はキューをクリア
+            Interlocked.Exchange(ref this.lastRequested, null);
+            await Application.Current.Dispatcher.BeginInvoke(async () => await this.presentationService.OpenErrorDialogAsync(Resources.FaildOverlay, e, this.name, string.Empty));
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
         }
         finally

@@ -321,14 +321,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             }
             catch (Exception ex)
             {
-                if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
-                {
-                    this.presentationService.ShowMessage(ex.Message, icon: Kamishibai.MessageBoxImage.Exclamation, owner: window);
-                }
-                else
-                {
-                    await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildApplySettings, ex, this.target, string.Empty, owner: window);
-                }
+                await this.presentationService.OpenErrorDialogAsync(Resources.FaildApplySettings, ex, this.target, string.Empty, owner: window);
             }
         }
         else
