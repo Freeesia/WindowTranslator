@@ -129,4 +129,7 @@
   <data name="AuthError" xml:space="preserve">
     <value>DeepL authorization error. An invalid API key is configured. Please try recreating the API key.</value>
   </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>DeepL usage limit has been reached. Current usage: {0} / {1} characters</value>
+  </data>
 </root>

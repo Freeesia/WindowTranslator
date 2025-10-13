@@ -71,4 +71,7 @@
   <data name="AuthError" xml:space="preserve">
     <value>DeepL प्राधिकरण त्रुटि। एक अमान्य API कुंजी कॉन्फ़िगर की गई है। कृपया API कुंजी को पुनः बनाने का प्रयास करें।</value>
   </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>DeepL उपयोग सीमा तक पहुंच गई है। वर्तमान उपयोग: {0} / {1} वर्ण</value>
+  </data>
 </root>

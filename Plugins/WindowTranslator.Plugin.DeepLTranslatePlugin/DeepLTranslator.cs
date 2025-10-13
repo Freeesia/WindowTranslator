@@ -83,6 +83,14 @@ public class DeepLTranslator : ITranslateModule
         {
             throw new AppUserException(Properties.Resources.AuthError);
         }
+        catch (QuotaExceededException)
+        {
+            var usage = await this.translator.GetUsageAsync().ConfigureAwait(false);
+            var message = string.Format(Properties.Resources.QuotaExceeded, 
+                usage.Character?.Count ?? 0, 
+                usage.Character?.Limit ?? 0);
+            throw new AppUserException(message);
+        }
         return translated;
     }
 
@@ -123,6 +131,21 @@ public class DeepLOptions : IPluginParam
     [JsonIgnore]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
+
+    /// <summary>
+    /// 使用量をチェックします
+    /// </summary>
+    /// <returns>使用量情報</returns>
+    public async Task<Usage> CheckUsageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(this.AuthKey))
+        {
+            throw new AppUserException(Properties.Resources.NeedApiKey);
+        }
+
+        using var translator = new Translator(this.AuthKey);
+        return await translator.GetUsageAsync().ConfigureAwait(false);
+    }
 }
 
 
