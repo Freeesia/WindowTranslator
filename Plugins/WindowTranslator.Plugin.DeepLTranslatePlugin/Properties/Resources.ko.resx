@@ -126,4 +126,7 @@
   <data name="NeedApiKey" xml:space="preserve">
     <value>DeepL API 키가 설정되지 않았습니다. 설정 대화상자에서 DeepL API 키를 설정해 주세요.</value>
   </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL 인증 오류입니다. 유효하지 않은 API 키가 설정되어 있습니다. API 키를 재생성하는 등의 방법을 시도해 주세요.</value>
+  </data>
 </root>
