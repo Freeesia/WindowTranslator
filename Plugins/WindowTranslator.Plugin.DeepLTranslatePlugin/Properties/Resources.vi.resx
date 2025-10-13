@@ -121,9 +121,12 @@
     <value>Khóa API</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>Đường dẫn thuật ngữ</value>
+    <value>Đường dẫn từ điển thuật ngữ</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
     <value>Khóa API DeepL chưa được thiết lập. Vui lòng đặt khóa API DeepL từ hộp thoại cài đặt.</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>Lỗi xác thực DeepL. Đã cấu hình khóa API không hợp lệ. Vui lòng thử tạo lại khóa API.</value>
   </data>
 </root>

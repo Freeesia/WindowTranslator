@@ -121,9 +121,12 @@
     <value>API 金鑰</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>詞彙路徑</value>
+    <value>詞彙表路徑</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
     <value>未設定 DeepL API 金鑰。請在設定對話方塊中設定 DeepL API 金鑰。</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL 授權錯誤。設定了無效的 API 金鑰。請嘗試重新建立 API 金鑰。</value>
   </data>
 </root>

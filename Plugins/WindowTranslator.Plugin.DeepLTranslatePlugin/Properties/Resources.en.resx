@@ -121,9 +121,12 @@
     <value>API Key</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>glossary path</value>
+    <value>Glossary Path</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
-    <value>DeepL API key is not set. Please set the DeepL API key from the settings dialog.</value>
+    <value>DeepL API key is not configured. Please set the DeepL API key from the settings dialog.</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL authorization error. An invalid API key is configured. Please try recreating the API key.</value>
   </data>
 </root>

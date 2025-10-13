@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -67,5 +67,8 @@
   </data>
   <data name="NeedApiKey" xml:space="preserve">
     <value>DeepL API कुंजी सेट नहीं है। कृपया सेटिंग्स डायलॉग से DeepL API कुंजी सेट करें।</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL प्राधिकरण त्रुटि। एक अमान्य API कुंजी कॉन्फ़िगर की गई है। कृपया API कुंजी को पुनः बनाने का प्रयास करें।</value>
   </data>
 </root>
