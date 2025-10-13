@@ -1,16 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Composition.WindowsRuntimeHelpers;
-using Kamishibai;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Composition.WindowsRuntimeHelpers;
+using Kamishibai;
+using Microsoft.Extensions.DependencyInjection;
 using Windows.Graphics.Capture;
 using Windows.Win32.Foundation;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
 using static Windows.Win32.PInvoke;
@@ -117,14 +118,7 @@ public partial class StartupViewModel
         }
         catch (Exception ex)
         {
-            if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
-            {
-                this.presentationService.ShowMessage(ex.Message, icon: Kamishibai.MessageBoxImage.Exclamation, owner: window);
-            }
-            else
-            {
-                await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildOverlay, ex, p.Name, string.Empty, owner: window);
-            }
+            await this.presentationService.OpenErrorDialogAsync(Resources.FaildOverlay, ex, p.Name, string.Empty, window);
         }
         if (!beforeVisible)
         {

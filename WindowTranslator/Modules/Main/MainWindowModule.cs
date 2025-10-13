@@ -21,29 +21,38 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
     {
         using var l = await this.asyncLock.EnterAsync();
         var scope = provider.CreateScope();
-        var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
-        var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
-        var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
-        processInfo.SetTargetProcess(targetWindowHandle, name);
-
-        if (!options.Value.Targets.ContainsKey(name) && !await presentationService.OpenAllSettingsDialogAsync(name))
+        try
         {
-            return;
+
+            var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+            var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
+            var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
+            processInfo.SetTargetProcess(targetWindowHandle, name);
+
+            if (!options.Value.Targets.ContainsKey(name) && !await presentationService.OpenAllSettingsDialogAsync(name))
+            {
+                return;
+            }
+
+            var window = options.Value.Common.ViewMode switch
+            {
+                ViewMode.Capture => await presentationService.OpenCaptureMainWindowAsync(),
+                ViewMode.Overlay => await presentationService.OpenOverlayMainWindowAsync(),
+                _ => throw new NotSupportedException(),
+            };
+            var info = new WindowInfo(name, targetWindowHandle, window);
+            window.Closed += (_, _) =>
+            {
+                scope.Dispose();
+                this.OpenedWindows.Remove(info);
+            };
+            this.OpenedWindows.Add(info);
         }
-
-        var window = options.Value.Common.ViewMode switch
-        {
-            ViewMode.Capture => await presentationService.OpenCaptureMainWindowAsync(),
-            ViewMode.Overlay => await presentationService.OpenOverlayMainWindowAsync(),
-            _ => throw new NotSupportedException(),
-        };
-        var info = new WindowInfo(name, targetWindowHandle, window);
-        window.Closed += (_, _) =>
+        catch (Exception)
         {
             scope.Dispose();
-            this.OpenedWindows.Remove(info);
-        };
-        this.OpenedWindows.Add(info);
+            throw;
+        }
     }
 
     public void Dispose()
