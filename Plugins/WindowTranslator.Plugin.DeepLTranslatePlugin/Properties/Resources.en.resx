@@ -126,4 +126,7 @@
   <data name="NeedApiKey" xml:space="preserve">
     <value>DeepL API key is not set. Please set the DeepL API key from the settings dialog.</value>
   </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL authorization error. An invalid API key is configured. Please try recreating the API key.</value>
+  </data>
 </root>
