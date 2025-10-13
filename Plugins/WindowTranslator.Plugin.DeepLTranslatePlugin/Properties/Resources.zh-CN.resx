@@ -126,4 +126,7 @@
   <data name="NeedApiKey" xml:space="preserve">
     <value>未设置 DeepL API 密钥。请在设置对话框中设置 DeepL API 密钥。</value>
   </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL 授权错误。配置了无效的 API 密钥。请尝试重新创建 API 密钥。</value>
+  </data>
 </root>
