@@ -4,6 +4,7 @@
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="DeepL.net" />
     <PackageReference Include="ValueTaskSupplement" />
+    <PackageReference Include="CommunityToolkit.Mvvm" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>

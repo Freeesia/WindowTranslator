@@ -80,6 +80,15 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         }
     }
 
+    protected override void SetAttribute(Attribute attribute, PropertyItem pi, object instance)
+    {
+        if (attribute is DisplayAttribute display && display.GetOrder() is { } order)
+        {
+            pi.SortIndex = order;
+        }
+        base.SetAttribute(attribute, pi, instance);
+    }
+
     protected override PropertyItem CreateCore(PropertyDescriptor pd, PropertyDescriptorCollection propertyDescriptors)
         => new ParentablePropertyItem(pd, propertyDescriptors);
 

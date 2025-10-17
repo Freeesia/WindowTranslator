@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CsvHelper;
 using CsvHelper.Configuration;
 using DeepL;
@@ -86,8 +88,8 @@ public class DeepLTranslator : ITranslateModule
         catch (QuotaExceededException)
         {
             var usage = await this.translator.GetUsageAsync().ConfigureAwait(false);
-            var message = string.Format(Properties.Resources.QuotaExceeded, 
-                usage.Character?.Count ?? 0, 
+            var message = string.Format(Properties.Resources.QuotaExceeded,
+                usage.Character?.Count ?? 0,
                 usage.Character?.Limit ?? 0);
             throw new AppUserException(message);
         }
@@ -119,33 +121,53 @@ public class DeepLTranslator : ITranslateModule
         => this.context = context;
 }
 
-public class DeepLOptions : IPluginParam
+[DisplayName("DeepL")]
+public partial class DeepLOptions : ObservableObject, IPluginParam
 {
-    [DataType(DataType.Password)]
-    public string AuthKey { get; set; } = string.Empty;
+    [property: Display(Order = 0)]
+    [property: AutoUpdateText]
+    [property: DataType(DataType.Password)]
+    [NotifyCanExecuteChangedFor(nameof(CheckUsageCommand))]
+    [ObservableProperty]
+    private string authKey = string.Empty;
 
+    [Display(Order = 3)]
     [FileExtensions(Extensions = ".csv")]
-    [InputFilePath(".csv", "用語集 (.csv)|*.csv")]
+    [InputFilePath(".csv", "CSV |*.csv")]
     public string? GlossaryPath { get; set; }
 
+    [Display(Order = 4)]
     [JsonIgnore]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
+
+    [property: Display(Order = 1)]
+    [property: JsonIgnore]
+    [property: ReadOnly(true)]
+    [ObservableProperty]
+    private string usage = string.Empty;
 
     /// <summary>
     /// 使用量をチェックします
     /// </summary>
     /// <returns>使用量情報</returns>
-    public async Task<Usage> CheckUsageAsync()
+    [property: Display(Order = 2)]
+    [property: JsonIgnore]
+    [RelayCommand(CanExecute = nameof(CanCheckUsage))]
+    public async Task CheckUsageAsync()
     {
-        if (string.IsNullOrWhiteSpace(this.AuthKey))
-        {
-            throw new AppUserException(Properties.Resources.NeedApiKey);
-        }
-
         using var translator = new Translator(this.AuthKey);
-        return await translator.GetUsageAsync().ConfigureAwait(false);
+        try
+        {
+            this.Usage = (await translator.GetUsageAsync()).Character?.ToString() ?? Properties.Resources.UnknownUsage;
+        }
+        catch (Exception)
+        {
+            this.Usage = "⚠️ " + Properties.Resources.AuthError;
+        }
     }
+
+    private bool CanCheckUsage() => !string.IsNullOrWhiteSpace(this.AuthKey);
 }
 
 
