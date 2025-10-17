@@ -132,11 +132,13 @@
   <data name="QuotaExceeded" xml:space="preserve">
     <value>DeepL 使用量已達上限。目前使用量：{0} / {1} 字元</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="CheckUsageCommand" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>檢查使用量</value>
   </data>
-  <data name="Usage" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="Usage" xml:space="preserve">
+    <value>使用量</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>未知</value>
   </data>
 </root>
