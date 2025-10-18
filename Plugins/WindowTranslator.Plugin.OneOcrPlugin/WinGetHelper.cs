@@ -247,14 +247,7 @@ internal class PackageInfo
 /// </summary>
 file class WindowsPackageManagerStandardFactory : IWindowsPackageManagerFactory
 {
-    private readonly PackageManager packageManager;
-
-    public WindowsPackageManagerStandardFactory()
-    {
-        this.packageManager = new PackageManager();
-    }
-
-    public PackageManager CreatePackageManager() => this.packageManager;
+    public PackageManager CreatePackageManager() => new();
 
     public FindPackagesOptions CreateFindPackagesOptions() => new();
 

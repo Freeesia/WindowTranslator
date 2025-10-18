@@ -46,12 +46,6 @@ public class OneOcrValidator : ITargetSettingsValidator
             return ValidateResult.Invalid("OneOcr", string.Format(Resources.CopyFaild, ex.Message));
         }
 
-        // 更新が行われた場合はメッセージを表示
-        if (success && message != null)
-        {
-            // 更新成功のメッセージを表示（今回はValidを返すが、メッセージをログに記録することを想定）
-        }
-
         return ValidateResult.Valid;
     }
 }
