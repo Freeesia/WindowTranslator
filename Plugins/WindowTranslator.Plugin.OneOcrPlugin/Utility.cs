@@ -9,6 +9,15 @@ static class Utility
     public const string OneOcrModel = "oneocr.onemodel";
     private const string OnnxRuntimeDll = "onnxruntime.dll";
     public const string ErrorPath = "Error.txt";
+    public const string ScreenSketchProductId = "9MZ95KL8MR0L";
+    
+    // 動作するScreenSketchのバージョン
+    private static readonly Dictionary<string, string> MinimumVersions = new()
+    {
+        ["10"] = "10.2008.3001.0",  // Win10
+        ["11"] = "11.2508.29.0"     // Win11
+    };
+    
     public static string OneOcrPath { get; } = Path.Combine(PathUtility.UserDir, "OneOcr");
 
     private static async ValueTask<string?> GetInstallLocation(string appName)
@@ -46,6 +55,67 @@ static class Utility
             }
         }
         return await GetInstallLocation("Microsoft.Windows.Photos").ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// ScreenSketchのバージョンをチェックし、必要に応じて更新を試みる
+    /// </summary>
+    /// <returns>更新が成功したかどうか。更新が不要な場合もtrueを返す</returns>
+    public static async ValueTask<(bool success, string? message)> CheckAndUpdateScreenSketchAsync()
+    {
+        try
+        {
+            // インストール済みのScreenSketchパッケージ情報を取得
+            var installedInfo = await WinGetHelper.GetInstalledPackageInfoAsync(ScreenSketchProductId).ConfigureAwait(false);
+            
+            if (installedInfo == null)
+            {
+                // ScreenSketchがインストールされていない
+                return (false, "ScreenSketchがインストールされていません");
+            }
+
+            // OSバージョンを取得
+            var osVersion = Environment.OSVersion.Version;
+            var osMajor = osVersion.Major.ToString();
+            
+            // 必要な最小バージョンを取得
+            if (!MinimumVersions.TryGetValue(osMajor, out var minVersion))
+            {
+                // サポートされていないOSバージョン（OSバージョンに応じたチェックをスキップ）
+                return (true, null);
+            }
+
+            // バージョン比較
+            var comparison = WinGetHelper.CompareVersions(installedInfo.Version, minVersion);
+            if (comparison >= 0)
+            {
+                // バージョンが十分新しい
+                return (true, null);
+            }
+
+            // バージョンが古いため、更新を試みる
+            var availableInfo = await WinGetHelper.GetPackageInfoAsync(ScreenSketchProductId).ConfigureAwait(false);
+            if (availableInfo == null)
+            {
+                return (false, $"ScreenSketchの更新情報を取得できませんでした。現在のバージョン: {installedInfo.Version}、必要なバージョン: {minVersion}");
+            }
+
+            // インストール済みの情報を使って更新
+            var upgraded = await WinGetHelper.UpgradePackageAsync(installedInfo).ConfigureAwait(false);
+            
+            if (upgraded)
+            {
+                return (true, $"ScreenSketchを {installedInfo.Version} から {availableInfo.Version} に更新しました");
+            }
+            else
+            {
+                return (false, $"ScreenSketchの更新に失敗しました。手動で更新してください。現在のバージョン: {installedInfo.Version}、必要なバージョン: {minVersion}");
+            }
+        }
+        catch (Exception ex)
+        {
+            return (false, $"ScreenSketchのバージョンチェック中にエラーが発生しました: {ex.Message}");
+        }
     }
 
     public static bool NeedCopyDll()

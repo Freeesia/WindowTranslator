@@ -157,4 +157,7 @@
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>OCR 行邊界框取得失敗。行號：{0}，錯誤代碼：{1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>未找到相依模組。此環境不可用。{0}</value>
+  </data>
 </root>

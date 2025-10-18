@@ -157,4 +157,7 @@ Hãy thử cập nhật ứng dụng "Snipping Tool" hoặc "Microsoft Photos".<
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>Lấy hộp giới hạn dòng OCR thất bại. Số dòng: {0}, Mã lỗi: {1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Không tìm thấy mô-đun phụ thuộc. Không khả dụng trong môi trường này. {0}</value>
+  </data>
 </root>
