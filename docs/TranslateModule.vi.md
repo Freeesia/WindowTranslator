@@ -1,28 +1,29 @@
 # Mô-đun Dịch thuật
 
-WindowTranslator cho phép bạn chọn từ nhiều mô-đun dịch thuật.  
-Mỗi mô-đun có những đặc điểm riêng và việc chọn mô-đun phù hợp với trường hợp sử dụng của bạn sẽ giúp bạn có trải nghiệm dịch thuật thoải mái hơn.
+WindowTranslator có thể chọn và sử dụng từ nhiều mô-đun dịch thuật.  
+Mỗi mô-đun có các đặc điểm riêng, bằng cách chọn mô-đun phù hợp theo mục đích sử dụng, bạn có thể sử dụng dịch thuật một cách thoải mái hơn.
 
 ## Bergamot ![Mặc định](https://img.shields.io/badge/Mặc%20định-brightgreen)
 
 Mô-đun dịch máy hoạt động ngoại tuyến.
 
 ### Ưu điểm
-- **Hoàn toàn miễn phí**: Không có bất kỳ phí nào
-- **Không giới hạn dịch**: Dịch bao nhiêu lần tùy thích
-- **Nhanh**: Dịch nhanh vì xử lý cục bộ
-- **Bảo mật**: Không cần kết nối internet, dữ liệu không được gửi ra bên ngoài
-- **Ổn định**: Không bị ảnh hưởng bởi điều kiện mạng
+- **Hoàn toàn miễn phí**: Hoàn toàn không tốn phí
+- **Không giới hạn dịch**: Có thể dịch không giới hạn lần
+- **Nhanh**: Dịch nhanh vì được xử lý cục bộ
+- **Quyền riêng tư**: Không cần kết nối internet, dữ liệu không được gửi ra bên ngoài
+- **Ổn định**: Không bị ảnh hưởng bởi mạng
 
 ### Nhược điểm
-- **Độ chính xác dịch**: Độ chính xác thấp hơn so với các dịch vụ dựa trên đám mây
-- **Sử dụng bộ nhớ**: Cần 1GB hoặc nhiều hơn bộ nhớ trống
-- **Hỗ trợ ngôn ngữ**: Chỉ hỗ trợ một số cặp ngôn ngữ nhất định
+- **Độ chính xác dịch**: So với các dịch vụ dựa trên đám mây, độ chính xác dịch thuật thấp hơn
+- **Sử dụng bộ nhớ**: Xử lý dịch thuật sử dụng một lượng bộ nhớ nhất định
+- **Ngôn ngữ hỗ trợ**: Chỉ hỗ trợ một số cặp ngôn ngữ
 
-### Trường hợp sử dụng được đề xuất
-- Môi trường có kết nối internet không ổn định
-- Khi ưu tiên bảo mật
-- Sử dụng dịch với tần suất cao
+### Các tình huống sử dụng được khuyến nghị
+- Khi muốn sử dụng miễn phí
+- Sử dụng trong môi trường ngoại tuyến
+- Khi coi trọng quyền riêng tư
+- Khi dịch với tần suất cao
 
 ---
 
@@ -37,14 +38,14 @@ Mô-đun dịch thuật sử dụng dịch vụ dịch của Google.
 
 ### Nhược điểm
 - **Giới hạn dịch**: Số ký tự có thể dịch mỗi ngày bị giới hạn
-- **Độ chính xác dịch**: Độ chính xác thấp hơn so với các dịch vụ trả phí khác trong một số trường hợp
-- **Tốc độ**: Bị ảnh hưởng bởi điều kiện mạng
+- **Độ chính xác dịch**: So với các dịch vụ trả phí khác có thể kém chính xác hơn
+- **Tốc độ**: Bị ảnh hưởng bởi mạng
 - **Ổn định**: Có thể đột ngột không khả dụng do giới hạn sử dụng
 
-### Trường hợp sử dụng được đề xuất
-- Sử dụng với tần suất thấp
+### Các tình huống sử dụng được khuyến nghị
+- Sử dụng không thường xuyên
 - Khi muốn bắt đầu sử dụng ngay lập tức
-- Khi cần dịch các cặp ngôn ngữ đa dạng
+- Khi muốn dịch các cặp ngôn ngữ đa dạng
 
 ---
 
@@ -53,19 +54,18 @@ Mô-đun dịch thuật sử dụng dịch vụ dịch của Google.
 Mô-đun sử dụng dịch vụ dịch thuật DeepL được biết đến với chất lượng cao.
 
 ### Ưu điểm
-- **Độ chính xác cao**: Nhận được bản dịch tự nhiên và chất lượng cao
+- **Độ chính xác cao**: Cung cấp bản dịch tự nhiên và chất lượng cao
 - **Hạn mức miễn phí hào phóng**: Tối đa 500.000 ký tự mỗi tháng miễn phí (API miễn phí)
 - **Nhanh**: Xử lý dịch nhanh
-- **Sử dụng kinh doanh**: Bản dịch chất lượng cao ngay cả cho tài liệu chuyên môn
+- **Hỗ trợ thuật ngữ**: Có thể duy trì tính nhất quán trong dịch thuật bằng cách sử dụng thuật ngữ
 
 ### Nhược điểm
 - **Cần đăng ký API**: Cần đăng ký DeepL API và thiết lập API key
-- **Giới hạn hạn mức miễn phí**: Cần chuyển sang gói trả phí khi vượt quá hạn mức miễn phí
-- **Hỗ trợ ngôn ngữ**: Hỗ trợ ngôn ngữ hạn chế hơn so với Google
+- **Giới hạn hạn mức miễn phí**: Khi vượt quá hạn mức miễn phí cần chuyển sang gói trả phí
+- **Hỗ trợ ngôn ngữ**: Hỗ trợ ngôn ngữ hạn chế so với Google và các dịch vụ khác
 
-### Trường hợp sử dụng được đề xuất
+### Các tình huống sử dụng được khuyến nghị
 - Khi cần bản dịch chất lượng cao
-- Dịch tài liệu kinh doanh
 - Sử dụng với tần suất trung bình
 
 ---
@@ -75,43 +75,42 @@ Mô-đun sử dụng dịch vụ dịch thuật DeepL được biết đến v�
 Mô-đun dịch thuật tận dụng công nghệ AI mới nhất của Google.
 
 ### Ưu điểm
-- **Độ chính xác cao nhất**: Bản dịch chất lượng rất cao với hiểu biết ngữ cảnh
-- **Biểu đạt linh hoạt**: Được dịch với cách diễn đạt tự nhiên
-- **Hỗ trợ thuật ngữ chuyên môn**: Hỗ trợ tài liệu kỹ thuật, game và nội dung chuyên môn
-- **Hạn mức miễn phí**: Có thể sử dụng miễn phí đến một lượng nhất định
+- **Độ chính xác cao nhất**: Có khả năng dịch chất lượng rất cao với hiểu biết ngữ cảnh
+- **Linh hoạt**: Có thể tùy chỉnh prompt để điều chỉnh phong cách dịch
+- **Hỗ trợ thuật ngữ**: Có thể duy trì tính nhất quán trong dịch thuật bằng cách sử dụng thuật ngữ
 
 ### Nhược điểm
-- **Cần API key**: Cần đăng ký với Google Cloud Platform và thiết lập API key
-- **Thanh toán theo mức sử dụng**: Phí phát sinh sau khi vượt quá hạn mức miễn phí (nhưng tối thiểu)
+- **Cần API key**: Cần lấy và thiết lập API key từ Google AI Studio
+- **Thanh toán theo mức sử dụng**: Phí dựa trên mức sử dụng (nhưng tối thiểu)
 - **Tốc độ**: Mất nhiều thời gian xử lý hơn các mô-đun khác do dựa trên LLM
 
-### Trường hợp sử dụng được đề xuất
+### Các tình huống sử dụng được khuyến nghị
 - Khi cần bản dịch chất lượng cao nhất
-- Dịch nội dung chuyên môn như game hoặc tài liệu kỹ thuật
+- Khi cần phong cách dịch tùy chỉnh
 - Khi cần dịch quan tâm đến ngữ cảnh
 
 ---
 
-## Plugin LLM (ChatGPT/Claude/LLM cục bộ)
+## ChatGPT API (hoặc LLM cục bộ)
 
-Mô-đun dịch thuật sử dụng OpenAI, Anthropic hoặc LLM cục bộ.
+Mô-đun dịch thuật sử dụng ChatGPT API hoặc LLM cục bộ.
 
 ### Ưu điểm
 - **Độ chính xác cao nhất**: Bản dịch chất lượng cao bằng các mô hình ngôn ngữ lớn
-- **Linh hoạt**: Tùy chỉnh prompt để điều chỉnh phong cách dịch
-- **Hiểu ngữ cảnh**: Bản dịch xem xét ngữ cảnh dài hơn
+- **Linh hoạt**: Có thể tùy chỉnh prompt để điều chỉnh phong cách dịch
+- **Hỗ trợ thuật ngữ**: Có thể duy trì tính nhất quán trong dịch thuật bằng cách sử dụng thuật ngữ
 - **Hỗ trợ LLM cục bộ**: Cũng có thể sử dụng máy chủ LLM của riêng bạn
 
 ### Nhược điểm
 - **Cần API key**: Cần thiết lập API key cho mỗi dịch vụ (trừ LLM cục bộ)
 - **Thanh toán theo mức sử dụng**: Phí dựa trên mức sử dụng (trừ LLM cục bộ)
 - **Tốc độ**: Thời gian xử lý dài hơn
-- **Yêu cầu LLM cục bộ**: Cần PC hiệu năng cao để chạy LLM của riêng bạn
+- **Yêu cầu LLM cục bộ**: Khi vận hành LLM riêng cần PC hiệu năng cao
 
-### Trường hợp sử dụng được đề xuất
+### Các tình huống sử dụng được khuyến nghị
 - Khi cần bản dịch chất lượng cao nhất
 - Khi cần phong cách dịch tùy chỉnh
-- Khi ưu tiên bảo mật trong khi muốn bản dịch chất lượng cao (LLM cục bộ)
+- Khi coi trọng quyền riêng tư mà vẫn muốn bản dịch chất lượng cao (LLM cục bộ)
 
 ---
 
@@ -121,30 +120,28 @@ Mô-đun dịch thuật sử dụng LLM cục bộ chuyên về tiếng Nhật.
 
 ### Ưu điểm
 - **Chuyên về tiếng Nhật**: Được tối ưu hóa cho dịch tiếng Nhật
-- **Hoàn toàn miễn phí**: Không có phí với mô hình nguồn mở
-- **Bảo mật**: Chạy cục bộ, dữ liệu không được gửi ra bên ngoài
+- **Hoàn toàn miễn phí**: Mô hình nguồn mở không tốn phí
+- **Quyền riêng tư**: Chạy cục bộ, dữ liệu không được gửi ra bên ngoài
 - **Ngoại tuyến**: Không cần kết nối internet
 
 ### Nhược điểm
 - **Yêu cầu cấu hình cao**: Cần PC hiệu năng cao bao gồm GPU
-- **Thiết lập**: Cấu hình ban đầu phức tạp
 - **Sử dụng bộ nhớ**: Cần lượng lớn bộ nhớ (khuyến nghị 8GB trở lên)
-- **Tốc độ**: Mất thời gian xử lý nếu không có GPU
+- **Tốc độ**: Xử lý mất thời gian nếu không có GPU
 
-### Trường hợp sử dụng được đề xuất
+### Các tình huống sử dụng được khuyến nghị
 - Khi bạn sở hữu PC hiệu năng cao
-- Khi bảo mật là ưu tiên hàng đầu
-- Khi ưu tiên chất lượng dịch tiếng Nhật
+- Khi quyền riêng tư là ưu tiên hàng đầu
+- Khi coi trọng chất lượng dịch tiếng Nhật
 
 ---
 
-## Chọn mô-đun
+## Cách chọn mô-đun
 
-| Mục đích | Mô-đun được đề xuất |
-|----------|---------------------|
-| Bắt đầu sử dụng ngay | **Bergamot** hoặc **Google Dịch** |
-| Cần bản dịch chất lượng cao nhất | **Google AI** hoặc **Plugin LLM** |
-| Muốn giảm chi phí | **Bergamot** hoặc **DeepL (trong hạn mức miễn phí)** |
-| Ưu tiên bảo mật | **Bergamot** hoặc **PLaMo** |
-| Sử dụng tần suất cao | **Bergamot** hoặc **DeepL** |
-| Sử dụng kinh doanh | **DeepL** hoặc **Google AI** |
+| Mục đích                        | Mô-đun được đề xuất                         |
+| ------------------------------- | -------------------------------------------- |
+| Bắt đầu sử dụng ngay           | **Bergamot** hoặc **Google Dịch**            |
+| Bản dịch chất lượng cao nhất   | **Google AI** hoặc **ChatGPT API**          |
+| Muốn giảm chi phí              | **Bergamot** hoặc **DeepL (trong hạn mức miễn phí)** |
+| Tập trung vào quyền riêng tư   | **Bergamot** hoặc **PLaMo**                 |
+| Sử dụng tần suất cao           | **Bergamot** hoặc **DeepL**                 |

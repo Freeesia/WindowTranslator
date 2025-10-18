@@ -1,28 +1,29 @@
 # Translation Modules
 
 WindowTranslator allows you to choose from multiple translation modules.  
-Each module has its own characteristics, and selecting the appropriate module for your use case will help you enjoy a more comfortable translation experience.
+Each module has its own characteristics, and by selecting the appropriate module for your use case, you can use translation more comfortably.
 
 ## Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
 
-An offline machine translation module.
+A machine translation module that works offline.
 
 ### Advantages
-- **Completely Free**: No fees whatsoever
-- **No Translation Limit**: Translate as many times as you want
-- **Fast**: Quick translations as it processes locally
+- **Completely Free**: No charges whatsoever
+- **No Translation Limits**: You can translate as many times as you want
+- **Fast**: Translation is quick as it's processed locally
 - **Privacy**: No internet connection required, data is not sent externally
 - **Stability**: Not affected by network conditions
 
 ### Disadvantages
-- **Translation Accuracy**: Lower accuracy compared to cloud-based services
-- **Memory Usage**: Requires 1GB or more of free memory
-- **Language Support**: Only certain language pairs are supported
+- **Translation Accuracy**: Lower translation accuracy compared to cloud-based services
+- **Memory Usage**: Uses a certain amount of memory for translation processing
+- **Language Support**: Only some language pairs are supported
 
 ### Recommended Use Cases
-- Unstable internet connection environments
-- When privacy is a priority
-- High-frequency translation usage
+- When you want to use it for free
+- Use in offline environments
+- When privacy is important
+- When translating frequently
 
 ---
 
@@ -36,15 +37,15 @@ A translation module using Google's translation service.
 - **Easy**: No special configuration required
 
 ### Disadvantages
-- **Translation Limit**: Limited number of characters that can be translated per day
-- **Translation Accuracy**: Lower accuracy compared to other paid services in some cases
+- **Translation Limits**: Limited number of characters that can be translated per day
+- **Translation Accuracy**: May be less accurate compared to other paid services
 - **Speed**: Affected by network conditions
-- **Stability**: May suddenly become unavailable due to usage limits
+- **Stability**: May suddenly become unavailable due to usage restrictions
 
 ### Recommended Use Cases
-- Low-frequency usage
+- Infrequent use
 - When you want to start using immediately
-- When you need to translate various language pairs
+- When you want to translate various language pairs
 
 ---
 
@@ -53,20 +54,19 @@ A translation module using Google's translation service.
 A module using DeepL's translation service, known for high-quality translations.
 
 ### Advantages
-- **High Accuracy**: Natural and high-quality translations
+- **High Accuracy**: Provides natural, high-quality translations
 - **Generous Free Tier**: Up to 500,000 characters per month for free (Free API)
 - **Fast**: Quick translation processing
-- **Business Use**: High-quality translations even for specialized documents
+- **Glossary Support**: Can maintain translation consistency using glossaries
 
 ### Disadvantages
-- **API Registration Required**: DeepL API registration and API key setup necessary
-- **Free Tier Limit**: Migration to paid plan required when free tier is exceeded
-- **Language Support**: More limited language support compared to Google
+- **API Registration Required**: Requires DeepL API registration and API key setup
+- **Free Tier Limits**: Migration to paid plan required when exceeding free tier
+- **Language Support**: Limited language support compared to Google and others
 
 ### Recommended Use Cases
-- When high-quality translations are required
-- Business document translation
-- Moderate frequency usage
+- When high-quality translation is required
+- Moderate frequency of use
 
 ---
 
@@ -75,43 +75,42 @@ A module using DeepL's translation service, known for high-quality translations.
 A translation module leveraging Google's latest AI technology.
 
 ### Advantages
-- **Highest Accuracy**: Very high-quality translations with contextual understanding
-- **Flexible Expressions**: Translated with natural phrasing
-- **Technical Terminology**: Supports technical documents, games, and specialized content
-- **Free Tier**: Can be used for free up to a certain amount
+- **Highest Accuracy**: Capable of very high-quality translation with contextual understanding
+- **Flexibility**: Can customize prompts to adjust translation style
+- **Glossary Support**: Can maintain translation consistency using glossaries
 
 ### Disadvantages
-- **API Key Required**: Registration with Google Cloud Platform and API key setup necessary
-- **Pay-as-you-go**: Charges apply after exceeding free tier (though minimal)
-- **Speed**: Takes longer to process than other modules due to LLM base
+- **API Key Required**: Requires API key acquisition and setup from Google AI Studio
+- **Pay-per-use**: Charges based on usage (though minimal)
+- **Speed**: Takes longer processing time than other modules due to LLM base
 
 ### Recommended Use Cases
-- When the highest quality translations are required
-- Translation of specialized content like games or technical documents
-- When context-aware translation is necessary
+- When highest quality translation is required
+- When customized translation style is needed
+- When context-aware translation is important
 
 ---
 
-## LLM Plugin (ChatGPT/Claude/Local LLM)
+## ChatGPT API (OR Local LLM)
 
-A translation module using OpenAI, Anthropic, or local LLMs.
+A translation module using ChatGPT API or local LLM.
 
 ### Advantages
-- **Highest Accuracy**: High-quality translations using large language models
-- **Flexibility**: Customize prompts to adjust translation style
-- **Context Understanding**: Translations considering longer context
-- **Local LLM Support**: Can use your own LLM server
+- **Highest Accuracy**: High-quality translation by large language models
+- **Flexibility**: Can customize prompts to adjust translation style
+- **Glossary Support**: Can maintain translation consistency using glossaries
+- **Local LLM Support**: Can also use your own LLM server
 
 ### Disadvantages
-- **API Key Required**: API key setup for each service necessary (except local LLM)
-- **Pay-as-you-go**: Charges based on usage (except local LLM)
+- **API Key Required**: Requires API key setup for each service (except local LLM)
+- **Pay-per-use**: Charges based on usage (except local LLM)
 - **Speed**: Longer processing time
-- **Local LLM Requirements**: High-spec PC required for running your own LLM
+- **Local LLM Requirements**: High-spec PC required when running your own LLM
 
 ### Recommended Use Cases
-- When the highest quality translations are required
+- When highest quality translation is required
 - When customized translation style is needed
-- When prioritizing privacy while wanting high-quality translations (local LLM)
+- When privacy is important while wanting high-quality translation (local LLM)
 
 ---
 
@@ -120,31 +119,29 @@ A translation module using OpenAI, Anthropic, or local LLMs.
 A translation module using local LLM specialized for Japanese.
 
 ### Advantages
-- **Japanese-Specialized**: Optimized for Japanese translation
-- **Completely Free**: No fees with open-source model
+- **Japanese Specialized**: Optimized for Japanese translation
+- **Completely Free**: Open source model with no charges
 - **Privacy**: Runs locally, data is not sent externally
 - **Offline**: No internet connection required
 
 ### Disadvantages
-- **High-Spec Requirements**: Requires high-performance PC including GPU
-- **Setup**: Complex initial configuration
-- **Memory Usage**: Requires large amount of memory (8GB+ recommended)
-- **Speed**: Takes time to process without GPU
+- **High-spec Requirements**: Requires high-performance PC including GPU
+- **Memory Usage**: Requires large amount of memory (8GB or more recommended)
+- **Speed**: Processing takes time without GPU
 
 ### Recommended Use Cases
 - When you own a high-performance PC
 - When privacy is the top priority
-- When prioritizing Japanese translation quality
+- When Japanese translation quality is important
 
 ---
 
-## Choosing a Module
+## How to Choose a Module
 
-| Purpose | Recommended Module |
-|---------|-------------------|
-| Start using immediately | **Bergamot** or **Google Translate** |
-| Highest quality translation needed | **Google AI** or **LLM Plugin** |
-| Want to keep costs down | **Bergamot** or **DeepL (within free tier)** |
-| Privacy priority | **Bergamot** or **PLaMo** |
-| High-frequency usage | **Bergamot** or **DeepL** |
-| Business use | **DeepL** or **Google AI** |
+| Purpose                        | Recommended Module                           |
+| ------------------------------ | -------------------------------------------- |
+| Start using immediately        | **Bergamot** or **Google Translate**        |
+| Highest quality translation    | **Google AI** or **ChatGPT API**            |
+| Keep costs down                | **Bergamot** or **DeepL (within free tier)** |
+| Privacy focused                | **Bergamot** or **PLaMo**                   |
+| High frequency usage           | **Bergamot** or **DeepL**                   |

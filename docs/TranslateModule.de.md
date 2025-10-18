@@ -1,28 +1,29 @@
 # Übersetzungsmodule
 
 WindowTranslator ermöglicht Ihnen die Auswahl aus mehreren Übersetzungsmodulen.  
-Jedes Modul hat seine eigenen Eigenschaften, und die Wahl des geeigneten Moduls für Ihren Anwendungsfall wird Ihnen ein komfortableres Übersetzungserlebnis ermöglichen.
+Jedes Modul hat seine eigenen Eigenschaften, und durch die Wahl des geeigneten Moduls für Ihren Anwendungsfall können Sie Übersetzungen komfortabler nutzen.
 
 ## Bergamot ![Standard](https://img.shields.io/badge/Standard-brightgreen)
 
-Ein Offline-Maschinenübersetzungsmodul.
+Ein Maschinenübersetzungsmodul, das offline funktioniert.
 
 ### Vorteile
-- **Völlig kostenlos**: Keinerlei Gebühren
-- **Keine Übersetzungsbegrenzung**: Übersetzen Sie so oft Sie möchten
-- **Schnell**: Schnelle Übersetzungen durch lokale Verarbeitung
+- **Völlig kostenlos**: Keinerlei Kosten
+- **Keine Übersetzungslimits**: Sie können beliebig oft übersetzen
+- **Schnell**: Übersetzung ist schnell, da sie lokal verarbeitet wird
 - **Datenschutz**: Keine Internetverbindung erforderlich, Daten werden nicht extern gesendet
 - **Stabilität**: Nicht von Netzwerkbedingungen betroffen
 
 ### Nachteile
-- **Übersetzungsgenauigkeit**: Geringere Genauigkeit im Vergleich zu Cloud-basierten Diensten
-- **Speichernutzung**: Benötigt 1 GB oder mehr freien Speicher
-- **Sprachunterstützung**: Nur bestimmte Sprachpaare werden unterstützt
+- **Übersetzungsgenauigkeit**: Geringere Übersetzungsgenauigkeit im Vergleich zu Cloud-basierten Diensten
+- **Speichernutzung**: Verwendet eine bestimmte Menge Speicher für die Übersetzungsverarbeitung
+- **Sprachunterstützung**: Nur einige Sprachpaare werden unterstützt
 
 ### Empfohlene Anwendungsfälle
-- Umgebungen mit instabiler Internetverbindung
-- Wenn Datenschutz Priorität hat
-- Häufige Übersetzungsnutzung
+- Wenn Sie es kostenlos nutzen möchten
+- Nutzung in Offline-Umgebungen
+- Wenn Datenschutz wichtig ist
+- Bei häufigem Übersetzen
 
 ---
 
@@ -36,15 +37,15 @@ Ein Übersetzungsmodul, das Googles Übersetzungsdienst verwendet.
 - **Einfach**: Keine spezielle Konfiguration erforderlich
 
 ### Nachteile
-- **Übersetzungsbegrenzung**: Begrenzte Anzahl von Zeichen, die pro Tag übersetzt werden können
-- **Übersetzungsgenauigkeit**: In einigen Fällen geringere Genauigkeit im Vergleich zu anderen kostenpflichtigen Diensten
+- **Übersetzungslimits**: Begrenzte Anzahl von Zeichen, die pro Tag übersetzt werden können
+- **Übersetzungsgenauigkeit**: Kann im Vergleich zu anderen kostenpflichtigen Diensten weniger genau sein
 - **Geschwindigkeit**: Von Netzwerkbedingungen betroffen
 - **Stabilität**: Kann aufgrund von Nutzungsbeschränkungen plötzlich nicht verfügbar werden
 
 ### Empfohlene Anwendungsfälle
-- Geringe Nutzungshäufigkeit
+- Seltene Nutzung
 - Wenn Sie sofort mit der Nutzung beginnen möchten
-- Wenn Sie verschiedene Sprachpaare übersetzen müssen
+- Wenn Sie verschiedene Sprachpaare übersetzen möchten
 
 ---
 
@@ -53,19 +54,18 @@ Ein Übersetzungsmodul, das Googles Übersetzungsdienst verwendet.
 Ein Modul, das DeepLs Übersetzungsdienst verwendet, bekannt für hochwertige Übersetzungen.
 
 ### Vorteile
-- **Hohe Genauigkeit**: Natürliche und qualitativ hochwertige Übersetzungen
+- **Hohe Genauigkeit**: Liefert natürliche, hochwertige Übersetzungen
 - **Großzügiges kostenloses Kontingent**: Bis zu 500.000 Zeichen pro Monat kostenlos (Free API)
 - **Schnell**: Schnelle Übersetzungsverarbeitung
-- **Geschäftliche Nutzung**: Hochwertige Übersetzungen auch für spezialisierte Dokumente
+- **Glossar-Unterstützung**: Kann Übersetzungskonsistenz durch Glossare aufrechterhalten
 
 ### Nachteile
-- **API-Registrierung erforderlich**: DeepL API-Registrierung und API-Schlüssel-Einrichtung notwendig
-- **Begrenzung des kostenlosen Kontingents**: Migration zu kostenpflichtigem Plan erforderlich, wenn kostenloses Kontingent überschritten wird
-- **Sprachunterstützung**: Begrenztere Sprachunterstützung im Vergleich zu Google
+- **API-Registrierung erforderlich**: Erfordert DeepL API-Registrierung und API-Schlüssel-Einrichtung
+- **Begrenzung des kostenlosen Kontingents**: Migration zu kostenpflichtigem Plan erforderlich bei Überschreitung des kostenlosen Kontingents
+- **Sprachunterstützung**: Begrenzte Sprachunterstützung im Vergleich zu Google und anderen
 
 ### Empfohlene Anwendungsfälle
-- Wenn hochwertige Übersetzungen erforderlich sind
-- Übersetzung von Geschäftsdokumenten
+- Wenn hochwertige Übersetzung erforderlich ist
 - Mittlere Nutzungshäufigkeit
 
 ---
@@ -75,43 +75,42 @@ Ein Modul, das DeepLs Übersetzungsdienst verwendet, bekannt für hochwertige Ü
 Ein Übersetzungsmodul, das Googles neueste KI-Technologie nutzt.
 
 ### Vorteile
-- **Höchste Genauigkeit**: Sehr hochwertige Übersetzungen mit Kontextverständnis
-- **Flexible Ausdrücke**: Übersetzt mit natürlicher Formulierung
-- **Fachterminologie**: Unterstützt technische Dokumente, Spiele und spezialisierte Inhalte
-- **Kostenloses Kontingent**: Kann bis zu einer bestimmten Menge kostenlos genutzt werden
+- **Höchste Genauigkeit**: Fähig zu sehr hochwertiger Übersetzung mit Kontextverständnis
+- **Flexibilität**: Kann Prompts anpassen, um Übersetzungsstil zu justieren
+- **Glossar-Unterstützung**: Kann Übersetzungskonsistenz durch Glossare aufrechterhalten
 
 ### Nachteile
-- **API-Schlüssel erforderlich**: Registrierung bei Google Cloud Platform und API-Schlüssel-Einrichtung notwendig
-- **Nutzungsabhängige Bezahlung**: Gebühren fallen nach Überschreitung des kostenlosen Kontingents an (jedoch minimal)
-- **Geschwindigkeit**: Längere Verarbeitung als andere Module aufgrund der LLM-Basis
+- **API-Schlüssel erforderlich**: Erfordert API-Schlüssel-Beschaffung und Einrichtung von Google AI Studio
+- **Nutzungsabhängige Bezahlung**: Gebühren basierend auf Nutzung (jedoch minimal)
+- **Geschwindigkeit**: Längere Verarbeitungszeit als andere Module aufgrund der LLM-Basis
 
 ### Empfohlene Anwendungsfälle
-- Wenn die höchste Übersetzungsqualität erforderlich ist
-- Übersetzung spezialisierter Inhalte wie Spiele oder technische Dokumente
-- Wenn kontextbewusste Übersetzung notwendig ist
+- Wenn höchste Übersetzungsqualität erforderlich ist
+- Wenn angepasster Übersetzungsstil benötigt wird
+- Wenn kontextbewusste Übersetzung wichtig ist
 
 ---
 
-## LLM-Plugin (ChatGPT/Claude/Lokales LLM)
+## ChatGPT API (ODER Lokales LLM)
 
-Ein Übersetzungsmodul, das OpenAI, Anthropic oder lokale LLMs verwendet.
+Ein Übersetzungsmodul, das ChatGPT API oder lokales LLM verwendet.
 
 ### Vorteile
-- **Höchste Genauigkeit**: Hochwertige Übersetzungen mit großen Sprachmodellen
-- **Flexibilität**: Passen Sie Prompts an, um den Übersetzungsstil anzupassen
-- **Kontextverständnis**: Übersetzungen unter Berücksichtigung längeren Kontexts
-- **Lokale LLM-Unterstützung**: Kann eigenen LLM-Server verwenden
+- **Höchste Genauigkeit**: Hochwertige Übersetzung durch große Sprachmodelle
+- **Flexibilität**: Kann Prompts anpassen, um Übersetzungsstil zu justieren
+- **Glossar-Unterstützung**: Kann Übersetzungskonsistenz durch Glossare aufrechterhalten
+- **Lokale LLM-Unterstützung**: Kann auch eigenen LLM-Server verwenden
 
 ### Nachteile
-- **API-Schlüssel erforderlich**: API-Schlüssel-Einrichtung für jeden Dienst notwendig (außer lokales LLM)
+- **API-Schlüssel erforderlich**: Erfordert API-Schlüssel-Einrichtung für jeden Dienst (außer lokales LLM)
 - **Nutzungsabhängige Bezahlung**: Gebühren basierend auf Nutzung (außer lokales LLM)
 - **Geschwindigkeit**: Längere Verarbeitungszeit
-- **Lokale LLM-Anforderungen**: Hochleistungs-PC erforderlich für eigenes LLM
+- **Lokale LLM-Anforderungen**: Hochleistungs-PC erforderlich beim Betrieb eigenes LLM
 
 ### Empfohlene Anwendungsfälle
-- Wenn die höchste Übersetzungsqualität erforderlich ist
+- Wenn höchste Übersetzungsqualität erforderlich ist
 - Wenn angepasster Übersetzungsstil benötigt wird
-- Wenn Datenschutz Priorität hat, während hochwertige Übersetzungen gewünscht sind (lokales LLM)
+- Wenn Datenschutz wichtig ist, während hochwertige Übersetzung gewünscht wird (lokales LLM)
 
 ---
 
@@ -121,30 +120,28 @@ Ein Übersetzungsmodul, das lokales LLM spezialisiert für Japanisch verwendet.
 
 ### Vorteile
 - **Japanisch-spezialisiert**: Optimiert für japanische Übersetzung
-- **Völlig kostenlos**: Keine Gebühren mit Open-Source-Modell
+- **Völlig kostenlos**: Open-Source-Modell ohne Gebühren
 - **Datenschutz**: Läuft lokal, Daten werden nicht extern gesendet
 - **Offline**: Keine Internetverbindung erforderlich
 
 ### Nachteile
 - **Hohe Spezifikationsanforderungen**: Benötigt Hochleistungs-PC einschließlich GPU
-- **Einrichtung**: Komplexe Erstkonfiguration
-- **Speichernutzung**: Benötigt große Menge an Speicher (8GB+ empfohlen)
-- **Geschwindigkeit**: Braucht Zeit zur Verarbeitung ohne GPU
+- **Speichernutzung**: Benötigt große Menge an Speicher (8GB oder mehr empfohlen)
+- **Geschwindigkeit**: Verarbeitung braucht Zeit ohne GPU
 
 ### Empfohlene Anwendungsfälle
 - Wenn Sie einen Hochleistungs-PC besitzen
 - Wenn Datenschutz höchste Priorität hat
-- Wenn japanische Übersetzungsqualität Priorität hat
+- Wenn japanische Übersetzungsqualität wichtig ist
 
 ---
 
-## Ein Modul auswählen
+## Auswahl eines Moduls
 
-| Zweck | Empfohlenes Modul |
-|-------|-------------------|
-| Sofort mit der Nutzung beginnen | **Bergamot** oder **Google Translate** |
-| Höchste Übersetzungsqualität benötigt | **Google AI** oder **LLM-Plugin** |
-| Kosten niedrig halten | **Bergamot** oder **DeepL (innerhalb kostenloses Kontingent)** |
-| Datenschutz-Priorität | **Bergamot** oder **PLaMo** |
-| Häufige Nutzung | **Bergamot** oder **DeepL** |
-| Geschäftliche Nutzung | **DeepL** oder **Google AI** |
+| Zweck                          | Empfohlenes Modul                         |
+| ------------------------------ | ----------------------------------------- |
+| Sofort mit der Nutzung beginnen | **Bergamot** oder **Google Translate**  |
+| Höchste Übersetzungsqualität  | **Google AI** oder **ChatGPT API**       |
+| Kosten niedrig halten         | **Bergamot** oder **DeepL (innerhalb kostenloses Kontingent)** |
+| Datenschutz im Fokus          | **Bergamot** oder **PLaMo**              |
+| Häufige Nutzung               | **Bergamot** oder **DeepL**              |
