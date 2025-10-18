@@ -17,7 +17,7 @@ Ein lokales OCR-Modul von Microsoft.
 
 ---
 
-### Windows-Standard-Zeichenerkennung
+## Windows-Standard-Zeichenerkennung
 
 Die OCR-Engine, die standardmäßig in Windows 10 und höher integriert ist.
 

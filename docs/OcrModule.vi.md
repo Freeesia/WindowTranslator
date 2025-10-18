@@ -17,7 +17,7 @@ Mô-đun OCR cục bộ do Microsoft cung cấp.
 
 ---
 
-### Nhận dạng ký tự chuẩn Windows
+## Nhận dạng ký tự chuẩn Windows
 
 Công cụ OCR được tích hợp sẵn trong Windows 10 trở lên.
 

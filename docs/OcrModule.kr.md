@@ -17,7 +17,7 @@ Microsoft가 제공하는 로컬 OCR 모듈입니다.
 
 ---
 
-### Windows 표준 문자 인식
+## Windows 표준 문자 인식
 
 Windows 10 이상에 기본 탑재된 OCR 엔진입니다.
 

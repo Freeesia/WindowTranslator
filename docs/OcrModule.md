@@ -17,7 +17,7 @@ Microsoftが提供するローカルOCRモジュールです。
 
 ---
 
-### Windows標準文字認識
+## Windows標準文字認識
 
 Windows 10以降に標準搭載されているOCRエンジンです。
 

@@ -17,7 +17,7 @@ Microsoft 提供的本地 OCR 模組。
 
 ---
 
-### Windows 標準字元識別
+## Windows 標準字元識別
 
 Windows 10 及更高版本自帶的 OCR 引擎。
 

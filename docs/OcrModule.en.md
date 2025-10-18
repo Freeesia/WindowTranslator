@@ -17,7 +17,7 @@ A local OCR module provided by Microsoft.
 
 ---
 
-### Windows Standard Character Recognition
+## Windows Standard Character Recognition
 
 The OCR engine that comes standard with Windows 10 and later.
 

@@ -17,7 +17,7 @@ Microsoft 提供的本地 OCR 模块。
 
 ---
 
-### Windows 标准字符识别
+## Windows 标准字符识别
 
 Windows 10 及更高版本自带的 OCR 引擎。
 
