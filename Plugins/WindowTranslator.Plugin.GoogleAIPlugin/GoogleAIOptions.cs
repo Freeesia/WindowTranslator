@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using GenerativeAI;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
@@ -17,8 +17,8 @@ public partial class GoogleAIOptions : IPluginParam
     public bool WaitCorrect { get; set; }
 
     [SelectorStyle(SelectorStyle.ComboBox)]
-    [JsonConverter(typeof(GoogleAIModelConverter))]
-    public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini20Flash;
+    [TypeConverter(typeof(GoogleAIModelTypeConverter))]
+    public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini25FlashLite;
 
     [LocalizedDescription(typeof(Resources), $"{nameof(PreviewModel)}_Desc")]
     public string? PreviewModel { get; set; }
@@ -100,19 +100,23 @@ public class GoogleAIValidator : ITargetSettingsValidator
 }
 
 /// <summary>
-/// GoogleAIModel用のカスタムコンバーター
-/// 古い設定ファイルからの数値デシリアライズと新しい文字列シリアライズをサポートします。
+/// GoogleAIModel用のカスタムTypeConverter
+/// 古い設定ファイルからの数値と文字列の読み込みをサポートします。
 /// </summary>
-public class GoogleAIModelConverter : JsonConverter<GoogleAIModel>
+public class GoogleAIModelTypeConverter : TypeConverter
 {
-    public override GoogleAIModel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
+    {
+        return sourceType == typeof(string) || sourceType == typeof(int) || base.CanConvertFrom(context, sourceType);
+    }
+
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
         // 数値として読み込む（古い設定ファイルの互換性のため）
-        if (reader.TokenType == JsonTokenType.Number)
+        if (value is int numericValue)
         {
-            var numericValue = reader.GetInt32();
             // 古いEnum値をマッピング
-            // 0: Gemini15Flash -> Gemini20Flash
+            // 0: Gemini15Flash -> Gemini25FlashLite
             // 1: Gemini15Pro -> Gemini25Pro
             // 2: Gemini20FlashLite (変更なし、ただし新しいインデックスは0)
             // 3: Gemini20Flash (変更なし、ただし新しいインデックスは1)
@@ -121,21 +125,20 @@ public class GoogleAIModelConverter : JsonConverter<GoogleAIModel>
             // 6: Gemini25FlashLite (変更なし、ただし新しいインデックスは4)
             return numericValue switch
             {
-                0 => GoogleAIModel.Gemini20Flash,     // Gemini15Flash -> Gemini20Flash
+                0 => GoogleAIModel.Gemini25FlashLite, // Gemini15Flash -> Gemini25FlashLite
                 1 => GoogleAIModel.Gemini25Pro,       // Gemini15Pro -> Gemini25Pro
                 2 => GoogleAIModel.Gemini20FlashLite, // Gemini20FlashLite
                 3 => GoogleAIModel.Gemini20Flash,     // Gemini20Flash
                 4 => GoogleAIModel.Gemini25Flash,     // Gemini25Flash
                 5 => GoogleAIModel.Gemini25Pro,       // Gemini25Pro
                 6 => GoogleAIModel.Gemini25FlashLite, // Gemini25FlashLite
-                _ => GoogleAIModel.Gemini20Flash,     // デフォルト
+                _ => GoogleAIModel.Gemini25FlashLite, // デフォルト
             };
         }
 
-        // 文字列として読み込む（新しい設定ファイル）
-        if (reader.TokenType == JsonTokenType.String)
+        // 文字列として読み込む
+        if (value is string stringValue)
         {
-            var stringValue = reader.GetString();
             if (Enum.TryParse<GoogleAIModel>(stringValue, out var result))
             {
                 return result;
@@ -143,18 +146,27 @@ public class GoogleAIModelConverter : JsonConverter<GoogleAIModel>
             // 古い名前からの移行をサポート
             return stringValue switch
             {
-                "Gemini15Flash" => GoogleAIModel.Gemini20Flash,
+                "Gemini15Flash" => GoogleAIModel.Gemini25FlashLite,
                 "Gemini15Pro" => GoogleAIModel.Gemini25Pro,
-                _ => GoogleAIModel.Gemini20Flash,
+                _ => GoogleAIModel.Gemini25FlashLite,
             };
         }
 
-        throw new JsonException($"Unexpected token type: {reader.TokenType}");
+        return base.ConvertFrom(context, culture, value);
     }
 
-    public override void Write(Utf8JsonWriter writer, GoogleAIModel value, JsonSerializerOptions options)
+    public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
     {
-        // 文字列として書き込む（新しい設定ファイル）
-        writer.WriteStringValue(value.ToString());
+        return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+    }
+
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
+    {
+        if (destinationType == typeof(string) && value is GoogleAIModel model)
+        {
+            return model.ToString();
+        }
+
+        return base.ConvertTo(context, culture, value, destinationType);
     }
 }
