@@ -39,13 +39,90 @@ public sealed class TesseractOcr(
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
+    private readonly List<PriorityRect> priorityRects = ocrParam.Value.PriorityRects ?? [];
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    {
+        // 優先矩形が指定されている場合は、それらのみを認識
+        if (this.priorityRects.Count > 0)
+        {
+            return await RecognizePriorityRectsAsync(bitmap);
+        }
+
+        // 優先矩形がない場合は通常の全体認識
+        return await RecognizeFullScreenAsync(bitmap);
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
+    {
+        var allResults = new List<TextRect>();
+
+        // 拡大率に基づくリサイズ処理
+        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
+        this.cts.Token.ThrowIfCancellationRequested();
+
+        for (int i = 0; i < this.priorityRects.Count; i++)
+        {
+            var priorityRect = this.priorityRects[i];
+            var absRect = priorityRect.ToAbsoluteRect(workingBitmap.PixelWidth, workingBitmap.PixelHeight);
+
+            // 矩形が画像範囲外の場合はスキップ
+            if (absRect.X < 0 || absRect.Y < 0 ||
+                absRect.X + absRect.Width > workingBitmap.PixelWidth ||
+                absRect.Y + absRect.Height > workingBitmap.PixelHeight)
+            {
+                this.logger.LogWarning($"Priority rect {i} is out of image bounds, skipping");
+                continue;
+            }
+
+            try
+            {
+                // 指定矩形の画像を切り出してOCR
+                var croppedBitmap = await PriorityRectUtility.CropBitmapAsync(workingBitmap, absRect);
+                var rectResults = await RecognizeRegionAsync(croppedBitmap);
+                croppedBitmap.Dispose();
+
+                // 切り出した画像の座標を元の画像の座標に変換
+                foreach (var text in rectResults)
+                {
+                    var adjustedText = PriorityRectUtility.OffsetTextRect(text, absRect.X, absRect.Y, priorityRect.Keyword);
+                    allResults.Add(adjustedText);
+                    this.logger.LogDebug($"Priority rect {i} OCR: {adjustedText.SourceText} at ({adjustedText.X}, {adjustedText.Y})");
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, $"Failed to OCR priority rect {i}");
+            }
+        }
+
+        if (workingBitmap != bitmap)
+        {
+            workingBitmap.Dispose();
+        }
+
+        // スケールを戻す
+        return allResults.Select(r => ToTextRect(r, this.scale));
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
     {
         // 拡大率に基づくリサイズ処理
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
         this.cts.Token.ThrowIfCancellationRequested();
 
+        var results = await RecognizeRegionAsync(workingBitmap);
+
+        if (bitmap != workingBitmap)
+        {
+            workingBitmap.Dispose();
+        }
+
+        return results;
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    {
         var sw = Stopwatch.StartNew();
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(async () => await Recognize(workingBitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
@@ -94,11 +171,6 @@ public sealed class TesseractOcr(
                 }
             } while (merged);
             results.Add(temp);
-        }
-
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
         }
 
         return results
