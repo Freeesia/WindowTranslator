@@ -129,4 +129,16 @@
   <data name="AuthError" xml:space="preserve">
     <value>DeepL 授權錯誤。設定了無效的 API 金鑰。請嘗試重新建立 API 金鑰。</value>
   </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>DeepL 使用量已達上限。目前使用量：{0} / {1} 字元</value>
+  </data>
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>檢查使用量</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>使用量</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>未知</value>
+  </data>
 </root>
