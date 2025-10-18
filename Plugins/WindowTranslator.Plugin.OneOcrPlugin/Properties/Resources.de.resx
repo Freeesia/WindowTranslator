@@ -157,4 +157,7 @@ Bitte versuchen Sie, die Apps "Ausschneiden und skizzieren" oder "Microsoft Foto
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>Fehler beim Abrufen der OCR-Zeilen-Begrenzungsbox. Zeilennummer: {0}, Fehlercode: {1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Abhängige Module nicht gefunden. Nicht verfügbar in dieser Umgebung. {0}</value>
+  </data>
 </root>

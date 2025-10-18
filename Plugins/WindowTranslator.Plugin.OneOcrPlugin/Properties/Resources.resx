@@ -157,4 +157,7 @@
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>OCR行の境界ボックスの取得に失敗しました。行番号: {0}, エラーコード: {1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>依存モジュールが見つかりません。この環境では利用できません。{0}</value>
+  </data>
 </root>

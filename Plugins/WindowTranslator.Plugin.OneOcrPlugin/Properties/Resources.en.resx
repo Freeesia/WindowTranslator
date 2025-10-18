@@ -157,4 +157,7 @@ Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>Failed to get OCR line bounding box. Line number: {0}, Error code: {1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Dependent modules not found. Not available in this environment. {0}</value>
+  </data>
 </root>

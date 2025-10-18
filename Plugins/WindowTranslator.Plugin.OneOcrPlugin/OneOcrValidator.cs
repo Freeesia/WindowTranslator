@@ -13,6 +13,14 @@ public class OneOcrValidator : ITargetSettingsValidator
             return ValidateResult.Valid;
         }
 
+        // ScreenSketchのバージョンをチェックし、必要に応じて更新
+        var (success, message) = await Utility.CheckAndUpdateScreenSketchAsync().ConfigureAwait(false);
+        if (!success && message != null)
+        {
+            // バージョンチェックや更新に失敗した場合は警告を表示するが、DLLのコピーは試みる
+            // （既に新しいバージョンがインストールされている可能性があるため）
+        }
+
         if (!Utility.NeedCopyDll())
         {
             return ValidateResult.Valid;
@@ -22,7 +30,10 @@ public class OneOcrValidator : ITargetSettingsValidator
         var oneOcrPath = await Utility.FindOneOcrPath().ConfigureAwait(false);
         if (oneOcrPath == null)
         {
-            return ValidateResult.Invalid("OneOcr", Resources.NotFoundModule);
+            var errorMessage = message != null
+                ? string.Format(Resources.NotFoundModuleWithVersion, message)
+                : Resources.NotFoundModule;
+            return ValidateResult.Invalid("OneOcr", errorMessage);
         }
 
         // DLLをコピー

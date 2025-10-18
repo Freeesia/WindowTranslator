@@ -99,4 +99,7 @@
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>OCR लाइन बाउंडिंग बॉक्स प्राप्त करने में विफल। लाइन नंबर: {0}, त्रुटि कोड: {1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>निर्भर मॉड्यूल नहीं मिला। इस वातावरण में उपलब्ध नहीं है। {0}</value>
+  </data>
 </root>
