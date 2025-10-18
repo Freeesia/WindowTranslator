@@ -3,28 +3,31 @@
 WindowTranslator ermöglicht Ihnen die Auswahl aus mehreren OCR-Modulen zur Erkennung von Text auf dem Bildschirm.  
 Jedes Modul hat seine eigenen Eigenschaften, und die Wahl des geeigneten Moduls für Ihren Anwendungsfall ermöglicht eine genauere Texterkennung.
 
-## OneOcr ![Standard](https://img.shields.io/badge/Standard-brightgreen)
+## Neue Windows-Zeichenerkennung (Beta) ![Standard](https://img.shields.io/badge/Standard-brightgreen)
 
 Ein lokales OCR-Modul von Microsoft.
 
 ### Vorteile
-- **Völlig kostenlos**: Keinerlei Gebühren
-- **Schnell**: Schnelle Erkennung durch lokale Verarbeitung
-- **Datenschutz**: Daten werden nicht extern gesendet
-- **Offline**: Keine Internetverbindung erforderlich
-- **Stabilität**: Nicht von Netzwerkbedingungen betroffen
-- **Leichtgewichtig**: Geringer Speicherverbrauch
+- **Erkennungsgenauigkeit**: Verfügt über die höchste Erkennungsgenauigkeit
+- **Schnell**: Sehr hohe Verarbeitungsgeschwindigkeit
 
 ### Nachteile
-- **Erkennungsgenauigkeit**: Geringere Genauigkeit bei komplexen Schriftarten oder handgeschriebenem Text
-- **Sprachunterstützung**: Nur begrenzte Sprachen unterstützt
-- **Sonderzeichen**: Kann bei dekorativen Zeichen oder speziellen Layouts schwach sein
+- **Speicherverbrauch**: Kann allein für die Erkennung über 1 GB Speicher verwenden
+- **Betriebsumgebung**: Funktioniert möglicherweise nicht in einigen Umgebungen (Windows 10 oder höher empfohlen)
 
-### Empfohlene Anwendungsfälle
-- Erkennung von Standardschrift-Text
-- Wenn Datenschutz Priorität hat
-- Offline-Umgebungsnutzung
-- Nutzung mit Low-Spec-PC
+---
+
+### Windows-Standard-Zeichenerkennung
+
+Die OCR-Engine, die standardmäßig in Windows 10 und höher integriert ist.
+
+### Vorteile
+- **Speicherverbrauch**: Leichtgewichtig mit geringem Speicherverbrauch
+- **Betriebsumgebung**: Weitgehend verfügbar unter Windows 10 und höher
+
+### Nachteile
+- **Erkennungsgenauigkeit**: Kann bei komplexen Schriftarten oder handgeschriebenem Text schwach sein
+- **Einrichtung**: Manuelle Installation von Sprachdaten kann erforderlich sein
 
 ---
 
@@ -33,71 +36,21 @@ Ein lokales OCR-Modul von Microsoft.
 Eine Open-Source-OCR-Engine.
 
 ### Vorteile
-- **Völlig kostenlos**: Open-Source und kostenlos nutzbar
 - **Mehrsprachige Unterstützung**: Unterstützt über 100 Sprachen
-- **Anpassbarkeit**: Kann durch Hinzufügen von Trainingsdaten angepasst werden
-- **Offline**: Keine Internetverbindung erforderlich
 - **Stabilität**: Zuverlässige Engine mit langer Geschichte
 
 ### Nachteile
-- **Erkennungsgenauigkeit**: Geringere Genauigkeit im Vergleich zu neuesten KI-basierten OCR
-- **Einrichtung**: Installation von Sprachdaten erforderlich
-- **Geschwindigkeit**: Relativ langsame Verarbeitungsgeschwindigkeit
-- **Bilder schlechter Qualität**: Schwach bei unscharfen oder verrauschten Bildern
-
-### Empfohlene Anwendungsfälle
-- Erkennung von Text in verschiedenen Sprachen
-- Wenn Anpassung benötigt wird
-- Sprachspezifische Erkennung
+- **Erkennungsgenauigkeit**: Kann im Vergleich zu anderen OCR unterlegen sein
 
 ---
 
-## Google AI OCR (Gemini Vision)
+## Auswahl eines Moduls
 
-Ein OCR-Modul, das Googles KI-Technologie nutzt.
+Bitte wählen Sie das Modul aus, das in folgender Reihenfolge hoher Erkennungsgenauigkeit funktioniert:
 
-### Vorteile
-- **Höchste Genauigkeit**: Sehr hohe Erkennungsgenauigkeit mit KI-Technologie
-- **Handschriftunterstützung**: Kann handgeschriebenen Text erkennen
-- **Komplexe Layouts**: Erkennt komplexe Layouts genau
-- **Mehrsprachige Unterstützung**: Unterstützt breites Spektrum an Sprachen
-- **Bildqualitätstoleranz**: Hohe Erkennungsgenauigkeit auch bei Bildern schlechter Qualität
-- **Kontextverständnis**: Erkennung unter Berücksichtigung des Kontexts
-
-### Nachteile
-- **API-Schlüssel erforderlich**: Registrierung bei Google Cloud Platform und API-Schlüssel-Einrichtung notwendig
-- **Nutzungsabhängige Bezahlung**: Gebühren basierend auf Nutzung (kostenloses Kontingent verfügbar)
-- **Geschwindigkeit**: Braucht Zeit zur Verarbeitung über Netzwerk
-- **Datenschutz**: Bilddaten werden an Google-Server gesendet
-- **Nur online**: Internetverbindung erforderlich
-
-### Empfohlene Anwendungsfälle
-- Erkennung von handgeschriebenem oder dekorativem Text
-- Wenn hohe Erkennungsgenauigkeit benötigt wird
-- Erkennung von Text mit komplexen Layouts
-- Wenn Bildqualität niedrig ist
-
----
-
-## LLM OCR
-
-Ein OCR-Modul, das Vision-Fähigkeiten großer Sprachmodelle (LLM) verwendet.
-
-### Vorteile
-- **Höchste Genauigkeit**: Sehr hohe Erkennungsgenauigkeit mit neuester KI-Technologie
-- **Kontextverständnis**: Erkennung unter Berücksichtigung des gesamten Bildkontexts
-- **Flexibilität**: Unterstützt komplexe Layouts und spezielle Schriftarten
-- **Mehrsprachige Unterstützung**: Unterstützt breites Spektrum an Sprachen
-- **Argumentationsfähigkeit**: Nicht nur Zeichenerkennung, sondern verständnisbasierte Erkennung
-
-### Nachteile
-- **API-Schlüssel erforderlich**: Benötigt API-Schlüssel von OpenAI, Anthropic usw.
-- **Nutzungsabhängige Bezahlung**: Gebühren basierend auf Nutzung
-- **Geschwindigkeit**: Längere Verarbeitungszeit
-- **Kosten**: Höhere Kosten aufgrund hohen Token-Verbrauchs für Bildverarbeitung
-- **Datenschutz**: Bilddaten werden an externe Dienste gesendet
-
-### Empfohlene Anwendungsfälle
+1. OneOcr
+2. Windows-Standard-Zeichenerkennung
+3. Tesseract OCR
 - Wenn höchste Erkennungsqualität benötigt wird
 - Komplexer Text, den herkömmliche OCR nicht erkennen kann
 - Wenn kontextbewusste Erkennung notwendig ist

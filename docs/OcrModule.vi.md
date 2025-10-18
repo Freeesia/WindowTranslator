@@ -3,28 +3,31 @@
 WindowTranslator cho phép bạn chọn từ nhiều mô-đun OCR để nhận dạng văn bản trên màn hình.  
 Mỗi mô-đun có những đặc điểm riêng và việc chọn mô-đun phù hợp với trường hợp sử dụng của bạn sẽ cho phép nhận dạng văn bản chính xác hơn.
 
-## OneOcr ![Mặc định](https://img.shields.io/badge/Mặc%20định-brightgreen)
+## Nhận dạng ký tự Windows mới (Beta) ![Mặc định](https://img.shields.io/badge/Mặc%20định-brightgreen)
 
 Mô-đun OCR cục bộ do Microsoft cung cấp.
 
 ### Ưu điểm
-- **Hoàn toàn miễn phí**: Không có bất kỳ phí nào
-- **Nhanh**: Nhận dạng nhanh vì xử lý cục bộ
-- **Bảo mật**: Dữ liệu không được gửi ra bên ngoài
-- **Ngoại tuyến**: Không cần kết nối internet
-- **Ổn định**: Không bị ảnh hưởng bởi điều kiện mạng
-- **Nhẹ**: Sử dụng bộ nhớ thấp
+- **Độ chính xác nhận dạng**: Có độ chính xác nhận dạng cao nhất
+- **Nhanh**: Tốc độ xử lý rất nhanh
 
 ### Nhược điểm
-- **Độ chính xác nhận dạng**: Độ chính xác thấp hơn cho phông chữ phức tạp hoặc chữ viết tay
-- **Hỗ trợ ngôn ngữ**: Chỉ hỗ trợ ngôn ngữ hạn chế
-- **Ký tự đặc biệt**: Có thể yếu với ký tự trang trí hoặc bố cục đặc biệt
+- **Sử dụng bộ nhớ**: Có thể sử dụng hơn 1GB bộ nhớ chỉ cho xử lý nhận dạng
+- **Môi trường hoạt động**: Có thể không hoạt động trong một số môi trường (khuyến nghị Windows 10 trở lên)
 
-### Trường hợp sử dụng được đề xuất
-- Nhận dạng văn bản phông chữ tiêu chuẩn
-- Khi ưu tiên bảo mật
-- Sử dụng môi trường ngoại tuyến
-- Sử dụng PC cấu hình thấp
+---
+
+### Nhận dạng ký tự chuẩn Windows
+
+Công cụ OCR được tích hợp sẵn trong Windows 10 trở lên.
+
+### Ưu điểm
+- **Sử dụng bộ nhớ**: Nhẹ và sử dụng bộ nhớ thấp
+- **Môi trường hoạt động**: Có sẵn rộng rãi trên Windows 10 trở lên
+
+### Nhược điểm
+- **Độ chính xác nhận dạng**: Có thể yếu với phông chữ phức tạp hoặc chữ viết tay
+- **Thiết lập**: Có thể cần cài đặt thủ công dữ liệu ngôn ngữ
 
 ---
 
@@ -33,71 +36,21 @@ Mô-đun OCR cục bộ do Microsoft cung cấp.
 Công cụ OCR nguồn mở.
 
 ### Ưu điểm
-- **Hoàn toàn miễn phí**: Nguồn mở và miễn phí sử dụng
 - **Hỗ trợ đa ngôn ngữ**: Hỗ trợ hơn 100 ngôn ngữ
-- **Khả năng tùy chỉnh**: Có thể tùy chỉnh bằng cách thêm dữ liệu đào tạo
-- **Ngoại tuyến**: Không cần kết nối internet
 - **Ổn định**: Công cụ đáng tin cậy với lịch sử lâu dài
 
 ### Nhược điểm
-- **Độ chính xác nhận dạng**: Độ chính xác thấp hơn so với OCR dựa trên AI mới nhất
-- **Thiết lập**: Cần cài đặt dữ liệu ngôn ngữ
-- **Tốc độ**: Tốc độ xử lý tương đối chậm
-- **Hình ảnh chất lượng thấp**: Yếu với hình ảnh mờ hoặc nhiều nhiễu
-
-### Trường hợp sử dụng được đề xuất
-- Nhận dạng văn bản bằng nhiều ngôn ngữ
-- Khi cần tùy chỉnh
-- Nhận dạng chuyên biệt cho ngôn ngữ cụ thể
+- **Độ chính xác nhận dạng**: Có thể kém hơn so với các OCR khác
 
 ---
 
-## Google AI OCR (Gemini Vision)
+## Cách chọn mô-đun
 
-Mô-đun OCR tận dụng công nghệ AI của Google.
+Vui lòng chọn mô-đun hoạt động theo thứ tự độ chính xác nhận dạng cao sau:
 
-### Ưu điểm
-- **Độ chính xác cao nhất**: Độ chính xác nhận dạng rất cao với công nghệ AI
-- **Hỗ trợ chữ viết tay**: Có thể nhận dạng chữ viết tay
-- **Bố cục phức tạp**: Nhận dạng chính xác bố cục phức tạp
-- **Hỗ trợ đa ngôn ngữ**: Hỗ trợ phạm vi rộng các ngôn ngữ
-- **Khả năng chịu đựng chất lượng hình ảnh**: Độ chính xác nhận dạng cao ngay cả với hình ảnh chất lượng thấp
-- **Hiểu ngữ cảnh**: Nhận dạng xem xét ngữ cảnh
-
-### Nhược điểm
-- **Cần API key**: Cần đăng ký với Google Cloud Platform và thiết lập API key
-- **Thanh toán theo mức sử dụng**: Phí dựa trên mức sử dụng (có hạn mức miễn phí)
-- **Tốc độ**: Mất thời gian xử lý qua mạng
-- **Bảo mật**: Dữ liệu hình ảnh được gửi đến máy chủ Google
-- **Chỉ trực tuyến**: Cần kết nối internet
-
-### Trường hợp sử dụng được đề xuất
-- Nhận dạng chữ viết tay hoặc văn bản trang trí
-- Khi cần độ chính xác nhận dạng cao
-- Nhận dạng văn bản với bố cục phức tạp
-- Khi chất lượng hình ảnh thấp
-
----
-
-## LLM OCR
-
-Mô-đun OCR sử dụng khả năng thị giác của các mô hình ngôn ngữ lớn (LLM).
-
-### Ưu điểm
-- **Độ chính xác cao nhất**: Độ chính xác nhận dạng rất cao với công nghệ AI mới nhất
-- **Hiểu ngữ cảnh**: Nhận dạng xem xét toàn bộ ngữ cảnh hình ảnh
-- **Linh hoạt**: Hỗ trợ bố cục phức tạp và phông chữ đặc biệt
-- **Hỗ trợ đa ngôn ngữ**: Hỗ trợ phạm vi rộng các ngôn ngữ
-- **Khả năng suy luận**: Không chỉ nhận dạng ký tự mà còn nhận dạng dựa trên hiểu biết
-
-### Nhược điểm
-- **Cần API key**: Cần API key từ OpenAI, Anthropic, v.v.
-- **Thanh toán theo mức sử dụng**: Phí dựa trên mức sử dụng
-- **Tốc độ**: Thời gian xử lý dài hơn
-- **Chi phí**: Chi phí cao hơn do tiêu thụ token cao cho xử lý hình ảnh
-- **Bảo mật**: Dữ liệu hình ảnh được gửi đến dịch vụ bên ngoài
-
-### Trường hợp sử dụng được đề xuất
+1. OneOcr
+2. Nhận dạng ký tự chuẩn Windows
+3. Tesseract OCR
 - Khi cần nhận dạng chất lượng cao nhất
 - Văn bản phức tạp mà OCR thông thường không thể nhận dạng
 - Khi cần nhận dạng quan tâm đến ngữ cảnh
