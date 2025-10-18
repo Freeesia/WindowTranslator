@@ -1,14 +1,14 @@
 namespace WindowTranslator.ComponentModel;
 
 /// <summary>
-/// プロパティのヘルプドキュメントURIを指定する属性です。
+/// プロパティのヘルプドキュメントページ名を指定する属性です。
 /// </summary>
-/// <param name="uri">ヘルプドキュメントのURI</param>
+/// <param name="pageName">ヘルプドキュメントのページ名（例: "OcrModule"）</param>
 [AttributeUsage(AttributeTargets.Property)]
-public class HelpUriAttribute(string uri) : Attribute
+public class HelpUriAttribute(string pageName) : Attribute
 {
     /// <summary>
-    /// ヘルプドキュメントのURIを取得します。
+    /// ヘルプドキュメントのページ名を取得します。
     /// </summary>
-    public string Uri { get; } = uri;
+    public string PageName { get; } = pageName;
 }
