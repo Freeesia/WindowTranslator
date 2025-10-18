@@ -79,6 +79,15 @@ namespace WindowTranslator.Plugin.DeepLTranslatePlugin.Properties {
         }
         
         /// <summary>
+        ///   使用量をチェック に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CheckUsageCommand {
+            get {
+                return ResourceManager.GetString("CheckUsageCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   用語集パス に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string GlossaryPath {
@@ -93,6 +102,33 @@ namespace WindowTranslator.Plugin.DeepLTranslatePlugin.Properties {
         internal static string NeedApiKey {
             get {
                 return ResourceManager.GetString("NeedApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   DeepLの使用量が上限に達しました。現在の使用量: {0} / {1} 文字 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotaExceeded {
+            get {
+                return ResourceManager.GetString("QuotaExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   不明 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string UnknownUsage {
+            get {
+                return ResourceManager.GetString("UnknownUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   使用量 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Usage {
+            get {
+                return ResourceManager.GetString("Usage", resourceCulture);
             }
         }
     }

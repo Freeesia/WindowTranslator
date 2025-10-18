@@ -129,4 +129,16 @@
   <data name="AuthError" xml:space="preserve">
     <value>DeepLの認可エラーです。利用できないAPIキーが設定されています。APIキーの再作成などお試しください。</value>
   </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>DeepLの使用量が上限に達しました。現在の使用量: {0} / {1} 文字</value>
+  </data>
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>使用量をチェック</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>使用量</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>不明</value>
+  </data>
 </root>
