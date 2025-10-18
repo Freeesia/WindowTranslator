@@ -11,13 +11,18 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 public partial class GoogleAIOptions : IPluginParam
 {
+    static GoogleAIOptions()
+    {
+        // EnumにTypeConverterする際はカスタムTypeDescriptionProviderを登録する必要がある
+        TypeDescriptor.AddProvider(new GoogleAIModelTypeDescriptionProvider(), typeof(GoogleAIModel));
+    }
+
     [SelectorStyle(SelectorStyle.ComboBox)]
     public CorrectMode CorrectMode { get; set; }
 
     public bool WaitCorrect { get; set; }
 
     [SelectorStyle(SelectorStyle.ComboBox)]
-    [TypeConverter(typeof(GoogleAIModelTypeConverter))]
     public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini25FlashLite;
 
     [LocalizedDescription(typeof(Resources), $"{nameof(PreviewModel)}_Desc")]
@@ -100,15 +105,31 @@ public class GoogleAIValidator : ITargetSettingsValidator
 }
 
 /// <summary>
+/// GoogleAIModel用のカスタムTypeDescriptionProvider
+/// </summary>
+file class GoogleAIModelTypeDescriptionProvider() : TypeDescriptionProvider(TypeDescriptor.GetProvider(typeof(GoogleAIModel)))
+{
+    public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object? instance)
+        => new GoogleAIModelTypeDescriptor(base.GetTypeDescriptor(objectType, instance));
+}
+
+/// <summary>
+/// GoogleAIModel用のカスタムTypeDescriptor
+/// </summary>
+file class GoogleAIModelTypeDescriptor(ICustomTypeDescriptor? parent) : CustomTypeDescriptor(parent)
+{
+    public override TypeConverter GetConverter()
+        => new GoogleAIModelTypeConverter();
+}
+
+/// <summary>
 /// GoogleAIModel用のカスタムTypeConverter
 /// 古い設定ファイルからの数値と文字列の読み込みをサポートします。
 /// </summary>
-public class GoogleAIModelTypeConverter : TypeConverter
+file class GoogleAIModelTypeConverter() : EnumConverter(typeof(GoogleAIModel))
 {
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
-    {
-        return sourceType == typeof(string) || sourceType == typeof(int) || base.CanConvertFrom(context, sourceType);
-    }
+        => sourceType == typeof(string) || sourceType == typeof(int) || base.CanConvertFrom(context, sourceType);
 
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
@@ -156,9 +177,7 @@ public class GoogleAIModelTypeConverter : TypeConverter
     }
 
     public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
-    {
-        return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
-    }
+        => destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 
     public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
     {
