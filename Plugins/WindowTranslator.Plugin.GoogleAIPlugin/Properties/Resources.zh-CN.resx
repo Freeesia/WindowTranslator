@@ -126,12 +126,6 @@
   <data name="CorrectMode_Text" xml:space="preserve">
     <value>纯文字更正。</value>
   </data>
-  <data name="Gemini15Flash" xml:space="preserve">
-    <value>双子座 1.5 闪光灯（至 2025 年 9 月 24 日）</value>
-  </data>
-  <data name="Gemini15Pro" xml:space="preserve">
-    <value>双子座 1.5 Pro（至 2025 年 9 月 24 日）</value>
-  </data>
   <data name="Gemini20FlashLite" xml:space="preserve">
     <value>Gemini 2.0 Flash Lite</value>
   </data>

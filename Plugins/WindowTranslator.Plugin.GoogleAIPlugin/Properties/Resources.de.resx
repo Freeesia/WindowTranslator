@@ -126,12 +126,6 @@
   <data name="CorrectMode_Text" xml:space="preserve">
     <value>Reine Textkorrektur.</value>
   </data>
-  <data name="Gemini15Flash" xml:space="preserve">
-    <value>Zwillinge 1.5 Flash (bis 24. September 2025)</value>
-  </data>
-  <data name="Gemini15Pro" xml:space="preserve">
-    <value>Gemini 1.5 Pro (bis 24. September 2025)</value>
-  </data>
   <data name="Gemini20FlashLite" xml:space="preserve">
     <value>Gemini 2.0 Flash Lite</value>
   </data>

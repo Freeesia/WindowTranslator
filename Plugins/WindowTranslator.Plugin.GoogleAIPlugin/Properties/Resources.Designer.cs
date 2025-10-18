@@ -124,24 +124,6 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin.Properties {
         }
         
         /// <summary>
-        ///   Gemini 1.5 Flash (～2025年9月24日) に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Gemini15Flash {
-            get {
-                return ResourceManager.GetString("Gemini15Flash", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Gemini 1.5 Pro (～2025年9月24日) に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Gemini15Pro {
-            get {
-                return ResourceManager.GetString("Gemini15Pro", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Gemini 2.0 Flash に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Gemini20Flash {
