@@ -62,31 +62,50 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         return fe;
     }
 
-    private FrameworkElement WrapWithHelpButton(FrameworkElement control, string helpUri)
+    private static Grid WrapWithHelpButton(FrameworkElement control, string helpUri)
     {
         var grid = new Grid();
-        grid.SetValue(Grid.IsSharedSizeScopeProperty, true);
-        
+
         // 2列定義: コントロール列とボタン列
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), SharedSizeGroup = "ControlColumn" });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        grid.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
 
         // コントロールを配置
-        control.SetValue(Grid.ColumnProperty, 0);
+        control.SetCurrentValue(Grid.ColumnProperty, 0);
         grid.Children.Add(control);
 
         // ヘルプボタンを配置
         var helpButton = new HyperlinkButton
         {
-            Icon = new SymbolIcon(SymbolRegular.QuestionCircle24),
+            Content = new SymbolIcon(SymbolRegular.QuestionCircle48)
+            {
+                Foreground = Brushes.DodgerBlue,
+                Filled = true,
+                FontSize = 24,
+            },
+            ToolTip = "Help",
+            Padding = new(4),
+            CornerRadius = new(16),
             Margin = new Thickness(4, 0, 0, 0),
             VerticalAlignment = VerticalAlignment.Center,
-            NavigateUri = new Uri(helpUri, UriKind.RelativeOrAbsolute)
+            NavigateUri = helpUri,
         };
-        helpButton.SetValue(Grid.ColumnProperty, 1);
+        helpButton.SetCurrentValue(Grid.ColumnProperty, 1);
         grid.Children.Add(helpButton);
 
         return grid;
+    }
+
+    private class SymbolIcon(SymbolRegular symbol) : Wpf.Ui.Controls.SymbolIcon(symbol)
+    {
+
+        protected override UIElement InitializeChildren()
+        {
+            var ret = base.InitializeChildren();
+            // Foregroundが反映されない問題の対策
+            ret.SetCurrentValue(System.Windows.Controls.TextBlock.ForegroundProperty, this.Foreground);
+            return ret;
+        }
     }
 
     protected override FrameworkElement CreateBoolControl(PropertyItem property)

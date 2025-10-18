@@ -23,7 +23,7 @@
 
                         <Border
                             Grid.Row="1"
-                            Padding="16"
+                            Padding="8"
                             Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
                             CornerRadius="8">
