@@ -48,35 +48,6 @@ An open-source OCR engine.
 
 Please select the module that works in the following order of high recognition accuracy:
 
-1. OneOcr
+1. New Windows Character Recognition (Beta)
 2. Windows Standard Character Recognition
 3. Tesseract OCR
-- When highest quality recognition is needed
-- Complex text that conventional OCR cannot recognize
-- When context-aware recognition is necessary
-
----
-
-## Choosing a Module
-
-| Purpose | Recommended Module |
-|---------|-------------------|
-| Start using immediately | **OneOcr** |
-| Highest quality recognition needed | **Google AI OCR** or **LLM OCR** |
-| Want to keep costs down | **OneOcr** or **Tesseract** |
-| Privacy priority | **OneOcr** or **Tesseract** |
-| Multilingual support needed | **Tesseract** or **Google AI OCR** |
-| Handwriting recognition | **Google AI OCR** or **LLM OCR** |
-| Offline environment | **OneOcr** or **Tesseract** |
-
----
-
-## Tips for Improving OCR Accuracy
-
-Regardless of which OCR module you use, you can improve recognition accuracy by paying attention to the following:
-
-1. **Screen Resolution**: Higher resolution improves recognition accuracy
-2. **Font Size**: Too small fonts are difficult to recognize, adjust to appropriate size
-3. **Contrast**: Higher contrast between text and background improves recognition accuracy
-4. **Clear Display**: Aim for display without blur or distortion
-5. **Language Settings**: Set the recognition target language correctly

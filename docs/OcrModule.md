@@ -48,6 +48,6 @@ Windows 10以降に標準搭載されているOCRエンジンです。
 
 認識精度が高い以下の順に動作するモジュールを選択してください。
 
-1. OneOcr
+1. 新Windows文字認識(ベータ)
 2. Windows標準文字認識
 3. Tesseract OCR

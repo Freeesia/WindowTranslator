@@ -48,35 +48,6 @@ Eine Open-Source-OCR-Engine.
 
 Bitte wählen Sie das Modul aus, das in folgender Reihenfolge hoher Erkennungsgenauigkeit funktioniert:
 
-1. OneOcr
+1. Neue Windows-Zeichenerkennung (Beta)
 2. Windows-Standard-Zeichenerkennung
 3. Tesseract OCR
-- Wenn höchste Erkennungsqualität benötigt wird
-- Komplexer Text, den herkömmliche OCR nicht erkennen kann
-- Wenn kontextbewusste Erkennung notwendig ist
-
----
-
-## Ein Modul auswählen
-
-| Zweck | Empfohlenes Modul |
-|-------|-------------------|
-| Sofort mit der Nutzung beginnen | **OneOcr** |
-| Höchste Erkennungsqualität benötigt | **Google AI OCR** oder **LLM OCR** |
-| Kosten niedrig halten | **OneOcr** oder **Tesseract** |
-| Datenschutz-Priorität | **OneOcr** oder **Tesseract** |
-| Mehrsprachige Unterstützung benötigt | **Tesseract** oder **Google AI OCR** |
-| Handschrifterkennung | **Google AI OCR** oder **LLM OCR** |
-| Offline-Umgebung | **OneOcr** oder **Tesseract** |
-
----
-
-## Tipps zur Verbesserung der OCR-Genauigkeit
-
-Unabhängig davon, welches OCR-Modul Sie verwenden, können Sie die Erkennungsgenauigkeit verbessern, indem Sie auf Folgendes achten:
-
-1. **Bildschirmauflösung**: Höhere Auflösung verbessert die Erkennungsgenauigkeit
-2. **Schriftgröße**: Zu kleine Schriften sind schwer zu erkennen, passen Sie auf geeignete Größe an
-3. **Kontrast**: Höherer Kontrast zwischen Text und Hintergrund verbessert die Erkennungsgenauigkeit
-4. **Klare Anzeige**: Streben Sie Anzeige ohne Unschärfe oder Verzerrung an
-5. **Spracheinstellungen**: Stellen Sie die Erkennungszielsprache korrekt ein
