@@ -10,12 +10,25 @@ public class LanguageOptions
     /// <summary>
     /// 翻訳元言語を取得または設定します。
     /// </summary>
-    public string Source { get; set; } = "en-US";
+    public string Source { get; set; } = GetDefaultSourceLanguage();
 
     /// <summary>
     /// 翻訳先言語を取得または設定します。
     /// </summary>
     public string Target { get; set; } = CultureInfo.CurrentUICulture.Name;
+
+    /// <summary>
+    /// OSの言語設定に基づいてデフォルトのソース言語を取得します。
+    /// </summary>
+    /// <returns>
+    /// OSの言語が英語の場合は日本語（ja-JP）、それ以外の場合は英語（en-US）
+    /// </returns>
+    private static string GetDefaultSourceLanguage()
+    {
+        var currentCulture = CultureInfo.CurrentUICulture.Name;
+        // OSの言語が英語の場合は日本語、それ以外は英語
+        return currentCulture.StartsWith("en", StringComparison.OrdinalIgnoreCase) ? "ja-JP" : "en-US";
+    }
 }
 
 /// <summary>
