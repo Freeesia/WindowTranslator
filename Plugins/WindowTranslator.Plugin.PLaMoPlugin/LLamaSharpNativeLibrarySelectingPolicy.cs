@@ -9,7 +9,7 @@ public class LLamaSharpNativeLibrarySelectingPolicy : INativeLibrarySelectingPol
     public IEnumerable<INativeLibrary> Apply(NativeLibraryConfig.Description description, SystemInfo systemInfo, NativeLogConfig.LLamaLogCallback? logCallback = null)
     {
         Log(description.ToString(), LLamaLogLevel.Info, logCallback);
-        yield return new NativeLibraryWithCuda(12, description.Library, description.AvxLevel, description.SkipCheck);
+        yield return new NativeLibraryWithVulkan(description.Library, description.AvxLevel, description.SkipCheck);
         yield return new NativeLibraryWithAvx(description.Library, description.AvxLevel, description.SkipCheck);
     }
 
