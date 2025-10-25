@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Panlingo.LanguageIdentification.FastText" />
-    <PackageReference Include="Microsoft.WindowsPackageManager.ComInterop" Version="1.11.530" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

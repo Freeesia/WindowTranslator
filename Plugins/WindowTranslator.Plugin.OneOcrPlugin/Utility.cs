@@ -43,6 +43,33 @@ static class Utility
         return path;
     }
 
+    /// <summary>
+    /// Get-AppxPackageを使用してScreenSketchのバージョンを取得する
+    /// </summary>
+    /// <returns>バージョン文字列。見つからない場合はnull</returns>
+    private static async ValueTask<string?> GetScreenSketchVersion()
+    {
+        var info = new ProcessStartInfo("powershell.exe", $"-Command \"(Get-AppxPackage -Name Microsoft.ScreenSketch).Version\"")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+        };
+        using var p = Process.Start(info);
+        await p!.WaitForExitAsync().ConfigureAwait(false);
+        if (p.ExitCode != 0)
+        {
+            return null;
+        }
+        var version = await p.StandardOutput.ReadToEndAsync();
+        version = version.Trim();
+        if (string.IsNullOrEmpty(version))
+        {
+            return null;
+        }
+        return version;
+    }
+
     public static async ValueTask<string?> FindOneOcrPath()
     {
         var scketch = await GetInstallLocation("Microsoft.ScreenSketch").ConfigureAwait(false);
@@ -58,17 +85,17 @@ static class Utility
     }
 
     /// <summary>
-    /// ScreenSketchのバージョンをチェックし、必要に応じて更新を試みる
+    /// ScreenSketchのバージョンをチェックし、必要に応じてMicrosoft Storeを開く
     /// </summary>
-    /// <returns>更新が成功したかどうか。更新が不要な場合もtrueを返す</returns>
-    public static async ValueTask<(bool success, string? message)> CheckAndUpdateScreenSketchAsync()
+    /// <returns>バージョンが十分か、または更新が必要かを示す情報</returns>
+    public static async ValueTask<(bool isVersionSufficient, string? message)> CheckScreenSketchVersionAsync()
     {
         try
         {
-            // インストール済みのScreenSketchパッケージ情報を取得
-            var installedInfo = await WinGetHelper.GetInstalledPackageInfoAsync(ScreenSketchProductId).ConfigureAwait(false);
+            // インストール済みのScreenSketchバージョンを取得
+            var installedVersion = await GetScreenSketchVersion().ConfigureAwait(false);
             
-            if (installedInfo == null)
+            if (installedVersion == null)
             {
                 // ScreenSketchがインストールされていない
                 return (false, "ScreenSketchがインストールされていません");
@@ -86,36 +113,57 @@ static class Utility
             }
 
             // バージョン比較
-            var comparison = WinGetHelper.CompareVersions(installedInfo.Version, minVersion);
+            var comparison = CompareVersions(installedVersion, minVersion);
             if (comparison >= 0)
             {
                 // バージョンが十分新しい
                 return (true, null);
             }
 
-            // バージョンが古いため、更新を試みる
-            var availableInfo = await WinGetHelper.GetPackageInfoAsync(ScreenSketchProductId).ConfigureAwait(false);
-            if (availableInfo == null)
-            {
-                return (false, $"ScreenSketchの更新情報を取得できませんでした。現在のバージョン: {installedInfo.Version}、必要なバージョン: {minVersion}");
-            }
-
-            // インストール済みの情報を使って更新
-            var upgraded = await WinGetHelper.UpgradePackageAsync(installedInfo).ConfigureAwait(false);
-            
-            if (upgraded)
-            {
-                return (true, $"ScreenSketchを {installedInfo.Version} から {availableInfo.Version} に更新しました");
-            }
-            else
-            {
-                return (false, $"ScreenSketchの更新に失敗しました。手動で更新してください。現在のバージョン: {installedInfo.Version}、必要なバージョン: {minVersion}");
-            }
+            // バージョンが古い
+            return (false, $"ScreenSketchの更新が必要です。現在のバージョン: {installedVersion}、必要なバージョン: {minVersion}");
         }
         catch (Exception ex)
         {
             return (false, $"ScreenSketchのバージョンチェック中にエラーが発生しました: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Microsoft Storeを開いてScreenSketchの更新を促す
+    /// </summary>
+    public static void OpenStoreForUpdate()
+    {
+        try
+        {
+            var storeUri = $"ms-windows-store://pdp/?ProductId={ScreenSketchProductId}";
+            var info = new ProcessStartInfo(storeUri)
+            {
+                UseShellExecute = true
+            };
+            Process.Start(info);
+        }
+        catch (Exception)
+        {
+            // ストアを開けない場合は無視
+        }
+    }
+
+    /// <summary>
+    /// バージョン文字列を比較する
+    /// </summary>
+    /// <param name="version1">バージョン1</param>
+    /// <param name="version2">バージョン2</param>
+    /// <returns>version1がversion2より新しい場合は1、古い場合は-1、同じ場合は0</returns>
+    private static int CompareVersions(string version1, string version2)
+    {
+        if (Version.TryParse(version1, out var v1) && Version.TryParse(version2, out var v2))
+        {
+            return v1.CompareTo(v2);
+        }
+
+        // Version型でパースできない場合は文字列比較
+        return string.Compare(version1, version2, StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool NeedCopyDll()

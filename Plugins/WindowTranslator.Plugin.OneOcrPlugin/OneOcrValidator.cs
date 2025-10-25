@@ -13,12 +13,40 @@ public class OneOcrValidator : ITargetSettingsValidator
             return ValidateResult.Valid;
         }
 
-        // ScreenSketchのバージョンをチェックし、必要に応じて更新
-        var (success, message) = await Utility.CheckAndUpdateScreenSketchAsync().ConfigureAwait(false);
-        if (!success && message != null)
+        // ScreenSketchのバージョンをチェック
+        var (isVersionSufficient, message) = await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false);
+        
+        if (!isVersionSufficient && message != null)
         {
-            // バージョンチェックや更新に失敗した場合は警告を表示するが、DLLのコピーは試みる
-            // （既に新しいバージョンがインストールされている可能性があるため）
+            // バージョンが古い場合、Microsoft Storeを開いて更新を促す
+            Utility.OpenStoreForUpdate();
+            
+            // ストアを開いた後、定期的にバージョンをチェック（最大30秒間、5秒ごと）
+            var maxRetries = 6;
+            var retryDelay = TimeSpan.FromSeconds(5);
+            
+            for (int i = 0; i < maxRetries; i++)
+            {
+                await Task.Delay(retryDelay).ConfigureAwait(false);
+                
+                var (newVersionSufficient, _) = await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false);
+                if (newVersionSufficient)
+                {
+                    // 更新が完了した
+                    break;
+                }
+            }
+            
+            // 最終確認
+            var (finalVersionSufficient, finalMessage) = await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false);
+            if (!finalVersionSufficient)
+            {
+                // まだバージョンが古い場合はエラーを返す
+                var errorMessage = finalMessage != null
+                    ? string.Format(Resources.NotFoundModuleWithVersion, finalMessage)
+                    : Resources.NotFoundModule;
+                return ValidateResult.Invalid("OneOcr", errorMessage);
+            }
         }
 
         if (!Utility.NeedCopyDll())
@@ -30,10 +58,7 @@ public class OneOcrValidator : ITargetSettingsValidator
         var oneOcrPath = await Utility.FindOneOcrPath().ConfigureAwait(false);
         if (oneOcrPath == null)
         {
-            var errorMessage = message != null
-                ? string.Format(Resources.NotFoundModuleWithVersion, message)
-                : Resources.NotFoundModule;
-            return ValidateResult.Invalid("OneOcr", errorMessage);
+            return ValidateResult.Invalid("OneOcr", Resources.NotFoundModule);
         }
 
         // DLLをコピー
