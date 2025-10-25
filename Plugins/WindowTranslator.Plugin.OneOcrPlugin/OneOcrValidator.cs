@@ -13,39 +13,14 @@ public class OneOcrValidator : ITargetSettingsValidator
             return ValidateResult.Valid;
         }
 
-        // ScreenSketchのバージョンをチェック
-        var (isVersionSufficient, message) = await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false);
-        
-        if (!isVersionSufficient && message != null)
+        // ScreenSketchのバージョンをチェック       
+        if (!await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
         {
             // バージョンが古い場合、Microsoft Storeを開いて更新を促す
-            Utility.OpenStoreForUpdate();
-            
-            // ストアを開いた後、定期的にバージョンをチェック（最大30秒間、5秒ごと）
-            var maxRetries = 6;
-            var retryDelay = TimeSpan.FromSeconds(5);
-            
-            for (int i = 0; i < maxRetries; i++)
+            Utility.OpenStoreForUpdate();            
+            while (!await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
             {
-                await Task.Delay(retryDelay).ConfigureAwait(false);
-                
-                var (newVersionSufficient, _) = await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false);
-                if (newVersionSufficient)
-                {
-                    // 更新が完了した
-                    break;
-                }
-            }
-            
-            // 最終確認
-            var (finalVersionSufficient, finalMessage) = await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false);
-            if (!finalVersionSufficient)
-            {
-                // まだバージョンが古い場合はエラーを返す
-                var errorMessage = finalMessage != null
-                    ? string.Format(Resources.NotFoundModuleWithVersion, finalMessage)
-                    : Resources.NotFoundModule;
-                return ValidateResult.Invalid("OneOcr", errorMessage);
+                await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);                
             }
         }
 
