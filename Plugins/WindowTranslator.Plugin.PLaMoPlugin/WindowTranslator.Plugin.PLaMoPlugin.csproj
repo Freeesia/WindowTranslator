@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LLamaSharp" />
-    <PackageReference Include="LLamaSharp.Backend.Cuda12.Windows" />
+    <PackageReference Include="LLamaSharp.Backend.Vulkan.Windows" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -17,9 +17,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="$(CUDA_PATH)\bin\cublas64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="$(CUDA_PATH)\bin\cublasLt64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="$(CUDA_PATH)\bin\cudart64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
