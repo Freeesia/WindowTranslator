@@ -2,6 +2,7 @@
 using WindowTranslator.Plugin.OneOcrPlugin.Properties;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -9,6 +10,7 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
 {
     private static readonly ValidateResult Invalid = ValidateResult.Invalid("OneOcr", Resources.NotFoundModule);
     private readonly IContentDialogService dialogService = dialogService;
+    private bool versionChecked = false;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
@@ -19,7 +21,7 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
         }
 
         // ScreenSketchのバージョンをチェック       
-        if (!await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
+        if (!this.versionChecked && !await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
         {
             // バージョンが古い場合、確認ダイアログを表示
             var confirmResult = await this.dialogService.ShowSimpleDialogAsync(new()
@@ -28,10 +30,7 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
                 Content = """
                 OneOcrを利用するには「切り取り領域とスケッチ」アプリの更新が必要です。
                 
-                Microsoft Storeを開いて更新を行いますか？
-                
-                > #### オプション
-                > [手動で更新する](ms-windows-store://pdp/?ProductId=9MZ95KL8MR0L)
+                Microsoft Storeを開いて更新を行ってください。
                 """,
                 PrimaryButtonText = "Storeを開く",
                 CloseButtonText = "更新しない"
@@ -48,14 +47,14 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
             // 更新チェック用のキャンセルトークン
             var checkCts = new CancellationTokenSource();
             var dialogCts = new CancellationTokenSource();
-            
+
             // バックグラウンドでバージョンチェックを継続
             var checkTask = Task.Run(async () =>
             {
                 while (!checkCts.Token.IsCancellationRequested)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(5), checkCts.Token).ConfigureAwait(false);
-                    
+
                     if (await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
                     {
                         // 更新完了
@@ -78,12 +77,12 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
                     更新が完了すると自動的に次に進みます。
                     
                     > #### 更新が完了しない場合
-                    > お手数ですが、Microsoft Storeで手動更新を完了してから再度お試しください。
-                    > [Microsoft Storeを開く](ms-windows-store://pdp/?ProductId=9MZ95KL8MR0L)
+                    > お手数ですが、Microsoft Storeで「更新とダウンロード」から更新を完了してから再度お試しください。
+                    > [更新とダウンロードを開く](ms-windows-store://downloadsandupdates)
                     """,
                     CloseButtonText = "中断"
                 }, dialogCts.Token);
-                
+
                 // ユーザーが中断した場合
                 await checkCts.CancelAsync();
                 return Invalid;
@@ -102,6 +101,8 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
                 // タスクのキャンセル
             }
         }
+
+        this.versionChecked = true;
 
         if (!Utility.NeedCopyDll())
         {
