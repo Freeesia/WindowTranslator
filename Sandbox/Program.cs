@@ -115,7 +115,7 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
 
 static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogger<OneOcr> logger, [FromServices] IOptionsSnapshot<LanguageOptions> langOptions, [FromServices] IOptionsSnapshot<BasicOcrParam> ocrParam)
 {
-    var validator = new OneOcrValidator();
+    var validator = new OneOcrValidator(null!);
     await validator.Validate(new() { SelectedPlugins = { [nameof(IOcrModule)] = nameof(OneOcr) } }).ConfigureAwait(false);
     var ocr = new OneOcr(logger, langOptions, ocrParam);
 
