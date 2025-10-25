@@ -160,4 +160,34 @@
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>종속 모듈을 찾을 수 없습니다. 이 환경에서는 사용할 수 없습니다. {0}</value>
   </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>캡처 도구 업데이트</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>OneOcr을 사용하려면 "캡처 도구" 앱을 업데이트해야 합니다.
+
+Microsoft Store를 열어 업데이트하십시오.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Store 열기</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>업데이트 안 함</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>업데이트 확인 중...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>"캡처 도구" 업데이트 확인 중...
+
+Microsoft Store에서 업데이트를 완료하십시오.
+업데이트가 완료되면 자동으로 계속됩니다.
+
+> #### 업데이트가 완료되지 않는 경우
+> Microsoft Store의 "다운로드 및 업데이트"에서 수동으로 업데이트를 완료한 후 다시 시도하십시오.
+> [다운로드 및 업데이트 열기](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>중단</value>
+  </data>
 </root>

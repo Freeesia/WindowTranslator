@@ -160,4 +160,34 @@ Bitte versuchen Sie, die Apps "Ausschneiden und skizzieren" oder "Microsoft Foto
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>Abhängige Module nicht gefunden. Nicht verfügbar in dieser Umgebung. {0}</value>
   </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Snipping Tool aktualisieren</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>Um OneOcr zu verwenden, müssen Sie die App "Snipping Tool" aktualisieren.
+
+Bitte öffnen Sie den Microsoft Store zur Aktualisierung.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Store öffnen</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>Nicht aktualisieren</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Suche nach Updates...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>Suche nach Updates für "Snipping Tool"...
+
+Bitte schließen Sie das Update im Microsoft Store ab.
+Der Vorgang wird automatisch fortgesetzt, wenn das Update abgeschlossen ist.
+
+> #### Wenn das Update nicht abgeschlossen wird
+> Bitte aktualisieren Sie manuell über "Downloads und Updates" im Microsoft Store und versuchen Sie es erneut.
+> [Downloads und Updates öffnen](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
 </root>

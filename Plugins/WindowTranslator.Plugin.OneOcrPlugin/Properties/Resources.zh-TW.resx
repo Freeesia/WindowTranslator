@@ -160,4 +160,34 @@
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>未找到相依模組。此環境不可用。{0}</value>
   </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>更新剪取工具</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>要使用OneOcr，需要更新「剪取工具」應用程式。
+
+請開啟Microsoft Store進行更新。</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>開啟Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>不更新</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>檢查更新中...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>正在檢查「剪取工具」的更新...
+
+請在Microsoft Store中完成更新。
+更新完成後將自動繼續。
+
+> #### 如果更新未完成
+> 請在Microsoft Store的「下載與更新」中手動完成更新，然後重試。
+> [開啟下載與更新](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>中止</value>
+  </data>
 </root>

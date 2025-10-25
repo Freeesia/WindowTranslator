@@ -160,4 +160,34 @@ Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>Dependent modules not found. Not available in this environment. {0}</value>
   </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Update Snipping Tool</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>To use OneOcr, you need to update the "Snipping Tool" app.
+
+Please open Microsoft Store to update.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Open Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>Don't Update</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Checking for Updates...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>Checking for "Snipping Tool" updates...
+
+Please complete the update in Microsoft Store.
+The process will continue automatically when the update is complete.
+
+> #### If the update doesn't complete
+> Please manually update from "Downloads and Updates" in Microsoft Store and try again.
+> [Open Downloads and Updates](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Abort</value>
+  </data>
 </root>

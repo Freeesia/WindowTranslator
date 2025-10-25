@@ -160,4 +160,34 @@
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>未找到依赖模块。此环境不可用。{0}</value>
   </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>更新截图工具</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>要使用OneOcr，需要更新"截图工具"应用。
+
+请打开Microsoft Store进行更新。</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>打开Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>不更新</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>检查更新中...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>正在检查"截图工具"的更新...
+
+请在Microsoft Store中完成更新。
+更新完成后将自动继续。
+
+> #### 如果更新未完成
+> 请在Microsoft Store的"下载和更新"中手动完成更新，然后重试。
+> [打开下载和更新](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>中止</value>
+  </data>
 </root>

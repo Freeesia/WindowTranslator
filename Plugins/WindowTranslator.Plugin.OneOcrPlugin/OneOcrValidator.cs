@@ -26,14 +26,10 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
             // バージョンが古い場合、確認ダイアログを表示
             var confirmResult = await this.dialogService.ShowSimpleDialogAsync(new()
             {
-                Title = "切り取り領域とスケッチの更新",
-                Content = """
-                OneOcrを利用するには「切り取り領域とスケッチ」アプリの更新が必要です。
-                
-                Microsoft Storeを開いて更新を行ってください。
-                """,
-                PrimaryButtonText = "Storeを開く",
-                CloseButtonText = "更新しない"
+                Title = Resources.UpdateDialogTitle,
+                Content = Resources.UpdateDialogContent,
+                PrimaryButtonText = Resources.OpenStoreButton,
+                CloseButtonText = Resources.DoNotUpdateButton
             });
 
             if (confirmResult != ContentDialogResult.Primary)
@@ -69,18 +65,9 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
                 // 更新中ダイアログを表示
                 await this.dialogService.ShowSimpleDialogAsync(new()
                 {
-                    Title = "更新確認中...",
-                    Content = """
-                    「切り取り領域とスケッチ」の更新を確認中...
-                    
-                    Microsoft Storeで更新を完了してください。
-                    更新が完了すると自動的に次に進みます。
-                    
-                    > #### 更新が完了しない場合
-                    > お手数ですが、Microsoft Storeで「更新とダウンロード」から更新を完了してから再度お試しください。
-                    > [更新とダウンロードを開く](ms-windows-store://downloadsandupdates)
-                    """,
-                    CloseButtonText = "中断"
+                    Title = Resources.CheckingUpdateTitle,
+                    Content = Resources.CheckingUpdateContent,
+                    CloseButtonText = Resources.AbortButton
                 }, dialogCts.Token);
 
                 // ユーザーが中断した場合

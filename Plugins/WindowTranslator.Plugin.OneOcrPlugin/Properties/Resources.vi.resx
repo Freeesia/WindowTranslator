@@ -160,4 +160,34 @@ Hãy thử cập nhật ứng dụng "Snipping Tool" hoặc "Microsoft Photos".<
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>Không tìm thấy mô-đun phụ thuộc. Không khả dụng trong môi trường này. {0}</value>
   </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Cập nhật Công cụ Cắt</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>Để sử dụng OneOcr, bạn cần cập nhật ứng dụng "Công cụ Cắt".
+
+Vui lòng mở Microsoft Store để cập nhật.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Mở Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>Không cập nhật</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Đang kiểm tra cập nhật...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>Đang kiểm tra cập nhật cho "Công cụ Cắt"...
+
+Vui lòng hoàn tất cập nhật trong Microsoft Store.
+Quá trình sẽ tự động tiếp tục khi cập nhật hoàn tất.
+
+> #### Nếu cập nhật không hoàn tất
+> Vui lòng cập nhật thủ công từ "Tải xuống và Cập nhật" trong Microsoft Store và thử lại.
+> [Mở Tải xuống và Cập nhật](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Hủy bỏ</value>
+  </data>
 </root>
