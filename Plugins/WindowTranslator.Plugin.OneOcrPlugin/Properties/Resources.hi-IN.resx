@@ -157,4 +157,37 @@
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
     <value>OCR行の境界ボックスの取得に失敗しました。行番号: {0}, エラーコード: {1}</value>
   </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>依存モジュールが見つかりません。この環境では利用できません。{0}</value>
+  </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>切り取り領域とスケッチの更新</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>OneOcrを利用するには「切り取り領域とスケッチ」アプリの更新が必要です。
+
+Microsoft Storeを開いて更新を行ってください。</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Storeを開く</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>更新しない</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>更新確認中...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>「切り取り領域とスケッチ」の更新を確認中...
+
+Microsoft Storeで更新を完了してください。
+更新が完了すると自動的に次に進みます。
+
+> #### 更新が完了しない場合
+> お手数ですが、Microsoft Storeで「更新とダウンロード」から更新を完了してから再度お試しください。
+> [更新とダウンロードを開く](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>中断</value>
+  </data>
 </root>
