@@ -1,4 +1,5 @@
-﻿using WindowTranslator.Modules;
+﻿using Microsoft.Extensions.Logging;
+using WindowTranslator.Modules;
 using WindowTranslator.Plugin.OneOcrPlugin.Properties;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -6,10 +7,11 @@ using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
-public class OneOcrValidator(IContentDialogService dialogService) : ITargetSettingsValidator
+public class OneOcrValidator(IContentDialogService dialogService, ILogger<OneOcrValidator> logger) : ITargetSettingsValidator
 {
-    private static readonly ValidateResult Invalid = ValidateResult.Invalid("OneOcr", Resources.NotFoundModule);
+    private static readonly ValidateResult Invalid = ValidateResult.Invalid(Resources.OneOcr, Resources.NotFoundModule);
     private readonly IContentDialogService dialogService = dialogService;
+    private readonly ILogger<OneOcrValidator> logger = logger;
     private bool versionChecked = false;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
@@ -21,7 +23,7 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
         }
 
         // ScreenSketchのバージョンをチェック       
-        if (!this.versionChecked && !await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
+        if (!this.versionChecked && !await Utility.CheckScreenSketchVersionAsync(this.logger))
         {
             // バージョンが古い場合、確認ダイアログを表示
             var confirmResult = await this.dialogService.ShowSimpleDialogAsync(new()
@@ -49,9 +51,9 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
             {
                 while (!checkCts.Token.IsCancellationRequested)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5), checkCts.Token).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(5), checkCts.Token);
 
-                    if (await Utility.CheckScreenSketchVersionAsync().ConfigureAwait(false))
+                    if (await Utility.CheckScreenSketchVersionAsync(this.logger))
                     {
                         // 更新完了
                         dialogCts.Cancel();
@@ -97,10 +99,10 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
         }
 
         // OneOcrのインストール先を取得
-        var oneOcrPath = await Utility.FindOneOcrPath().ConfigureAwait(false);
+        var oneOcrPath = await Utility.FindOneOcrPath();
         if (oneOcrPath == null)
         {
-            return ValidateResult.Invalid("OneOcr", Resources.NotFoundModule);
+            return Invalid;
         }
 
         // DLLをコピー
@@ -110,7 +112,7 @@ public class OneOcrValidator(IContentDialogService dialogService) : ITargetSetti
         }
         catch (Exception ex)
         {
-            return ValidateResult.Invalid("OneOcr", string.Format(Resources.CopyFaild, ex.Message));
+            return ValidateResult.Invalid(Resources.OneOcr, string.Format(Resources.CopyFaild, ex.Message));
         }
 
         return ValidateResult.Valid;

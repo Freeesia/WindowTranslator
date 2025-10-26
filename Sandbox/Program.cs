@@ -113,11 +113,11 @@ static async Task GoogleAITranslateTest([FromServices] IOptions<Secret> secret)
     Console.WriteLine(translated[0]);
 }
 
-static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogger<OneOcr> logger, [FromServices] IOptionsSnapshot<LanguageOptions> langOptions, [FromServices] IOptionsSnapshot<BasicOcrParam> ocrParam)
+static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILoggerFactory loggerFactory, [FromServices] IOptionsSnapshot<LanguageOptions> langOptions, [FromServices] IOptionsSnapshot<BasicOcrParam> ocrParam)
 {
-    var validator = new OneOcrValidator(null!);
+    var validator = new OneOcrValidator(null!, loggerFactory.CreateLogger<OneOcrValidator>());
     await validator.Validate(new() { SelectedPlugins = { [nameof(IOcrModule)] = nameof(OneOcr) } }).ConfigureAwait(false);
-    var ocr = new OneOcr(logger, langOptions, ocrParam);
+    var ocr = new OneOcr(loggerFactory.CreateLogger<OneOcr>(), langOptions, ocrParam);
 
     // 画像ファイルの読み込み
     using var fileStream = new FileStream(imagePath, FileMode.Open);

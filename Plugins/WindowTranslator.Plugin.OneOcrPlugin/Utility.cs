@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -20,6 +21,9 @@ static class Utility
     };
 
     public static string OneOcrPath { get; } = Path.Combine(PathUtility.UserDir, "OneOcr");
+
+    private static int GetOsVersion()
+        => Environment.OSVersion.Version is { Major: 10, Build: < 22000 } ? 10 : 11;
 
     private static async ValueTask<string?> GetInstallLocation(string appName)
     {
@@ -89,20 +93,22 @@ static class Utility
     /// ScreenSketchのバージョンをチェックし、必要に応じてMicrosoft Storeを開く
     /// </summary>
     /// <returns>バージョンが十分か、または更新が必要かを示す情報</returns>
-    public static async ValueTask<bool> CheckScreenSketchVersionAsync()
+    public static async ValueTask<bool> CheckScreenSketchVersionAsync(ILogger logger)
     {
         // インストール済みのScreenSketchバージョンを取得
         var installedVersion = await GetInstallVersion(ScreenSketchAppName).ConfigureAwait(false);
 
         if (installedVersion == null)
         {
+            logger.LogWarning("ScreenSketch is not installed.");
             // ScreenSketchがインストールされていない
             return false;
         }
 
         // 必要な最小バージョンを取得
-        if (!MinimumVersions.TryGetValue(Environment.OSVersion.Version.Major, out var minVersion))
+        if (!MinimumVersions.TryGetValue(GetOsVersion(), out var minVersion))
         {
+            logger.LogWarning("Unsupported OS version: {OSVersion}", Environment.OSVersion.Version);
             // サポートされていないOSバージョン（OSバージョンに応じたチェックをスキップ）
             return false;
         }
@@ -114,6 +120,7 @@ static class Utility
             return true;
         }
 
+        logger.LogInformation("ScreenSketch version is outdated. Installed: {InstalledVersion}, Required: {RequiredVersion}", installedVersion, minVersion);
         // バージョンが古い
         return false;
     }
