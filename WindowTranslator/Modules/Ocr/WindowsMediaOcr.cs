@@ -53,29 +53,26 @@ public sealed partial class WindowsMediaOcr(
     {
         var allResults = new List<TextRect>();
 
-        // 拡大率に基づくリサイズ処理
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-        this.cts.Token.ThrowIfCancellationRequested();
-
         foreach (var priorityRect in this.priorityRects)
         {
-            var absRect = priorityRect.ToAbsoluteRect(workingBitmap.PixelWidth, workingBitmap.PixelHeight);
+            // 元の画像サイズで絶対座標を計算
+            var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight);
 
-            // 指定矩形の画像を切り出してOCR
-            using var croppedBitmap = workingBitmap.Crop(absRect);
-            var rectResults = await RecognizeRegionAsync(croppedBitmap);
+            // 元の画像から矩形を切り出し
+            using var croppedBitmap = bitmap.Crop(absRect);
+            
+            // 切り出した画像をスケーリング
+            using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
+            this.cts.Token.ThrowIfCancellationRequested();
+            
+            // スケーリングされた切り出し画像をOCR
+            var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
 
-            // 切り出した画像の座標を元の画像の座標に変換
+            // 座標を元の画像座標系に変換（切り出し位置分オフセット）
             allResults.AddRange(rectResults.Select(text => text.Offset(absRect.X, absRect.Y, priorityRect.Keyword)));
         }
 
-        if (workingBitmap != bitmap)
-        {
-            workingBitmap.Dispose();
-        }
-
-        // スケールを戻す
-        return allResults.Select(r => ToTextRect(r, this.scale));
+        return allResults;
     }
 
     private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
