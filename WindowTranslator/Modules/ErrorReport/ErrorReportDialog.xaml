@@ -113,7 +113,7 @@
                 Content="{x:Static properties:Resources.Sent}"
                 IsOpen="{Binding Sent, Mode=OneWay}"
                 Placement="Top" />
-            <ui:Button Content="閉じる" IsCancel="True" />
+            <ui:Button Content="{x:Static properties:Resources.Close}" IsCancel="True" />
         </StackPanel>
         <ContentPresenter
             x:Name="RootContentDialog"
