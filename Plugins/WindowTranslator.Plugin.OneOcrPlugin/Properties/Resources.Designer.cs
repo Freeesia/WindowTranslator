@@ -61,6 +61,40 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
+        ///   中断 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string AbortButton {
+            get {
+                return ResourceManager.GetString("AbortButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   「切り取り領域とスケッチ」の更新を確認中...
+        ///
+        ///Microsoft Storeで更新を完了してください。
+        ///更新が完了すると自動的に次に進みます。
+        ///
+        ///&gt; #### 更新が完了しない場合
+        ///&gt; お手数ですが、Microsoft Storeで「更新とダウンロード」から更新を完了してから再度お試しください。
+        ///&gt; [更新とダウンロードを開く](ms-windows-store://downloadsandupdates) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CheckingUpdateContent {
+            get {
+                return ResourceManager.GetString("CheckingUpdateContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   更新確認中... に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CheckingUpdateTitle {
+            get {
+                return ResourceManager.GetString("CheckingUpdateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   OneOcrのDLLのコピーに失敗しました。{0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string CopyFaild {
@@ -71,7 +105,7 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         
         /// <summary>
         ///   OCRパイプラインの作成に失敗しました。エラーコード: {0}
-        ///   「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。 に類似しているローカライズされた文字列を検索します。
+        ///「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string CreatePipelineFaild {
             get {
@@ -89,11 +123,11 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
-        ///   OCR行の取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        ///   更新しない に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string GetLineFaild {
+        internal static string DoNotUpdateButton {
             get {
-                return ResourceManager.GetString("GetLineFaild", resourceCulture);
+                return ResourceManager.GetString("DoNotUpdateButton", resourceCulture);
             }
         }
         
@@ -125,6 +159,15 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
+        ///   OCR行の取得に失敗しました。行番号: {0}, エラーコード: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GetLineFaild {
+            get {
+                return ResourceManager.GetString("GetLineFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   OCRの初期化オプション作成に失敗しました。エラーコード: {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string InitFaild {
@@ -143,11 +186,29 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         }
         
         /// <summary>
+        ///   依存モジュールが見つかりません。この環境では利用できません。{0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NotFoundModuleWithVersion {
+            get {
+                return ResourceManager.GetString("NotFoundModuleWithVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   新Windows文字認識(ベータ) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string OneOcr {
             get {
                 return ResourceManager.GetString("OneOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Storeを開く に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string OpenStoreButton {
+            get {
+                return ResourceManager.GetString("OpenStoreButton", resourceCulture);
             }
         }
         
@@ -175,6 +236,26 @@ namespace WindowTranslator.Plugin.OneOcrPlugin.Properties {
         internal static string SetMaxRecognitionLineCountFaild {
             get {
                 return ResourceManager.GetString("SetMaxRecognitionLineCountFaild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OneOcrを利用するには「切り取り領域とスケッチ」アプリの更新が必要です。
+        ///
+        ///Microsoft Storeを開いて更新を行ってください。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string UpdateDialogContent {
+            get {
+                return ResourceManager.GetString("UpdateDialogContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   切り取り領域とスケッチの更新 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string UpdateDialogTitle {
+            get {
+                return ResourceManager.GetString("UpdateDialogTitle", resourceCulture);
             }
         }
     }

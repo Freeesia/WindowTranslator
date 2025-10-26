@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Panlingo.LanguageIdentification.FastText;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Collections;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.OneOcrPlugin.Properties;
 using WinRT;
@@ -17,6 +18,7 @@ using static WindowTranslator.Plugin.OneOcrPlugin.NativeMethods;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
+[DefaultModule]
 public sealed class OneOcr : IOcrModule, IDisposable
 {
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
