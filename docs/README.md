@@ -5,7 +5,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
 [![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
-[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
+[![Microsoft Store](https://get.microsoft.com/images/ja%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
 
 WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻訳するためのツールです。
 
@@ -15,14 +15,20 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 - [ WindowTranslator](#-windowtranslator)
   - [目次](#目次)
   - [ダウンロード](#ダウンロード)
-    - [インストール版 ](#インストール版-)
+    - [Microsoft Store版 ](#microsoft-store版-)
+    - [インストール版](#インストール版)
     - [ポータブル版](#ポータブル版)
   - [使い方](#使い方)
     - [Bergamot ](#bergamot-)
   - [その他の機能](#その他の機能)
 
 ## ダウンロード
-### インストール版 ![オススメ](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
+### Microsoft Store版 ![オススメ](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
+
+[Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)からインストールします。
+.NETがインストールされていない環境でも動作します。
+
+### インストール版
 
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)から`WindowTranslator-(バージョン).msi`をダウンロードして実行しインストールします。  
 インストール手順動画はこちら⬇️  
@@ -40,7 +46,8 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 
 1. `WindowTranslator.exe`を起動し、翻訳ボタンを押下します。  
    ![翻訳ボタン](images/translate.png)
-v   ![ウィンドウ選択](images/select.png)
+2. 翻訳したいアプリケーションのウィンドウを選択し、「OK」ボタンを押下します。  
+   ![ウィンドウ選択](images/select.png)
 3. 「全体設定」タブの「言語設定」から翻訳元・翻訳先を選択します。  
    ![言語設定](images/language.png)
 4. 設定完了後、「OK」ボタンを押下して設定画面を閉じます。  
@@ -52,7 +59,7 @@ v   ![ウィンドウ選択](images/select.png)
 > [!NOTE]
 > WindowTranslatorでは各種翻訳モジュールが利用可能です。  
 > Google翻訳は翻訳可能なテキスト量が少なく、利用頻度が高い場合は他のモジュールの利用を検討してください。  
-> 利用可能な翻訳モジュール一覧は下記の動画もしくは[Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳)でご確認いただけます。
+> 利用可能な翻訳モジュール一覧は下記の動画もしくは[ドキュメント](https://wt.studiofreesia.com/TranslateModule)でご確認いただけます。
 > 
 > |                |                                                              使い方動画                                                               | メリット                    | デメリット                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |

@@ -15,17 +15,23 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 - [ WindowTranslator](#-windowtranslator)
   - [目录](#目录)
   - [下载](#下载)
-    - [安装版 ](#安装版-)
+    - [Microsoft Store 版本 ](#microsoft-store-版本-)
+    - [安装版](#安装版)
     - [便携版](#便携版)
   - [使用方法](#使用方法)
     - [Bergamot ](#bergamot-)
   - [其他功能](#其他功能)
 
 ## 下载
-### 安装版 ![推荐](https://img.shields.io/badge/推荐-brightgreen)
+### Microsoft Store 版本 ![推荐](https://img.shields.io/badge/推荐-brightgreen)
+
+从 [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct) 安装。
+即使在未安装 .NET 的环境中也能正常工作。
+
+### 安装版
 
 从[GitHub发布页面](https://github.com/Freeesia/WindowTranslator/releases/latest)下载`WindowTranslator-(版本).msi`并运行安装。  
-安装指南视频⬇️  
+安装指南视频在这里⬇️  
 [![安装指南视频](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### 便携版
@@ -42,18 +48,18 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
    ![翻译按钮](images/translate.png)
 2. 选择要翻译的应用程序窗口，然后点击"确定"按钮。  
    ![窗口选择](images/select.png)
-3. 在"常规设置"选项卡中的"语言设置"中选择源语言和目标语言。  
+3. 在"全体设置"选项卡中的"语言设置"中选择翻译源语言和翻译目标语言。  
    ![语言设置](images/language.png)
 4. 完成设置后，点击"确定"按钮关闭设置界面。  
    > 可能需要安装OCR功能。
    > 请按照指示进行安装。
-5. 片刻后，翻译结果将以叠加形式显示。  
+5. 稍后翻译结果将以覆盖层形式显示。  
    ![翻译结果](images/result.png)
 
 > [!NOTE]
 > WindowTranslator提供各种翻译模块。  
 > Google翻译可翻译的文本量较少，如果您经常使用，请考虑使用其他模块。  
-> 您可以在下面的视频或[Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳)中查看可用翻译模块列表。
+> 您可以在下面的视频或[文档](https://wt.studiofreesia.com/TranslateModule.zh-cn)中查看可用翻译模块列表。
 > 
 > |                |                                                          使用方法视频                                                           | 优点                    | 缺点                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
@@ -66,8 +72,8 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 
 ## 其他功能
 
-除了翻译模块外，WindowTranslator还具有各种功能。  
-如果您想了解更多，请查看[Wiki](https://github.com/Freeesia/WindowTranslator/wiki)。
+除了翻译模块外，WindowTranslator还搭载了各种功能。  
+如果想了解更多，请查看[Wiki](https://github.com/Freeesia/WindowTranslator/wiki)。
 
 ---
 [隐私政策](PrivacyPolicy.md)

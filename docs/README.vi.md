@@ -15,14 +15,20 @@ WindowTranslator là công cụ để dịch cửa sổ của các ứng dụng 
 - [ WindowTranslator](#-windowtranslator)
   - [Mục lục](#mục-lục)
   - [Tải xuống](#tải-xuống)
-    - [Phiên bản cài đặt ](#phiên-bản-cài-đặt-)
+    - [Phiên bản Microsoft Store ](#phiên-bản-microsoft-store-)
+    - [Phiên bản cài đặt](#phiên-bản-cài-đặt)
     - [Phiên bản di động](#phiên-bản-di-động)
   - [Cách sử dụng](#cách-sử-dụng)
     - [Bergamot ](#bergamot-)
   - [Các tính năng khác](#các-tính-năng-khác)
 
 ## Tải xuống
-### Phiên bản cài đặt ![Đề xuất](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
+### Phiên bản Microsoft Store ![Đề xuất](https://img.shields.io/badge/Đề_xuất-brightgreen)
+
+Cài đặt từ [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
+Hoạt động ngay cả trong môi trường chưa cài đặt .NET.
+
+### Phiên bản cài đặt
 
 Tải xuống `WindowTranslator-(phiên bản).msi` từ [trang Releases trên GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) và chạy để cài đặt.  
 Video hướng dẫn cài đặt ở đây⬇️  
@@ -36,24 +42,24 @@ Tải xuống tệp zip từ [trang Releases trên GitHub](https://github.com/Fr
 
 ## Cách sử dụng
 
-### Bergamot ![Mặc định](https://img.shields.io/badge/デフォルト-brightgreen)
+### Bergamot ![Mặc định](https://img.shields.io/badge/Mặc_định-brightgreen)
 
 1. Khởi chạy `WindowTranslator.exe` và nhấn nút dịch.  
    ![Nút dịch](images/translate.png)
 2. Chọn cửa sổ ứng dụng bạn muốn dịch và nhấn nút "OK".  
    ![Chọn cửa sổ](images/select.png)
-3. Chọn ngôn ngữ nguồn và ngôn ngữ đích từ "Cài đặt ngôn ngữ" trong tab "Cài đặt chung".  
+3. Chọn ngôn ngữ nguồn dịch và ngôn ngữ đích dịch từ "Cài đặt ngôn ngữ" trong tab "Cài đặt tổng thể".  
    ![Cài đặt ngôn ngữ](images/language.png)
 4. Sau khi cài đặt hoàn tất, nhấn nút "OK" để đóng màn hình cài đặt.  
    > Có thể cần cài đặt chức năng OCR.
    > Vui lòng làm theo hướng dẫn để cài đặt.
-5. Sau một lúc, kết quả dịch sẽ được hiển thị dưới dạng lớp phủ.  
+5. Sau một lúc, kết quả dịch sẽ được hiển thị dưới dạng overlay.  
    ![Kết quả dịch](images/result.png)
 
 > [!NOTE]
 > WindowTranslator có nhiều mô-đun dịch khác nhau có sẵn.  
 > Google Dịch có giới hạn lượng văn bản có thể dịch thấp, nếu bạn sử dụng thường xuyên, hãy cân nhắc sử dụng các mô-đun khác.  
-> Bạn có thể xem danh sách các mô-đun dịch có sẵn trong video bên dưới hoặc trên [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳).
+> Bạn có thể xem danh sách các mô-đun dịch có sẵn trong video bên dưới hoặc trên [Tài liệu](https://wt.studiofreesia.com/TranslateModule.vi).
 > 
 > |                |                                                              Video hướng dẫn                                                           | Ưu điểm                    | Nhược điểm                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
@@ -66,10 +72,10 @@ Tải xuống tệp zip từ [trang Releases trên GitHub](https://github.com/Fr
 
 ## Các tính năng khác
 
-Ngoài các mô-đun dịch, WindowTranslator còn có nhiều tính năng khác.  
-Để tìm hiểu thêm về cách sử dụng nâng cao, vui lòng xem [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
+Ngoài các mô-đun dịch, WindowTranslator còn được trang bị nhiều tính năng khác.  
+Nếu muốn tìm hiểu thêm, vui lòng xem [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
 
 ---
-[Chính sách riêng tư](PrivacyPolicy.vi.md)
+[Chính sách riêng tư](PrivacyPolicy.md)
 
 Tài liệu này được dịch từ tiếng Nhật bằng công cụ dịch máy.
