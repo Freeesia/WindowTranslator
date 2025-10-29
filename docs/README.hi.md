@@ -9,7 +9,7 @@
 
 WindowTranslator Windows पर एप्लिकेशन की विंडो का अनुवाद करने के लिए एक उपकरण है।
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md)
 
 ## विषय सूची
 - [ WindowTranslator](#-windowtranslator)
