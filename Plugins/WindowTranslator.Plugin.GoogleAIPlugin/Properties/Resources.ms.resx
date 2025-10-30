@@ -75,10 +75,10 @@
     <value>Gemini 2.0 Flash</value>
   </data>
   <data name="PreviewModel" xml:space="preserve">
-    <value>Preview model to be used</value>
+    <value>Model pratonton untuk digunakan</value>
   </data>
   <data name="PreviewModel_Desc" xml:space="preserve">
-    <value>If you enter a model name, it will take precedence over "Model to be used</value>
+    <value>Jika anda memasukkan nama model, ia akan diutamakan berbanding "Model untuk digunakan"</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
     <value>Sampel Pembetulan</value>
@@ -102,10 +102,10 @@
     <value>Pembetulan pengecaman</value>
   </data>
   <data name="GoogleAIOptions" xml:space="preserve">
-    <value>Gemini Settings</value>
+    <value>Tetapan Gemini</value>
   </data>
   <data name="GoogleAITranslator" xml:space="preserve">
-    <value>Gemini Translation</value>
+    <value>Terjemahan Gemini</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
     <value>Tunggu pembetulan selesai sebelum meneruskan terjemahan</value>
@@ -120,9 +120,9 @@
     <value>Gemini 2.5 Flash Lite</value>
   </data>
   <data name="GeminiNotInitialized" xml:space="preserve">
-    <value>Gemini functionality is not initialized. Please configure Google AI options from the settings dialog</value>
+    <value>Fungsi Gemini tidak diinisialisasi. Sila konfigurasikan pilihan Google AI dari dialog tetapan</value>
   </data>
   <data name="InvalidApiKey" xml:space="preserve">
-    <value>Gemini API key is invalid. Please configure Google AI options from the settings dialog</value>
+    <value>Kunci API Gemini tidak sah. Sila konfigurasikan pilihan Google AI dari dialog tetapan</value>
   </data>
 </root>

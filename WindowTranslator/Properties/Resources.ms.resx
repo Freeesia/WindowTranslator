@@ -186,10 +186,10 @@
     <value>Mula automatik semasa but sistem</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>General settings</value>
+    <value>Tetapan umum</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Display method</value>
+    <value>Kaedah paparan</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
     <value>Per-item settings</value>
@@ -210,16 +210,16 @@
     <value>license</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Do not translate</value>
+    <value>Jangan terjemah</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
     <value>Tetapan cache</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>Threshold for close text</value>
+    <value>Ambang untuk teks hampir</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>Do not cache</value>
+    <value>Jangan cache</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
     <value>Windows Standard Character Recognition</value>
@@ -228,7 +228,7 @@
     <value>Nama Aplikasi</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Gift games on Steam</value>
+    <value>Hadiahkan permainan di Steam</value>
   </data>
   <data name="Application" xml:space="preserve">
     <value>Maklumat Aplikasi</value>
@@ -249,23 +249,23 @@
     <value>Show busy icon</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Translate only when overlay is enabled</value>
+    <value>Terjemah hanya apabila hamparan didayakan</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Display overlay translation only for text at mouse pointer position</value>
+    <value>Paparkan terjemahan hamparan hanya untuk teks pada kedudukan penunjuk tetikus</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay background opacity</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Send error information to the report system. The following information will be sent:
-* Application information
-* PC specifications and environment information
-* Translation target application name
-* Translation target image
-* Translation target settings
+    <value>Hantar maklumat ralat ke sistem laporan. Maklumat berikut akan dihantar:
+* Maklumat aplikasi
+* Spesifikasi PC dan maklumat persekitaran
+* Nama aplikasi sasaran terjemahan
+* Imej sasaran terjemahan
+* Tetapan sasaran terjemahan
 
-&gt; %{color:red}**Personal information will not be sent, but please ensure that personal information is not included in the translation target screen.**%</value>
+&gt; %{color:red}**Maklumat peribadi tidak akan dihantar, tetapi sila pastikan maklumat peribadi tidak disertakan dalam skrin sasaran terjemahan.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
     <value>Send Information</value>
@@ -292,7 +292,7 @@
     <value>Melampir</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Export</value>
+    <value>Eksport</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>Kosongkan</value>
@@ -301,16 +301,16 @@
     <value>Skrol Automatik</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>Export Logs</value>
+    <value>Eksport Log</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>Export Failed</value>
+    <value>Eksport Gagal</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>Export Completed</value>
+    <value>Eksport Selesai</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>Logs exported to `{0}`.</value>
+    <value>Log dieksport ke `{0}`.</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
     <value>Text Files</value>
@@ -322,21 +322,20 @@
     <value>Translation failed</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>Failed to embed into window.</value>
+    <value>Gagal membenam ke dalam tetingkap.</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
     <value>Please select a window other than WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>The selected window "{0}" cannot determine the process and cannot be captured.
-Monitors are not supported.
-</value>
+    <value>Tetingkap yang dipilih "{0}" tidak dapat menentukan proses dan tidak dapat ditangkap.
+Monitor tidak disokong.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Settings Validation Error</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>Save and Close</value>
+    <value>Simpan dan Tutup</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
     <value>Tetapan Lalai</value>
@@ -345,7 +344,7 @@ Monitors are not supported.
     <value>Mula Automatik</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0} has been registered for auto-start.</value>
+    <value>{0} telah didaftarkan untuk mula automatik.</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
     <value>Mula automatik untuk {0} telah dilumpuhkan.</value>
@@ -354,12 +353,12 @@ Monitors are not supported.
     <value>Tetapan Bahasa</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>Source and target languages are the same. Please specify different languages.</value>
+    <value>Bahasa sumber dan sasaran adalah sama. Sila nyatakan bahasa yang berbeza.</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
-    <value>OCR functionality for {0} is not available. Please install the target language feature</value>
+    <value>Fungsi OCR untuk {0} tidak tersedia. Sila pasang ciri bahasa sasaran</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>Failed to apply settings.</value>
+    <value>Gagal menerapkan tetapan.</value>
   </data>
 </root>

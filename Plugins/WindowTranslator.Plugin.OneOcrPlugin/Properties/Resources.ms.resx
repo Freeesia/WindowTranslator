@@ -66,38 +66,38 @@
     <value>Modul bersandar tidak dijumpai. Tidak tersedia dalam persekitaran ini.</value>
   </data>
   <data name="CopyFaild" xml:space="preserve">
-    <value>Failed to copy OneOcr DLL. {0}</value>
+    <value>Gagal menyalin DLL OneOcr. {0}</value>
   </data>
   <data name="InitFaild" xml:space="preserve">
-    <value>Failed to create OCR initialization options. Error code: {0}</value>
+    <value>Gagal mencipta pilihan permulaan OCR. Kod ralat: {0}</value>
   </data>
   <data name="SetLazyLoadFaild" xml:space="preserve">
-    <value>Failed to set OCR model lazy loading. Error code: {0}</value>
+    <value>Gagal menetapkan pemuatan lambat model OCR. Kod ralat: {0}</value>
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>Failed to create OCR pipeline. Error code: {0}
-Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
+    <value>Gagal mencipta saluran OCR. Kod ralat: {0}
+Sila cuba mengemas kini aplikasi "Snipping Tool" atau "Microsoft Photos".</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
-    <value>Failed to create OCR process options. Error code: {0}</value>
+    <value>Gagal mencipta pilihan proses OCR. Kod ralat: {0}</value>
   </data>
   <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
-    <value>Failed to set OCR maximum recognition line count. Error code: {0}</value>
+    <value>Gagal menetapkan kiraan baris pengecaman maksimum OCR. Kod ralat: {0}</value>
   </data>
   <data name="RunPipelineFaild" xml:space="preserve">
-    <value>Failed to run OCR pipeline. Error code: {0}</value>
+    <value>Gagal menjalankan saluran OCR. Kod ralat: {0}</value>
   </data>
   <data name="GetLineCountFaild" xml:space="preserve">
-    <value>Failed to get OCR line count. Error code: {0}</value>
+    <value>Gagal mendapatkan kiraan baris OCR. Kod ralat: {0}</value>
   </data>
   <data name="GetLineFaild" xml:space="preserve">
-    <value>Failed to get OCR line. Line number: {0}, Error code: {1}</value>
+    <value>Gagal mendapatkan baris OCR. Nombor baris: {0}, Kod ralat: {1}</value>
   </data>
   <data name="GetLineContentFaild" xml:space="preserve">
-    <value>Failed to get OCR line text content. Line number: {0}, Error code: {1}</value>
+    <value>Gagal mendapatkan kandungan teks baris OCR. Nombor baris: {0}, Kod ralat: {1}</value>
   </data>
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
-    <value>Failed to get OCR line bounding box. Line number: {0}, Error code: {1}</value>
+    <value>Gagal mendapatkan kotak sempadan baris OCR. Nombor baris: {0}, Kod ralat: {1}</value>
   </data>
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>Modul bersandar tidak dijumpai. Tidak tersedia dalam persekitaran ini. {0}</value>
@@ -106,15 +106,15 @@ Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
     <value>Update Snipping Tool</value>
   </data>
   <data name="UpdateDialogContent" xml:space="preserve">
-    <value>To use OneOcr, you need to update the "Snipping Tool" app.
+    <value>Untuk menggunakan OneOcr, anda perlu mengemas kini aplikasi "Snipping Tool".
 
-Please open Microsoft Store to update.</value>
+Sila buka Microsoft Store untuk mengemas kini.</value>
   </data>
   <data name="OpenStoreButton" xml:space="preserve">
     <value>Open Store</value>
   </data>
   <data name="DoNotUpdateButton" xml:space="preserve">
-    <value>Don't Update</value>
+    <value>Jangan kemas kini</value>
   </data>
   <data name="CheckingUpdateTitle" xml:space="preserve">
     <value>Menyemak Kemas Kini...</value>

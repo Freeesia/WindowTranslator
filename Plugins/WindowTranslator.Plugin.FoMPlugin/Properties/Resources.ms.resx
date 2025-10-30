@@ -60,21 +60,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ExcludeUnspecifiedText" xml:space="preserve">
-    <value>Exclude unidentified text</value>
+    <value>Kecualikan teks tidak dikenal pasti</value>
   </data>
   <data name="FarmName" xml:space="preserve">
-    <value>Farm Name</value>
+    <value>Nama Ladang</value>
   </data>
   <data name="FoMOptions" xml:space="preserve">
-    <value>Exclusive to Fields of Mistria</value>
+    <value>Eksklusif untuk Fields of Mistria</value>
   </data>
   <data name="IsEnabledCorrect" xml:space="preserve">
-    <value>Use compensation with resources included in the game.</value>
+    <value>Gunakan pampasan dengan sumber yang disertakan dalam permainan.</value>
   </data>
   <data name="PlayerName" xml:space="preserve">
     <value>Player Name</value>
   </data>
   <data name="UseJpn" xml:space="preserve">
-    <value>Use the Japanese resources included in the game</value>
+    <value>Gunakan sumber Jepun yang disertakan dalam permainan</value>
   </data>
 </root>

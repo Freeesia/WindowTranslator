@@ -65,16 +65,16 @@
     <value>Bergamot tidak tersedia pada PC anda</value>
   </data>
   <data name="NotFoundToModel" xml:space="preserve">
-    <value>Model data that can translate to {0} was not found. Translation to this language is not available.</value>
+    <value>Data model yang boleh menterjemah ke {0} tidak dijumpai. Terjemahan ke bahasa ini tidak tersedia.</value>
   </data>
   <data name="NotFoundFromModel" xml:space="preserve">
-    <value>Model data that can translate from {0} was not found. Translation from this language is not available.</value>
+    <value>Data model yang boleh menterjemah dari {0} tidak dijumpai. Terjemahan dari bahasa ini tidak tersedia.</value>
   </data>
   <data name="DownloadFaild" xml:space="preserve">
-    <value>Failed to download model file.
+    <value>Gagal memuat turun fail model.
 {0}</value>
   </data>
   <data name="NotFoundCompatModel" xml:space="preserve">
-    <value>No translatable model data from {0} to {1} was found. Translation for this language pair is not available.</value>
+    <value>Tiada data model terjemahan dari {0} ke {1} dijumpai. Terjemahan untuk pasangan bahasa ini tidak tersedia.</value>
   </data>
 </root>

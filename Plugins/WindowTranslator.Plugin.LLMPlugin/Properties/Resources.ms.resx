@@ -78,7 +78,7 @@
     <value>Kunci API</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>Local LLM Connection</value>
+    <value>Sambungan LLM Tempatan</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
     <value>Sampel Pembetulan</value>
@@ -90,7 +90,7 @@
     <value>laluan glosari</value>
   </data>
   <data name="Endpoint_Desc" xml:space="preserve">
-    <value>Empty when using OpenAI</value>
+    <value>Kosong semasa menggunakan OpenAI</value>
   </data>
   <data name="LLMOptions" xml:space="preserve">
     <value>Tetapan API ChatGPT</value>
@@ -102,7 +102,7 @@
     <value>Tunggu pembetulan selesai sebelum meneruskan terjemahan</value>
   </data>
   <data name="NeedSettings" xml:space="preserve">
-    <value>LLM functionality is not initialized. Please configure LLM options in the settings dialog</value>
+    <value>Fungsi LLM tidak diinisialisasi. Sila konfigurasikan pilihan LLM dalam dialog tetapan</value>
   </data>
   <data name="InvalidOptions" xml:space="preserve">
     <value>"Terjemahan API ChatGPT" dipilih sebagai modul terjemahan atau pembetulan pengecaman didayakan.

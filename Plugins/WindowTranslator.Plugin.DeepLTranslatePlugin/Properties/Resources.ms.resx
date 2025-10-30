@@ -63,7 +63,7 @@
     <value>Kunci API</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>Glossary Path</value>
+    <value>Laluan Glosari</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
     <value>Kunci API DeepL tidak dikonfigurasi. Sila tetapkan kunci API DeepL dari dialog tetapan.</value>
