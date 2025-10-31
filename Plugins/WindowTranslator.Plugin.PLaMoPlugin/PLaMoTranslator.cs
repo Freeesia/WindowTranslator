@@ -98,8 +98,6 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
             throw new InvalidOperationException(Resources.ModelNotInitialized);
         }
 
-
-
         using var context = this.weights.CreateContext(this.modelParams, this.logger);
         var executor = new StatelessExecutor(this.weights, this.modelParams);
         var responseBuilder = new StringBuilder();
