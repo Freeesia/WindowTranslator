@@ -379,6 +379,8 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("zh-Hant"),
         CultureInfo.GetCultureInfo("vi-VN"),
         CultureInfo.GetCultureInfo("hi-IN"),
+        CultureInfo.GetCultureInfo("ms-MY"),
+        CultureInfo.GetCultureInfo("id-ID"),
     ];
 
     [Browsable(false)]
