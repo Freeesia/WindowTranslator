@@ -30,15 +30,15 @@ Funciona mesmo em ambientes onde o .NET não está instalado.
 
 ### Versão para instalação
 
-[página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)de`WindowTranslator-(バージョン).msi`をDownloadして実行しインストールします。  
+[página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)de `WindowTranslator-(versão).msi`e execute para instalar.  
 Vídeo tutorial de instalação aqui⬇️  
-[![インストール手順動画](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+[![Vídeo de instalação](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### Versão portátil
 
-[página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)dezipファイルをDownloadして任意のフォルダに展開してください。  
-- `WindowTranslator-(バージョン).zip` : Requer ambiente .NET  
-- `WindowTranslator-full-(バージョン).zip` : Independente do .NET
+[página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)de arquivo zip e extraia para qualquer pasta.  
+- `WindowTranslator-(versão).zip` : Requer ambiente .NET  
+- `WindowTranslator-full-(versão).zip` : Independente do .NET
 
 ## Como usar
 
@@ -48,7 +48,7 @@ Vídeo tutorial de instalação aqui⬇️
    ![Botão de Tradução](images/translate.png)
 2. Selecione a janela do aplicativo que deseja traduzir e clique no botão "OK".  
    ![Seleção de Janela](images/select.png)
-3. 「全体設定」タブの「Configuração de Idioma」deTradução元・Tradução先を選択します。  
+3. Na aba "Configurações Gerais", em "Configuração de Idioma", selecione o idioma de origem e destino.  
    ![Configuração de Idioma](images/language.png)
 4. Após concluir as configurações, clique no botão "OK" para fechar a tela de configurações.  
    > A instalação da função OCR pode ser necessária.
@@ -59,14 +59,14 @@ Vídeo tutorial de instalação aqui⬇️
 > [!NOTE]
 > Vários módulos de tradução estão disponíveis no WindowTranslator.  
 > O Google Tradutor tem um limite baixo de texto traduzível. Se você usa com frequência, considere usar outros módulos.  
-> A lista de módulos de tradução disponíveis pode ser vista no vídeo abaixo ou na[documentação](https://wt.studiofreesia.com/TranslateModule).
+> A lista de módulos de tradução disponíveis pode ser vista no vídeo abaixo ou na [documentação](https://wt.studiofreesia.com/TranslateModule).
 > 
-> |                |                                                              Como usar動画                                                               | Vantagens                    | デVantagens                        |
+> |                |                                                              Vídeo de uso                                                               | Vantagens                    | Desvantagens                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
 > |   Bergamot     | | Totalmente gratuito<br/>Sem limite de tradução<br/>Tradução rápida | Menor precisão de tradução<br/>Requer mais de 1GB de memória livre |
-> |   GoogleTradução   | [![GooleTradução設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Totalmente gratuito | Limite de tradução baixo<br/>Menor precisão de tradução |
-> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Grande cota gratuita<br/>Tradução rápida | |
-> |     Gemini     | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Alta precisão de tradução | Requer pequeno pagamento |
+> |   Google Tradutor   | [![Vídeo de configuração do Google Tradutor](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Totalmente gratuito | Limite de tradução baixo<br/>Menor precisão de tradução |
+> |     DeepL      |   [![Vídeo de configuração do DeepL](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Grande cota gratuita<br/>Tradução rápida | |
+> |     Gemini     | [![Vídeo de configuração do Google AI](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Alta precisão de tradução | Requer pequeno pagamento |
 > |    ChatGPT     | TBD | Alta precisão de tradução | Requer pequeno pagamento |
 > |  LLM Local   | TBD | O serviço em si é gratuito | Requer PC de alto desempenho |
 

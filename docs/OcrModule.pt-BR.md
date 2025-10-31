@@ -1,11 +1,11 @@
 # OCRMódulo
 
-WindowTranslatorでは、画面上のテキストを認識するために複数のOCRMódulode選択できます。  
-各Móduloには特徴があり、用途に応じて適切なMóduloを選択することで、より正確なテキスト認識が可能になります。
+WindowTranslatorでは, 画面上のテキストを認識するために複数のOCRMódulode選択できます.  
+各Móduloには特徴があり, 用途に応じて適切なMóduloを選択することで, より正確なテキスト認識が可能になります.
 
 ## 新Windows文字認識(ベータ) ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-Microsoftが提供するローカルOCRMóduloです。
+Microsoftが提供するローカルOCRMóduloです.
 
 ### Vantagens
 - **認識精度**: 最も高い認識精度を誇ります
@@ -19,7 +19,7 @@ Microsoftが提供するローカルOCRMóduloです。
 
 ## Windows標準文字認識
 
-Windows 10以降に標準搭載されているOCRエンジンです。
+Windows 10以降に標準搭載されているOCRエンジンです.
 
 ### Vantagens
 - **使用メモリ**: 軽量でメモリ使用量が少ないです
@@ -33,7 +33,7 @@ Windows 10以降に標準搭載されているOCRエンジンです。
 
 ## Tesseract OCR
 
-オープンソースのOCRエンジンです。
+オープンソースのOCRエンジンです.
 
 ### Vantagens
 - **多言語対応**: 100以上の言語に対応しています
@@ -46,7 +46,7 @@ Windows 10以降に標準搭載されているOCRエンジンです。
 
 ## Móduloの選び方
 
-認識精度が高い以下の順に動作するMóduloを選択してください。
+認識精度が高い以下の順に動作するMóduloを選択してください.
 
 1. 新Windows文字認識(ベータ)
 2. Windows標準文字認識

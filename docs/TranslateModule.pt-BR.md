@@ -1,17 +1,17 @@
 # TraduçãoMódulo
 
-WindowTranslatorでは、複数のTraduçãoMódulode選択して利用できます。  
-各Móduloには特徴があり、用途に応じて適切なMóduloを選択することで、より快適にTraduçãoを利用できます。
+WindowTranslatorでは, 複数のTraduçãoMódulode選択して利用できます.  
+各Móduloには特徴があり, 用途に応じて適切なMóduloを選択することで, より快適にTraduçãoを利用できます.
 
 ## Bergamot ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-オフラインで動作する機械TraduçãoMóduloです。
+オフラインで動作する機械TraduçãoMóduloです.
 
 ### Vantagens
 - **Totalmente gratuito**: 料金は一切かかりません
 - **Sem limite de tradução**: 何度でもTraduçãoできます
 - **高速**: ローカルで処理されるためTradução rápidaです
-- **プライバシー**: インターネット接続不要で、データが外部に送信されません
+- **プライバシー**: インターネット接続不要で, データが外部に送信されません
 - **安定性**: ネットワークの影響を受けません
 
 ### デVantagens
@@ -29,7 +29,7 @@ WindowTranslatorでは、複数のTraduçãoMódulode選択して利用できま
 
 ## GoogleTradução
 
-GoogleのTraduçãoサービスを利用したTraduçãoMóduloです。
+GoogleのTraduçãoサービスを利用したTraduçãoMóduloです.
 
 ### Vantagens
 - **Totalmente gratuito**: APIキーなしで利用できます
@@ -51,7 +51,7 @@ GoogleのTraduçãoサービスを利用したTraduçãoMóduloです。
 
 ## DeepL
 
-高品質なTraduçãoで知られるDeepLのTraduçãoサービスを利用したMóduloです。
+高品質なTraduçãoで知られるDeepLのTraduçãoサービスを利用したMóduloです.
 
 ### Vantagens
 - **高精度**: 自然で高品質なTraduçãoが得られます
@@ -61,7 +61,7 @@ GoogleのTraduçãoサービスを利用したTraduçãoMóduloです。
 
 ### デVantagens
 - **API登録必要**: DeepL APIの登録とAPIキーの設定が必要です
-- **無料枠制限**: 無料枠を超えた場合、有料プランへの移行が必要です
+- **無料枠制限**: 無料枠を超えた場合, 有料プランへの移行が必要です
 - **対応言語**: 対応言語がGoogleなどと比べて限定的です
 
 ### 推奨される利用シーン
@@ -72,7 +72,7 @@ GoogleのTraduçãoサービスを利用したTraduçãoMóduloです。
 
 ## Google AI (Gemini)
 
-Googleの最新AI技術を活用したTraduçãoMóduloです。
+Googleの最新AI技術を活用したTraduçãoMóduloです.
 
 ### Vantagens
 - **最高精度**: 文脈を理解した非常に高品質なTraduçãoが可能です
@@ -82,7 +82,7 @@ Googleの最新AI技術を活用したTraduçãoMóduloです。
 ### デVantagens
 - **APIキー必要**: Google AI StudiodeAPIキーの取得と設定が必要です
 - **従量課金**: 利用量に応じた課金が発生します（ただし少額）
-- **速度**: LLMベースのため、他のMóduloより処理時間がかかります
+- **速度**: LLMベースのため, 他のMóduloより処理時間がかかります
 
 ### 推奨される利用シーン
 - 最高品質のTraduçãoを求める場合
@@ -93,7 +93,7 @@ Googleの最新AI技術を活用したTraduçãoMóduloです。
 
 ## ChatGPT API (OR LLM Local)
 
-ChatGPT APIまたはLLM Localを利用したTraduçãoMóduloです。
+ChatGPT APIまたはLLM Localを利用したTraduçãoMóduloです.
 
 ### Vantagens
 - **最高精度**: 大規模言語モデルによる高品質なTradução
@@ -105,7 +105,7 @@ ChatGPT APIまたはLLM Localを利用したTraduçãoMóduloです。
 - **APIキー必要**: 各サービスのAPIキーの設定が必要です（LLM Localを除く）
 - **従量課金**: 利用量に応じた課金が発生します（LLM Localを除く）
 - **速度**: 処理時間が長めです
-- **LLM Localの要件**: 自前のLLMを動かす場合、Requer PC de alto desempenhoです
+- **LLM Localの要件**: 自前のLLMを動かす場合, Requer PC de alto desempenhoです
 
 ### 推奨される利用シーン
 - 最高品質のTraduçãoを求める場合
@@ -116,18 +116,18 @@ ChatGPT APIまたはLLM Localを利用したTraduçãoMóduloです。
 
 ## PLaMo
 
-日本語に特化したLLM Localを利用したTraduçãoMóduloです。
+日本語に特化したLLM Localを利用したTraduçãoMóduloです.
 
 ### Vantagens
 - **日本語特化**: 日本語のTraduçãoに最適化されています
 - **Totalmente gratuito**: オープンソースモデルで料金不要
-- **プライバシー**: ローカルで動作するため、データが外部に送信されません
+- **プライバシー**: ローカルで動作するため, データが外部に送信されません
 - **オフライン**: インターネット接続不要
 
 ### デVantagens
 - **高スペック要件**: GPUを含む高性能なPCが必要です
 - **メモリ使用量**: 大量のメモリが必要です（8GB以上推奨）
-- **速度**: GPUなしの場合、処理に時間がかかります
+- **速度**: GPUなしの場合, 処理に時間がかかります
 
 ### 推奨される利用シーン
 - 高性能なPCを所有している場合
