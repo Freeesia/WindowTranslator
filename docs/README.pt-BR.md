@@ -3,79 +3,77 @@
 [![App Build](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
-[![GitHub Baixes (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
-[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
+[![Microsoft Store](https://get.microsoft.com/images/pt-br%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
 
-WindowTranslator is a tool for translating windows of applications on Windows.
+WindowTranslator é uma ferramenta para traduzir as janelas de aplicativos do Windows.
 
-[JA](README.md) | [PT-BR](./README.pt-BR.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md) | [PT-BR](./README.pt-BR.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md) | [PT-BR](./README.pt-BR.md)
 
 ## Índice
 - [ WindowTranslator](#-windowtranslator)
-  - [Índice](#table-of-contents)
-  - [Baixe](#download)
-    - [Microsoft Store Version ](#microsoft-store-version-)
-    - [Installer Version](#installer-version)
-    - [Portable Version](#portable-version)
-  - [How to Use](#how-to-use)
+  - [Índice](#Índice)
+  - [Download](#Download)
+    - [Versão Microsoft Store ](#microsoft-store版-)
+    - [Versão para instalação](#Versão para instalação)
+    - [Versão portátil](#Versão portátil)
+  - [Como usar](#Como usar)
     - [Bergamot ](#bergamot-)
-  - [Other Features](#other-features)
+  - [Outras funções](#Outras funções)
 
-## Baixe
-### Microsoft Store Version ![Recomendado](https://img.shields.io/badge/Recomendado-brightgreen)
+## Download
+### Versão Microsoft Store ![Recomendado](https://img.shields.io/badge/%E3%82%AA%E3%82%B9%E3%82%B9%E3%83%A1-brightgreen)
 
-Instalar da the [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
-Works even in environments where .NET is not installed.
+[Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)para instalar.
+Funciona mesmo em ambientes onde o .NET não está instalado.
 
-### Installer Version
+### Versão para instalação
 
-Baixe `WindowTranslator-(version).msi` de the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
-Installation tutorial video is here⬇️  
-[![Installation tutorial video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+[página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)de`WindowTranslator-(バージョン).msi`をDownloadして実行しインストールします。  
+Vídeo tutorial de instalação aqui⬇️  
+[![インストール手順動画](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
-### Portable Version
+### Versão portátil
 
-Baixe the zip file de the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
-- `WindowTranslator-(version).zip` : Requer ambiente .NET  
-- `WindowTranslator-full-(version).zip` : .NET independent
+[página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)dezipファイルをDownloadして任意のフォルダに展開してください。  
+- `WindowTranslator-(バージョン).zip` : Requer ambiente .NET  
+- `WindowTranslator-full-(バージョン).zip` : Independente do .NET
 
-## How to Use
+## Como usar
 
 ### Bergamot ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-1. Launch `WindowTranslator.exe` e clique no botão de tradução.  
+1. `WindowTranslator.exe`e clique no botão de tradução.  
    ![Botão de Tradução](images/translate.png)
-2. Select the window of the application you want to translate and click the "OK" button.  
+2. Selecione a janela do aplicativo que deseja traduzir e clique no botão "OK".  
    ![Seleção de Janela](images/select.png)
-3. From the "General Settings" tab, select the source and target languages in "Language Settings".  
-   ![Language Settings](images/language.png)
-4. After completing the settings, click the "OK" button to close the settings screen.  
-   > OCR function installation may be required.
-   > Please follow the instructions to install.
-5. After a while, the translation results will be displayed as an overlay.  
-   ![Translation Results](images/result.png)
+3. 「全体設定」タブの「Configuração de Idioma」deTradução元・Tradução先を選択します。  
+   ![Configuração de Idioma](images/language.png)
+4. Após concluir as configurações, clique no botão "OK" para fechar a tela de configurações.  
+   > A instalação da função OCR pode ser necessária.
+   > Siga as instruções para instalar.
+5. Após alguns instantes, o resultado da tradução será exibido como sobreposição.  
+   ![Resultado da Tradução](images/result.png)
 
 > [!NOTE]
-> Various translation modules are available in WindowTranslator.  
-> Google Translate has a low limit on the amount of text that can be translated. If you use it frequently, consider using other modules.  
-> You can check the list of available translation modules in the videos below or on the [Documentation](https://wt.studiofreesia.com/TranslateModule.en).
+> Vários módulos de tradução estão disponíveis no WindowTranslator.  
+> O Google Tradutor tem um limite baixo de texto traduzível. Se você usa com frequência, considere usar outros módulos.  
+> A lista de módulos de tradução disponíveis pode ser vista no vídeo abaixo ou na[documentação](https://wt.studiofreesia.com/TranslateModule).
 > 
-> |                |                                                           How to Use Video                                                            | Advantages                    | Disadvantages                        |
-> | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
-> |   Bergamot     | | Completely free<br/>No translation limit<br/>Fast translation | Lower translation accuracy<br/>Requires more than 1GB of free memory |
-> |   Google Translate   | [![Google Translate Setup Video](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Completely free | Low translation limit<br/>Lower translation accuracy |
-> |     DeepL      |   [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Large free tier<br/>Fast translation | |
-> |     Gemini     | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High translation accuracy | Small fee required |
-> |    ChatGPT     | TBD | High translation accuracy | Small fee required |
-> | Local LLM | TBD | Service itself is free | High-spec PC required |
+> |                |                                                              Como usar動画                                                               | Vantagens                    | デVantagens                        |
+> | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------------- |
+> |   Bergamot     | | Totalmente gratuito<br/>Sem limite de tradução<br/>Tradução rápida | Menor precisão de tradução<br/>Requer mais de 1GB de memória livre |
+> |   GoogleTradução   | [![GooleTradução設定動画](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Totalmente gratuito | Limite de tradução baixo<br/>Menor precisão de tradução |
+> |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Grande cota gratuita<br/>Tradução rápida | |
+> |     Gemini     | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Alta precisão de tradução | Requer pequeno pagamento |
+> |    ChatGPT     | TBD | Alta precisão de tradução | Requer pequeno pagamento |
+> |  LLM Local   | TBD | O serviço em si é gratuito | Requer PC de alto desempenho |
 
-## Other Features
+## Outras funções
 
-In addition to translation modules, WindowTranslator has various features.  
-If you want to learn more, please check the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
+Além dos módulos de tradução, o WindowTranslator possui várias outras funções.  
+Para aqueles que desejam usar mais recursos, consulte a[Wiki](https://github.com/Freeesia/WindowTranslator/wiki) .
 
 ---
 [Política de Privacidade](PrivacyPolicy.md)
-
-This document was translated de Japanese using machine translation.

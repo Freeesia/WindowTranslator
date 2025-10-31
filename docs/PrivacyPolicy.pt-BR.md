@@ -3,61 +3,60 @@ title: Política de Privacidade
 description: WindowTranslator Política de Privacidade
 ---
 
-This Política de Privacidade governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+本Política de Privacidadeは、「WindowTranslator」（以下「本アプリ」といいます）の利用に際し、ユーザーの個人情報およびデータの取り扱いについて定めたものです。
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data de its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## はじめに
+本アプリはオープンソースとしてGitHub（ https://github.com/Freeesia/WindowTranslator ）にて公開されており、アプリ自体は基本的にユーザーの個人情報や利用状況を収集しません。ただし、ユーザーが明示的にエラーレポートの送信を選択した場合のみ、技術的な問題解決のために必要最小限の情報を収集いたします。
 
-## Collection of Personal Information
+## 個人情報の収集について
+### アプリ自体による情報収集
+本アプリは、通常の利用においてユーザーの入力情報、操作履歴、端末情報などの個人情報を直接収集しません。
+ただし、ユーザーが明示的にエラーレポートの送信を選択した場合のみ、技術的な問題解決のために必要な情報を収集いたします。
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### エラーログ・クラッシュレポート
+本アプリでは、ユーザーが明示的にエラーレポートの送信操作を行った場合のみ、以下の情報を収集いたします：
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+- アプリケーションの動作情報
+- PCのハードウェア仕様情報
+- OS環境情報
+- エラー発生時の状況
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+これらの情報は技術的な問題の解決とアプリの品質向上のためにのみ使用され、個人を特定できる情報は含まれません。
+エラーレポートの送信は完全に任意であり、ユーザーの同意なしに自動的に送信されることはありません。
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+## Googleユーザーデータに関する取り扱い
+本アプリはGoogle Apps Scriptサービスへアクセスする際のみ、以下の通りGoogleユーザーデータに関連する権限を取得します。
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+### アクセスするデータ
+本アプリは、Google Apps Scriptを利用するために必要な最小限の認証トークンのみを取得します。  
+ユーザーの個人情報自体は一切利用しません。
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### データの利用方法
+取得した認証情報は、アプリ内でGoogle Apps Scriptを実行するためにのみ使用されます。  
+この認証は、ユーザーがGoogleサービスを利用するための認証目的に限定され、その他の目的では使用されません。
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### データの共有・転送
+認証情報やその他のGoogleユーザーデータは、本アプリ提供者によって一切収集、保存、共有、または第三者への転送は行われません。  
+すべての認証情報はユーザーのPC上に保存され、Googleのサービス利用のためにのみ利用されます。
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### データ保護の仕組み
+認証情報はユーザーのPC上に安全に保存され、アプリ提供者はこれらの情報へのアクセス権限を一切有しておりません。  
+したがって、データ保護に関する追加のセキュリティ対策は、ユーザー自身のPCのセキュリティ管理に依存します。
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### データの保持・削除
+認証情報（Googleの認証トークン等）は、ユーザーのPC上にのみ保存されます。  
+認証情報の削除は、ユーザーがPC上の `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin` フォルダを削除することで完結し、アプリ提供者側で管理・削除することはありません。
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## Traduçãoエンジンおよび第三者ライブラリの利用について
+本アプリは、GoogleTradução、DeepLなど、複数のTraduçãoエンジンを利用可能な設計となっております。これらのTraduçãoエンジンおよび連携ライブラリは、各サービスの独自のPolítica de Privacidadeに基づいてユーザー情報や利用状況の収集を行う可能性があります。
+ユーザーの皆様には、本アプリ利用に際してご利用のTraduçãoエンジン各社のPolítica de Privacidadeも併せてご確認いただくことを強く推奨いたします。
 
-## Contact Information  
-For any questions or feedback regarding this Política de Privacidade, please contact:  
-GitHub Account: [Freeesia](https://github.com/Freeesia)
+## お問い合わせ先
+本Política de Privacidadeに関するご質問・ご意見は、下記GitHubアカウントまでご連絡ください。
 
-## Changes to This Política de Privacidade  
-This Política de Privacidade may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+GitHubアカウント: [Freeesia](https://github.com/Freeesia)
 
-> [!WARNING]
-> Note: This file is machine translated de the original Japanese version, which is the master version.
+## 本Política de Privacidadeの変更について
+法令の改正や本アプリの機能変更等に伴い、本Política de Privacidadeを予告なく変更する場合があります。変更が行われた場合は、本アプリ内またはGitHubリポジトリ等を通じて速やかに周知いたします。
+
+以上
