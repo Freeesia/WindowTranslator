@@ -1,63 +1,63 @@
 ---
-title: Privacy Policy
-description: WindowTranslator Privacy Policy
+title: Dasar Privasi
+description: Dasar Privasi WindowTranslator
 ---
 
-This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+Dasar Privasi ini mengawal penggunaan "WindowTranslator" (selepas ini dirujuk sebagai "Aplikasi").
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## Pengenalan
+Aplikasi ini adalah sumber terbuka dan tersedia di GitHub ( https://github.com/Freeesia/WindowTranslator ).  
+Aplikasi ini secara amnya tidak mengumpul maklumat peribadi atau data penggunaan daripada penggunanya. Walau bagaimanapun, apabila pengguna secara eksplisit memilih untuk menghantar laporan ralat, maklumat minimum yang diperlukan untuk penyelesaian masalah teknikal dikumpulkan.
 
-## Collection of Personal Information
+## Pengumpulan Maklumat Peribadi
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### Maklumat yang Dikumpul oleh Aplikasi  
+Aplikasi ini tidak mengumpul secara langsung data peribadi seperti input pengguna, sejarah interaksi, atau maklumat peranti semasa penggunaan biasa.
+Walau bagaimanapun, apabila pengguna secara eksplisit memilih untuk menghantar laporan ralat, maklumat yang diperlukan untuk penyelesaian masalah teknikal dikumpulkan.
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+### Log Ralat dan Laporan Kemalangan  
+Aplikasi ini mengumpul maklumat berikut hanya apabila pengguna secara eksplisit melakukan penyerahan laporan ralat:
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+- Maklumat operasi aplikasi
+- Maklumat spesifikasi perkakasan PC
+- Maklumat persekitaran OS
+- Keadaan berlakunya ralat
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+Maklumat ini digunakan semata-mata untuk penyelesaian masalah teknikal dan peningkatan kualiti aplikasi, dan tidak termasuk maklumat yang boleh mengenal pasti secara peribadi.
+Penyerahan laporan ralat adalah sepenuhnya sukarela dan tidak akan dihantar secara automatik tanpa persetujuan pengguna.
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+## Pengendalian Data Pengguna Google  
+Apabila mengakses perkhidmatan Google Apps Script, Aplikasi ini hanya mendapatkan token pengesahan minimum yang diperlukan.  
+Tiada maklumat peribadi pengguna digunakan di luar pengesahan ini.
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### Penggunaan Data yang Dikumpul  
+Maklumat pengesahan yang diperoleh digunakan semata-mata untuk melaksanakan Google Apps Script dalam Aplikasi.  
+Pengesahan ini terhad secara ketat kepada tujuan membolehkan penggunaan perkhidmatan Google.
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### Perkongsian atau Pemindahan Data  
+Pembekal Aplikasi tidak mengumpul, menyimpan, berkongsi, atau memindahkan sebarang maklumat pengesahan atau data pengguna Google lain.  
+Semua data pengesahan disimpan pada PC pengguna dan digunakan semata-mata untuk mengakses perkhidmatan Google.
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### Perlindungan Data  
+Data pengesahan disimpan dengan selamat pada PC pengguna, dan pembekal Aplikasi tidak mempunyai sebarang hak akses kepada data ini.  
+Langkah keselamatan tambahan bergantung kepada pengurusan keselamatan PC pengguna sendiri.
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### Pengekalan dan Penghapusan Data  
+Token pengesahan disimpan hanya pada PC pengguna.  
+Penghapusan token ini diselesaikan oleh pengguna dengan membuang folder yang terletak di `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## Penggunaan Enjin Terjemahan dan Perpustakaan Pihak Ketiga  
+Aplikasi ini direka untuk menyokong pelbagai enjin terjemahan, termasuk Google Terjemahan dan DeepL.  
+Enjin terjemahan ini dan perpustakaan yang berkaitan mungkin mengumpul data pengguna atau maklumat penggunaan mengikut dasar privasi masing-masing.  
+Pengguna amat digalakkan untuk menyemak dasar privasi perkhidmatan terjemahan yang mereka gunakan.
 
-## Contact Information  
-For any questions or feedback regarding this Privacy Policy, please contact:  
-GitHub Account: [Freeesia](https://github.com/Freeesia)
+## Maklumat Hubungan  
+Untuk sebarang pertanyaan atau maklum balas mengenai Dasar Privasi ini, sila hubungi:  
+Akaun GitHub: [Freeesia](https://github.com/Freeesia)
 
-## Changes to This Privacy Policy  
-This Privacy Policy may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+## Perubahan kepada Dasar Privasi Ini  
+Dasar Privasi ini mungkin dipinda tanpa notis awal kerana perubahan dalam undang-undang atau fungsi aplikasi.  
+Sebarang perubahan akan segera dikomunikasikan melalui Aplikasi atau repositori GitHub.
 
 > [!WARNING]
-> Note: This file is machine translated from the original Japanese version, which is the master version.
+> Nota: Fail ini diterjemahkan mesin dari versi Bahasa Jepun yang asal, yang merupakan versi induk.

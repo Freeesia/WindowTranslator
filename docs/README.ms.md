@@ -7,75 +7,75 @@
 [![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
 [![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
 
-WindowTranslator is a tool for translating windows of applications on Windows.
+WindowTranslator adalah alat untuk menterjemah tetingkap aplikasi pada Windows.
 
 [JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md)
 
-## Table of Contents
+## Kandungan
 - [ WindowTranslator](#-windowtranslator)
-  - [Table of Contents](#table-of-contents)
-  - [Download](#download)
-    - [Microsoft Store Version ](#microsoft-store-version-)
-    - [Installer Version](#installer-version)
-    - [Portable Version](#portable-version)
-  - [How to Use](#how-to-use)
+  - [Kandungan](#kandungan)
+  - [Muat Turun](#muat-turun)
+    - [Versi Microsoft Store ](#versi-microsoft-store-)
+    - [Versi Pemasang](#versi-pemasang)
+    - [Versi Mudah Alih](#versi-mudah-alih)
+  - [Cara Penggunaan](#cara-penggunaan)
     - [Bergamot ](#bergamot-)
-  - [Other Features](#other-features)
+  - [Ciri-ciri Lain](#ciri-ciri-lain)
 
-## Download
-### Microsoft Store Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
+## Muat Turun
+### Versi Microsoft Store ![Disyorkan](https://img.shields.io/badge/Disyorkan-brightgreen)
 
-Install from the [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
-Works even in environments where .NET is not installed.
+Pasang dari [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
+Berfungsi walaupun dalam persekitaran di mana .NET tidak dipasang.
 
-### Installer Version
+### Versi Pemasang
 
-Download `WindowTranslator-(version).msi` from the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
-Installation tutorial video is here⬇️  
-[![Installation tutorial video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+Muat turun `WindowTranslator-(versi).msi` dari [halaman keluaran GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) dan jalankan untuk memasang.  
+Video tutorial pemasangan ada di sini⬇️  
+[![Video tutorial pemasangan](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
-### Portable Version
+### Versi Mudah Alih
 
-Download the zip file from the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
-- `WindowTranslator-(version).zip` : Requires .NET environment  
-- `WindowTranslator-full-(version).zip` : .NET independent
+Muat turun fail zip dari [halaman keluaran GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) dan ekstrak ke mana-mana folder.  
+- `WindowTranslator-(versi).zip` : Memerlukan persekitaran .NET  
+- `WindowTranslator-full-(versi).zip` : Bebas daripada .NET
 
-## How to Use
+## Cara Penggunaan
 
-### Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
+### Bergamot ![Lalai](https://img.shields.io/badge/Lalai-brightgreen)
 
-1. Launch `WindowTranslator.exe` and click the translate button.  
-   ![Translate Button](images/translate.png)
-2. Select the window of the application you want to translate and click the "OK" button.  
-   ![Window Selection](images/select.png)
-3. From the "General Settings" tab, select the source and target languages in "Language Settings".  
-   ![Language Settings](images/language.png)
-4. After completing the settings, click the "OK" button to close the settings screen.  
-   > OCR function installation may be required.
-   > Please follow the instructions to install.
-5. After a while, the translation results will be displayed as an overlay.  
-   ![Translation Results](images/result.png)
+1. Lancarkan `WindowTranslator.exe` dan klik butang terjemah.  
+   ![Butang Terjemah](images/translate.png)
+2. Pilih tetingkap aplikasi yang anda mahu terjemahkan dan klik butang "OK".  
+   ![Pemilihan Tetingkap](images/select.png)
+3. Dari tab "Tetapan Umum", pilih bahasa sumber dan sasaran dalam "Tetapan Bahasa".  
+   ![Tetapan Bahasa](images/language.png)
+4. Selepas menyelesaikan tetapan, klik butang "OK" untuk menutup skrin tetapan.  
+   > Pemasangan fungsi OCR mungkin diperlukan.
+   > Sila ikuti arahan untuk memasang.
+5. Selepas beberapa ketika, hasil terjemahan akan dipaparkan sebagai hamparan.  
+   ![Hasil Terjemahan](images/result.png)
 
 > [!NOTE]
-> Various translation modules are available in WindowTranslator.  
-> Google Translate has a low limit on the amount of text that can be translated. If you use it frequently, consider using other modules.  
-> You can check the list of available translation modules in the videos below or on the [Documentation](https://wt.studiofreesia.com/TranslateModule.en).
+> Pelbagai modul terjemahan tersedia dalam WindowTranslator.  
+> Google Terjemahan mempunyai had rendah pada jumlah teks yang boleh diterjemahkan. Jika anda menggunakannya dengan kerap, pertimbangkan untuk menggunakan modul lain.  
+> Anda boleh menyemak senarai modul terjemahan yang tersedia dalam video di bawah atau di [Dokumentasi](https://wt.studiofreesia.com/TranslateModule.en).
 > 
-> |                |                                                           How to Use Video                                                            | Advantages                    | Disadvantages                        |
+> |                |                                                           Video Cara Penggunaan                                                            | Kelebihan                    | Kekurangan                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
-> |   Bergamot     | | Completely free<br/>No translation limit<br/>Fast translation | Lower translation accuracy<br/>Requires more than 1GB of free memory |
-> |   Google Translate   | [![Google Translate Setup Video](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Completely free | Low translation limit<br/>Lower translation accuracy |
-> |     DeepL      |   [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Large free tier<br/>Fast translation | |
-> |     Gemini     | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High translation accuracy | Small fee required |
-> |    ChatGPT     | TBD | High translation accuracy | Small fee required |
-> | Local LLM | TBD | Service itself is free | High-spec PC required |
+> |   Bergamot     | | Percuma sepenuhnya<br/>Tiada had terjemahan<br/>Terjemahan pantas | Ketepatan terjemahan lebih rendah<br/>Memerlukan lebih daripada 1GB memori bebas |
+> |   Google Terjemahan   | [![Video Persediaan Google Terjemahan](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Percuma sepenuhnya | Had terjemahan rendah<br/>Ketepatan terjemahan lebih rendah |
+> |     DeepL      |   [![Video Persediaan DeepL](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Peringkat percuma yang besar<br/>Terjemahan pantas | |
+> |     Gemini     | [![Video Persediaan Google AI](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Ketepatan terjemahan tinggi | Bayaran kecil diperlukan |
+> |    ChatGPT     | TBD | Ketepatan terjemahan tinggi | Bayaran kecil diperlukan |
+> | LLM Tempatan | TBD | Perkhidmatan itu sendiri percuma | PC spesifikasi tinggi diperlukan |
 
-## Other Features
+## Ciri-ciri Lain
 
-In addition to translation modules, WindowTranslator has various features.  
-If you want to learn more, please check the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
+Selain modul terjemahan, WindowTranslator mempunyai pelbagai ciri.  
+Jika anda ingin mengetahui lebih lanjut, sila semak [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
 
 ---
-[Privacy Policy](PrivacyPolicy.md)
+[Dasar Privasi](PrivacyPolicy.md)
 
-This document was translated from Japanese using machine translation.
+Dokumen ini diterjemahkan dari Bahasa Jepun menggunakan terjemahan mesin.
