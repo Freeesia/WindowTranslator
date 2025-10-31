@@ -1,7 +1,7 @@
 # Módulo de Tradução
 
-WindowTranslator memungkinkan Anda memilih de beberapa modul terjemahan.  
-Setiap modul memiliki karakteristiknya sendiri, dan dengan memilih modul yang sesuai untuk kasus penggunaan Anda, Anda dapat menggunakan terjemahan dengan lebih nyaman.
+O WindowTranslator permite que você escolha entre vários módulos de tradução.  
+Cada módulo tem suas próprias características, e ao escolher o módulo adequado para o seu caso de uso, você pode utilizar as traduções de forma mais conveniente.
 
 ## Bergamot ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 

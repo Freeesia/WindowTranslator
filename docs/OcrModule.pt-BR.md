@@ -1,7 +1,7 @@
 # Módulo OCR
 
-WindowTranslator memungkinkan Anda memilih de beberapa modul OCR untuk mengenali teks di layar.  
-Setiap modul memiliki karakteristiknya sendiri, dan memilih modul yang sesuai untuk kasus penggunaan Anda akan memungkinkan pengenalan teks yang lebih akurat.
+O WindowTranslator permite que você escolha entre vários módulos de OCR para reconhecer texto na tela.  
+Cada módulo tem suas próprias características, e escolher o módulo adequado para o seu caso de uso permitirá um reconhecimento de texto mais preciso.
 
 ## Pengenalan Karakter Windows Baru (Beta) ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
