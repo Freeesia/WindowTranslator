@@ -1,147 +1,147 @@
-# Módulo de Tradução
+# Módulo de Traduçãos
 
-O WindowTranslator permite que você escolha entre vários módulos de tradução.  
-Cada módulo tem suas próprias características, e ao escolher o módulo adequado para o seu caso de uso, você pode utilizar as traduções de forma mais conveniente.
+WindowTranslator allows you to choose de multiple translation modules.  
+Each module has its own characteristics, and by selecting the appropriate module for your use case, you can use translation more comfortably.
 
 ## Bergamot ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-Modul terjemahan mesin yang berfungsi offline.
+A machine translation module that works offline.
 
-### Keuntungan
-- **Sepenuhnya Gratis**: Tidak ada biaya sama sekali
-- **Tidak Ada Batas Tradução**: Anda dapat menerjemahkan sebanyak yang Anda inginkan
-- **Cepat**: Tradução cepat karena diproses secara lokal
-- **Privasi**: Tidak ada koneksi internet yang diperlukan, data tidak dikirim ke luar
-- **Stabilitas**: Tidak terpengaruh oleh kondisi jaringan
+### Advantages
+- **Completely Free**: No charges whatsoever
+- **No Translation Limits**: You can translate as many times as you want
+- **Fast**: Translation is quick as it's processed locally
+- **Privacy**: No internet connection required, data is not sent externally
+- **Stability**: Not affected by network conditions
 
-### Kerugian
-- **Akurasi Tradução**: Akurasi terjemahan lebih rendah dibandingkan layanan berbasis cloud
-- **Penggunaan Memori**: Menggunakan sejumlah memori untuk pemrosesan terjemahan
-- **Dukungan Bahasa**: Hanya beberapa pasangan bahasa yang didukung
+### Disadvantages
+- **Translation Accuracy**: Lower translation accuracy compared to cloud-based services
+- **Memory Usage**: Uses a certain amount of memory for translation processing
+- **Language Support**: Only some language pairs are supported
 
-### Kasus Penggunaan yang Recomendado
-- Ketika Anda ingin menggunakannya secara gratis
-- Penggunaan dalam lingkungan offline
-- Ketika privasi penting
-- Ketika menerjemahkan secara sering
+### Recomendado Use Cases
+- When you want to use it for free
+- Use in offline environments
+- When privacy is important
+- When translating frequently
 
 ---
 
-## Google Tradução
+## Google Translate
 
-Modul terjemahan menggunakan layanan terjemahan Google.
+A translation module using Google's translation service.
 
-### Keuntungan
-- **Sepenuhnya Gratis**: Dapat digunakan tanpa kunci API
-- **Dukungan Multibahasa**: Mendukung banyak pasangan bahasa
-- **Mudah**: Tidak ada konfigurasi khusus yang diperlukan
+### Advantages
+- **Completely Free**: Can be used without an API key
+- **Multilingual Support**: Supports many language pairs
+- **Easy**: No special configuration required
 
-### Kerugian
-- **Batas Tradução**: Jumlah karakter terbatas yang dapat diterjemahkan per hari
-- **Akurasi Tradução**: Mungkin kurang akurat dibandingkan layanan berbayar lainnya
-- **Kecepatan**: Terpengaruh oleh kondisi jaringan
-- **Stabilitas**: Mungkin tiba-tiba tidak tersedia karena pembatasan penggunaan
+### Disadvantages
+- **Translation Limits**: Limited number of characters that can be translated per day
+- **Translation Accuracy**: May be less accurate compared to other paid services
+- **Speed**: Affected by network conditions
+- **Stability**: May suddenly become unavailable due to usage restrictions
 
-### Kasus Penggunaan yang Recomendado
-- Penggunaan yang jarang
-- Ketika Anda ingin mulai menggunakan segera
-- Ketika Anda ingin menerjemahkan berbagai pasangan bahasa
+### Recomendado Use Cases
+- Infrequent use
+- When you want to start using immediately
+- When you want to translate various language pairs
 
 ---
 
 ## DeepL
 
-Modul menggunakan layanan terjemahan DeepL, terkenal dengan terjemahan berkualitas tinggi.
+A module using DeepL's translation service, known for high-quality translations.
 
-### Keuntungan
-- **Akurasi Tinggi**: Menyediakan terjemahan alami berkualitas tinggi
-- **Tingkat Gratis yang Murah Hati**: Hingga 500.000 karakter per bulan secara gratis (API Gratis)
-- **Cepat**: Pemrosesan terjemahan cepat
-- **Dukungan Glosarium**: Dapat mempertahankan konsistensi terjemahan menggunakan glosarium
+### Advantages
+- **High Accuracy**: Provides natural, high-quality translations
+- **Generous Free Tier**: Up to 500,000 characters per month for free (Free API)
+- **Fast**: Quick translation processing
+- **Glossary Support**: Can maintain translation consistency using glossaries
 
-### Kerugian
-- **Pendaftaran API Diperlukan**: Memerlukan pendaftaran API DeepL dan setup kunci API
-- **Batas Tingkat Gratis**: Migrasi ke paket berbayar diperlukan saat melebihi tingkat gratis
-- **Dukungan Bahasa**: Dukungan bahasa terbatas dibandingkan Google dan lainnya
+### Disadvantages
+- **API Registration Required**: Requires DeepL API registration and API key setup
+- **Free Tier Limits**: Migration to paid plan required when exceeding free tier
+- **Language Support**: Limited language support compared to Google and others
 
-### Kasus Penggunaan yang Recomendado
-- Ketika terjemahan berkualitas tinggi diperlukan
-- Frekuensi penggunaan sedang
+### Recomendado Use Cases
+- When high-quality translation is required
+- Moderate frequency of use
 
 ---
 
 ## Google AI (Gemini)
 
-Modul terjemahan yang memanfaatkan teknologi AI terbaru Google.
+A translation module leveraging Google's latest AI technology.
 
-### Keuntungan
-- **Akurasi Tertinggi**: Mampu melakukan terjemahan berkualitas sangat tinggi dengan pemahaman kontekstual
-- **Fleksibilitas**: Dapat menyesuaikan prompt untuk menyesuaikan gaya terjemahan
-- **Dukungan Glosarium**: Dapat mempertahankan konsistensi terjemahan menggunakan glosarium
+### Advantages
+- **Highest Accuracy**: Capable of very high-quality translation with contextual understanding
+- **Flexibility**: Can customize prompts to adjust translation style
+- **Glossary Support**: Can maintain translation consistency using glossaries
 
-### Kerugian
-- **Kunci API Diperlukan**: Memerlukan perolehan kunci API dan setup de Google AI Studio
-- **Bayar per penggunaan**: Biaya berdasarkan penggunaan (walaupun minimal)
-- **Kecepatan**: Membutuhkan waktu pemrosesan lebih lama depada modul lain karena berbasis LLM
+### Disadvantages
+- **API Key Required**: Requires API key acquisition and setup de Google AI Studio
+- **Pay-per-use**: Charges based on usage (though minimal)
+- **Speed**: Takes longer processing time than other modules due to LLM base
 
-### Kasus Penggunaan yang Recomendado
-- Ketika terjemahan berkualitas tertinggi diperlukan
-- Ketika gaya terjemahan kustom diperlukan
-- Ketika terjemahan sadar konteks penting
+### Recomendado Use Cases
+- When highest quality translation is required
+- When customized translation style is needed
+- When context-aware translation is important
 
 ---
 
-## API ChatGPT (ATAU LLM Lokal)
+## ChatGPT API (OR Local LLM)
 
-Modul terjemahan menggunakan API ChatGPT atau LLM lokal.
+A translation module using ChatGPT API or local LLM.
 
-### Keuntungan
-- **Akurasi Tertinggi**: Tradução berkualitas tinggi oleh model bahasa besar
-- **Fleksibilitas**: Dapat menyesuaikan prompt untuk menyesuaikan gaya terjemahan
-- **Dukungan Glosarium**: Dapat mempertahankan konsistensi terjemahan menggunakan glosarium
-- **Dukungan LLM Lokal**: Juga dapat menggunakan server LLM Anda sendiri
+### Advantages
+- **Highest Accuracy**: High-quality translation by large language models
+- **Flexibility**: Can customize prompts to adjust translation style
+- **Glossary Support**: Can maintain translation consistency using glossaries
+- **Local LLM Support**: Can also use your own LLM server
 
-### Kerugian
-- **Kunci API Diperlukan**: Memerlukan setup kunci API untuk setiap layanan (kecuali LLM lokal)
-- **Bayar per penggunaan**: Biaya berdasarkan penggunaan (kecuali LLM lokal)
-- **Kecepatan**: Waktu pemrosesan lebih lama
-- **Persyaratan LLM Lokal**: PC spesifikasi tinggi diperlukan saat menjalankan LLM sendiri
+### Disadvantages
+- **API Key Required**: Requires API key setup for each service (except local LLM)
+- **Pay-per-use**: Charges based on usage (except local LLM)
+- **Speed**: Longer processing time
+- **Local LLM Requirements**: High-spec PC required when running your own LLM
 
-### Kasus Penggunaan yang Recomendado
-- Ketika terjemahan berkualitas tertinggi diperlukan
-- Ketika gaya terjemahan kustom diperlukan
-- Ketika privasi penting sambil menginginkan terjemahan berkualitas tinggi (LLM lokal)
+### Recomendado Use Cases
+- When highest quality translation is required
+- When customized translation style is needed
+- When privacy is important while wanting high-quality translation (local LLM)
 
 ---
 
 ## PLaMo
 
-Modul terjemahan menggunakan LLM lokal khusus untuk Bahasa Jepang.
+A translation module using local LLM specialized for Japanese.
 
-### Keuntungan
-- **Khusus Jepang**: Dioptimalkan untuk terjemahan Jepang
-- **Sepenuhnya Gratis**: Model sumber terbuka tanpa biaya
-- **Privasi**: Berjalan secara lokal, data tidak dikirim ke luar
-- **Offline**: Tidak ada koneksi internet yang diperlukan
+### Advantages
+- **Japanese Specialized**: Optimized for Japanese translation
+- **Completely Free**: Open source model with no charges
+- **Privacy**: Executes locally, data is not sent externally
+- **Offline**: No internet connection required
 
-### Kerugian
-- **Persyaratan Spesifikasi Tinggi**: Memerlukan PC berkinerja tinggi termasuk GPU
-- **Penggunaan Memori**: Memerlukan jumlah memori yang besar (8GB atau lebih direkomendasikan)
-- **Kecepatan**: Pemrosesan membutuhkan waktu tanpa GPU
+### Disadvantages
+- **High-spec Requirements**: Requires high-performance PC including GPU
+- **Memory Usage**: Requires large amount of memory (8GB or more recommended)
+- **Speed**: Processing takes time without GPU
 
-### Kasus Penggunaan yang Recomendado
-- Ketika Anda memiliki PC berkinerja tinggi
-- Ketika privasi adalah prioritas utama
-- Ketika kualitas terjemahan Jepang penting
+### Recomendado Use Cases
+- When you own a high-performance PC
+- When privacy is the top priority
+- When Japanese translation quality is important
 
 ---
 
-## Cara Memilih Modul
+## How to Choose a Module
 
-| Tujuan                              | Modul yang Recomendado                           |
-| ----------------------------------- | ----------------------------------------------------- |
-| Mulai menggunakan segera            | **Bergamot** atau **Google Tradução**               |
-| Tradução berkualitas tertinggi    | **Google AI** atau **API ChatGPT**                    |
-| Menjaga biaya rendah                | **Bergamot** atau **DeepL (dalam tingkat gratis)**    |
-| Fokus privasi                       | **Bergamot** atau **PLaMo**                           |
-| Penggunaan frekuensi tinggi         | **Bergamot** atau **DeepL**                           |
+| Purpose                        | Recomendado Module                           |
+| ------------------------------ | -------------------------------------------- |
+| Start using immediately        | **Bergamot** or **Google Translate**        |
+| Highest quality translation    | **Google AI** or **ChatGPT API**            |
+| Keep costs down                | **Bergamot** or **DeepL (within free tier)** |
+| Privacy focused                | **Bergamot** or **PLaMo**                   |
+| High frequency usage           | **Bergamot** or **DeepL**                   |

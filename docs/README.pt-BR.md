@@ -3,79 +3,79 @@
 [![App Build](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Freeesia/WindowTranslator/actions/workflows/dotnet-desktop.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/Freeesia/WindowTranslator)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![NuGet Version](https://img.shields.io/nuget/v/WindowTranslator.Abstractions)](https://www.nuget.org/packages/WindowTranslator.Abstractions)
-[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
+[![GitHub Baixes (all assets, all releases)](https://img.shields.io/github/downloads/Freeesia/WindowTranslator/total)](https://github.com/Freeesia/WindowTranslator/releases/latest)
 [![Crowdin](https://badges.crowdin.net/windowtranslator/localized.svg)](https://crowdin.com/project/windowtranslator)
-[![Microsoft Store](https://get.microsoft.com/images/pt-br%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
+[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct)
 
-O WindowTranslator é uma ferramenta para traduzir as janelas dos aplicativos do Windows.
+WindowTranslator is a tool for translating windows of applications on Windows.
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [PT-BR](./README.pt-BR.md)
+[JA](README.md) | [PT-BR](./README.pt-BR.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md) | [PT-BR](./README.pt-BR.md)
 
 ## Índice
 - [ WindowTranslator](#-windowtranslator)
-  - [Índice](#daftar-isi)
-  - [Baixe](#unduh)
-    - [Versão da Microsoft Store ](#versi-microsoft-store-)
-    - [Versão de Instalação](#versi-installer)
-    - [Versão Portátil](#versi-portabel)
-  - [Como usar](#cara-penggunaan)
+  - [Índice](#table-of-contents)
+  - [Baixe](#download)
+    - [Microsoft Store Version ](#microsoft-store-version-)
+    - [Installer Version](#installer-version)
+    - [Portable Version](#portable-version)
+  - [How to Use](#how-to-use)
     - [Bergamot ](#bergamot-)
-  - [Outras funcionalidades](#fitur-lainnya)
+  - [Other Features](#other-features)
 
 ## Baixe
-### Versão da Microsoft Store ![Recomendado](https://img.shields.io/badge/Recomendado-brightgreen)
+### Microsoft Store Version ![Recomendado](https://img.shields.io/badge/Recomendado-brightgreen)
 
-Instalar da [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
-Funciona mesmo em ambientes onde o .NET não está instalado.
+Instalar da the [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
+Works even in environments where .NET is not installed.
 
-### Versão de Instalação
+### Installer Version
 
-Baixe `WindowTranslator-(versi).msi` de [halaman rilis GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) e execute para instalar.  
-Vídeo tutorial de instalação aqui⬇️  
-[![Video tutorial instalasi](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+Baixe `WindowTranslator-(version).msi` de the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
+Installation tutorial video is here⬇️  
+[![Installation tutorial video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
-### Versão Portátil
+### Portable Version
 
-Baixe file zip de [halaman rilis GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) e extraia para qualquer pasta.  
-- `WindowTranslator-(versi).zip` : Requer ambiente .NET  
-- `WindowTranslator-full-(versi).zip` : Independen de .NET
+Baixe the zip file de the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
+- `WindowTranslator-(version).zip` : Requer ambiente .NET  
+- `WindowTranslator-full-(version).zip` : .NET independent
 
-## Como usar
+## How to Use
 
 ### Bergamot ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-1. Execute `WindowTranslator.exe` e clique no botão de tradução.  
+1. Launch `WindowTranslator.exe` e clique no botão de tradução.  
    ![Botão de Tradução](images/translate.png)
-2. Selecione a janela do aplicativo que deseja traduzir e clique no botão "OK".  
+2. Select the window of the application you want to translate and click the "OK" button.  
    ![Seleção de Janela](images/select.png)
-3. Dari tab "Pengaturan Umum", pilih bahasa sumber dan target dalam "Pengaturan Bahasa".  
-   ![Pengaturan Bahasa](images/language.png)
-4. Setelah menyelesaikan pengaturan, klik tombol "OK" untuk menutup layar pengaturan.  
-   > Instalasi fungsi OCR mungkin diperlukan.
-   > Silakan ikuti instruksi untuk menginstal.
-5. Setelah beberapa saat, hasil terjemahan akan ditampilkan sebagai hamparan.  
-   ![Hasil Tradução](images/result.png)
+3. From the "General Settings" tab, select the source and target languages in "Language Settings".  
+   ![Language Settings](images/language.png)
+4. After completing the settings, click the "OK" button to close the settings screen.  
+   > OCR function installation may be required.
+   > Please follow the instructions to install.
+5. After a while, the translation results will be displayed as an overlay.  
+   ![Translation Results](images/result.png)
 
 > [!NOTE]
-> Berbagai modul terjemahan tersedia di WindowTranslator.  
-> Google Tradução memiliki batas rendah pada jumlah teks yang dapat diterjemahkan. Jika Anda sering menggunakannya, pertimbangkan untuk menggunakan modul lain.  
-> Anda dapat memeriksa daftar modul terjemahan yang tersedia dalam video di bawah atau di [Dokumentasi](https://wt.studiofreesia.com/TranslateModule.en).
+> Various translation modules are available in WindowTranslator.  
+> Google Translate has a low limit on the amount of text that can be translated. If you use it frequently, consider using other modules.  
+> You can check the list of available translation modules in the videos below or on the [Documentation](https://wt.studiofreesia.com/TranslateModule.en).
 > 
-> |                |                                                           Video Como usar                                                            | Keuntungan                    | Kerugian                        |
+> |                |                                                           How to Use Video                                                            | Advantages                    | Disadvantages                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
-> |   Bergamot     | | Sepenuhnya gratis<br/>Tidak ada batas terjemahan<br/>Tradução cepat | Akurasi terjemahan lebih rendah<br/>Memerlukan lebih de 1GB memori bebas |
-> |   Google Tradução   | [![Video Setup Google Tradução](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Sepenuhnya gratis | Batas terjemahan rendah<br/>Akurasi terjemahan lebih rendah |
-> |     DeepL      |   [![Video Setup DeepL](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Tingkat gratis yang besar<br/>Tradução cepat | |
-> |     Gemini     | [![Video Setup Google AI](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | Akurasi terjemahan tinggi | Biaya kecil diperlukan |
-> |    ChatGPT     | TBD | Akurasi terjemahan tinggi | Biaya kecil diperlukan |
-> | LLM Lokal | TBD | Layanan itu sendiri gratis | PC spesifikasi tinggi diperlukan |
+> |   Bergamot     | | Completely free<br/>No translation limit<br/>Fast translation | Lower translation accuracy<br/>Requires more than 1GB of free memory |
+> |   Google Translate   | [![Google Translate Setup Video](https://github.com/user-attachments/assets/bbf45370-0387-47e1-b690-3183f37e06d2)](https://youtu.be/83A8T890N5M)  | Completely free | Low translation limit<br/>Lower translation accuracy |
+> |     DeepL      |   [![DeepL Setup Video](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | Large free tier<br/>Fast translation | |
+> |     Gemini     | [![Google AI Setup Video](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | High translation accuracy | Small fee required |
+> |    ChatGPT     | TBD | High translation accuracy | Small fee required |
+> | Local LLM | TBD | Service itself is free | High-spec PC required |
 
-## Outras funcionalidades
+## Other Features
 
-Selain modul terjemahan, WindowTranslator memiliki berbagai fitur.  
-Jika Anda ingin mempelajari lebih lanjut, silakan periksa [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
+In addition to translation modules, WindowTranslator has various features.  
+If you want to learn more, please check the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki).
 
 ---
 [Política de Privacidade](PrivacyPolicy.md)
 
-Dokumen ini diterjemahkan de Bahasa Jepang menggunakan terjemahan mesin.
+This document was translated de Japanese using machine translation.

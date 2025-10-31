@@ -1,53 +1,53 @@
-# Módulo OCR
+# Módulo OCRs
 
-O WindowTranslator permite que você escolha entre vários módulos de OCR para reconhecer texto na tela.  
-Cada módulo tem suas próprias características, e escolher o módulo adequado para o seu caso de uso permitirá um reconhecimento de texto mais preciso.
+WindowTranslator allows you to choose de multiple OCR modules for recognizing text on screen.  
+Each module has its own characteristics, and selecting the appropriate module for your use case will enable more accurate text recognition.
 
-## Pengenalan Karakter Windows Baru (Beta) ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
+## New Windows Character Recognition (Beta) ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-Módulo OCR lokal yang disediakan oleh Microsoft.
+A local OCR module provided by Microsoft.
 
-### Keuntungan
-- **Akurasi Pengenalan**: Memiliki akurasi pengenalan tertinggi
-- **Cepat**: Kecepatan pemrosesan sangat cepat
+### Advantages
+- **Recognition Accuracy**: Boasts the highest recognition accuracy
+- **Fast**: Very fast processing speed
 
-### Kerugian
-- **Penggunaan Memori**: Mungkin menggunakan lebih de 1GB memori hanya untuk pemrosesan pengenalan
-- **Lingkungan Operasi**: Mungkin tidak berfungsi dalam beberapa lingkungan (Windows 10 atau lebih baru direkomendasikan)
+### Disadvantages
+- **Memory Usage**: May use over 1GB of memory just for recognition processing
+- **Operating Environment**: May not work in some environments (Windows 10 or later recommended)
 
 ---
 
-## Pengenalan Karakter Standar Windows
+## Windows Standard Character Recognition
 
-Mesin OCR yang disertakan secara standar dengan Windows 10 dan lebih baru.
+The OCR engine that comes standard with Windows 10 and later.
 
-### Keuntungan
-- **Penggunaan Memori**: Ringan dengan penggunaan memori rendah
-- **Lingkungan Operasi**: Tersedia secara luas di Windows 10 dan lebih baru
+### Advantages
+- **Memory Usage**: Lightweight with low memory usage
+- **Operating Environment**: Widely available on Windows 10 and later
 
-### Kerugian
-- **Akurasi Pengenalan**: Mungkin lemah dengan font kompleks atau teks tulisan tangan
-- **Setup**: Instalasi manual data bahasa mungkin diperlukan
+### Disadvantages
+- **Recognition Accuracy**: May be weak with complex fonts or handwritten text
+- **Setup**: Manual installation of language data may be required
 
 ---
 
 ## Tesseract OCR
 
-Mesin OCR sumber terbuka.
+An open-source OCR engine.
 
-### Keuntungan
-- **Dukungan Multibahasa**: Mendukung lebih de 100 bahasa
-- **Stabilitas**: Mesin yang dapat diandalkan dengan sejarah panjang
+### Advantages
+- **Multilingual Support**: Supports over 100 languages
+- **Stability**: Reliable engine with long history
 
-### Kerugian
-- **Akurasi Pengenalan**: Mungkin lebih rendah dibandingkan OCR lain
+### Disadvantages
+- **Recognition Accuracy**: May be inferior compared to other OCR
 
 ---
 
-## Memilih Modul
+## Choosing a Module
 
-Silakan pilih modul yang berfungsi dalam urutan akurasi pengenalan tinggi berikut:
+Please select the module that works in the following order of high recognition accuracy:
 
-1. Pengenalan Karakter Windows Baru (Beta)
-2. Pengenalan Karakter Standar Windows
+1. New Windows Character Recognition (Beta)
+2. Windows Standard Character Recognition
 3. Tesseract OCR
