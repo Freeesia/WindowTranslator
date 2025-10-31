@@ -3,60 +3,60 @@ title: Política de Privacidade
 description: WindowTranslator Política de Privacidade
 ---
 
-本Política de Privacidadeは, 「WindowTranslator」（以下「本アプリ」といいます）の利用に際し, ユーザーの個人情報およびデータの取り扱いについて定めたものです.
+Esta Política de Privacidade define o tratamento de informações pessoais e dados dos usuários ao utilizar o "WindowTranslator" (doravante denominado "este aplicativo").
 
-## はじめに
-本アプリはオープンソースとしてGitHub（ https://github.com/Freeesia/WindowTranslator ）にて公開されており, アプリ自体は基本的にユーザーの個人情報や利用状況を収集しません.ただし, ユーザーが明示的にエラーレポートの送信を選択した場合のみ, 技術的な問題解決のために必要最小限の情報を収集いたします.
+## Introdução
+Este aplicativo é publicado como código aberto no GitHub (https://github.com/Freeesia/WindowTranslator), e o aplicativo em si basicamente não coleta informações pessoais ou situações de uso dos usuários. No entanto, apenas quando o usuário escolher explicitamente enviar um relatório de erro, coletaremos o mínimo de informações necessárias para resolver problemas técnicos.
 
-## 個人情報の収集について
-### アプリ自体による情報収集
-本アプリは, 通常の利用においてユーザーの入力情報, 操作履歴, 端末情報などの個人情報を直接収集しません.
-ただし, ユーザーが明示的にエラーレポートの送信を選択した場合のみ, 技術的な問題解決のために必要な情報を収集いたします.
+## Sobre a coleta de informações pessoais
+### Coleta de informações pelo próprio aplicativo
+Este aplicativo não coleta diretamente informações pessoais como informações de entrada do usuário, histórico de operações ou informações do dispositivo durante o uso normal.
+No entanto, apenas quando o usuário escolher explicitamente enviar um relatório de erro, coletaremos as informações necessárias para resolver problemas técnicos.
 
-### エラーログ・クラッシュレポート
-本アプリでは, ユーザーが明示的にエラーレポートの送信操作を行った場合のみ, 以下の情報を収集いたします：
+### Logs de erro e relatórios de crash
+Este aplicativo coleta as seguintes informações apenas quando o usuário executa explicitamente a operação de envio de relatório de erro:
 
-- アプリケーションの動作情報
-- PCのハードウェア仕様情報
-- OS環境情報
-- エラー発生時の状況
+- Informações de operação do aplicativo
+- Informações de especificações de hardware do PC
+- Informações do ambiente do SO
+- Situação no momento da ocorrência do erro
 
-これらの情報は技術的な問題の解決とアプリの品質向上のためにのみ使用され, 個人を特定できる情報は含まれません.
-エラーレポートの送信は完全に任意であり, ユーザーの同意なしに自動的に送信されることはありません.
+Essas informações são usadas apenas para resolver problemas técnicos e melhorar a qualidade do aplicativo, e não contêm informações de identificação pessoal.
+O envio de relatórios de erro é completamente opcional e não será enviado automaticamente sem o consentimento do usuário.
 
-## Googleユーザーデータに関する取り扱い
-本アプリはGoogle Apps Scriptサービスへアクセスする際のみ, 以下の通りGoogleユーザーデータに関連する権限を取得します.
+## Tratamento de dados de usuário do Google
+Este aplicativo obtém permissões relacionadas aos dados de usuário do Google apenas ao acessar o serviço Google Apps Script, conforme segue.
 
-### アクセスするデータ
-本アプリは, Google Apps Scriptを利用するために必要な最小限の認証トークンのみを取得します.  
-ユーザーの個人情報自体は一切利用しません.
+### Dados acessados
+Este aplicativo obtém apenas os tokens de autenticação mínimos necessários para usar o Google Apps Script.  
+Não utilizamos as informações pessoais do usuário em si.
 
-### データの利用方法
-取得した認証情報は, アプリ内でGoogle Apps Scriptを実行するためにのみ使用されます.  
-この認証は, ユーザーがGoogleサービスを利用するための認証目的に限定され, その他の目的では使用されません.
+### Método de uso dos dados
+As informações de autenticação obtidas são usadas apenas para executar o Google Apps Script dentro do aplicativo.  
+Esta autenticação é limitada ao propósito de autenticação para que o usuário use os serviços do Google e não é usada para outros fins.
 
-### データの共有・転送
-認証情報やその他のGoogleユーザーデータは, 本アプリ提供者によって一切収集, 保存, 共有, または第三者への転送は行われません.  
-すべての認証情報はユーザーのPC上に保存され, Googleのサービス利用のためにのみ利用されます.
+### Compartilhamento e transferência de dados
+Informações de autenticação e outros dados de usuário do Google não são coletados, armazenados, compartilhados ou transferidos para terceiros pelo provedor deste aplicativo.  
+Todas as informações de autenticação são armazenadas no PC do usuário e são usadas apenas para usar os serviços do Google.
 
-### データ保護の仕組み
-認証情報はユーザーのPC上に安全に保存され, アプリ提供者はこれらの情報へのアクセス権限を一切有しておりません.  
-したがって, データ保護に関する追加のセキュリティ対策は, ユーザー自身のPCのセキュリティ管理に依存します.
+### Mecanismo de proteção de dados
+As informações de autenticação são armazenadas com segurança no PC do usuário, e o provedor do aplicativo não possui nenhuma permissão de acesso a essas informações.  
+Portanto, medidas de segurança adicionais relacionadas à proteção de dados dependem do gerenciamento de segurança do próprio PC do usuário.
 
-### データの保持・削除
-認証情報（Googleの認証トークン等）は, ユーザーのPC上にのみ保存されます.  
-認証情報の削除は, ユーザーがPC上の `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin` フォルダを削除することで完結し, アプリ提供者側で管理・削除することはありません.
+### Retenção e exclusão de dados
+Informações de autenticação (tokens de autenticação do Google, etc.) são armazenadas apenas no PC do usuário.  
+A exclusão de informações de autenticação é concluída quando o usuário exclui a pasta `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin` no PC, e não é gerenciada ou excluída pelo provedor do aplicativo.
 
-## Traduçãoエンジンおよび第三者ライブラリの利用について
-本アプリは, GoogleTradução, DeepLなど, 複数のTraduçãoエンジンを利用可能な設計となっております.これらのTraduçãoエンジンおよび連携ライブラリは, 各サービスの独自のPolítica de Privacidadeに基づいてユーザー情報や利用状況の収集を行う可能性があります.
-ユーザーの皆様には, 本アプリ利用に際してご利用のTraduçãoエンジン各社のPolítica de Privacidadeも併せてご確認いただくことを強く推奨いたします.
+## Sobre o uso de motores de tradução e bibliotecas de terceiros
+Este aplicativo é projetado para usar vários motores de tradução, como Google Tradutor e DeepL. Esses motores de tradução e bibliotecas integradas podem coletar informações do usuário e situações de uso com base nas políticas de privacidade individuais de cada serviço.
+Recomendamos fortemente que os usuários também verifiquem as políticas de privacidade de cada motor de tradução que usam ao utilizar este aplicativo.
 
-## お問い合わせ先
-本Política de Privacidadeに関するご質問・ご意見は, 下記GitHubアカウントまでご連絡ください.
+## Contato
+Para perguntas ou comentários sobre esta Política de Privacidade, entre em contato com a conta do GitHub abaixo.
 
-GitHubアカウント: [Freeesia](https://github.com/Freeesia)
+Conta do GitHub: [Freeesia](https://github.com/Freeesia)
 
-## 本Política de Privacidadeの変更について
-法令の改正や本アプリの機能変更等に伴い, 本Política de Privacidadeを予告なく変更する場合があります.変更が行われた場合は, 本アプリ内またはGitHubリポジトリ等を通じて速やかに周知いたします.
+## Sobre mudanças nesta Política de Privacidade
+Esta Política de Privacidade pode ser alterada sem aviso prévio devido a revisões de leis ou mudanças nas funcionalidades deste aplicativo. Quando forem feitas alterações, notificaremos prontamente através do aplicativo ou do repositório do GitHub.
 
-以上
+Fim

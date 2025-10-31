@@ -15,7 +15,7 @@ WindowTranslator é uma ferramenta para traduzir as janelas de aplicativos do Wi
 - [ WindowTranslator](#-windowtranslator)
   - [Índice](#Índice)
   - [Download](#Download)
-    - [Versão Microsoft Store ](#microsoft-store版-)
+    - [Versão Microsoft Store ](#microsoft-store-)
     - [Versão para instalação](#Versão para instalação)
     - [Versão portátil](#Versão portátil)
   - [Como usar](#Como usar)

@@ -1,147 +1,147 @@
 # TraduçãoMódulo
 
-WindowTranslatorでは, 複数のTraduçãoMódulode選択して利用できます.  
-各Móduloには特徴があり, 用途に応じて適切なMóduloを選択することで, より快適にTraduçãoを利用できます.
+No WindowTranslator, você pode selecionar e usar vários módulos de tradução.  
+Cada módulo possui características próprias, e ao selecionar o módulo apropriado para o seu caso de uso, você pode utilizar as traduções de forma mais conveniente.
 
 ## Bergamot ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-オフラインで動作する機械TraduçãoMóduloです.
+Módulo de tradução automática que funciona offline.
 
 ### Vantagens
-- **Totalmente gratuito**: 料金は一切かかりません
-- **Sem limite de tradução**: 何度でもTraduçãoできます
-- **高速**: ローカルで処理されるためTradução rápidaです
-- **プライバシー**: インターネット接続不要で, データが外部に送信されません
-- **安定性**: ネットワークの影響を受けません
+- **Totalmente gratuito**: Sem custos
+- **Sem limite de tradução**: Traduza quantas vezes quiser
+- **Rápido**: Tradução rápida pois é processado localmente
+- **Privacidade**: Não requer conexão à internet, dados não são enviados externamente
+- **Estabilidade**: Não afetado pela rede
 
-### デVantagens
-- **Tradução精度**: クラウドベースのサービスと比較するとTradução精度が劣ります
-- **メモリ使用量**: Tradução処理に一定のメモリを使用します
-- **対応言語**: 一部の言語ペアのみサポートされています
+### Desvantagens
+- **Precisão da tradução**: A precisão da tradução é inferior comparada aos serviços baseados em nuvem
+- **Uso de memória**: Usa uma certa quantidade de memória para processamento de tradução
+- **Idiomas suportados**: Apenas alguns pares de idiomas são suportados
 
-### 推奨される利用シーン
-- 無料で利用したい場合
-- オフライン環境での利用
-- プライバシーを重視する場合
-- 高頻度でTraduçãoを行う場合
+### Cenários de uso recomendados
+- Para uso gratuito
+- Para uso em ambiente offline
+- Para quem prioriza privacidade
+- Para tradução frequente
 
 ---
 
-## GoogleTradução
+## Google Tradutor
 
-GoogleのTraduçãoサービスを利用したTraduçãoMóduloです.
+Módulo de tradução que utiliza o serviço de tradução do Google.
 
 ### Vantagens
-- **Totalmente gratuito**: APIキーなしで利用できます
-- **多言語対応**: 多くの言語ペアに対応しています
-- **簡単**: 特別な設定が不要です
+- **Totalmente gratuito**: Pode ser usado sem chave de API
+- **Suporte multilíngue**: Suporta muitos pares de idiomas
+- **Fácil**: Não requer configuração especial
 
-### デVantagens
-- **Tradução上限**: 1日あたりのTradução可能な文字数に制限があります
-- **Tradução精度**: 他の有料サービスと比較すると精度が劣る場合があります
-- **速度**: ネットワークの影響を受けます
-- **安定性**: 利用制限により突然使えなくなる可能性があります
+### Desvantagens
+- **Limite de tradução**: Há um limite no número de caracteres que podem ser traduzidos por dia
+- **Precisão da tradução**: A precisão pode ser inferior comparada a outros serviços pagos
+- **Velocidade**: Afetado pela rede
+- **Estabilidade**: Pode ficar indisponível repentinamente devido a limites de uso
 
-### 推奨される利用シーン
-- 低頻度での利用
-- すぐに使い始めたい場合
-- 多様な言語ペアでTraduçãoしたい場合
+### Cenários de uso recomendados
+- Para uso de baixa frequência
+- Para começar a usar imediatamente
+- Para traduzir com diversos pares de idiomas
 
 ---
 
 ## DeepL
 
-高品質なTraduçãoで知られるDeepLのTraduçãoサービスを利用したMóduloです.
+Módulo que utiliza o serviço de tradução DeepL, conhecido por traduções de alta qualidade.
 
 ### Vantagens
-- **高精度**: 自然で高品質なTraduçãoが得られます
-- **無料枠が充実**: 月50万文字まで無料で利用できます（無料API）
-- **高速**: Tradução処理が速いです
-- **用語集対応**: 用語集を利用してTraduçãoの一貫性を保てます
+- **Alta precisão**: Obtenha traduções naturais e de alta qualidade
+- **Ampla cota gratuita**: Use gratuitamente até 500.000 caracteres por mês (API gratuita)
+- **Rápido**: Processamento de tradução rápido
+- **Suporte a glossário**: Use glossários para manter consistência na tradução
 
-### デVantagens
-- **API登録必要**: DeepL APIの登録とAPIキーの設定が必要です
-- **無料枠制限**: 無料枠を超えた場合, 有料プランへの移行が必要です
-- **対応言語**: 対応言語がGoogleなどと比べて限定的です
+### Desvantagens
+- **Registro de API necessário**: É necessário registrar-se na API DeepL e configurar a chave de API
+- **Limite de cota gratuita**: Se exceder a cota gratuita, é necessário migrar para um plano pago
+- **Idiomas suportados**: Os idiomas suportados são limitados comparados ao Google e outros
 
-### 推奨される利用シーン
-- 高品質なTraduçãoを求める場合
-- 中程度の頻度での利用
+### Cenários de uso recomendados
+- Para quem busca traduções de alta qualidade
+- Para uso de frequência moderada
 
 ---
 
 ## Google AI (Gemini)
 
-Googleの最新AI技術を活用したTraduçãoMóduloです.
+Módulo de tradução que utiliza a mais recente tecnologia de IA do Google.
 
 ### Vantagens
-- **最高精度**: 文脈を理解した非常に高品質なTraduçãoが可能です
-- **柔軟性**: プロンプトをカスタマイズしてTraduçãoスタイルを調整可能
-- **用語集対応**: 用語集を利用してTraduçãoの一貫性を保てます
+- **Máxima precisão**: Permite traduções de altíssima qualidade com compreensão de contexto
+- **Flexibilidade**: Customize prompts para ajustar o estilo de tradução
+- **Suporte a glossário**: Use glossários para manter consistência na tradução
 
-### デVantagens
-- **APIキー必要**: Google AI StudiodeAPIキーの取得と設定が必要です
-- **従量課金**: 利用量に応じた課金が発生します（ただし少額）
-- **速度**: LLMベースのため, 他のMóduloより処理時間がかかります
+### Desvantagens
+- **Chave de API necessária**: É necessário obter e configurar uma chave de API no Google AI Studio
+- **Cobrança por uso**: Haverá cobrança de acordo com o uso (mas pequena)
+- **Velocidade**: Como é baseado em LLM, leva mais tempo de processamento que outros módulos
 
-### 推奨される利用シーン
-- 最高品質のTraduçãoを求める場合
-- カスタマイズされたTraduçãoスタイルが必要な場合
-- 文脈を重視したTraduçãoが必要な場合
+### Cenários de uso recomendados
+- Para quem busca traduções da mais alta qualidade
+- Quando é necessário um estilo de tradução customizado
+- Quando é necessária tradução que valoriza o contexto
 
 ---
 
 ## ChatGPT API (OR LLM Local)
 
-ChatGPT APIまたはLLM Localを利用したTraduçãoMóduloです.
+Módulo de tradução que utiliza ChatGPT API ou LLM local.
 
 ### Vantagens
-- **最高精度**: 大規模言語モデルによる高品質なTradução
-- **柔軟性**: プロンプトをカスタマイズしてTraduçãoスタイルを調整可能
-- **用語集対応**: 用語集を利用してTraduçãoの一貫性を保てます
-- **LLM Local対応**: 自前のLLMサーバーも利用可能
+- **Máxima precisão**: Traduções de alta qualidade por modelos de linguagem em grande escala
+- **Flexibilidade**: Customize prompts para ajustar o estilo de tradução
+- **Suporte a glossário**: Use glossários para manter consistência na tradução
+- **Suporte a LLM local**: Também pode usar seu próprio servidor LLM
 
-### デVantagens
-- **APIキー必要**: 各サービスのAPIキーの設定が必要です（LLM Localを除く）
-- **従量課金**: 利用量に応じた課金が発生します（LLM Localを除く）
-- **速度**: 処理時間が長めです
-- **LLM Localの要件**: 自前のLLMを動かす場合, Requer PC de alto desempenhoです
+### Desvantagens
+- **Chave de API necessária**: É necessário configurar a chave de API de cada serviço (exceto LLM local)
+- **Cobrança por uso**: Haverá cobrança de acordo com o uso (exceto LLM local)
+- **Velocidade**: Tempo de processamento mais longo
+- **Requisitos do LLM local**: Para executar seu próprio LLM, é necessário um PC de alto desempenho
 
-### 推奨される利用シーン
-- 最高品質のTraduçãoを求める場合
-- カスタマイズされたTraduçãoスタイルが必要な場合
-- プライバシーを重視しつつ高品質なTraduçãoを行いたい場合（LLM Local）
+### Cenários de uso recomendados
+- Para quem busca traduções da mais alta qualidade
+- Quando é necessário um estilo de tradução customizado
+- Para quem deseja traduções de alta qualidade priorizando privacidade (LLM local)
 
 ---
 
 ## PLaMo
 
-日本語に特化したLLM Localを利用したTraduçãoMóduloです.
+Módulo de tradução que utiliza LLM local especializado em japonês.
 
 ### Vantagens
-- **日本語特化**: 日本語のTraduçãoに最適化されています
-- **Totalmente gratuito**: オープンソースモデルで料金不要
-- **プライバシー**: ローカルで動作するため, データが外部に送信されません
-- **オフライン**: インターネット接続不要
+- **Especializado em japonês**: Otimizado para tradução de japonês
+- **Totalmente gratuito**: Modelo de código aberto sem custos
+- **Privacidade**: Como opera localmente, dados não são enviados externamente
+- **Offline**: Não requer conexão à internet
 
-### デVantagens
-- **高スペック要件**: GPUを含む高性能なPCが必要です
-- **メモリ使用量**: 大量のメモリが必要です（8GB以上推奨）
-- **速度**: GPUなしの場合, 処理に時間がかかります
+### Desvantagens
+- **Requisitos de alto desempenho**: É necessário um PC de alto desempenho incluindo GPU
+- **Uso de memória**: Requer grande quantidade de memória (8GB ou mais recomendado)
+- **Velocidade**: Sem GPU, o processamento leva mais tempo
 
-### 推奨される利用シーン
-- 高性能なPCを所有している場合
-- プライバシーを最重視する場合
-- 日本語のTradução品質を重視する場合
+### Cenários de uso recomendados
+- Para quem possui um PC de alto desempenho
+- Para quem prioriza ao máximo a privacidade
+- Para quem prioriza a qualidade da tradução de japonês
 
 ---
 
-## Móduloの選び方
+## Como escolher um módulo
 
-| 目的                 | 推奨Módulo                            |
+| Objetivo                 | Módulo recomendado                            |
 | -------------------- | ----------------------------------------- |
-| すぐに使い始めたい   | **Bergamot** または **GoogleTradução**        |
-| 最高品質のTraduçãoが必要 | **Google AI** または **ChatGPT API**      |
-| コストを抑えたい     | **Bergamot** または **DeepL（無料枠内）** |
-| プライバシー重視     | **Bergamot** または **PLaMo**             |
-| 高頻度で使用         | **Bergamot** または **DeepL**             |
+| Para começar a usar imediatamente   | **Bergamot** ou **Google Tradutor**        |
+| Quando é necessária tradução da mais alta qualidade | **Google AI** ou **ChatGPT API**      |
+| Para manter os custos baixos     | **Bergamot** ou **DeepL (cota gratuita)** |
+| Priorizar privacidade     | **Bergamot** ou **PLaMo**             |
+| Para uso frequente         | **Bergamot** ou **DeepL**             |

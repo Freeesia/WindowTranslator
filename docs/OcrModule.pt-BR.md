@@ -1,53 +1,53 @@
 # OCRMódulo
 
-WindowTranslatorでは, 画面上のテキストを認識するために複数のOCRMódulode選択できます.  
-各Móduloには特徴があり, 用途に応じて適切なMóduloを選択することで, より正確なテキスト認識が可能になります.
+No WindowTranslator, você pode selecionar entre vários módulos de OCR para reconhecer texto na tela.  
+Cada módulo possui características próprias, e selecionar o módulo apropriado para o seu caso de uso permitirá um reconhecimento de texto mais preciso.
 
-## 新Windows文字認識(ベータ) ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
+## Novo reconhecimento de caracteres do Windows (Beta) ![Padrão](https://img.shields.io/badge/Padrão-brightgreen)
 
-Microsoftが提供するローカルOCRMóduloです.
+Módulo OCR local fornecido pela Microsoft.
 
 ### Vantagens
-- **認識精度**: 最も高い認識精度を誇ります
-- **高速**: 処理速度が非常に速いです
+- **Precisão de reconhecimento**: Possui a maior precisão de reconhecimento
+- **Rápido**: Velocidade de processamento muito rápida
 
-### デVantagens
-- **使用メモリ**: 認識処理だけで1GB以上のメモリを使用する場合があります
-- **動作環境**: 一部環境では動作しない場合があります（Windows 10以降推奨）
+### Desvantagens
+- **Uso de memória**: Pode usar mais de 1GB de memória apenas para processamento de reconhecimento
+- **Ambiente de operação**: Pode não funcionar em alguns ambientes (Windows 10 ou posterior recomendado)
 
 ---
 
-## Windows標準文字認識
+## Reconhecimento de caracteres padrão do Windows
 
-Windows 10以降に標準搭載されているOCRエンジンです.
+Motor OCR padrão incluído no Windows 10 e posterior.
 
 ### Vantagens
-- **使用メモリ**: 軽量でメモリ使用量が少ないです
-- **動作環境**: Windows 10以降であれば広く利用可能です
+- **Uso de memória**: Leve e com baixo uso de memória
+- **Ambiente de operação**: Amplamente disponível no Windows 10 e posterior
 
-### デVantagens
-- **認識精度**: 複雑なフォントや手書き文字には弱い場合があります
-- **セットアップ**: 言語データの手動インストールが必要な場合があります
+### Desvantagens
+- **Precisão de reconhecimento**: Pode ter dificuldade com fontes complexas ou texto manuscrito
+- **Configuração**: Pode ser necessária a instalação manual de dados de idioma
 
 ---
 
 ## Tesseract OCR
 
-オープンソースのOCRエンジンです.
+Motor OCR de código aberto.
 
 ### Vantagens
-- **多言語対応**: 100以上の言語に対応しています
-- **安定性**: 長い歴史を持つ信頼性の高いエンジン
+- **Suporte multilíngue**: Suporta mais de 100 idiomas
+- **Estabilidade**: Motor confiável com longa história
 
-### デVantagens
-- **認識精度**: 他のOCRと比較すると精度が劣る場合があります
+### Desvantagens
+- **Precisão de reconhecimento**: A precisão pode ser inferior comparada a outros OCRs
 
 ---
 
-## Móduloの選び方
+## Como escolher um módulo
 
-認識精度が高い以下の順に動作するMóduloを選択してください.
+Selecione os módulos na seguinte ordem de maior precisão de reconhecimento.
 
-1. 新Windows文字認識(ベータ)
-2. Windows標準文字認識
+1. Novo reconhecimento de caracteres do Windows (Beta)
+2. Reconhecimento de caracteres padrão do Windows
 3. Tesseract OCR
