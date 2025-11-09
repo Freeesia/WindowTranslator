@@ -32,7 +32,7 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore 
         var windows = new HashSet<IntPtr>();
         EnumWindows((hWnd, lParam) =>
         {
-            if (!IsWindowVisible(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
+            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
             {
                 return true;
             }
