@@ -122,7 +122,7 @@ jobs:
           versionSpec: "6.x"
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v4.2.0
-      - uses: Jimver/cuda-toolkit@v0.2.24
+      - uses: Jimver/cuda-toolkit@v0.2.29
         with:
           cuda: '12.9.0'
       - env:
