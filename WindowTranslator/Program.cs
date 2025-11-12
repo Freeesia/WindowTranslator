@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Markup;
+using System.Windows.Threading;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +23,8 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Logging;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
-using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.ErrorReport;
+using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
@@ -179,7 +181,19 @@ if (SentrySdk.IsEnabled)
 }
 AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
 
-await app.RunAsync();
+try
+{
+    await app.RunAsync();
+}
+catch (Exception e)
+{
+    var ds = new ContentDialogService();
+    var w = new ErrorReportDialog(ds)
+    {
+        DataContext = new ErrorReportViewModel(ds, null, Resources.UnhundledErrorMessage, e, string.Empty),
+    };
+    w.ShowDialog();
+}
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
     => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute)))
