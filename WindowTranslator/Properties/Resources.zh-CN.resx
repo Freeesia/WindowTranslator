@@ -420,4 +420,7 @@
   <data name="FaildApplySettings" xml:space="preserve">
     <value>应用设置失败。</value>
   </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>发生未知错误</value>
+  </data>
 </root>

@@ -420,4 +420,7 @@ Monitore werden nicht unterstützt.
   <data name="FaildApplySettings" xml:space="preserve">
     <value>Fehler beim Anwenden der Einstellungen.</value>
   </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Ein unbekannter Fehler ist aufgetreten</value>
+  </data>
 </root>

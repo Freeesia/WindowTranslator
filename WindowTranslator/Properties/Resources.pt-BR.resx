@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -359,6 +359,9 @@ Monitor tidak didukung.</value>
     <value>Fungsi OCR untuk {0} tidak tersedia. Silakan instal fitur bahasa target</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>Gagal menerapkan pengaturan.</value>
+    <value>Falha ao aplicar configurações.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Ocorreu um erro desconhecido</value>
   </data>
 </root>

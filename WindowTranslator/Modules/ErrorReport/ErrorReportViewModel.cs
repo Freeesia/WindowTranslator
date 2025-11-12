@@ -14,9 +14,9 @@ using Wpf.Ui.Extensions;
 namespace WindowTranslator.Modules.ErrorReport;
 
 [OpenDialog]
-public partial class ErrorReportViewModel([Inject] IContentDialogService dialogService, [Inject] IOptionsSnapshot<UserSettings> options, string message, Exception ex, string target, string? lastIamgePath = null) : ObservableObject
+public partial class ErrorReportViewModel([Inject] IContentDialogService dialogService, [Inject] IOptionsSnapshot<UserSettings>? options, string message, Exception ex, string target, string? lastIamgePath = null) : ObservableObject
 {
-    private readonly UserSettings settings = options.Value;
+    private readonly UserSettings? settings = options?.Value;
     private readonly IContentDialogService dialogService = dialogService;
     private readonly Exception ex = ex;
     private readonly string target = target;
@@ -31,7 +31,7 @@ public partial class ErrorReportViewModel([Inject] IContentDialogService dialogS
 
     public string Message { get; } = message;
 
-    public string Info { get; } = GetInfo(ex, options.Value, target);
+    public string Info { get; } = GetInfo(ex, options?.Value, target);
 
     public bool IsSentryEnabled { get; } = SentrySdk.IsEnabled;
 
@@ -77,7 +77,7 @@ public partial class ErrorReportViewModel([Inject] IContentDialogService dialogS
             {
                 scope.AddAttachment(this.lastIamgePath);
             }
-            if (settings.Targets.TryGetValue(target, out TargetSettings? setting))
+            if (settings?.Targets.TryGetValue(target, out TargetSettings? setting) ?? false)
             {
                 setting.PluginParams.Clear();
                 scope.Contexts["Target"] = new
@@ -95,7 +95,7 @@ public partial class ErrorReportViewModel([Inject] IContentDialogService dialogS
         this.Sent = false;
     }
 
-    private static string GetInfo(Exception ex, UserSettings settings, string target)
+    private static string GetInfo(Exception ex, UserSettings? settings, string target)
     {
         if (ex == null)
             return string.Empty;
@@ -136,7 +136,7 @@ public partial class ErrorReportViewModel([Inject] IContentDialogService dialogS
         }
 
         // TargetSettingsの情報を追加
-        if (settings.Targets.TryGetValue(target, out TargetSettings? value))
+        if (settings?.Targets.TryGetValue(target, out TargetSettings? value) ?? false)
         {
             sb.AppendLine();
             sb.AppendLine("=== Settings Information ===");
