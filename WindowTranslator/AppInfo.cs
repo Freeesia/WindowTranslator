@@ -67,24 +67,4 @@ public partial class AppInfo
         var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
         Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
     }
-
-    [property: Category("Application")]
-    [RelayCommand(CanExecute = nameof(CanOpenReview))]
-    public static void OpenReview()
-    {
-        // Microsoft Storeのレビューページを開く
-        const string StoreReviewUrl = "ms-windows-store://review/?ProductId=9P4TWX8P72L9";
-        Process.Start(new ProcessStartInfo(StoreReviewUrl) { UseShellExecute = true });
-    }
-
-    public static bool CanOpenReview()
-    {
-        var processPath = Environment.ProcessPath;
-        if (string.IsNullOrEmpty(processPath))
-        {
-            return false;
-        }
-        // Microsoft Store版の場合のみレビューボタンを有効化
-        return processPath.Contains("WindowsApps", StringComparison.OrdinalIgnoreCase);
-    }
 }
