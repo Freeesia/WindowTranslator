@@ -257,7 +257,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         var results = new Dictionary<string, IReadOnlyList<ValidateResult>>();
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
-            var validationResults = await TargetSettingsValidationUtility.ValidateAsync(name, target, this.validators);
+            var validationResults = await this.validators.ValidateAsync(target);
             if (validationResults.Any())
             {
                 results.Add(name, validationResults);

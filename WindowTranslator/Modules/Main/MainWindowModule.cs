@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using System.Collections.ObjectModel;
+using WindowTranslator.Extensions;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
@@ -52,7 +53,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
             
             // 設定を検証
             var validators = scope.ServiceProvider.GetRequiredService<IEnumerable<ITargetSettingsValidator>>();
-            var validationResults = await TargetSettingsValidationUtility.ValidateAsync(name, targetSettings, validators);
+            var validationResults = await validators.ValidateAsync(targetSettings);
             
             if (validationResults.Any())
             {
@@ -85,7 +86,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
                     targetSettings = GetTargetSettings(options, name);
                     
                     validators = scope.ServiceProvider.GetRequiredService<IEnumerable<ITargetSettingsValidator>>();
-                    validationResults = await TargetSettingsValidationUtility.ValidateAsync(name, targetSettings, validators);
+                    validationResults = await validators.ValidateAsync(targetSettings);
                     
                     // まだ検証エラーがある場合は翻訳を開始しない
                     if (validationResults.Any())

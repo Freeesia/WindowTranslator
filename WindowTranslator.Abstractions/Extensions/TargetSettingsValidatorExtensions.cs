@@ -1,23 +1,21 @@
 using WindowTranslator.Properties;
 
-namespace WindowTranslator;
+namespace WindowTranslator.Extensions;
 
 /// <summary>
-/// 翻訳対象設定の検証を行うユーティリティクラス
+/// 翻訳対象設定バリデーターの拡張メソッド
 /// </summary>
-public static class TargetSettingsValidationUtility
+public static class TargetSettingsValidatorExtensions
 {
     /// <summary>
     /// 設定の検証を行う
     /// </summary>
-    /// <param name="targetName">対象名</param>
+    /// <param name="validators">バリデーターのコレクション</param>
     /// <param name="settings">検証する設定</param>
-    /// <param name="validators">検証に使用するバリデーターのコレクション</param>
     /// <returns>検証結果のリスト（空の場合は全て有効）</returns>
     public static async Task<IReadOnlyList<ValidateResult>> ValidateAsync(
-        string targetName, 
-        TargetSettings settings, 
-        IEnumerable<ITargetSettingsValidator> validators)
+        this IEnumerable<ITargetSettingsValidator> validators,
+        TargetSettings settings)
     {
         var results = new List<ValidateResult>();
 
