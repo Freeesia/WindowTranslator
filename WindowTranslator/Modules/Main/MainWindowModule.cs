@@ -28,24 +28,25 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
         var scope = provider.CreateScope();
         try
         {
-
             var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
             var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
             var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
             processInfo.SetTargetProcess(targetWindowHandle, name);
 
+            // 設定が存在しない場合、設定ダイアログを開く
             if (!options.Value.Targets.ContainsKey(name) && !await presentationService.OpenAllSettingsDialogAsync(name))
             {
                 return;
             }
 
-            // 翻訳対象の設定を検証
+            // 翻訳対象の設定を取得
             var targetSettings = options.Value.Targets.TryGetValue(name, out var settings) 
                 ? settings 
                 : options.Value.Targets.TryGetValue(string.Empty, out var defaultSettings) 
                     ? defaultSettings 
                     : new TargetSettings();
             
+            // 設定を検証
             var validationService = scope.ServiceProvider.GetRequiredService<ITargetSettingsValidationService>();
             var validationResults = await validationService.ValidateAsync(name, targetSettings);
             
@@ -63,8 +64,31 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
 
                 if (result == ContentDialogResult.Primary)
                 {
-                    // 設定ダイアログを開く
+                    // 設定ダイアログを開く（保存されるとConfigurationがリロードされる）
                     if (!await presentationService.OpenAllSettingsDialogAsync(name))
+                    {
+                        return;
+                    }
+                    
+                    // 設定が保存された後、再度検証を行う（新しいscopeで最新の設定を取得）
+                    scope.Dispose();
+                    scope = provider.CreateScope();
+                    options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
+                    presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
+                    processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
+                    processInfo.SetTargetProcess(targetWindowHandle, name);
+                    
+                    targetSettings = options.Value.Targets.TryGetValue(name, out settings) 
+                        ? settings 
+                        : options.Value.Targets.TryGetValue(string.Empty, out defaultSettings) 
+                            ? defaultSettings 
+                            : new TargetSettings();
+                    
+                    validationService = scope.ServiceProvider.GetRequiredService<ITargetSettingsValidationService>();
+                    validationResults = await validationService.ValidateAsync(name, targetSettings);
+                    
+                    // まだ検証エラーがある場合は翻訳を開始しない
+                    if (validationResults.Any())
                     {
                         return;
                     }
