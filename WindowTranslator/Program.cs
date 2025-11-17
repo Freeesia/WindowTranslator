@@ -186,9 +186,6 @@ if (SentrySdk.IsEnabled)
 }
 AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
 
-// レビュー依頼サービスを初期化
-AppInfo.ReviewRequestService = app.Services.GetRequiredService<IReviewRequestService>();
-
 try
 {
     await app.RunAsync();

@@ -13,8 +13,6 @@ public partial class AppInfo
 
     public static AppInfo Instance { get; } = new();
 
-    internal static IReviewRequestService? ReviewRequestService { get; set; }
-
     [Category("Application")]
     public string Title { get; }
 
@@ -74,7 +72,9 @@ public partial class AppInfo
     [RelayCommand(CanExecute = nameof(CanOpenReview))]
     public static void OpenReview()
     {
-        ReviewRequestService?.OpenReviewPage();
+        // Microsoft Storeのレビューページを開く
+        const string StoreReviewUrl = "ms-windows-store://review/?ProductId=9P4TWX8P72L9";
+        Process.Start(new ProcessStartInfo(StoreReviewUrl) { UseShellExecute = true });
     }
 
     public static bool CanOpenReview()

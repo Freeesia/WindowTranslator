@@ -41,7 +41,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         WriteIndented = true,
     };
     private readonly IUpdateChecker updateChecker;
-    private readonly IReviewRequestService reviewRequestService;
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
@@ -104,7 +103,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IOptionsSnapshot<UserSettings> options,
         [Inject] IServiceProvider sp,
         [Inject] IUpdateChecker updateChecker,
-        [Inject] IReviewRequestService reviewRequestService,
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
@@ -143,7 +141,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.SelectedTarget = selected;
 
         this.updateChecker = updateChecker;
-        this.reviewRequestService = reviewRequestService;
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
@@ -154,9 +151,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
-        
-        // レビュー依頼を表示すべきか確認して表示
-        _ = CheckAndShowReviewRequestAsync();
     }
 
     private void UpdateChecker_UpdateAvailable(object? sender, EventArgs e)
@@ -340,52 +334,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     {
         this.IsBusy = true;
         return new DisposeAction(() => this.IsBusy = false);
-    }
-
-    private async Task CheckAndShowReviewRequestAsync()
-    {
-        // ターゲットモードの場合はレビュー依頼を表示しない
-        if (this.TargetMode)
-        {
-            return;
-        }
-
-        // レビュー依頼を表示すべきか確認
-        if (!this.reviewRequestService.ShouldShowReviewRequest)
-        {
-            return;
-        }
-
-        // ダイアログが開けるまで少し待つ
-        await Task.Delay(500);
-
-        await this.reviewRequestService.ShowReviewRequestAsync();
-
-        var result = await this.dialogService.ShowSimpleDialogAsync(new()
-        {
-            Title = Resources.ReviewRequest,
-            Content = Resources.ReviewRequestMessage,
-            PrimaryButtonText = Resources.WriteReview,
-            SecondaryButtonText = Resources.ReviewLater,
-            CloseButtonText = Resources.ReviewNeverShowAgain,
-        });
-
-        switch (result)
-        {
-            case ContentDialogResult.Primary:
-                // レビューする
-                this.reviewRequestService.OpenReviewPage();
-                await this.reviewRequestService.NeverShowAgainAsync();
-                break;
-            case ContentDialogResult.Secondary:
-                // 後で
-                await this.reviewRequestService.ShowLaterAsync();
-                break;
-            case ContentDialogResult.None:
-                // 二度と表示しない
-                await this.reviewRequestService.NeverShowAgainAsync();
-                break;
-        }
     }
 
     public void Dispose()

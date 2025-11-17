@@ -3,6 +3,8 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.UI.Notifications;
 
 namespace WindowTranslator;
 
@@ -70,6 +72,9 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
         }
 
         await this.app.WaitForStartupAsync();
+        
+        // Toast通知のアクティベーション処理を登録
+        ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
 
         this.reviewState = await LoadReviewStateAsync();
 
@@ -93,6 +98,9 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
         {
             this.ShouldShowReviewRequest = true;
             this.logger.LogInformation($"初回起動から {daysSinceFirstLaunch:F1} 日経過しました。レビュー依頼を表示します");
+            
+            // レビュー依頼通知を表示
+            ShowReviewNotification();
         }
     }
 
@@ -145,6 +153,81 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
         }
         
         this.logger.LogInformation("レビュー依頼を二度と表示しない設定にしました");
+    }
+
+    /// <summary>
+    /// レビュー依頼通知を表示します
+    /// </summary>
+    private void ShowReviewNotification()
+    {
+        var builder = new ToastContentBuilder()
+            .AddText("WindowTranslatorをご利用いただきありがとうございます")
+            .AddText("Microsoft Storeでレビューをお願いできますでしょうか？")
+            .AddArgument(nameof(ReviewRequestService))
+            .AddButton(new ToastButton()
+                .AddArgument("action", ToastActions.Review)
+                .SetContent("レビューする"))
+            .AddButton(new ToastButton()
+                .AddArgument("action", ToastActions.Later)
+                .SetContent("後で")
+                .SetBackgroundActivation());
+
+        {
+            var args = ToastArguments.Parse(builder.Content.Launch);
+            args.Add("action", ToastActions.NeverShowAgain);
+            builder.Content.Actions.ContextMenuItems.Add(new("二度と表示しない", args.ToString()));
+        }
+
+        builder.Show(t =>
+        {
+            t.ExpiresOnReboot = true;
+            t.NotificationMirroring = NotificationMirroring.Disabled;
+            t.SuppressPopup = false;
+        });
+
+        // レビュー依頼を表示したことを記録
+        _ = ShowReviewRequestAsync();
+    }
+
+    /// <summary>
+    /// Toast通知のアクティベーション処理
+    /// </summary>
+    private async void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
+    {
+        var args = ToastArguments.Parse(e.Argument);
+        if (!args.Contains(nameof(ReviewRequestService)))
+        {
+            return;
+        }
+
+        if (!args.TryGetValue<ToastActions>("action", out var action))
+        {
+            return;
+        }
+
+        switch (action)
+        {
+            case ToastActions.Review:
+                OpenReviewPage();
+                await NeverShowAgainAsync();
+                break;
+            case ToastActions.Later:
+                await ShowLaterAsync();
+                break;
+            case ToastActions.NeverShowAgain:
+                await NeverShowAgainAsync();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Toast通知のアクション
+    /// </summary>
+    private enum ToastActions
+    {
+        Review,
+        Later,
+        NeverShowAgain
     }
 
     /// <summary>
