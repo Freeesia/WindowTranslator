@@ -61,7 +61,7 @@ jobs:
           template: docs/template.html
           extend_default_theme: true
           build_html: false
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: docs
           path: pdfs/
@@ -87,7 +87,7 @@ jobs:
             -fo licenses\third-party-licenses.txt `
             -f net8.0 `
             -err
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: licenses
           path: licenses/
@@ -153,7 +153,7 @@ jobs:
         with:
           name: licenses
           path: publish/licenses
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
           path: publish\
@@ -190,7 +190,7 @@ jobs:
           dotnet wix extension -g add WixToolset.Util.wixext/5.0.2 WixToolset.UI.wixext/5.0.2
           dotnet run -c Release
         working-directory: WindowTranslator.Wix
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: WindowTranslator-${{ needs.build.outputs.version }}.msi
           path: publish\
