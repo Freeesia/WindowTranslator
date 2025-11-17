@@ -3,7 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using System.Collections.ObjectModel;
+using WindowTranslator.Properties;
+using WindowTranslator.Services;
 using WindowTranslator.Stores;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Modules.Main;
 public sealed class MainWindowModule(App app, IServiceProvider provider) : IMainWindowModule, IDisposable
@@ -32,6 +37,42 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
             if (!options.Value.Targets.ContainsKey(name) && !await presentationService.OpenAllSettingsDialogAsync(name))
             {
                 return;
+            }
+
+            // 翻訳対象の設定を検証
+            var targetSettings = options.Value.Targets.TryGetValue(name, out var settings) 
+                ? settings 
+                : options.Value.Targets.TryGetValue(string.Empty, out var defaultSettings) 
+                    ? defaultSettings 
+                    : new TargetSettings();
+            
+            var validationService = scope.ServiceProvider.GetRequiredService<ITargetSettingsValidationService>();
+            var validationResults = await validationService.ValidateAsync(name, targetSettings);
+            
+            if (validationResults.Any())
+            {
+                // 検証エラーがある場合、エラーダイアログを表示
+                var dialogService = scope.ServiceProvider.GetRequiredService<IContentDialogService>();
+                var result = await dialogService.ShowSimpleDialogAsync(new()
+                {
+                    Title = Resources.SettingsInvalid,
+                    Content = string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")),
+                    PrimaryButtonText = Resources.Settings,
+                    CloseButtonText = Resources.Cancel,
+                });
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    // 設定ダイアログを開く
+                    if (!await presentationService.OpenAllSettingsDialogAsync(name))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
             }
 
             var window = options.Value.Common.ViewMode switch

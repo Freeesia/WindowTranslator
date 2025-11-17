@@ -19,6 +19,7 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
+using WindowTranslator.Services;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -44,7 +45,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
-    private readonly IEnumerable<ITargetSettingsValidator> validators;
+    private readonly ITargetSettingsValidationService validationService;
     private readonly IMainWindowModule mainWindowModule;
     private readonly IConfigurationRoot? rootConfig;
     private readonly string target;
@@ -107,7 +108,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
-        [Inject] IEnumerable<ITargetSettingsValidator> validators,
+        [Inject] ITargetSettingsValidationService validationService,
         [Inject] IMainWindowModule mainWindowModule,
         string target)
     {
@@ -144,7 +145,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
-        this.validators = validators;
+        this.validationService = validationService;
         this.mainWindowModule = mainWindowModule;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
@@ -257,33 +258,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         var results = new Dictionary<string, IReadOnlyList<ValidateResult>>();
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
-            var r = new List<ValidateResult>();
-            if (target.Language.Source == target.Language.Target)
+            var validationResults = await this.validationService.ValidateAsync(name, target);
+            if (validationResults.Any())
             {
-                r.Add(ValidateResult.Invalid(Resources.TranslateLanguage, Resources.SameSourceTargetLanguage));
-            }
-
-            if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
-            {
-                r.Add(ValidateResult.Invalid(Resources.TranslateModule, """
-                    翻訳モジュールが選択されていません。
-                    「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
-                    """));
-            }
-            if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
-            {
-                r.Add(ValidateResult.Invalid(Resources.CacheModule, """
-                    キャッシュモジュールが選択されていません。
-                    「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
-                    """));
-            }
-            foreach (var validator in this.validators)
-            {
-                r.Add(await validator.Validate(target));
-            }
-            if (r.Any(r => !r.IsValid))
-            {
-                results.Add(name, r.Where(r => !r.IsValid).ToArray());
+                results.Add(name, validationResults);
             }
         }
         if (results.Any())
