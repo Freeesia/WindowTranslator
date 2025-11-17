@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows10.0.20348.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net10.0-windows10.0.20348.0</TargetFrameworks>
     <RootNamespace>WindowTranslator</RootNamespace>
     <IsPackable>true</IsPackable>
     <PackageIcon>wt.png</PackageIcon>
