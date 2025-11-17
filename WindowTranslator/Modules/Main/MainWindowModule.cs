@@ -22,6 +22,15 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
     public Task OpenTargetAsync(IntPtr targetWindowHandle, string name)
         => this.app.Dispatcher.Invoke(() => OpenTargetWindowCoreAsync(targetWindowHandle, name));
 
+    private static TargetSettings GetTargetSettings(IOptionsSnapshot<UserSettings> options, string name)
+    {
+        return options.Value.Targets.TryGetValue(name, out var settings)
+            ? settings
+            : options.Value.Targets.TryGetValue(string.Empty, out var defaultSettings)
+                ? defaultSettings
+                : new TargetSettings();
+    }
+
     private async Task OpenTargetWindowCoreAsync(IntPtr targetWindowHandle, string name)
     {
         using var l = await this.asyncLock.EnterAsync();
@@ -40,11 +49,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
             }
 
             // 翻訳対象の設定を取得
-            var targetSettings = options.Value.Targets.TryGetValue(name, out var settings) 
-                ? settings 
-                : options.Value.Targets.TryGetValue(string.Empty, out var defaultSettings) 
-                    ? defaultSettings 
-                    : new TargetSettings();
+            var targetSettings = GetTargetSettings(options, name);
             
             // 設定を検証
             var validationService = scope.ServiceProvider.GetRequiredService<ITargetSettingsValidationService>();
@@ -78,11 +83,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
                     processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
                     processInfo.SetTargetProcess(targetWindowHandle, name);
                     
-                    targetSettings = options.Value.Targets.TryGetValue(name, out settings) 
-                        ? settings 
-                        : options.Value.Targets.TryGetValue(string.Empty, out defaultSettings) 
-                            ? defaultSettings 
-                            : new TargetSettings();
+                    targetSettings = GetTargetSettings(options, name);
                     
                     validationService = scope.ServiceProvider.GetRequiredService<ITargetSettingsValidationService>();
                     validationResults = await validationService.ValidateAsync(name, targetSettings);
