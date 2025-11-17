@@ -117,22 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DeployId" xml:space="preserve">
-    <value>ID triển khai script</value>
+  <data name="Install" xml:space="preserve">
+    <value>설치</value>
   </data>
-  <data name="GasOptions" xml:space="preserve">
-    <value>Google Dịch</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
   </data>
-  <data name="GasTranslator" xml:space="preserve">
-    <value>Google Dịch</value>
+  <data name="ConfirmInstall" xml:space="preserve">
+    <value>TesseractOcr를 이용하려면 Visual C++ Redistributable이 필요합니다.
+설치하시겠습니까?
+
+&gt; #### 옵션
+&gt; [수동으로 설치](https://aka.ms/vs/17/release/vc_redist.x64.exe) </value>
   </data>
-  <data name="UnexpectedResponse" xml:space="preserve">
-    <value>Google Dịch đang trả về phản hồi không mong muốn.
-Bạn có thể đã vượt quá giới hạn dịch thuật hàng giờ.
-Vui lòng đợi một lúc và thử lại, hoặc sử dụng mô-đun dịch thuật khác.</value>
+  <data name="InstallingTitle" xml:space="preserve">
+    <value>Visual C++ Redistributable 설치 중...</value>
   </data>
-  <data name="PermissionDenied" xml:space="preserve">
-    <value>Một số hoặc tất cả quyền mà mô-đun dịch thuật yêu cầu đã không được cấp.
-Khi bạn thử dịch lại, bạn sẽ được nhắc cấp quyền một lần nữa.</value>
+  <data name="InstallingMessage" xml:space="preserve">
+    <value>Visual C++ Redistributable 설치 중...
+몇 분 정도 걸릴 수 있습니다.
+
+&gt; #### 설치가 완료되지 않은 경우
+&gt; 번거로우시겠지만 수동으로 설치를 시도해 주십시오.
+&gt; [수동으로 설치](https://aka.ms/vs/17/release/vc_redist.x64.exe)</value>
+  </data>
+  <data name="NotInstalledVcRedist" xml:space="preserve">
+    <value>Visual C++ Redistributable이 설치되지 않았습니다</value>
   </data>
 </root>
