@@ -142,6 +142,11 @@ else
         .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
 }
 
+// レビュー依頼サービスの登録
+builder.Services.AddSingleton<ReviewRequestService>()
+    .AddSingleton<IReviewRequestService>(sp => sp.GetRequiredService<ReviewRequestService>())
+    .AddHostedService(sp => sp.GetRequiredService<ReviewRequestService>());
+
 builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
     .AddScoped<IProcessInfoStore>(sp => sp.GetRequiredService<IProcessInfoStoreInternal>());
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
@@ -180,6 +185,9 @@ if (SentrySdk.IsEnabled)
     app.Logger.LogInformation("Sentry is enabled.");
 }
 AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
+
+// レビュー依頼サービスを初期化
+AppInfo.ReviewRequestService = app.Services.GetRequiredService<IReviewRequestService>();
 
 try
 {

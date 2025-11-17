@@ -13,6 +13,8 @@ public partial class AppInfo
 
     public static AppInfo Instance { get; } = new();
 
+    internal static IReviewRequestService? ReviewRequestService { get; set; }
+
     [Category("Application")]
     public string Title { get; }
 
@@ -66,5 +68,23 @@ public partial class AppInfo
     {
         var dir = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "licenses");
         Process.Start(new ProcessStartInfo("cmd.exe", $"/c start \"\" \"{dir}\"") { CreateNoWindow = true });
+    }
+
+    [property: Category("Application")]
+    [RelayCommand(CanExecute = nameof(CanOpenReview))]
+    public static void OpenReview()
+    {
+        ReviewRequestService?.OpenReviewPage();
+    }
+
+    public static bool CanOpenReview()
+    {
+        var processPath = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(processPath))
+        {
+            return false;
+        }
+        // Microsoft Store版の場合のみレビューボタンを有効化
+        return processPath.Contains("WindowsApps", StringComparison.OrdinalIgnoreCase);
     }
 }
