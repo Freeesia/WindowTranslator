@@ -1,31 +1,23 @@
-using Microsoft.Extensions.DependencyInjection;
 using WindowTranslator.Properties;
 
-namespace WindowTranslator.Services;
+namespace WindowTranslator;
 
 /// <summary>
-/// 翻訳対象設定の検証を行うサービス
+/// 翻訳対象設定の検証を行うユーティリティクラス
 /// </summary>
-public interface ITargetSettingsValidationService
+public static class TargetSettingsValidationUtility
 {
     /// <summary>
     /// 設定の検証を行う
     /// </summary>
     /// <param name="targetName">対象名</param>
     /// <param name="settings">検証する設定</param>
+    /// <param name="validators">検証に使用するバリデーターのコレクション</param>
     /// <returns>検証結果のリスト（空の場合は全て有効）</returns>
-    Task<IReadOnlyList<ValidateResult>> ValidateAsync(string targetName, TargetSettings settings);
-}
-
-/// <summary>
-/// 翻訳対象設定の検証を行うサービス実装
-/// </summary>
-public class TargetSettingsValidationService(IServiceProvider serviceProvider) : ITargetSettingsValidationService
-{
-    private readonly IServiceProvider serviceProvider = serviceProvider;
-
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<ValidateResult>> ValidateAsync(string targetName, TargetSettings settings)
+    public static async Task<IReadOnlyList<ValidateResult>> ValidateAsync(
+        string targetName, 
+        TargetSettings settings, 
+        IEnumerable<ITargetSettingsValidator> validators)
     {
         var results = new List<ValidateResult>();
 
@@ -54,7 +46,6 @@ public class TargetSettingsValidationService(IServiceProvider serviceProvider) :
         }
 
         // 各バリデーターによる検証
-        var validators = serviceProvider.GetServices<ITargetSettingsValidator>();
         foreach (var validator in validators)
         {
             var result = await validator.Validate(settings);

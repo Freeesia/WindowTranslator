@@ -19,7 +19,6 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
-using WindowTranslator.Services;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -45,7 +44,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
-    private readonly ITargetSettingsValidationService validationService;
+    private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
     private readonly IConfigurationRoot? rootConfig;
     private readonly string target;
@@ -108,7 +107,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
-        [Inject] ITargetSettingsValidationService validationService,
+        [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
         string target)
     {
@@ -145,7 +144,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
-        this.validationService = validationService;
+        this.validators = validators;
         this.mainWindowModule = mainWindowModule;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
@@ -258,7 +257,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         var results = new Dictionary<string, IReadOnlyList<ValidateResult>>();
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
-            var validationResults = await this.validationService.ValidateAsync(name, target);
+            var validationResults = await TargetSettingsValidationUtility.ValidateAsync(name, target, this.validators);
             if (validationResults.Any())
             {
                 results.Add(name, validationResults);

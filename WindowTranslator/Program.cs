@@ -29,7 +29,6 @@ using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Properties;
-using WindowTranslator.Services;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using MessageBoxImage = Kamishibai.MessageBoxImage;
@@ -145,7 +144,6 @@ else
 
 builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
     .AddScoped<IProcessInfoStore>(sp => sp.GetRequiredService<IProcessInfoStoreInternal>());
-builder.Services.AddScoped<ITargetSettingsValidationService, TargetSettingsValidationService>();
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
 builder.Services.AddPresentation<CaptureMainWindow, CaptureMainViewModel>();
 builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
