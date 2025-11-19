@@ -364,4 +364,19 @@ Monitor tidak disokong.</value>
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>Ralat tidak diketahui telah berlaku</value>
   </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Permintaan Ulasan</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Terima kasih kerana menggunakan WindowTranslator. Bolehkah anda meninggalkan ulasan di Microsoft Store?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Tulis Ulasan</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Kemudian</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Jangan Tunjuk Lagi</value>
+  </data>
 </root>

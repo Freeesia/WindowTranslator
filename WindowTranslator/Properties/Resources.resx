@@ -423,4 +423,19 @@
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>不明なエラーが発生しました</value>
   </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>レビューのお願い</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>WindowTranslatorをご利用いただきありがとうございます。Microsoft Storeでレビューをお願いできますでしょうか？</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>レビューする</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>後で</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>二度と表示しない</value>
+  </data>
 </root>

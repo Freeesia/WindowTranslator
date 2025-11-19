@@ -364,4 +364,19 @@ Monitor tidak didukung.</value>
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>Ocorreu um erro desconhecido</value>
   </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Solicitação de Avaliação</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Obrigado por usar o WindowTranslator. Você poderia deixar uma avaliação na Microsoft Store?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Escrever Avaliação</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Mais tarde</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Nunca Mostrar Novamente</value>
+  </data>
 </root>

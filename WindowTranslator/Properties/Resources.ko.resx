@@ -423,4 +423,19 @@
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>알 수 없는 오류가 발생했습니다</value>
   </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>리뷰 요청</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>WindowTranslator를 사용해 주셔서 감사합니다. Microsoft Store에서 리뷰를 남겨주시겠습니까?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>리뷰 작성</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>나중에</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>다시 표시 안 함</value>
+  </data>
 </root>
