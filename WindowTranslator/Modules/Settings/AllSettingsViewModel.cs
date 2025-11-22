@@ -257,33 +257,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         var results = new Dictionary<string, IReadOnlyList<ValidateResult>>();
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
-            var r = new List<ValidateResult>();
-            if (target.Language.Source == target.Language.Target)
+            var validationResults = await this.validators.ValidateAsync(target);
+            if (validationResults.Any())
             {
-                r.Add(ValidateResult.Invalid(Resources.TranslateLanguage, Resources.SameSourceTargetLanguage));
-            }
-
-            if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
-            {
-                r.Add(ValidateResult.Invalid(Resources.TranslateModule, """
-                    翻訳モジュールが選択されていません。
-                    「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
-                    """));
-            }
-            if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
-            {
-                r.Add(ValidateResult.Invalid(Resources.CacheModule, """
-                    キャッシュモジュールが選択されていません。
-                    「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
-                    """));
-            }
-            foreach (var validator in this.validators)
-            {
-                r.Add(await validator.Validate(target));
-            }
-            if (r.Any(r => !r.IsValid))
-            {
-                results.Add(name, r.Where(r => !r.IsValid).ToArray());
+                results.Add(name, validationResults);
             }
         }
         if (results.Any())
