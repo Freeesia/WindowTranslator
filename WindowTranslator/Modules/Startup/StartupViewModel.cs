@@ -162,8 +162,8 @@ public partial class StartupViewModel
             if (windowTitle == targetTitle)
             {
                 _ = GetWindowThreadProcessId(hWnd, out var processId);
-                var p = Process.GetProcessById(processId);
-                return new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
+                var p = Process.GetProcessById(unchecked((int)processId));
+                return new ProcessInfo(windowTitle, p.Id, hWnd, p.ProcessName);
             }
 
             hWnd = FindWindowEx(HWND.Null, hWnd, null, null);
