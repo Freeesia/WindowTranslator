@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CorrectMode_Image" xml:space="preserve">
+    <value>Pembetulan melalui pengecaman imej</value>
+  </data>
+  <data name="CorrectMode_None" xml:space="preserve">
+    <value>Tidak dibetulkan</value>
+  </data>
+  <data name="CorrectMode_Text" xml:space="preserve">
+    <value>Pembetulan teks sahaja</value>
+  </data>
+  <data name="Gemini20FlashLite" xml:space="preserve">
+    <value>Gemini 2.0 Flash Lite</value>
+  </data>
+  <data name="Gemini20Flash" xml:space="preserve">
+    <value>Gemini 2.0 Flash</value>
+  </data>
+  <data name="PreviewModel" xml:space="preserve">
+    <value>Model pratonton untuk digunakan</value>
+  </data>
+  <data name="PreviewModel_Desc" xml:space="preserve">
+    <value>Jika anda memasukkan nama model, ia akan diutamakan berbanding "Model untuk digunakan"</value>
+  </data>
+  <data name="CorrectSample" xml:space="preserve">
+    <value>Sampel Pembetulan</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>Kunci API</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>access point</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>laluan glosari</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model untuk digunakan</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Maklumat konteks untuk digunakan semasa terjemahan</value>
+  </data>
+  <data name="CorrectMode" xml:space="preserve">
+    <value>Pembetulan pengecaman</value>
+  </data>
+  <data name="GoogleAIOptions" xml:space="preserve">
+    <value>Tetapan Gemini</value>
+  </data>
+  <data name="GoogleAITranslator" xml:space="preserve">
+    <value>Terjemahan Gemini</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>Tunggu pembetulan selesai sebelum meneruskan terjemahan</value>
+  </data>
+  <data name="Gemini25Flash" xml:space="preserve">
+    <value>Gemini 2.5 Flash</value>
+  </data>
+  <data name="Gemini25Pro" xml:space="preserve">
+    <value>Gemini 2.5 Pro</value>
+  </data>
+  <data name="Gemini25FlashLite" xml:space="preserve">
+    <value>Gemini 2.5 Flash Lite</value>
+  </data>
+  <data name="GeminiNotInitialized" xml:space="preserve">
+    <value>Fungsi Gemini tidak diinisialisasi. Sila konfigurasikan pilihan Google AI dari dialog tetapan</value>
+  </data>
+  <data name="InvalidApiKey" xml:space="preserve">
+    <value>Kunci API Gemini tidak sah. Sila konfigurasikan pilihan Google AI dari dialog tetapan</value>
+  </data>
+</root>

@@ -33,6 +33,8 @@ FindWindowEx
 GetWindowText
 GetWindowTextLength
 GetWindowThreadProcessId
+GetClassName
+DwmGetWindowAttribute
 
 
 // WindowMonitor

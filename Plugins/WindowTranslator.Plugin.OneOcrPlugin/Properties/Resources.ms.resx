@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="OneOcr" xml:space="preserve">
+    <value>New Windows Character Recognition (Beta)</value>
+  </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Modul bersandar tidak dijumpai. Tidak tersedia dalam persekitaran ini.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Gagal menyalin DLL OneOcr. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Gagal mencipta pilihan permulaan OCR. Kod ralat: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Gagal menetapkan pemuatan lambat model OCR. Kod ralat: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Gagal mencipta saluran OCR. Kod ralat: {0}
+Sila cuba mengemas kini aplikasi "Snipping Tool" atau "Microsoft Photos".</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Gagal mencipta pilihan proses OCR. Kod ralat: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Gagal menetapkan kiraan baris pengecaman maksimum OCR. Kod ralat: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Gagal menjalankan saluran OCR. Kod ralat: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Gagal mendapatkan kiraan baris OCR. Kod ralat: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Gagal mendapatkan baris OCR. Nombor baris: {0}, Kod ralat: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Gagal mendapatkan kandungan teks baris OCR. Nombor baris: {0}, Kod ralat: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Gagal mendapatkan kotak sempadan baris OCR. Nombor baris: {0}, Kod ralat: {1}</value>
+  </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Modul bersandar tidak dijumpai. Tidak tersedia dalam persekitaran ini. {0}</value>
+  </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Update Snipping Tool</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>Untuk menggunakan OneOcr, anda perlu mengemas kini aplikasi "Snipping Tool".
+
+Sila buka Microsoft Store untuk mengemas kini.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Open Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>Jangan kemas kini</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Menyemak Kemas Kini...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>Menyemak kemas kini "Snipping Tool"...
+
+Sila lengkapkan kemas kini dalam Microsoft Store.
+Proses akan diteruskan secara automatik apabila kemas kini selesai.
+
+&gt; #### Jika kemas kini tidak selesai
+&gt; Sila kemas kini secara manual dari "Muat Turun dan Kemas Kini" dalam Microsoft Store dan cuba lagi.
+&gt; [Buka Muat Turun dan Kemas Kini](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Batal</value>
+  </data>
+</root>

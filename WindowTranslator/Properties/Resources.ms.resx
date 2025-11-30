@@ -1,0 +1,367 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Source" xml:space="preserve">
+    <value>Bahasa sumber (pengecaman)</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Bahasa sasaran (paparan)</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>Pemilihan Modul Terjemahan</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>Pemilihan Modul Cache</value>
+  </data>
+  <data name="ViewMode" xml:space="preserve">
+    <value>Mod paparan hasil terjemahan</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>Sasaran terjemahan automatik</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>Terjemahkan secara automatik apabila proses dilancarkan sebaik sahaja dipilih untuk terjemahan</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Tetapan keseluruhan</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>Lain-lain</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>Tetapan Pemalam</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Tetapan Bahasa</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>hamparan</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>tetingkap tangkapan</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>Cache dalam memori</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Cache fail tempatan</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Tetapan</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>Lampir</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>nyahlampir</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Tamat</value>
+  </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>WindowTranslator sudah berjalan.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Tentang</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>Semak lesen pihak ketiga</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>Kemas kini tersedia: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>Anda menggunakan versi terkini.</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>Maklumat Kemas Kini</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>Kemas kini ke versi terkini</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>Semak butiran</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Hanya semasa anda menekan</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Tekan untuk hidupkan/matikan</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>Tukar paparan hamparan</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>Jadikan paparan hamparan boleh ditangkap</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>Proses Diterjemahkan</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>Modul pengecaman</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>Pintasan</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>Suis hamparan</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>Versi baharu, {0}, telah dikeluarkan</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>Pemasangan versi baharu {0}</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>Semak kemas kini</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>Semak versi baharu</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Batal</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>Mula automatik semasa but sistem</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Tetapan umum</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>Kaedah paparan</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>Per-item settings</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versi</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>Tarikh binaan</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>developer</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>Public page</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>license</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>Jangan terjemah</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>Tetapan cache</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>Ambang untuk teks hampir</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>Jangan cache</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Windows Standard Character Recognition</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Nama Aplikasi</value>
+  </data>
+  <data name="SteamWishlist" xml:space="preserve">
+    <value>Hadiahkan permainan di Steam</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>Maklumat Aplikasi</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Alamat Hubungan</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>Technical Information</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Tutup</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Guna</value>
+  </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>Show busy icon</value>
+  </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Terjemah hanya apabila hamparan didayakan</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>Paparkan terjemahan hamparan hanya untuk teks pada kedudukan penunjuk tetikus</value>
+  </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Overlay background opacity</value>
+  </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Hantar maklumat ralat ke sistem laporan. Maklumat berikut akan dihantar:
+* Maklumat aplikasi
+* Spesifikasi PC dan maklumat persekitaran
+* Nama aplikasi sasaran terjemahan
+* Imej sasaran terjemahan
+* Tetapan sasaran terjemahan
+
+&gt; %{color:red}**Maklumat peribadi tidak akan dihantar, tetapi sila pastikan maklumat peribadi tidak disertakan dalam skrin sasaran terjemahan.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Send Information</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Salin Maklumat</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Disalin</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Sahkan</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Melampir</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Eksport</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Kosongkan</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Skrol Automatik</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Eksport Log</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Eksport Gagal</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Eksport Selesai</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>Log dieksport ke `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Text Files</value>
+  </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>OCR failed</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>Translation failed</value>
+  </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Gagal membenam ke dalam tetingkap.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Please select a window other than WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>Tetingkap yang dipilih "{0}" tidak dapat menentukan proses dan tidak dapat ditangkap.
+Monitor tidak disokong.</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Settings Validation Error</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Simpan dan Tutup</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Tetapan Lalai</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Mula Automatik</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} telah didaftarkan untuk mula automatik.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>Mula automatik untuk {0} telah dilumpuhkan.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Tetapan Bahasa</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Bahasa sumber dan sasaran adalah sama. Sila nyatakan bahasa yang berbeza.</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>Fungsi OCR untuk {0} tidak tersedia. Sila pasang ciri bahasa sasaran</value>
+  </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>Gagal menerapkan tetapan.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Ralat tidak diketahui telah berlaku</value>
+  </data>
+</root>
