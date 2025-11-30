@@ -72,7 +72,11 @@ static class Utility
         {
             return null;
         }
-        return new(version);
+        if (!Version.TryParse(version, out var v))
+        {
+            throw new InvalidOperationException($"Failed to parse ScreenSketch version. : {version}");
+        }
+        return v;
     }
 
     public static async ValueTask<string?> FindOneOcrPath()
