@@ -74,7 +74,7 @@ static class Utility
         }
         if (!Version.TryParse(version, out var v))
         {
-            throw new InvalidOperationException($"Failed to parse ScreenSketch version. : {version}");
+            throw new InvalidOperationException($"Failed to parse {appName} version. : {version}");
         }
         return v;
     }
