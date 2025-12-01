@@ -18,4 +18,9 @@ public static class PathUtility
     /// ユーザー設定ファイルのパスを取得します。
     /// </summary>
     public static readonly string UserSettings = Path.Combine(UserDir, "settings.json");
+
+    /// <summary>
+    /// 共有設定ディレクトリのパスを取得します。
+    /// </summary>
+    public static readonly string SharedDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "StudioFreesia", "WindowTranslator");
 }
