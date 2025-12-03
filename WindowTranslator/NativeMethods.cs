@@ -7,11 +7,6 @@ namespace Windows.Win32;
 internal static partial class PInvoke
 {
     [SupportedOSPlatform("windows5.0")]
-    [OverloadResolutionPriority(2)]
-    internal static unsafe Foundation.HWND CreateWindowEx(UI.WindowsAndMessaging.WINDOW_EX_STYLE dwExStyle, string lpClassName, string lpWindowName, UI.WindowsAndMessaging.WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, Foundation.HWND hWndParent, SafeHandle hMenu, SafeHandle hInstance, IntPtr lpParam)
-        => CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam.ToPointer());
-
-    [SupportedOSPlatform("windows5.0")]
     internal static unsafe string GetWindowText(Foundation.HWND hWnd)
     {
         var bufferSize = GetWindowTextLength(hWnd);
