@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
@@ -20,7 +21,7 @@ static class Utility
         [11] = new("11.2508.29.0"),    // Win11
     };
 
-    public static string OneOcrPath { get; } = Path.Combine(PathUtility.UserDir, "OneOcr");
+    public static string OneOcrPath { get; } = Path.Combine(PathUtility.SharedDir, "OneOcr");
 
     private static int GetOsVersion()
         => Environment.OSVersion.Version is { Major: 10, Build: < 22000 } ? 10 : 11;
@@ -72,7 +73,11 @@ static class Utility
         {
             return null;
         }
-        return new(version);
+        if (!Version.TryParse(version, out var v))
+        {
+            throw new InvalidOperationException($"Failed to parse {appName} version. : {version}");
+        }
+        return v;
     }
 
     public static async ValueTask<string?> FindOneOcrPath()
@@ -250,5 +255,21 @@ static class Utility
             centerX + dx * cos - dy * sin,
             centerY + dx * sin + dy * cos
         );
+    }
+
+    private static void MigrateModelsIfNeeded()
+    {
+        var oldPath = Path.Combine(PathUtility.UserDir, "OneOcr");
+        if (Directory.Exists(oldPath) && !Directory.Exists(OneOcrPath))
+        {
+            Directory.CreateDirectory(PathUtility.SharedDir);
+            Directory.Move(oldPath, OneOcrPath);
+        }
+    }
+
+    [ModuleInitializer]
+    internal static void Initialize()
+    {
+        MigrateModelsIfNeeded();
     }
 }

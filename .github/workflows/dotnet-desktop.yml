@@ -50,7 +50,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: baileyjm02/markdown-to-pdf@v1
         with:
           input_path: docs
@@ -61,20 +61,23 @@ jobs:
           template: docs/template.html
           extend_default_theme: true
           build_html: false
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: docs
           path: pdfs/
   license:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: licenses
           key: ${{ runner.os }}-licenses-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-licenses-
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
       - run: |
           dotnet tool restore
           dotnet restore
@@ -85,9 +88,9 @@ jobs:
             -ji include-projects.json `
             -d licenses `
             -fo licenses\third-party-licenses.txt `
-            -f net8.0 `
+            -f net10.0 `
             -err
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: licenses
           path: licenses/
@@ -105,7 +108,7 @@ jobs:
     outputs:
       version: ${{ steps.gitversion.outputs.assemblySemFileVer }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: actions/cache@v4
@@ -116,7 +119,7 @@ jobs:
             ${{ runner.os }}-nuget-
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
       - uses: gittools/actions/gitversion/setup@v4.2.0
         with:
           versionSpec: "6.x"
@@ -125,14 +128,14 @@ jobs:
       - uses: Jimver/cuda-toolkit@v0.2.29
         with:
           cuda: '12.9.0'
-      - env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: |
+      - run: |
           dotnet publish WindowTranslator -c Release -o publish --sc ${{ matrix.self }} `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - run: |
           $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" -and $_.Name -notmatch "Tests?" }
           for ($i = 0; $i -lt $folders.Count; $i++) {
@@ -153,7 +156,7 @@ jobs:
         with:
           name: licenses
           path: publish/licenses
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: WindowTranslator${{ matrix.self && '-full' || '' }}-${{ steps.gitversion.outputs.fullSemVer }}
           path: publish\
@@ -170,7 +173,7 @@ jobs:
     needs: build
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -179,7 +182,7 @@ jobs:
             ${{ runner.os }}-nuget-
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
       - uses: actions/download-artifact@v6
         with:
           path: artifacts
@@ -190,7 +193,7 @@ jobs:
           dotnet wix extension -g add WixToolset.Util.wixext/5.0.2 WixToolset.UI.wixext/5.0.2
           dotnet run -c Release
         working-directory: WindowTranslator.Wix
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: WindowTranslator-${{ needs.build.outputs.version }}.msi
           path: publish\

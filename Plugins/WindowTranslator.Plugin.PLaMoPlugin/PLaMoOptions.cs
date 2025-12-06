@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
@@ -13,7 +14,7 @@ public class PLaMoOptions : IPluginParam
     public const string ModelFileName = "plamo-2-translate-Q4_K_S.gguf";
     public const string ModelUrl = $"https://huggingface.co/mmnga/plamo-2-translate-gguf/resolve/main/{ModelFileName}";
 
-    public static string ModelPath => Path.Combine(PathUtility.UserDir, "plamo", ModelFileName);
+    public static string ModelPath => Path.Combine(PathUtility.SharedDir, "plamo", ModelFileName);
 
     [LocalizedDescription(typeof(Resources), $"{nameof(ContextSize)}_Desc")]
     [Range(512, 32768)]
@@ -24,6 +25,21 @@ public class PLaMoOptions : IPluginParam
     [Spinnable(Minimum = -1, Maximum = 6)]
     [LocalizedDescription(typeof(Resources), $"{nameof(VRAM)}_Desc")]
     public int VRAM { get; set; } = -1;
+
+    private static void MigrateModelsIfNeeded()
+    {
+        if (File.Exists(Path.Combine(PathUtility.UserDir, "plamo", ModelFileName)) && !File.Exists(ModelPath))
+        {
+            Directory.CreateDirectory(Path.Combine(PathUtility.SharedDir, "plamo"));
+            File.Move(Path.Combine(PathUtility.UserDir, "plamo", ModelFileName), ModelPath);
+        }
+    }
+
+    [ModuleInitializer]
+    internal static void Initialize()
+    {
+        MigrateModelsIfNeeded();
+    }
 }
 
 public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsValidator

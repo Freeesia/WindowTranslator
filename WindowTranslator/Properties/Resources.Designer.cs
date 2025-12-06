@@ -466,6 +466,15 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   {0}: 設定検証エラー に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InvalidSettings {
+            get {
+                return ResourceManager.GetString("InvalidSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string IsEnableAutoTarget {
@@ -732,6 +741,15 @@ namespace WindowTranslator.Properties {
         public static string ReviewRequestMessage {
             get {
                 return ResourceManager.GetString("ReviewRequestMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   そのまま実行 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RunAsIs {
+            get {
+                return ResourceManager.GetString("RunAsIs", resourceCulture);
             }
         }
         

@@ -438,4 +438,10 @@
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>二度と表示しない</value>
   </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>そのまま実行</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: 設定検証エラー</value>
+  </data>
 </root>

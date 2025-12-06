@@ -148,6 +148,9 @@ dotnet_diagnostic.CA1716.severity = none
 dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA2254.severity = none
 
+# CA2255: 'ModuleInitializer' 属性はライブラリで使用しないでください
+dotnet_diagnostic.CA2255.severity = none
+
 dotnet_code_quality.ca1711.allowed_suffixes = EventArgs
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:suggestion
