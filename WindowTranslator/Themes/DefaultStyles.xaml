@@ -125,4 +125,23 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style BasedOn="{StaticResource {x:Type ui:MessageBox}}" TargetType="{x:Type ui:MessageBox}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <md:MarkdownScrollViewer
+                        Margin="8"
+                        ClickAction="OpenBrowser"
+                        Markdown="{Binding}"
+                        MarkdownStyle="{StaticResource mdStyle}">
+                        <md:MarkdownScrollViewer.Plugins>
+                            <mdp:MdXamlPlugins>
+                                <ctrl:LineBreakSplitPluginSetup />
+                            </mdp:MdXamlPlugins>
+                        </md:MarkdownScrollViewer.Plugins>
+                    </md:MarkdownScrollViewer>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

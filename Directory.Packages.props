@@ -46,8 +46,8 @@
     <PackageVersion Include="Wacton.Unicolour" Version="6.3.0" />
     <PackageVersion Include="Weikio.PluginFramework.AspNetCore" Version="1.5.1" />
     <PackageVersion Include="WixSharp_wix4" Version="2.8.0" />
-    <PackageVersion Include="WPF-UI" Version="4.0.3" />
-    <PackageVersion Include="WPF-UI.Tray" Version="4.0.3" />
+    <PackageVersion Include="WPF-UI" Version="4.1.0" />
+    <PackageVersion Include="WPF-UI.Tray" Version="4.1.0" />
     <PackageVersion Include="WpfAnalyzers" Version="4.1.1" />
     <PackageVersion Include="XamlAnimatedGif" Version="2.3.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />

@@ -423,4 +423,10 @@
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>不明なエラーが発生しました</value>
   </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>そのまま実行</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: 設定検証エラー</value>
+  </data>
 </root>
