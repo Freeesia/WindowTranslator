@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -373,5 +374,21 @@ public sealed class TesseractOcr(
     {
         public byte[] Bytes { get; } = ArrayPool<byte>.Shared.Rent(Size);
         public void Dispose() => ArrayPool<byte>.Shared.Return(this.Bytes);
+    }
+
+    private static void MigrateModelsIfNeeded()
+    {
+        var oldPath = Path.Combine(PathUtility.UserDir, "tessdata");
+        if (Directory.Exists(oldPath) && !Directory.Exists(DataDir))
+        {
+            Directory.CreateDirectory(PathUtility.SharedDir);
+            Directory.Move(oldPath, DataDir);
+        }
+    }
+
+    [ModuleInitializer]
+    internal static void Initialize()
+    {
+        MigrateModelsIfNeeded();
     }
 }

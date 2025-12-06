@@ -158,7 +158,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 (HWND)hwndParent.Handle,
                 null!,
                 null!,
-                IntPtr.Zero);
+                []);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
             SetWindowPos(hwndHost, new(1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);

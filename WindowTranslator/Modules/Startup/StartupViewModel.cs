@@ -179,7 +179,7 @@ public partial class StartupViewModel
             Process p;
             try
             {
-                p = Process.GetProcessById(processId);
+                p = Process.GetProcessById(unchecked((int)processId));
             }
             catch (ArgumentException)
             {
@@ -191,12 +191,12 @@ public partial class StartupViewModel
             // サイズが完全一致する場合は即座に結果を設定して終了
             if (width == targetSize.Width && height == targetSize.Height)
             {
-                result = new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
+                result = new ProcessInfo(windowTitle, p.Id, hWnd, p.ProcessName);
                 return false; // 列挙を終了
             }
 
             // タイトルは一致するが、サイズが異なる場合は候補として保持
-            candidate ??= new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
+            candidate ??= new ProcessInfo(windowTitle, p.Id, hWnd, p.ProcessName);
 
             return true;
         }, IntPtr.Zero);

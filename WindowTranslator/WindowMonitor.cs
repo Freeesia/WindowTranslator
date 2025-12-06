@@ -45,7 +45,7 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore 
             Process p;
             try
             {
-                p = Process.GetProcessById(processId);
+                p = Process.GetProcessById(unchecked((int)processId));
             }
             catch (ArgumentException)
             {
