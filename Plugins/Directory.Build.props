@@ -14,7 +14,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PropertyTools" ExcludeAssets="runtime" />
-    <PackageReference Include="System.Linq.Async" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>

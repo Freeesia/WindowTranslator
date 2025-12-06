@@ -62,7 +62,7 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
             await this.processing.WaitAsync();
             using var rel = new DisposeAction(() => this.processing.Release());
             this.logger.LogDebug("TryGetNextFrame");
-            using var frame = framePool.TryGetNextFrame();
+            using var frame = sender.TryGetNextFrame();
             if (frame is null)
             {
                 return;
@@ -89,7 +89,7 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
             this.cts.Token.ThrowIfCancellationRequested();
             this.lastSize = frame.ContentSize;
             this.logger.LogDebug($"フレームプール再生成:({this.lastSize.Width}, {this.lastSize.Height})");
-            framePool.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
+            sender.Recreate(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
         }
         catch (ObjectDisposedException)
         {
