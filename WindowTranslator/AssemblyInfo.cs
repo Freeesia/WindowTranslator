@@ -1,4 +1,3 @@
-using System.Resources;
 using System.Runtime.Versioning;
 using System.Windows;
 
@@ -12,4 +11,3 @@ using System.Windows;
 )]
 
 [assembly: SupportedOSPlatform("windows10.0.19041")]
-[assembly: NeutralResourcesLanguage("en")]
