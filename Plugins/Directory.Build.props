@@ -2,7 +2,7 @@
   <!-- 上位階層の Directory.Build.props をインクルード -->
   <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.props" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.props')" />
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
@@ -14,7 +14,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PropertyTools" ExcludeAssets="runtime" />
-    <PackageReference Include="System.Linq.Async" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>
