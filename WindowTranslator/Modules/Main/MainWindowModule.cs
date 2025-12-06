@@ -6,8 +6,6 @@ using System.Collections.ObjectModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
-using Wpf.Ui;
-using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Modules.Main;
@@ -40,21 +38,18 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
             }
 
             // 検証エラーがある場合、エラーダイアログを表示
-            var dialogService = scope.ServiceProvider.GetRequiredService<IContentDialogService>();
-            var result = await dialogService.ShowSimpleDialogAsync(new()
+            var result = await presentationService.ShowMessageAsync(new(string.Format(Resources.InvalidSettings, name), string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")))
             {
-                Title = Resources.SettingsInvalid,
-                Content = string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")),
                 PrimaryButtonText = Resources.Settings,
-                SecondaryButtonText = "そのまま実行",
+                SecondaryButtonText = Resources.RunAsIs,
                 CloseButtonText = Resources.Cancel,
             });
 
             switch (result)
             {
-                case ContentDialogResult.Primary:
+                case Wpf.Ui.Controls.MessageBoxResult.Primary:
                     break;
-                case ContentDialogResult.Secondary:
+                case Wpf.Ui.Controls.MessageBoxResult.Secondary:
                     return settings;
                 default:
                     return null;
@@ -62,12 +57,12 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
         }
 
         // 設定が存在しない、または検証エラーがある場合、設定ダイアログを開く
-        if (!await presentationService.OpenAllSettingsDialogAsync(name))
+        if (!await presentationService.OpenAllSettingsDialogAsync(name, false))
         {
             return null;
         }
 
-        return scope.ServiceProvider.GetRequiredKeyedService<IOptionsSnapshot<TargetSettings>>(name).Value;
+        return scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get(name);
     }
 
     private async Task OpenTargetWindowCoreAsync(IntPtr targetWindowHandle, string name)

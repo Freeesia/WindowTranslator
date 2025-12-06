@@ -109,7 +109,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
-        string target)
+        string target,
+        bool? applyMode = null)
     {
         var items = provider.GetPlugins();
         var ocrModules = items.Where(p => typeof(IOcrModule).IsAssignableFrom(p.Type)).Select(Convert).ToArray();
@@ -128,7 +129,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
             .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
 
-        this.ApplyMode = !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
+        this.ApplyMode = applyMode ?? !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
             selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
