@@ -49,7 +49,7 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
     private static readonly string reviewStatePath = Path.Combine(PathUtility.UserDir, ReviewStateFileName);
     
     // Microsoft Store用のプロトコルURL
-    private const string StoreReviewUrl = "ms-windows-store://review/?ProductId=9P4TWX8P72L9";
+    private const string StoreReviewUrl = "ms-windows-store://review/?ProductId=9pjd2fdzqxm3";
     
     private readonly ILogger<ReviewRequestService> logger;
     private readonly App app;
@@ -84,20 +84,21 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
             return;
         }
 
-        if (this.reviewState.FirstLaunchDate == null)
+        // 今日の日付を記録
+        var today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+        if (!this.reviewState.LaunchDates.Contains(today))
         {
-            // 初回起動日を記録
-            this.reviewState = this.reviewState with { FirstLaunchDate = DateTime.UtcNow };
+            var newLaunchDates = new HashSet<string>(this.reviewState.LaunchDates) { today };
+            this.reviewState = this.reviewState with { LaunchDates = newLaunchDates };
             await SaveReviewStateAsync(this.reviewState);
-            this.logger.LogInformation("初回起動日を記録しました");
-            return;
+            this.logger.LogInformation($"起動日を記録しました。起動日数: {this.reviewState.LaunchDates.Count}");
         }
 
-        var daysSinceFirstLaunch = (DateTime.UtcNow - this.reviewState.FirstLaunchDate.Value).TotalDays;
-        if (daysSinceFirstLaunch >= DaysBeforeReview)
+        // 起動日数が指定日数以上になったらレビュー依頼を表示
+        if (this.reviewState.LaunchDates.Count >= DaysBeforeReview)
         {
             this.ShouldShowReviewRequest = true;
-            this.logger.LogInformation($"初回起動から {daysSinceFirstLaunch:F1} 日経過しました。レビュー依頼を表示します");
+            this.logger.LogInformation($"起動日数が {this.reviewState.LaunchDates.Count} 日になりました。レビュー依頼を表示します");
             
             // レビュー依頼通知を表示
             ShowReviewNotification();
@@ -161,21 +162,21 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
     private void ShowReviewNotification()
     {
         var builder = new ToastContentBuilder()
-            .AddText("WindowTranslatorをご利用いただきありがとうございます")
-            .AddText("Microsoft Storeでレビューをお願いできますでしょうか？")
+            .AddText(Properties.Resources.ReviewRequest)
+            .AddText(Properties.Resources.ReviewRequestMessage)
             .AddArgument(nameof(ReviewRequestService))
             .AddButton(new ToastButton()
                 .AddArgument("action", ToastActions.Review)
-                .SetContent("レビューする"))
+                .SetContent(Properties.Resources.WriteReview))
             .AddButton(new ToastButton()
                 .AddArgument("action", ToastActions.Later)
-                .SetContent("後で")
+                .SetContent(Properties.Resources.ReviewLater)
                 .SetBackgroundActivation());
 
         {
             var args = ToastArguments.Parse(builder.Content.Launch);
             args.Add("action", ToastActions.NeverShowAgain);
-            builder.Content.Actions.ContextMenuItems.Add(new("二度と表示しない", args.ToString()));
+            builder.Content.Actions.ContextMenuItems.Add(new(Properties.Resources.ReviewNeverShowAgain, args.ToString()));
         }
 
         builder.Show(t =>
@@ -300,9 +301,9 @@ internal class IgnoreReviewRequestService : IReviewRequestService
 internal record ReviewState
 {
     /// <summary>
-    /// 初回起動日
+    /// 起動した日付のリスト（日を跨いだ起動のみカウント）
     /// </summary>
-    public DateTime? FirstLaunchDate { get; init; }
+    public HashSet<string> LaunchDates { get; init; } = new();
 
     /// <summary>
     /// 最後にレビュー依頼を表示した日時

@@ -41,6 +41,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         WriteIndented = true,
     };
     private readonly IUpdateChecker updateChecker;
+    private readonly IReviewRequestService reviewRequestService;
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
@@ -98,11 +99,25 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool IsVisibleAbout { get; } = !AppInfo.SuppressMode;
 
+    public bool IsVisibleReviewButton => IsMicrosoftStoreVersion();
+
+    private static bool IsMicrosoftStoreVersion()
+    {
+        var processPath = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(processPath))
+        {
+            return false;
+        }
+        // WindowsAppsフォルダ内にインストールされているかチェック
+        return processPath.Contains("WindowsApps", StringComparison.OrdinalIgnoreCase);
+    }
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
         [Inject] IServiceProvider sp,
         [Inject] IUpdateChecker updateChecker,
+        [Inject] IReviewRequestService reviewRequestService,
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
@@ -141,6 +156,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.SelectedTarget = selected;
 
         this.updateChecker = updateChecker;
+        this.reviewRequestService = reviewRequestService;
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
@@ -204,6 +220,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     }
     private static ModuleItem Convert(Plugin plugin)
     => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
+
+    [RelayCommand]
+    public void OpenReview()
+        => this.reviewRequestService.OpenReviewPage();
 
     [RelayCommand]
     public void DeleteAutoTarget(string item)

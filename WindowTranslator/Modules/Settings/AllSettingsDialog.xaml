@@ -375,20 +375,29 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.About}" Visibility="{Binding IsVisibleAbout, Converter={StaticResource b2vConv}}">
-                    <pt:PropertyGrid
-                        Grid.Column="2"
-                        Margin="8"
-                        ControlFactory="{StaticResource factory}"
-                        Operator="{StaticResource operator}"
-                        SelectedObject="{x:Static root:AppInfo.Instance}"
-                        TabVisibility="Collapsed">
-                        <pt:PropertyGrid.Resources>
-                            <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
-                                <Setter Property="Padding" Value="4,8" />
-                            </Style>
-                            <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
-                        </pt:PropertyGrid.Resources>
-                    </pt:PropertyGrid>
+                    <DockPanel>
+                        <ui:Button
+                            Command="{Binding OpenReviewCommand}"
+                            Content="{x:Static properties:Resources.WriteReview}"
+                            DockPanel.Dock="Bottom"
+                            Icon="{ui:SymbolIcon Star24}"
+                            Margin="8"
+                            Visibility="{Binding IsVisibleReviewButton, Converter={StaticResource b2vConv}}" />
+                        <pt:PropertyGrid
+                            Grid.Column="2"
+                            Margin="8"
+                            ControlFactory="{StaticResource factory}"
+                            Operator="{StaticResource operator}"
+                            SelectedObject="{x:Static root:AppInfo.Instance}"
+                            TabVisibility="Collapsed">
+                            <pt:PropertyGrid.Resources>
+                                <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                    <Setter Property="Padding" Value="4,8" />
+                                </Style>
+                                <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
+                            </pt:PropertyGrid.Resources>
+                        </pt:PropertyGrid>
+                    </DockPanel>
                 </TabItem>
             </TabControl>
         </DockPanel>
