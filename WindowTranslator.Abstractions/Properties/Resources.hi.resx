@@ -1,52 +1,110 @@
-<?xml version='1.0' encoding='utf-8'?>
-<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
-  <xs:schema id="root">
-    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xs:element name="root" ns1:IsDataSet="true">
-      <xs:complexType>
-        <xs:choice maxOccurs="unbounded">
-          <xs:element name="metadata">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
-              <xs:attribute name="name" use="required" type="xsd:string" />
-              <xs:attribute name="type" type="xsd:string" />
-              <xs:attribute name="mimetype" type="xsd:string" />
-              <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="assembly">
-            <xs:complexType>
-              <xs:attribute name="alias" type="xsd:string" />
-              <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="data">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
-              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
-              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
-              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
-              <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="resheader">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
-              <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -60,60 +118,72 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Capture" xml:space="preserve">
-    <value>विंडो कैप्चर करें</value>
+    <value>キャプチャーウィンドウ</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>ओवरले</value>
+    <value>オーバレイ</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>केवल दबाते समय</value>
+    <value>押している間だけ</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>ON/OFF टॉगल करने के लिए दबाएं</value>
+    <value>押してON/OFFを切り替える</value>
   </data>
   <data name="Recognize" xml:space="preserve">
-    <value>पहचान सेटिंग्स</value>
+    <value>認識設定</value>
   </data>
   <data name="Scale" xml:space="preserve">
-    <value>आवर्धन दर</value>
+    <value>拡大率</value>
   </data>
   <data name="MergeThrethold" xml:space="preserve">
-    <value>मर्ज थ्रेशोल्ड</value>
+    <value>マージ閾値</value>
   </data>
   <data name="XPosThrethold" xml:space="preserve">
-    <value>X स्थिति शिफ्ट थ्रेशोल्ड</value>
+    <value>X位置ずれ閾値</value>
   </data>
   <data name="YPosThrethold" xml:space="preserve">
-    <value>Y स्थिति शिफ्ट थ्रेशोल्ड</value>
+    <value>Y位置ずれ閾値</value>
   </data>
   <data name="LeadingThrethold" xml:space="preserve">
-    <value>लाइन अंतराल थ्रेशोल्ड</value>
+    <value>行間閾値</value>
   </data>
   <data name="SpacingThreshold" xml:space="preserve">
-    <value>वर्ण अंतराल थ्रेशोल्ड</value>
+    <value>文字間閾値</value>
   </data>
   <data name="FontSizeThrethold" xml:space="preserve">
-    <value>फ़ॉन्ट साइज़ शिफ्ट थ्रेशोल्ड</value>
+    <value>文字サイズずれ閾値</value>
   </data>
   <data name="IsAvoidMergeList" xml:space="preserve">
-    <value>सूची को मर्ज करने से बचें</value>
+    <value>リストのマージを避ける</value>
   </data>
   <data name="BufferSize" xml:space="preserve">
-    <value>बफर साइज़</value>
+    <value>バッファサイズ</value>
   </data>
   <data name="BasicOcrParam" xml:space="preserve">
-    <value>बुनियादी OCR सेटअप</value>
+    <value>基本的なOCRの設定</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>अन्य</value>
+    <value>その他</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>बफर फ़ंक्शन</value>
+    <value>バッファ機能</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>पहचान त्रुटि सुधार</value>
+    <value>認識ミスの補正</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>कंपन दमन</value>
+    <value>振動の抑制</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>言語設定</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>翻訳モジュール</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>キャッシュモジュール</value>
   </data>
 </root>
