@@ -1,5 +1,6 @@
 ﻿using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using System.Collections.ObjectModel;
@@ -10,10 +11,11 @@ using Wpf.Ui.Extensions;
 
 namespace WindowTranslator.Modules.Main;
 
-public sealed class MainWindowModule(App app, IServiceProvider provider) : IMainWindowModule, IDisposable
+public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger<MainWindowModule> logger) : IMainWindowModule, IDisposable
 {
     private readonly App app = app;
     private readonly IServiceProvider provider = provider;
+    private readonly ILogger<MainWindowModule> logger = logger;
     private readonly AsyncSemaphore asyncLock = new(1);
 
     public ObservableCollection<WindowInfo> OpenedWindows { get; } = new();
@@ -34,6 +36,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
             var validationResults = await validators.ValidateAsync(settings);
             if (validationResults.IsEmpty())
             {
+                this.logger.LogInformation($"Settings for target '{name}' are valid.");
                 return settings;
             }
 
@@ -48,10 +51,13 @@ public sealed class MainWindowModule(App app, IServiceProvider provider) : IMain
             switch (result)
             {
                 case Wpf.Ui.Controls.MessageBoxResult.Primary:
+                    this.logger.LogInformation($"User chose to open settings for target '{name}'.");
                     break;
                 case Wpf.Ui.Controls.MessageBoxResult.Secondary:
+                    this.logger.LogWarning($"Settings for target '{name}' are invalid, but user chose to run as is.");
                     return settings;
                 default:
+                    this.logger.LogWarning($"Settings for target '{name}' are invalid, and user cancelled the operation.");
                     return null;
             }
         }

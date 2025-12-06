@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
@@ -46,6 +47,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IAutoTargetStore autoTargetStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
+    private readonly ILogger<AllSettingsViewModel> logger;
     private readonly IConfigurationRoot? rootConfig;
     private readonly string target;
     [ObservableProperty]
@@ -109,6 +111,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
+        [Inject] ILogger<AllSettingsViewModel> logger,
         string target,
         bool? applyMode = null)
     {
@@ -147,6 +150,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore = autoTargetStore;
         this.validators = validators;
         this.mainWindowModule = mainWindowModule;
+        this.logger = logger;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
@@ -277,6 +281,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             {
                 return;
             }
+            this.logger.LogWarning("Settings are invalid, but user chose to save them anyway.");
         }
 
         // 値の保存
