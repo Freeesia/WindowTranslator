@@ -1,3 +1,5 @@
+//#define ENABLE_REVIEW
+
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -14,65 +16,44 @@ namespace WindowTranslator;
 internal interface IReviewRequestService
 {
     /// <summary>
-    /// レビュー依頼を表示すべきかどうかを取得します
+    /// レビュー依頼を表示できるかどうか
     /// </summary>
-    bool ShouldShowReviewRequest { get; }
-
-    /// <summary>
-    /// レビュー依頼を表示します
-    /// </summary>
-    Task ShowReviewRequestAsync();
+    bool CanOpenReview { get; }
 
     /// <summary>
     /// Microsoft Storeのレビューページを開きます
     /// </summary>
-    void OpenReviewPage();
-
-    /// <summary>
-    /// レビュー依頼を後で表示するように設定します
-    /// </summary>
-    Task ShowLaterAsync();
-
-    /// <summary>
-    /// レビュー依頼を二度と表示しないように設定します
-    /// </summary>
-    Task NeverShowAgainAsync();
+    Task OpenReviewPageAsync();
 }
 
 /// <summary>
 /// レビュー依頼サービスの実装
 /// </summary>
-internal class ReviewRequestService : BackgroundService, IReviewRequestService
+internal class ReviewRequestService(ILogger<ReviewRequestService> logger, App app) : BackgroundService, IReviewRequestService
 {
     private const int DaysBeforeReview = 4;
     private const string ReviewStateFileName = "review-state.json";
     private static readonly string reviewStatePath = Path.Combine(PathUtility.UserDir, ReviewStateFileName);
-    
+
     // Microsoft Store用のプロトコルURL
     private const string StoreReviewUrl = "ms-windows-store://review/?ProductId=9pjd2fdzqxm3";
-    
-    private readonly ILogger<ReviewRequestService> logger;
-    private readonly App app;
+
+    private readonly ILogger<ReviewRequestService> logger = logger;
+    private readonly App app = app;
     private ReviewState? reviewState;
 
-    public bool ShouldShowReviewRequest { get; private set; }
-
-    public ReviewRequestService(ILogger<ReviewRequestService> logger, App app)
-    {
-        this.logger = logger;
-        this.app = app;
-    }
+    public bool CanOpenReview { get; private set; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (!IsMicrosoftStoreVersion())
         {
-            this.logger.LogInformation("Microsoft Store版ではないため、レビュー依頼は表示しません");
             return;
         }
+        this.CanOpenReview = true;
 
         await this.app.WaitForStartupAsync();
-        
+
         // Toast通知のアクティベーション処理を登録
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
 
@@ -80,7 +61,6 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
 
         if (this.reviewState.NeverShowAgain)
         {
-            this.logger.LogInformation("レビュー依頼を二度と表示しない設定になっています");
             return;
         }
 
@@ -88,41 +68,28 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
         var today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
         if (!this.reviewState.LaunchDates.Contains(today))
         {
-            var newLaunchDates = new HashSet<string>(this.reviewState.LaunchDates) { today };
-            this.reviewState = this.reviewState with { LaunchDates = newLaunchDates };
+            this.reviewState = this.reviewState with { LaunchDates = [.. this.reviewState.LaunchDates, today] };
             await SaveReviewStateAsync(this.reviewState);
-            this.logger.LogInformation($"起動日を記録しました。起動日数: {this.reviewState.LaunchDates.Count}");
         }
 
         // 起動日数が指定日数以上になったらレビュー依頼を表示
         if (this.reviewState.LaunchDates.Count >= DaysBeforeReview)
         {
-            this.ShouldShowReviewRequest = true;
-            this.logger.LogInformation($"起動日数が {this.reviewState.LaunchDates.Count} 日になりました。レビュー依頼を表示します");
-            
             // レビュー依頼通知を表示
             ShowReviewNotification();
         }
     }
 
-    public async Task ShowReviewRequestAsync()
-    {
-        this.ShouldShowReviewRequest = false;
-        
-        // レビュー依頼を表示した日時を記録
-        if (this.reviewState != null)
-        {
-            this.reviewState = this.reviewState with { LastShownDate = DateTime.UtcNow };
-            await SaveReviewStateAsync(this.reviewState);
-        }
-    }
-
-    public void OpenReviewPage()
+    public async Task OpenReviewPageAsync()
     {
         try
         {
             Process.Start(new ProcessStartInfo(StoreReviewUrl) { UseShellExecute = true });
-            this.logger.LogInformation("Microsoft Storeのレビューページを開きました");
+            this.logger.LogDebug("Microsoft Storeのレビューページを開きました");
+
+            // Reviewedフラグを立てる
+            this.reviewState = (this.reviewState ?? await LoadReviewStateAsync()) with { NeverShowAgain = true };
+            await SaveReviewStateAsync(this.reviewState);
         }
         catch (Exception ex)
         {
@@ -130,30 +97,20 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
         }
     }
 
-    public async Task ShowLaterAsync()
+    private async Task ShowLaterAsync()
     {
-        this.ShouldShowReviewRequest = false;
-        
-        if (this.reviewState != null)
-        {
-            this.reviewState = this.reviewState with { LastShownDate = DateTime.UtcNow };
-            await SaveReviewStateAsync(this.reviewState);
-        }
-        
-        this.logger.LogInformation("レビュー依頼を後で表示するように設定しました");
+        // 後で表示するように起動日付リストをクリア(再度カウントを始める)
+        this.reviewState = (this.reviewState ?? await LoadReviewStateAsync()) with { LaunchDates = [] };
+        await SaveReviewStateAsync(this.reviewState);
+        this.logger.LogDebug("レビュー依頼を後で表示するように設定しました");
     }
 
-    public async Task NeverShowAgainAsync()
+    private async Task NeverShowAgainAsync()
     {
-        this.ShouldShowReviewRequest = false;
-        
-        if (this.reviewState != null)
-        {
-            this.reviewState = this.reviewState with { NeverShowAgain = true };
-            await SaveReviewStateAsync(this.reviewState);
-        }
-        
-        this.logger.LogInformation("レビュー依頼を二度と表示しない設定にしました");
+        // 二度と表示しない設定にする
+        this.reviewState = (this.reviewState ?? await LoadReviewStateAsync()) with { NeverShowAgain = true };
+        await SaveReviewStateAsync(this.reviewState);
+        this.logger.LogDebug("レビュー依頼を二度と表示しない設定にしました");
     }
 
     /// <summary>
@@ -185,9 +142,6 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
             t.NotificationMirroring = NotificationMirroring.Disabled;
             t.SuppressPopup = false;
         });
-
-        // レビュー依頼を表示したことを記録
-        _ = ShowReviewRequestAsync();
     }
 
     /// <summary>
@@ -209,8 +163,7 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
         switch (action)
         {
             case ToastActions.Review:
-                OpenReviewPage();
-                await NeverShowAgainAsync();
+                await OpenReviewPageAsync();
                 break;
             case ToastActions.Later:
                 await ShowLaterAsync();
@@ -236,6 +189,9 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
     /// </summary>
     private static bool IsMicrosoftStoreVersion()
     {
+#if ENABLE_REVIEW
+        return true;
+#endif
         var processPath = Environment.ProcessPath;
         if (string.IsNullOrEmpty(processPath))
         {
@@ -280,22 +236,6 @@ internal class ReviewRequestService : BackgroundService, IReviewRequestService
 }
 
 /// <summary>
-/// レビューのダミーサービス（Microsoft Store版以外用）
-/// </summary>
-internal class IgnoreReviewRequestService : IReviewRequestService
-{
-    public bool ShouldShowReviewRequest => false;
-
-    public Task ShowReviewRequestAsync() => Task.CompletedTask;
-
-    public void OpenReviewPage() { }
-
-    public Task ShowLaterAsync() => Task.CompletedTask;
-
-    public Task NeverShowAgainAsync() => Task.CompletedTask;
-}
-
-/// <summary>
 /// レビュー状態を保持するレコード
 /// </summary>
 internal record ReviewState
@@ -303,15 +243,13 @@ internal record ReviewState
     /// <summary>
     /// 起動した日付のリスト（日を跨いだ起動のみカウント）
     /// </summary>
-    public HashSet<string> LaunchDates { get; init; } = new();
-
-    /// <summary>
-    /// 最後にレビュー依頼を表示した日時
-    /// </summary>
-    public DateTime? LastShownDate { get; init; }
+    public HashSet<string> LaunchDates { get; init; } = [];
 
     /// <summary>
     /// 二度と表示しない設定
     /// </summary>
+    /// <remarks>
+    /// レビューを書いた場合もこのフラグを立てる
+    /// </remarks>
     public bool NeverShowAgain { get; init; }
 }

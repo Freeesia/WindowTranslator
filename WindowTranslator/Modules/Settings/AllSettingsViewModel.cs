@@ -99,18 +99,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool IsVisibleAbout { get; } = !AppInfo.SuppressMode;
 
-    public bool IsVisibleReviewButton => IsMicrosoftStoreVersion();
-
-    private static bool IsMicrosoftStoreVersion()
-    {
-        var processPath = Environment.ProcessPath;
-        if (string.IsNullOrEmpty(processPath))
-        {
-            return false;
-        }
-        // WindowsAppsフォルダ内にインストールされているかチェック
-        return processPath.Contains("WindowsApps", StringComparison.OrdinalIgnoreCase);
-    }
+    public bool IsVisibleReviewButton => this.reviewRequestService.CanOpenReview;
 
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
@@ -222,8 +211,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
     [RelayCommand]
-    public void OpenReview()
-        => this.reviewRequestService.OpenReviewPage();
+    public Task OpenReviewAsync()
+        => this.reviewRequestService.OpenReviewPageAsync();
 
     [RelayCommand]
     public void DeleteAutoTarget(string item)
