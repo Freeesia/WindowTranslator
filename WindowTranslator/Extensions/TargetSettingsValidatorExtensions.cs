@@ -1,3 +1,4 @@
+using WindowTranslator.Modules;
 using WindowTranslator.Properties;
 
 namespace WindowTranslator.Extensions;
