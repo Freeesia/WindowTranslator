@@ -423,4 +423,19 @@ Màn hình không được hỗ trợ.
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>Đã xảy ra lỗi không xác định</value>
   </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Yêu cầu đánh giá</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Cảm ơn bạn đã sử dụng WindowTranslator. Bạn có thể để lại đánh giá trên Microsoft Store không?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Viết đánh giá</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Để sau</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Không hiển thị lại</value>
+  </data>
 </root>

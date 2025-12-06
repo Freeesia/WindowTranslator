@@ -709,6 +709,42 @@ namespace WindowTranslator.Properties {
         }
         
         /// <summary>
+        ///   後で に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ReviewLater {
+            get {
+                return ResourceManager.GetString("ReviewLater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   二度と表示しない に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ReviewNeverShowAgain {
+            get {
+                return ResourceManager.GetString("ReviewNeverShowAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   レビューのお願い に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ReviewRequest {
+            get {
+                return ResourceManager.GetString("ReviewRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   WindowTranslatorをご利用いただきありがとうございます。Microsoft Storeでレビューをお願いできますでしょうか？ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ReviewRequestMessage {
+            get {
+                return ResourceManager.GetString("ReviewRequestMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   そのまま実行 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RunAsIs {
@@ -975,6 +1011,15 @@ namespace WindowTranslator.Properties {
         public static string WindowsMediaOcr {
             get {
                 return ResourceManager.GetString("WindowsMediaOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   レビューする に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WriteReview {
+            get {
+                return ResourceManager.GetString("WriteReview", resourceCulture);
             }
         }
     }

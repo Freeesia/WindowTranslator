@@ -358,4 +358,22 @@
   <data name="FaildApplySettings" xml:space="preserve">
     <value>सेटिंग्स लागू करने में विफल।</value>
   </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>एक अज्ञात त्रुटि हुई है</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>समीक्षा अनुरोध</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>WindowTranslator का उपयोग करने के लिए धन्यवाद। क्या आप Microsoft Store पर एक समीक्षा छोड़ सकते हैं?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>समीक्षा लिखें</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>बाद में</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>फिर कभी न दिखाएं</value>
+  </data>
 </root>
