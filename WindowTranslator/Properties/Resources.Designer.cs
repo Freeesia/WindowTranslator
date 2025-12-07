@@ -288,6 +288,11 @@ internal class Resources
     public static string InstallNewVersion => ResourceManager.GetString("InstallNewVersion", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "{0}: 設定検証エラー" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string InvalidSettings => ResourceManager.GetString("InvalidSettings", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsEnableAutoTarget => ResourceManager.GetString("IsEnableAutoTarget", resourceCulture) ?? string.Empty;
@@ -416,6 +421,31 @@ internal class Resources
     /// "{0}を自動起動に登録しました。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string RegisterAutoStart => ResourceManager.GetString("RegisterAutoStart", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "後で" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string ReviewLater => ResourceManager.GetString("ReviewLater", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "二度と表示しない" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string ReviewNeverShowAgain => ResourceManager.GetString("ReviewNeverShowAgain", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "レビューのお願い" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string ReviewRequest => ResourceManager.GetString("ReviewRequest", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "WindowTranslatorをご利用いただきありがとうございます。Microsoft Store..." に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string ReviewRequestMessage => ResourceManager.GetString("ReviewRequestMessage", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "そのまま実行" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string RunAsIs => ResourceManager.GetString("RunAsIs", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。" に類似しているローカライズされた文字列を検索します。
@@ -556,4 +586,9 @@ internal class Resources
     /// "Windows標準文字認識" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string WindowsMediaOcr => ResourceManager.GetString("WindowsMediaOcr", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "レビューする" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string WriteReview => ResourceManager.GetString("WriteReview", resourceCulture) ?? string.Empty;
 }

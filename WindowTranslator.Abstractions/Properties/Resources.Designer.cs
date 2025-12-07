@@ -78,6 +78,11 @@ internal class Resources
     public static string BufferSize => ResourceManager.GetString("BufferSize", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "キャッシュモジュール" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string CacheModule => ResourceManager.GetString("CacheModule", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "キャプチャーウィンドウ" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Capture => ResourceManager.GetString("Capture", resourceCulture) ?? string.Empty;
@@ -133,6 +138,11 @@ internal class Resources
     public static string Recognize => ResourceManager.GetString("Recognize", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string SameSourceTargetLanguage => ResourceManager.GetString("SameSourceTargetLanguage", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "拡大率" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Scale => ResourceManager.GetString("Scale", resourceCulture) ?? string.Empty;
@@ -146,6 +156,16 @@ internal class Resources
     /// "押してON/OFFを切り替える" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Toggle => ResourceManager.GetString("Toggle", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "言語設定" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string TranslateLanguage => ResourceManager.GetString("TranslateLanguage", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "翻訳モジュール" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string TranslateModule => ResourceManager.GetString("TranslateModule", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "X位置ずれ閾値" に類似しているローカライズされた文字列を検索します。
