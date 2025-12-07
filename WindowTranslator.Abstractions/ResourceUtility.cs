@@ -8,7 +8,7 @@ namespace WindowTranslator;
 /// </summary>
 public static class ResourceUtility
 {
-    private static readonly Dictionary<Assembly, ResourceManager> ResManagerCache = new();
+    private static readonly Dictionary<Assembly, CustomResourceManager> ResManagerCache = new();
 
     /// <summary>
     /// 型からリソースマネージャを取得します。

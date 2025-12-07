@@ -33,8 +33,8 @@ using WindowTranslator.Stores;
 using Wpf.Ui;
 using MessageBoxImage = Kamishibai.MessageBoxImage;
 
-//Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
-//Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
+//Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
+//Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 
 #if DEBUG
 var createdNew = true;
