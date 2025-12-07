@@ -118,310 +118,324 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Source" xml:space="preserve">
-    <value>翻訳元(認識)言語</value>
+    <value>स्रोत (पहचानी गई) भाषा</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>翻訳先(表示)言語</value>
+    <value>लक्ष्य (प्रदर्शन) भाषा</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
+    <value>अनुवाद मॉड्यूल चयन</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
+    <value>कैश मॉड्यूल चयन</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
-    <value>翻訳結果表示モード</value>
+    <value>अनुवाद परिणाम प्रदर्शन मोड</value>
   </data>
   <data name="AutoTargets" xml:space="preserve">
-    <value>自動翻訳対象</value>
+    <value>स्वचालित अनुवाद लक्ष्य</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する</value>
+    <value>अनुवाद के लिए चुने जाने पर एक बार प्रक्रिया लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
-    <value>全体設定</value>
+    <value>समग्र सेटिंग</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>その他</value>
+    <value>अन्य</value>
   </data>
   <data name="Plugin" xml:space="preserve">
-    <value>プラグイン設定</value>
+    <value>प्लग-इन सेटिंग्स</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>言語設定</value>
+    <value>भाषा सेटिंग्स</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>オーバレイ</value>
+    <value>ओवरले</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>キャプチャーウィンドウ</value>
+    <value>विंडो कैप्चर करें</value>
   </data>
   <data name="InMemoryCache" xml:space="preserve">
-    <value>メモリ内キャッシュ</value>
+    <value>इन-मेमोरी कैश</value>
   </data>
   <data name="LocalCache" xml:space="preserve">
-    <value>ローカルファイルキャッシュ</value>
+    <value>स्थानीय फ़ाइल कैश</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>設定</value>
+    <value>सेटिंग</value>
   </data>
   <data name="Attach" xml:space="preserve">
-    <value>アタッチ</value>
+    <value>अटैच करें</value>
   </data>
   <data name="Detach" xml:space="preserve">
-    <value>デタッチ</value>
+    <value>डिटैच करें</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>終了</value>
+    <value>समाप्त</value>
   </data>
   <data name="MutexError" xml:space="preserve">
-    <value>すでにWindowTranslatorが起動中です</value>
+    <value>WindowTranslator पहले से ही चल रहा है।</value>
   </data>
   <data name="About" xml:space="preserve">
-    <value>このアプリについて</value>
+    <value>के बारे में</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>サードパーティーライセンスの確認</value>
+    <value>तृतीय-पक्ष लाइसेंस जांचें</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>アップデートがあります: {0}</value>
+    <value>अपडेट उपलब्ध: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
-    <value>最新バージョンをご利用中です。</value>
+    <value>आप नवीनतम संस्करण का उपयोग कर रहे हैं।</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>更新情報</value>
+    <value>जानकारी अपडेट करें</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
-    <value>最新バージョンに更新</value>
+    <value>नवीनतम संस्करण में अपडेट करें</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>詳細情報の確認</value>
+    <value>विवरण जांचें</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>押している間だけ</value>
+    <value>केवल दबाते समय</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>押してON/OFFを切り替える</value>
+    <value>ON/OFF टॉगल करने के लिए दबाएं</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>オーバーレイ表示の切り替え</value>
+    <value>ओवरले प्रदर्शन टॉगल करें</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>オーバーレイ表示をキャプチャー可能にする</value>
+    <value>ओवरले प्रदर्शन को कैप्चर करने योग्य बनाएं</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>翻訳対象プロセス</value>
+    <value>अनुवादित प्रक्रिया</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>認識モジュール</value>
+    <value>पहचान मॉड्यूल</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>ショートカット</value>
+    <value>शॉर्टकट</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>オーバーレイ切り替え</value>
+    <value>ओवरले स्विच</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>新しいバージョン: {0} がリリースされました</value>
+    <value>एक नया संस्करण, {0}, जारी किया गया है</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>新しいバージョン: {0} のインストール</value>
+    <value>नया संस्करण {0} इंस्टॉलेशन</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>更新内容の確認</value>
+    <value>अपडेट जांचें</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>新しいバージョンのチェック</value>
+    <value>नया संस्करण जांचें</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>キャンセル</value>
+    <value>रद्द करें</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>ठीक है</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>PC起動時に自動起動</value>
+    <value>सिस्टम बूट पर स्वचालित रूप से प्रारंभ करें</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>全般設定</value>
+    <value>सामान्य सेटिंग्स</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>表示方法</value>
+    <value>प्रदर्शन विधि</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>対象ごとの設定</value>
+    <value>प्रति-आइटम सेटिंग्स</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>バージョン</value>
+    <value>संस्करण</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>ビルド日時</value>
+    <value>बिल्ड तारीख</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>開発者</value>
+    <value>डेवलपर</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>公開ページ</value>
+    <value>सार्वजनिक पृष्ठ</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>ライセンス</value>
+    <value>लाइसेंस</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>翻訳しない</value>
+    <value>अनुवाद न करें</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>キャッシュ設定</value>
+    <value>कैश सेटिंग</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>近いテキストの閾値</value>
+    <value>निकट टेक्स्ट के लिए थ्रेशोल्ड</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>キャッシュしない</value>
+    <value>कैश न करें</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Windows標準文字認識</value>
+    <value>Windows मानक वर्ण पहचान</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>アプリ名</value>
+    <value>एप्लिकेशन नाम</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Steamでゲームをギフト</value>
+    <value>Steam पर गेम गिफ्ट करें</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>アプリ情報</value>
+    <value>एप्लिकेशन जानकारी</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value>連絡先</value>
+    <value>संपर्क पता</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value>技術情報</value>
+    <value>तकनीकी जानकारी</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>閉じる</value>
+    <value>बंद करें</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>適用</value>
+    <value>लागू करें</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>処理中アイコンを表示する</value>
+    <value>व्यस्त आइकन दिखाएं</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>オーバレイを有効にしたタイミングのみ翻訳する</value>
+    <value>केवल तब अनुवाद करें जब ओवरले सक्षम हो</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>マウスポインター位置のテキストのみオーバレイ翻訳を表示する</value>
+    <value>केवल माउस पॉइंटर स्थिति पर टेक्स्ट के लिए ओवरले अनुवाद प्रदर्शित करें</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>オーバーレイ背景の不透明度</value>
+    <value>ओवरले पृष्ठभूमि अस्पष्टता</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>エラー情報をレポートシステムに送信します。以下の情報が送信されます。
-* アプリ情報
-* PCのスペック、環境情報
-* 翻訳対象のアプリ名
-* 翻訳対象の画像
-* 翻訳対象の設定
+    <value>रिपोर्ट सिस्टम को त्रुटि जानकारी भेजें। निम्नलिखित जानकारी भेजी जाएगी:
+* Application information
+* PC specifications and environment information
+* Translation target application name
+* Translation target image
+* Translation target settings
 
-&gt; %{color:red}**個人情報は送信されませんが、翻訳対象の画面に個人情報が含まれないようにしてください。**%</value>
+&gt; %{color:red}**Personal information will not be sent, but please ensure that personal information is not included in the translation target screen.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>情報を送信</value>
+    <value>जानकारी भेजें</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>送信完了</value>
+    <value>भेजा गया</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>情報をコピー</value>
+    <value>जानकारी कॉपी करें</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>コピーしました</value>
+    <value>कॉपी किया गया</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>確認</value>
+    <value>पुष्टि करें</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>送信</value>
+    <value>सबमिट करें</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>ログ</value>
+    <value>लॉग</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>アタッチ中</value>
+    <value>अटैच हो रहा है</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>エクスポート</value>
+    <value>निर्यात</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>クリア</value>
+    <value>साफ़ करें</value>
   </data>
   <data name="AutoScroll" xml:space="preserve">
-    <value>自動スクロール</value>
+    <value>स्वतः स्क्रॉल</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>ログのエクスポート</value>
+    <value>लॉग निर्यात करें</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>エクスポート失敗</value>
+    <value>निर्यात विफल</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>エクスポート完了</value>
+    <value>निर्यात पूर्ण</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>ログを`{0}`にエクスポートしました。</value>
+    <value>लॉग `{0}` में निर्यात किए गए।</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
-    <value>テキストファイル</value>
+    <value>टेक्स्ट फ़ाइलें</value>
   </data>
   <data name="FaildOcr" xml:space="preserve">
-    <value>OCRに失敗しました</value>
+    <value>OCR विफल</value>
   </data>
   <data name="FaildTranslate" xml:space="preserve">
-    <value>翻訳に失敗しました</value>
+    <value>अनुवाद विफल</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>ウィンドウの埋め込みに失敗しました。</value>
+    <value>विंडो में एम्बेड करने में विफल।</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
-    <value>WindowTranslator以外のウィンドウを選択してください</value>
+    <value>कृपया WindowTranslator के अलावा कोई अन्य विंडो चुनें</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。
-モニターはサポート対象外です。
-</value>
+    <value>चयनित विंडो "{0}" प्रक्रिया निर्धारित नहीं कर सकती और कैप्चर नहीं की जा सकती।
+मॉनिटर समर्थित नहीं हैं।</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
-    <value>設定検証エラー</value>
+    <value>सेटिंग्स सत्यापन त्रुटि</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>保存して閉じる</value>
+    <value>सहेजें और बंद करें</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
-    <value>デフォルト設定</value>
+    <value>डिफ़ॉल्ट सेटिंग्स</value>
   </data>
   <data name="AutoStart" xml:space="preserve">
-    <value>自動起動</value>
+    <value>स्वतः प्रारंभ</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0}を自動起動に登録しました。</value>
+    <value>{0} स्वतः-प्रारंभ के लिए पंजीकृत किया गया है।</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
-    <value>{0}の自動起動を解除しました。</value>
+    <value>{0} के लिए स्वतः-प्रारंभ अक्षम कर दिया गया है।</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>言語設定</value>
+    <value>भाषा सेटिंग्स</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+    <value>स्रोत और लक्ष्य भाषाएँ समान हैं। कृपया विभिन्न भाषाएँ निर्दिष्ट करें।</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
     <value>{0}のOCR機能が使えません。対象の言語機能をインストールしてください</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>設定の適用に失敗しました。</value>
+    <value>सेटिंग्स लागू करने में विफल।</value>
   </data>
   <data name="UnhundledErrorMessage" xml:space="preserve">
-    <value>不明なエラーが発生しました</value>
+    <value>एक अज्ञात त्रुटि हुई है</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>समीक्षा अनुरोध</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>WindowTranslator का उपयोग करने के लिए धन्यवाद। क्या आप Microsoft Store पर एक समीक्षा छोड़ सकते हैं?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>समीक्षा लिखें</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>बाद में</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>फिर कभी न दिखाएं</value>
   </data>
   <data name="RunAsIs" xml:space="preserve">
     <value>そのまま実行</value>
