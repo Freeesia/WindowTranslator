@@ -160,6 +160,7 @@ csharp_style_prefer_readonly_struct = true:suggestion
 csharp_style_prefer_readonly_struct_member = true:suggestion
 
 [*.{csproj,props}]
+charset = utf-8-bom
 indent_size = 2
 
 [*.md]
