@@ -142,6 +142,11 @@ else
         .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
 }
 
+// レビュー依頼サービスの登録
+builder.Services.AddSingleton<ReviewRequestService>()
+    .AddSingleton<IReviewRequestService>(sp => sp.GetRequiredService<ReviewRequestService>())
+    .AddHostedService(sp => sp.GetRequiredService<ReviewRequestService>());
+
 builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
     .AddScoped<IProcessInfoStore>(sp => sp.GetRequiredService<IProcessInfoStoreInternal>());
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();

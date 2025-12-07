@@ -423,4 +423,19 @@
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>發生未知錯誤</value>
   </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>請求評論</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>感謝您使用 WindowTranslator。您能在 Microsoft Store 上留下評論嗎？</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>撰寫評論</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>稍後</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>不再顯示</value>
+  </data>
 </root>
