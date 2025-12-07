@@ -424,9 +424,9 @@
     <value>알 수 없는 오류가 발생했습니다</value>
   </data>
   <data name="RunAsIs" xml:space="preserve">
-    <value>そのまま実行</value>
+    <value>그대로 실행</value>
   </data>
   <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: 設定検証エラー</value>
+    <value>{0}: 설정 검증 오류</value>
   </data>
 </root>
