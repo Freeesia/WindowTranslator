@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Source" xml:space="preserve">
+    <value>لغة المصدر (التعرف)</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>اللغة الهدف (العرض)</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>وحدة الترجمة</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>وحدة التخزين المؤقت</value>
+  </data>
+  <data name="ViewMode" xml:space="preserve">
+    <value>وضع عرض النتائج</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>أهداف الترجمة التلقائية</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>الترجمة تلقائياً عند بدء عملية محددة</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>الإعدادات العامة</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>أخرى</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>إعدادات الإضافات</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>إعدادات اللغة</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>الطبقة العلوية</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>نافذة الالتقاط</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>التخزين المؤقت في الذاكرة</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>التخزين المؤقت المحلي</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>الإعدادات</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>إرفاق</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>فصل</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>WindowTranslator قيد التشغيل بالفعل.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>حول</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>التحقق من تراخيص الطرف الثالث</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>تحديث متاح: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>أنت تستخدم أحدث إصدار.</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>معلومات التحديث</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>التحديث إلى أحدث إصدار</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>عرض التفاصيل</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>فقط أثناء الضغط</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>اضغط للتشغيل/الإيقاف</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>تبديل عرض الطبقة العلوية</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>جعل الطبقة العلوية قابلة للالتقاط</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>العمليات المستهدفة للترجمة</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>وحدة التعرف</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>اختصارات</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>تبديل الطبقة العلوية</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>إصدار جديد {0} متاح</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>تثبيت الإصدار الجديد {0}</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>التحقق من التحديثات</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>التحقق من إصدار جديد</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>موافق</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>البدء تلقائياً عند بدء النظام</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>الإعدادات العامة</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>طريقة العرض</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>إعدادات لكل هدف</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>الإصدار</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>تاريخ البناء</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>المطور</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>الصفحة العامة</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>الترخيص</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>عدم الترجمة</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>إعدادات التخزين المؤقت</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>عتبة النص المتشابه</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>عدم التخزين المؤقت</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>التعرف على الحروف القياسي في Windows</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>اسم التطبيق</value>
+  </data>
+  <data name="SteamWishlist" xml:space="preserve">
+    <value>إهداء ألعاب على Steam</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>معلومات التطبيق</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>جهة الاتصال</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>معلومات تقنية</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>تطبيق</value>
+  </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>عرض أيقونة مشغول</value>
+  </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>الترجمة فقط عند تفعيل الطبقة العلوية</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>عرض الترجمة فقط للنص تحت المؤشر</value>
+  </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>شفافية خلفية الطبقة العلوية</value>
+  </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>إرسال معلومات الخطأ إلى نظام التقارير.</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>إرسال المعلومات</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>تم الإرسال</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>نسخ المعلومات</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>تم النسخ</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>تأكيد</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>إرسال</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>السجل</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>جارٍ الإرفاق</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>تصدير</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>التمرير التلقائي</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>تصدير السجلات</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>فشل التصدير</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>اكتمل التصدير</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>تم تصدير السجلات إلى `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>ملفات نصية</value>
+  </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>فشل التعرف الضوئي</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>فشلت الترجمة</value>
+  </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>فشل الدمج في النافذة.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>الرجاء اختيار نافذة غير WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>النافذة المحددة "{0}" لا يمكن تحديد العملية.</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>خطأ في التحقق من الإعدادات</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>حفظ وإغلاق</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>الإعدادات الافتراضية</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>البدء التلقائي</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>تم تسجيل {0} للبدء التلقائي.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>تم تعطيل البدء التلقائي لـ {0}.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>إعدادات اللغة</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>لغتا المصدر والهدف متطابقتان.</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>وظيفة OCR لـ {0} غير متوفرة.</value>
+  </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>فشل تطبيق الإعدادات.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>حدث خطأ غير معروف</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>طلب مراجعة</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>شكراً لاستخدام WindowTranslator. هل يمكنك ترك مراجعة؟</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>كتابة مراجعة</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>لاحقاً</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>عدم العرض مجدداً</value>
+  </data>
+</root>
