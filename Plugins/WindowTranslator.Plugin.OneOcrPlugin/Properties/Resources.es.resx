@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="OneOcr" xml:space="preserve">
+    <value>Nuevo reconocimiento Windows (beta)</value>
+  </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Módulo dependiente no encontrado. No disponible en este entorno.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Error al copiar la DLL de OneOcr. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Error al crear opciones de inicialización OCR. Código de error: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Error al configurar la carga diferida del modelo OCR. Código de error: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Error al crear el pipeline OCR. Código de error: {0}</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Error al crear opciones de proceso OCR. Código de error: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Error al establecer el número máximo de líneas OCR. Código de error: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Error al ejecutar el pipeline OCR. Código de error: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Error al obtener el conteo de líneas OCR. Código de error: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Error al obtener la línea OCR. Número de línea: {0}, Código de error: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Error al obtener el contenido de texto de la línea OCR. Número de línea: {0}, Código de error: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Error al obtener el cuadro delimitador de la línea OCR. Número de línea: {0}, Código de error: {1}</value>
+  </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Módulo dependiente no encontrado. No disponible en este entorno. {0}</value>
+  </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Actualización de Recorte y Anotación</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>Para usar OneOcr, se requiere una actualización de la aplicación Recorte y Anotación.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Abrir Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>No actualizar</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Verificando actualizaciones...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>Verificando actualizaciones de Recorte y Anotación...</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+</root>
