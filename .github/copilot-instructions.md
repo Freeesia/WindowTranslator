@@ -9,6 +9,21 @@
   * ただし、翻訳テキストに日本語が入っていた場合は各言語の翻訳に置き換える
 * ログメッセージはリソースを作成しない
 
+### 新しい翻訳言語の追加時
+
+* 翻訳元リソース
+  * `Properties/Resources.resx`
+  * `docs/*.md`
+* 翻訳対象
+  * `Properties/Resources.*.resx`
+  * `docs/*.*.md`
+* 各`docs/README.*.md`ファイルに新規言語へのリンクを記載する
+* `.github/copilot-instructions.md`に翻訳先言語として追記
+* `TargetSettingsViewModel.Languages`に新規言語カルチャーを追加
+* `store/store_info.csv`に新規言語列を追加し`ja`列から翻訳する
+  * `ja`列がURLなら他の言語列も同じURLを利用する
+  * `ja`列が`False`なら他の言語列も同じ`False`を利用する
+
 ## コード実装時
 
 * 指定された指示には必ず従う
