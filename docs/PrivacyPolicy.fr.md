@@ -59,4 +59,5 @@ Compte GitHub : [Freeesia](https://github.com/Freeesia)
 ## Modifications de cette politique de confidentialité
 Cette politique de confidentialité peut être modifiée sans préavis en raison de modifications légales ou de changements de fonctionnalités de l'Application. En cas de modification, nous en informerons rapidement via l'Application ou le dépôt GitHub.
 
-Fin
+> [!WARNING]
+> Remarque : Ce fichier est une traduction automatique de la version japonaise originale, qui est la version officielle.
