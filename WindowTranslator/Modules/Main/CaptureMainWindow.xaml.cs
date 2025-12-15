@@ -34,7 +34,7 @@ public partial class CaptureMainWindow
     private void CheckTargetWindow()
     {
         // ディスプレイの場合はウィンドウチェックをスキップ
-        if (this.processInfo.Name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase))
+        if (this.processInfo.IsMonitor)
         {
             return;
         }

@@ -95,7 +95,7 @@ public partial class OverlayMainWindow : Window
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
         // ディスプレイの場合は仮想デスクトップチェックをスキップ
-        if (!this.processInfo.Name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase))
+        if (!this.processInfo.IsMonitor)
         {
             if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
             {
@@ -152,7 +152,7 @@ public partial class OverlayMainWindow : Window
         var sw = Stopwatch.StartNew();
         
         // ディスプレイの場合は専用の処理
-        if (this.processInfo.Name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase))
+        if (this.processInfo.IsMonitor)
         {
             UpdateDisplayPositionAndSize();
             return;

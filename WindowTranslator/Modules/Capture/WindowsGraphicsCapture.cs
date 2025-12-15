@@ -45,7 +45,7 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
         this.targetWindow = targetWindow;
         
         // ディスプレイかウィンドウかを判定
-        this.isMonitor = this.processInfo.Name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase);
+        this.isMonitor = this.processInfo.IsMonitor;
         
         GraphicsCaptureItem? item;
         if (this.isMonitor)
