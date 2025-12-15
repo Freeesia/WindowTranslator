@@ -225,7 +225,7 @@ public partial class StartupViewModel
         var monitors = new List<(IntPtr Handle, int Width, int Height)>();
         
         // モニターを列挙
-        EnumDisplayMonitors(nint.Zero, IntPtr.Zero, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
+        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
         {
             var monitorInfo = new MONITORINFOEXW();
             monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();

@@ -238,16 +238,35 @@ public partial class OverlayMainWindow : Window
             return;
         }
         
-        // モニターの解像度情報を取得
-        var mode = default(DEVMODEW);
-        EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode);
-        var eDpiScale = GetDpiForSystem() / 96.0;
-        var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
-        
         var left = monitorInfo.monitorInfo.rcMonitor.left;
         var top = monitorInfo.monitorInfo.rcMonitor.top;
         var width = monitorInfo.monitorInfo.rcMonitor.right - left;
         var height = monitorInfo.monitorInfo.rcMonitor.bottom - top;
+        
+        // モニター座標の検証
+        if (width <= 0 || height <= 0)
+        {
+            this.logger.LogWarning($"Invalid monitor dimensions: {width}x{height}");
+            return;
+        }
+        
+        // モニターの解像度情報を取得
+        var mode = default(DEVMODEW);
+        var eDpiScale = GetDpiForSystem() / 96.0;
+        var rDpiScale = eDpiScale;
+        
+        if (EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode))
+        {
+            // EnumDisplaySettings が成功した場合のみ rDpiScale を計算
+            if (mode.dmPelsWidth > 0)
+            {
+                rDpiScale = eDpiScale * mode.dmPelsWidth / width;
+            }
+        }
+        else
+        {
+            this.logger.LogWarning("Failed to get display settings, using default DPI scale");
+        }
         
         GetCursorPos(out var nativePos);
         var x = (nativePos.X - left) / eDpiScale;
