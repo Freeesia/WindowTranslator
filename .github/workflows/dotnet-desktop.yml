@@ -146,12 +146,12 @@ jobs:
               -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
               -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
           }
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         if: ${{ needs.docs.result == 'success' }}
         with:
           name: docs
           path: publish
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         if: ${{ needs.license.result == 'success' }}
         with:
           name: licenses
@@ -183,7 +183,7 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           path: artifacts
           pattern: WindowTranslator-full-*
@@ -207,7 +207,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
       - run: |
           for dir in WindowTranslator-*/; do
             base=$(basename "$dir")
