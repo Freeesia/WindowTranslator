@@ -328,8 +328,7 @@
     <value>Please select a window other than WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Tetingkap yang dipilih "{0}" tidak dapat menentukan proses dan tidak dapat ditangkap.
-Monitor tidak disokong.</value>
+    <value>Tetingkap yang dipilih "{0}" tidak dapat menentukan proses dan tidak dapat ditangkap.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Settings Validation Error</value>

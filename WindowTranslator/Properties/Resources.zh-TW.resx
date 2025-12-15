@@ -386,9 +386,7 @@
     <value>請選擇WindowTranslator以外的視窗</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>選擇的視窗「{0}」無法確定程序，無法擷取。
-不支援顯示器。
-</value>
+    <value>選擇的視窗「{0}」無法確定程序，無法擷取。</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>設定驗證錯誤</value>
