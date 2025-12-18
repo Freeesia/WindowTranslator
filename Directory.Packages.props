@@ -10,7 +10,7 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="DeepL.net" Version="1.15.0" />
-    <PackageVersion Include="Google.Apis.Auth" Version="1.72.0" />
+    <PackageVersion Include="Google.Apis.Auth" Version="1.73.0" />
     <PackageVersion Include="Google.Apis.Script.v1" Version="1.68.0.3294" />
     <PackageVersion Include="Google_GenerativeAI" Version="3.3.0" />
     <PackageVersion Include="Kamishibai.Hosting" Version="3.1.0" />
