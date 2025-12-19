@@ -1,10 +1,14 @@
-﻿using Wpf.Ui.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using WindowTranslator.Modules.Validate;
+using Wpf.Ui.Controls;
 
 namespace WindowTranslator;
 
 partial interface IPresentationService
 {
     Task<MessageBoxResult> ShowMessageAsync(MessageContext context, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ValidateResult>> OpenValidateAsync(TargetSettings settings);
 }
 
 partial class PresentationService
@@ -29,6 +33,13 @@ partial class PresentationService
             box.SecondaryButtonText = context.SecondaryButtonText;
         }
         return box.ShowDialogAsync(true, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ValidateResult>> OpenValidateAsync(TargetSettings settings)
+    {
+        var viewModel = new ValidateViewModel(this, this._serviceProvider.GetServices<ITargetSettingsValidator>(), settings);
+        await OpenDialogAsync(viewModel, System.Windows.Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        return viewModel.Results;
     }
 }
 

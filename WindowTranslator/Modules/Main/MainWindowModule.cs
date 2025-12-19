@@ -1,10 +1,9 @@
-﻿using Kamishibai;
+﻿using System.Collections.ObjectModel;
+using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
-using System.Collections.ObjectModel;
-using WindowTranslator.Extensions;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui.Extensions;
@@ -32,8 +31,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
         if (options.Value.Targets.TryGetValue(name, out var settings))
         {
             // 設定を検証
-            var validators = scope.ServiceProvider.GetRequiredService<IEnumerable<ITargetSettingsValidator>>();
-            var validationResults = await validators.ValidateAsync(settings);
+            var validationResults = await presentationService.OpenValidateAsync(settings);
             if (validationResults.IsEmpty())
             {
                 this.logger.LogInformation($"Settings for target '{name}' are valid.");
