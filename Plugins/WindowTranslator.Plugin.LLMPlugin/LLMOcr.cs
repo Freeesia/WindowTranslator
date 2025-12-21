@@ -72,7 +72,7 @@ public sealed class LLMOcr : IOcrModule
 
         if (string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.Model))
         {
-            throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+            throw new AppUserException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         }
 
         this.system = ChatMessage.CreateSystemMessage($$"""

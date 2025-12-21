@@ -137,7 +137,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
             }
             catch (ApiException e) when (e.ErrorCode == 400)
             {
-                throw new ApiException(e.ErrorCode, "GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e.ErrorStatus);
+                throw new AppUserException("GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e);
             }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (ApiException e) when (e.ErrorCode == 503)
