@@ -7,6 +7,7 @@ using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
+using WindowTranslator.Plugin.GoogleAIPlugin.Properties;
 
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
@@ -137,7 +138,7 @@ public abstract class OcrCorrectFilterBase<T> : IFilterModule, IDisposable
             }
             catch (ApiException e) when (e.ErrorCode == 400)
             {
-                throw new AppUserException("GeminiのAPIキーが無効です。設定ダイアログからGoogleAIオプションを設定してください", e);
+                throw new AppUserException(Resources.InvalidApiKey, e);
             }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (ApiException e) when (e.ErrorCode == 503)
