@@ -23,6 +23,8 @@
 * `store/store_info.csv`に新規言語列を追加し`ja`列から翻訳する
   * `ja`列がURLなら他の言語列も同じURLを利用する
   * `ja`列が`False`なら他の言語列も同じ`False`を利用する
+  * `SearchTerm`は各行40文字以内に収める
+  * `SearchTerm`は合計21単語以内に収める
 
 ## コード実装時
 
