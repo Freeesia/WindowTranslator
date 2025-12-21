@@ -108,24 +108,24 @@
     <value>Прочее</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
+    <value>Функция буфера</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
+    <value>Исправление ошибок распознавания</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
+    <value>Подавление вибрации</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>言語設定</value>
+    <value>Настройки языка</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+    <value>Исходный и целевой языки совпадают. Пожалуйста, укажите другой язык.</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
+    <value>Модуль перевода</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
+    <value>Модуль кэша</value>
   </data>
 </root>

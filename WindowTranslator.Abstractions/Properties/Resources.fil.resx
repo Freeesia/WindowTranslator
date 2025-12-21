@@ -108,24 +108,24 @@
     <value>Iba pa</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
+    <value>Pag-andar ng Buffer</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
+    <value>Pagwawasto ng Mali sa Pagkilala</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
+    <value>Pagsupil ng Panginginig</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>言語設定</value>
+    <value>Mga Setting ng Wika</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+    <value>Ang pinagmulang wika at target na wika ay pareho. Mangyaring magtukoy ng ibang wika.</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
+    <value>Modyul ng Pagsasalin</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
+    <value>Modyul ng Cache</value>
   </data>
 </root>

@@ -108,24 +108,24 @@
     <value>อื่นๆ</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
+    <value>ฟังก์ชันบัฟเฟอร์</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
+    <value>การแก้ไขข้อผิดพลาดในการรู้จำ</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
+    <value>การระงับการสั่นสะเทือน</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>言語設定</value>
+    <value>การตั้งค่าภาษา</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+    <value>ภาษาต้นทางและภาษาเป้าหมายเหมือนกัน โปรดระบุภาษาที่แตกต่างกัน</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
+    <value>โมดูลการแปล</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
+    <value>โมดูลแคช</value>
   </data>
 </root>

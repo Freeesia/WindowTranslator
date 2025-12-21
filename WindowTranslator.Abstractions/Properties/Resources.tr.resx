@@ -108,24 +108,24 @@
     <value>Diğer</value>
   </data>
   <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
+    <value>Tampon İşlevi</value>
   </data>
   <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
+    <value>Tanıma Hatası Düzeltmesi</value>
   </data>
   <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
+    <value>Titreşim Bastırma</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>言語設定</value>
+    <value>Dil Ayarları</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
+    <value>Kaynak dil ve hedef dil aynı. Lütfen farklı bir dil belirtin.</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
+    <value>Çeviri Modülü</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
+    <value>Önbellek Modülü</value>
   </data>
 </root>
