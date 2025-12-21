@@ -116,8 +116,10 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         byte[] salt = Encoding.UTF8.GetBytes("wX9&7QjrkK%@");
         using var aes = Aes.Create();
         // PBKDF2 を使って、パスワードから鍵と IV を生成
-        aes.Key = Rfc2898DeriveBytes.Pbkdf2(password, salt, 10000, HashAlgorithmName.SHA256, 32);
-        aes.IV = Rfc2898DeriveBytes.Pbkdf2(password, salt, 10000, HashAlgorithmName.SHA256, 16);
+        Span<byte> buf = stackalloc byte[48];
+        Rfc2898DeriveBytes.Pbkdf2(password, salt.AsSpan(), buf, 10000, HashAlgorithmName.SHA256);
+        aes.Key = buf[..32].ToArray();
+        aes.IV = buf[32..].ToArray();
         aes.Padding = PaddingMode.PKCS7;
 
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
