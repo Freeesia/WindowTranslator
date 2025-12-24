@@ -1,147 +1,147 @@
-# Translation Modules
+# Mga Modyul ng Pagsasalin
 
-WindowTranslator allows you to choose from multiple translation modules.  
-Each module has its own characteristics, and by selecting the appropriate module for your use case, you can use translation more comfortably.
+Ang WindowTranslator ay nagbibigay-daan sa iyo na pumili mula sa maraming modyul ng pagsasalin.  
+Ang bawat modyul ay may sariling mga katangian, at sa pamamagitan ng pagpili ng naaangkop na modyul para sa iyong kaso ng paggamit, maaari mong gamitin ang pagsasalin nang mas komportable.
 
 ## Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
 
-A machine translation module that works offline.
+Isang modyul ng machine translation na gumagana offline.
 
-### Advantages
-- **Completely Free**: No charges whatsoever
-- **No Translation Limits**: You can translate as many times as you want
-- **Fast**: Translation is quick as it's processed locally
-- **Privacy**: No internet connection required, data is not sent externally
-- **Stability**: Not affected by network conditions
+### Mga Bentahe
+- **Lubos na Libre**: Walang anumang bayad
+- **Walang Limitasyon sa Pagsasalin**: Maaari kang magsalin ng maraming beses hangga't gusto mo
+- **Mabilis**: Ang pagsasalin ay mabilis dahil ito ay naproseso nang lokal
+- **Privacy**: Walang kailangang koneksyon sa internet, ang data ay hindi ipinapadala sa labas
+- **Katatagan**: Hindi apektado ng mga kondisyon ng network
 
-### Disadvantages
-- **Translation Accuracy**: Lower translation accuracy compared to cloud-based services
-- **Memory Usage**: Uses a certain amount of memory for translation processing
-- **Language Support**: Only some language pairs are supported
+### Mga Disbentahe
+- **Katumpakan ng Pagsasalin**: Mas mababang katumpakan ng pagsasalin kumpara sa mga cloud-based na serbisyo
+- **Paggamit ng Memory**: Gumagamit ng ilang halaga ng memory para sa pagproseso ng pagsasalin
+- **Suporta sa Wika**: Suportado lamang ang ilang language pair
 
-### Recommended Use Cases
-- When you want to use it for free
-- Use in offline environments
-- When privacy is important
-- When translating frequently
+### Mga Inirerekomendang Kaso ng Paggamit
+- Kapag gusto mong gamitin ito nang libre
+- Paggamit sa mga offline na kapaligiran
+- Kapag mahalaga ang privacy
+- Kapag madalas magsalin
 
 ---
 
 ## Google Translate
 
-A translation module using Google's translation service.
+Isang modyul ng pagsasalin na gumagamit ng serbisyo ng pagsasalin ng Google.
 
-### Advantages
-- **Completely Free**: Can be used without an API key
-- **Multilingual Support**: Supports many language pairs
-- **Easy**: No special configuration required
+### Mga Bentahe
+- **Lubos na Libre**: Maaaring gamitin nang walang API key
+- **Suporta sa Maraming Wika**: Sumusuporta sa maraming language pair
+- **Madali**: Walang kinakailangang special na configuration
 
-### Disadvantages
-- **Translation Limits**: Limited number of characters that can be translated per day
-- **Translation Accuracy**: May be less accurate compared to other paid services
-- **Speed**: Affected by network conditions
-- **Stability**: May suddenly become unavailable due to usage restrictions
+### Mga Disbentahe
+- **Mga Limitasyon sa Pagsasalin**: Limitado ang bilang ng mga character na maaaring isalin bawat araw
+- **Katumpakan ng Pagsasalin**: Maaaring hindi gaanong tumpak kumpara sa iba pang bayad na serbisyo
+- **Bilis**: Apektado ng mga kondisyon ng network
+- **Katatagan**: Maaaring biglang hindi magamit dahil sa mga limitasyon sa paggamit
 
-### Recommended Use Cases
-- Infrequent use
-- When you want to start using immediately
-- When you want to translate various language pairs
+### Mga Inirerekomendang Kaso ng Paggamit
+- Hindi madalas na paggamit
+- Kapag gusto mong magsimulang gumamit agad
+- Kapag gusto mong magsalin ng iba't ibang language pair
 
 ---
 
 ## DeepL
 
-A module using DeepL's translation service, known for high-quality translations.
+Isang modyul na gumagamit ng serbisyo ng pagsasalin ng DeepL, kilala sa mataas na kalidad ng mga pagsasalin.
 
-### Advantages
-- **High Accuracy**: Provides natural, high-quality translations
-- **Generous Free Tier**: Up to 500,000 characters per month for free (Free API)
-- **Fast**: Quick translation processing
-- **Glossary Support**: Can maintain translation consistency using glossaries
+### Mga Bentahe
+- **Mataas na Katumpakan**: Nagbibigay ng natural at mataas na kalidad ng mga pagsasalin
+- **Mapagbigay na Libreng Tier**: Hanggang 500,000 character bawat buwan nang libre (Free API)
+- **Mabilis**: Mabilis na pagproseso ng pagsasalin
+- **Suporta sa Glossary**: Maaaring mapanatili ang consistency ng pagsasalin gamit ang mga glossary
 
-### Disadvantages
-- **API Registration Required**: Requires DeepL API registration and API key setup
-- **Free Tier Limits**: Migration to paid plan required when exceeding free tier
-- **Language Support**: Limited language support compared to Google and others
+### Mga Disbentahe
+- **Kinakailangan ang Pagpaparehistro sa API**: Kinakailangan ang pagpaparehistro sa DeepL API at pag-set up ng API key
+- **Mga Limitasyon ng Libreng Tier**: Kinakailangan ang paglipat sa bayad na plano kapag lumampas sa libreng tier
+- **Suporta sa Wika**: Limitadong suporta sa wika kumpara sa Google at iba pa
 
-### Recommended Use Cases
-- When high-quality translation is required
-- Moderate frequency of use
+### Mga Inirerekomendang Kaso ng Paggamit
+- Kapag kinakailangan ang mataas na kalidad ng pagsasalin
+- Katamtamang dalas ng paggamit
 
 ---
 
 ## Google AI (Gemini)
 
-A translation module leveraging Google's latest AI technology.
+Isang modyul ng pagsasalin na gumagamit ng pinakabagong teknolohiya ng AI ng Google.
 
-### Advantages
-- **Highest Accuracy**: Capable of very high-quality translation with contextual understanding
-- **Flexibility**: Can customize prompts to adjust translation style
-- **Glossary Support**: Can maintain translation consistency using glossaries
+### Mga Bentahe
+- **Pinakamataas na Katumpakan**: Kayang mag-translate ng napakataas na kalidad na may pag-unawa sa konteksto
+- **Kakayahang umangkop**: Maaaring i-customize ang mga prompt upang ayusin ang estilo ng pagsasalin
+- **Suporta sa Glossary**: Maaaring mapanatili ang consistency ng pagsasalin gamit ang mga glossary
 
-### Disadvantages
-- **API Key Required**: Requires API key acquisition and setup from Google AI Studio
-- **Pay-per-use**: Charges based on usage (though minimal)
-- **Speed**: Takes longer processing time than other modules due to LLM base
+### Mga Disbentahe
+- **Kinakailangan ang API Key**: Kinakailangan ang pagkuha at pag-set up ng API key mula sa Google AI Studio
+- **Bayad ayon sa paggamit**: Singilin batay sa paggamit (kahit minimal)
+- **Bilis**: Tumatagal ng mas mahabang oras ng pagproseso kaysa sa iba pang modyul dahil sa base ng LLM
 
-### Recommended Use Cases
-- When highest quality translation is required
-- When customized translation style is needed
-- When context-aware translation is important
+### Mga Inirerekomendang Kaso ng Paggamit
+- Kapag kinakailangan ang pinakamataas na kalidad ng pagsasalin
+- Kapag kinakailangan ang customized na estilo ng pagsasalin
+- Kapag mahalaga ang context-aware na pagsasalin
 
 ---
 
-## ChatGPT API (OR Local LLM)
+## ChatGPT API (o Local LLM)
 
-A translation module using ChatGPT API or local LLM.
+Isang modyul ng pagsasalin na gumagamit ng ChatGPT API o local LLM.
 
-### Advantages
-- **Highest Accuracy**: High-quality translation by large language models
-- **Flexibility**: Can customize prompts to adjust translation style
-- **Glossary Support**: Can maintain translation consistency using glossaries
-- **Local LLM Support**: Can also use your own LLM server
+### Mga Bentahe
+- **Pinakamataas na Katumpakan**: Mataas na kalidad ng pagsasalin ng malalaking modelo ng wika
+- **Kakayahang umangkop**: Maaaring i-customize ang mga prompt upang ayusin ang estilo ng pagsasalin
+- **Suporta sa Glossary**: Maaaring mapanatili ang consistency ng pagsasalin gamit ang mga glossary
+- **Suporta sa Local LLM**: Maaari ring gamitin ang sarili mong LLM server
 
-### Disadvantages
-- **API Key Required**: Requires API key setup for each service (except local LLM)
-- **Pay-per-use**: Charges based on usage (except local LLM)
-- **Speed**: Longer processing time
-- **Local LLM Requirements**: High-spec PC required when running your own LLM
+### Mga Disbentahe
+- **Kinakailangan ang API Key**: Kinakailangan ang pag-set up ng API key para sa bawat serbisyo (maliban sa local LLM)
+- **Bayad ayon sa paggamit**: Singilin batay sa paggamit (maliban sa local LLM)
+- **Bilis**: Mas mahabang oras ng pagproseso
+- **Mga Kinakailangan ng Local LLM**: Kinakailangan ang high-spec na PC kapag nagpapatakbo ng sariling LLM
 
-### Recommended Use Cases
-- When highest quality translation is required
-- When customized translation style is needed
-- When privacy is important while wanting high-quality translation (local LLM)
+### Mga Inirerekomendang Kaso ng Paggamit
+- Kapag kinakailangan ang pinakamataas na kalidad ng pagsasalin
+- Kapag kinakailangan ang customized na estilo ng pagsasalin
+- Kapag mahalaga ang privacy habang nais ang mataas na kalidad ng pagsasalin (local LLM)
 
 ---
 
 ## PLaMo
 
-A translation module using local LLM specialized for Japanese.
+Isang modyul ng pagsasalin na gumagamit ng local LLM na dalubhasa para sa wikang Hapon.
 
-### Advantages
-- **Japanese Specialized**: Optimized for Japanese translation
-- **Completely Free**: Open source model with no charges
-- **Privacy**: Runs locally, data is not sent externally
-- **Offline**: No internet connection required
+### Mga Bentahe
+- **Dalubhasa sa Hapon**: Naka-optimize para sa pagsasalin ng Hapon
+- **Lubos na Libre**: Open source model na walang bayad
+- **Privacy**: Tumatakbo nang lokal, ang data ay hindi ipinapadala sa labas
+- **Offline**: Walang kailangang koneksyon sa internet
 
-### Disadvantages
-- **High-spec Requirements**: Requires high-performance PC including GPU
-- **Memory Usage**: Requires large amount of memory (8GB or more recommended)
-- **Speed**: Processing takes time without GPU
+### Mga Disbentahe
+- **Mataas na Kinakailangan sa Spec**: Kinakailangan ang mataas na pagganap na PC kasama ang GPU
+- **Paggamit ng Memory**: Kinakailangan ang malaking halaga ng memory (inirerekomenda ang 8GB o higit pa)
+- **Bilis**: Tumatagal ang pagproseso kung walang GPU
 
-### Recommended Use Cases
-- When you own a high-performance PC
-- When privacy is the top priority
-- When Japanese translation quality is important
+### Mga Inirerekomendang Kaso ng Paggamit
+- Kapag mayroon kang mataas na pagganap na PC
+- Kapag ang privacy ay nangungunang priyoridad
+- Kapag mahalaga ang kalidad ng pagsasalin ng Hapon
 
 ---
 
-## How to Choose a Module
+## Paano Pumili ng Modyul
 
-| Purpose                        | Recommended Module                           |
-| ------------------------------ | -------------------------------------------- |
-| Start using immediately        | **Bergamot** or **Google Translate**        |
-| Highest quality translation    | **Google AI** or **ChatGPT API**            |
-| Keep costs down                | **Bergamot** or **DeepL (within free tier)** |
-| Privacy focused                | **Bergamot** or **PLaMo**                   |
-| High frequency usage           | **Bergamot** or **DeepL**                   |
+| Layunin                           | Inirerekomendang Modyul                      |
+| --------------------------------- | -------------------------------------------- |
+| Magsimulang gumamit agad          | **Bergamot** o **Google Translate**         |
+| Pinakamataas na kalidad ng pagsasalin | **Google AI** o **ChatGPT API**         |
+| Panatilihing mababa ang gastos    | **Bergamot** o **DeepL (sa loob ng libreng tier)** |
+| Nakatuon sa privacy               | **Bergamot** o **PLaMo**                    |
+| Mataas na dalas ng paggamit       | **Bergamot** o **DeepL**                    |

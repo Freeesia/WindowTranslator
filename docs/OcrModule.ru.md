@@ -1,53 +1,53 @@
-# OCR Modules
+# OCR модули
 
-WindowTranslator allows you to choose from multiple OCR modules for recognizing text on screen.  
-Each module has its own characteristics, and selecting the appropriate module for your use case will enable more accurate text recognition.
+WindowTranslator позволяет выбирать из нескольких OCR-модулей для распознавания текста на экране.  
+Каждый модуль имеет свои характеристики, и выбор подходящего модуля для вашего случая обеспечит более точное распознавание текста.
 
-## New Windows Character Recognition (Beta) ![Default](https://img.shields.io/badge/Default-brightgreen)
+## Новое распознавание символов Windows (Бета) ![По умолчанию](https://img.shields.io/badge/По_умолчанию-brightgreen)
 
-A local OCR module provided by Microsoft.
+Локальный OCR-модуль, предоставляемый Microsoft.
 
-### Advantages
-- **Recognition Accuracy**: Boasts the highest recognition accuracy
-- **Fast**: Very fast processing speed
+### Преимущества
+- **Точность распознавания**: Обладает наивысшей точностью распознавания
+- **Скорость**: Очень высокая скорость обработки
 
-### Disadvantages
-- **Memory Usage**: May use over 1GB of memory just for recognition processing
-- **Operating Environment**: May not work in some environments (Windows 10 or later recommended)
+### Недостатки
+- **Использование памяти**: Может использовать более 1 ГБ памяти только для обработки распознавания
+- **Рабочая среда**: Может не работать в некоторых средах (рекомендуется Windows 10 или более поздняя версия)
 
 ---
 
-## Windows Standard Character Recognition
+## Стандартное распознавание символов Windows
 
-The OCR engine that comes standard with Windows 10 and later.
+OCR-движок, который входит в стандартную комплектацию Windows 10 и более поздних версий.
 
-### Advantages
-- **Memory Usage**: Lightweight with low memory usage
-- **Operating Environment**: Widely available on Windows 10 and later
+### Преимущества
+- **Использование памяти**: Легкий с низким потреблением памяти
+- **Рабочая среда**: Широко доступен на Windows 10 и более поздних версиях
 
-### Disadvantages
-- **Recognition Accuracy**: May be weak with complex fonts or handwritten text
-- **Setup**: Manual installation of language data may be required
+### Недостатки
+- **Точность распознавания**: Может быть слабым со сложными шрифтами или рукописным текстом
+- **Настройка**: Может потребоваться ручная установка языковых данных
 
 ---
 
 ## Tesseract OCR
 
-An open-source OCR engine.
+OCR-движок с открытым исходным кодом.
 
-### Advantages
-- **Multilingual Support**: Supports over 100 languages
-- **Stability**: Reliable engine with long history
+### Преимущества
+- **Многоязычная поддержка**: Поддерживает более 100 языков
+- **Стабильность**: Надежный движок с долгой историей
 
-### Disadvantages
-- **Recognition Accuracy**: May be inferior compared to other OCR
+### Недостатки
+- **Точность распознавания**: Может уступать по сравнению с другими OCR
 
 ---
 
-## Choosing a Module
+## Выбор модуля
 
-Please select the module that works in the following order of high recognition accuracy:
+Пожалуйста, выберите модуль, который работает в следующем порядке по высокой точности распознавания:
 
-1. New Windows Character Recognition (Beta)
-2. Windows Standard Character Recognition
+1. Новое распознавание символов Windows (Бета)
+2. Стандартное распознавание символов Windows
 3. Tesseract OCR

@@ -1,147 +1,147 @@
-# Translation Modules
+# โมดูลการแปล
 
-WindowTranslator allows you to choose from multiple translation modules.  
-Each module has its own characteristics, and by selecting the appropriate module for your use case, you can use translation more comfortably.
+WindowTranslator ช่วยให้คุณเลือกจากโมดูลการแปลหลายตัว  
+แต่ละโมดูลมีลักษณะเฉพาะของตัวเอง และโดยการเลือกโมดูลที่เหมาะสมสำหรับกรณีการใช้งานของคุณ คุณสามารถใช้การแปลได้สะดวกสบายยิ่งขึ้น
 
-## Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
+## Bergamot ![ค่าเริ่มต้น](https://img.shields.io/badge/ค่าเริ่มต้น-brightgreen)
 
-A machine translation module that works offline.
+โมดูลการแปลด้วยเครื่องที่ทำงานแบบออฟไลน์
 
-### Advantages
-- **Completely Free**: No charges whatsoever
-- **No Translation Limits**: You can translate as many times as you want
-- **Fast**: Translation is quick as it's processed locally
-- **Privacy**: No internet connection required, data is not sent externally
-- **Stability**: Not affected by network conditions
+### ข้อดี
+- **ฟรีทั้งหมด**: ไม่มีค่าใช้จ่ายใดๆ
+- **ไม่มีข้อจำกัดในการแปล**: คุณสามารถแปลได้มากเท่าที่ต้องการ
+- **เร็ว**: การแปลรวดเร็วเนื่องจากประมวลผลในเครื่อง
+- **ความเป็นส่วนตัว**: ไม่ต้องการการเชื่อมต่ออินเทอร์เน็ต ข้อมูลไม่ถูกส่งออกภายนอก
+- **เสถียรภาพ**: ไม่ได้รับผลกระทบจากสภาพเครือข่าย
 
-### Disadvantages
-- **Translation Accuracy**: Lower translation accuracy compared to cloud-based services
-- **Memory Usage**: Uses a certain amount of memory for translation processing
-- **Language Support**: Only some language pairs are supported
+### ข้อเสีย
+- **ความแม่นยำในการแปล**: ความแม่นยำในการแปลต่ำกว่าเมื่อเทียบกับบริการบนคลาวด์
+- **การใช้หน่วยความจำ**: ใช้หน่วยความจำจำนวนหนึ่งสำหรับการประมวลผลการแปล
+- **รองรับภาษา**: รองรับเฉพาะบางคู่ภาษา
 
-### Recommended Use Cases
-- When you want to use it for free
-- Use in offline environments
-- When privacy is important
-- When translating frequently
+### กรณีการใช้งานที่แนะนำ
+- เมื่อคุณต้องการใช้งานฟรี
+- ใช้ในสภาพแวดล้อมออฟไลน์
+- เมื่อความเป็นส่วนตัวเป็นสิ่งสำคัญ
+- เมื่อแปลบ่อยครั้ง
 
 ---
 
 ## Google Translate
 
-A translation module using Google's translation service.
+โมดูลการแปลที่ใช้บริการแปลของ Google
 
-### Advantages
-- **Completely Free**: Can be used without an API key
-- **Multilingual Support**: Supports many language pairs
-- **Easy**: No special configuration required
+### ข้อดี
+- **ฟรีทั้งหมด**: สามารถใช้ได้โดยไม่ต้องมี API key
+- **รองรับหลายภาษา**: รองรับคู่ภาษามากมาย
+- **ง่าย**: ไม่ต้องการการตั้งค่าพิเศษ
 
-### Disadvantages
-- **Translation Limits**: Limited number of characters that can be translated per day
-- **Translation Accuracy**: May be less accurate compared to other paid services
-- **Speed**: Affected by network conditions
-- **Stability**: May suddenly become unavailable due to usage restrictions
+### ข้อเสีย
+- **ข้อจำกัดในการแปล**: จำนวนอักขระที่สามารถแปลได้ต่อวันมีจำกัด
+- **ความแม่นยำในการแปล**: อาจแม่นยำน้อยกว่าเมื่อเทียบกับบริการอื่นที่เสียค่าใช้จ่าย
+- **ความเร็ว**: ได้รับผลกระทบจากสภาพเครือข่าย
+- **เสถียรภาพ**: อาจไม่สามารถใช้ได้อย่างกะทันหันเนื่องจากข้อจำกัดการใช้งาน
 
-### Recommended Use Cases
-- Infrequent use
-- When you want to start using immediately
-- When you want to translate various language pairs
+### กรณีการใช้งานที่แนะนำ
+- การใช้งานไม่บ่อย
+- เมื่อต้องการเริ่มใช้งานทันที
+- เมื่อต้องการแปลคู่ภาษาที่หลากหลาย
 
 ---
 
 ## DeepL
 
-A module using DeepL's translation service, known for high-quality translations.
+โมดูลที่ใช้บริการแปลของ DeepL ซึ่งเป็นที่รู้จักในด้านการแปลคุณภาพสูง
 
-### Advantages
-- **High Accuracy**: Provides natural, high-quality translations
-- **Generous Free Tier**: Up to 500,000 characters per month for free (Free API)
-- **Fast**: Quick translation processing
-- **Glossary Support**: Can maintain translation consistency using glossaries
+### ข้อดี
+- **ความแม่นยำสูง**: ให้การแปลที่เป็นธรรมชาติและมีคุณภาพสูง
+- **แผนฟรีที่ใจกว้าง**: สูงสุด 500,000 ตัวอักษรต่อเดือนฟรี (Free API)
+- **เร็ว**: การประมวลผลการแปลรวดเร็ว
+- **รองรับอภิธานศัพท์**: สามารถรักษาความสอดคล้องของการแปลโดยใช้อภิธานศัพท์
 
-### Disadvantages
-- **API Registration Required**: Requires DeepL API registration and API key setup
-- **Free Tier Limits**: Migration to paid plan required when exceeding free tier
-- **Language Support**: Limited language support compared to Google and others
+### ข้อเสีย
+- **ต้องการการลงทะเบียน API**: ต้องการการลงทะเบียน DeepL API และการตั้งค่า API key
+- **ข้อจำกัดแผนฟรี**: ต้องย้ายไปแผนแบบเสียเงินเมื่อเกินแผนฟรี
+- **รองรับภาษา**: รองรับภาษาจำกัดเมื่อเทียบกับ Google และอื่นๆ
 
-### Recommended Use Cases
-- When high-quality translation is required
-- Moderate frequency of use
+### กรณีการใช้งานที่แนะนำ
+- เมื่อต้องการการแปลคุณภาพสูง
+- ความถี่การใช้งานปานกลาง
 
 ---
 
 ## Google AI (Gemini)
 
-A translation module leveraging Google's latest AI technology.
+โมดูลการแปลที่ใช้เทคโนโลยี AI ล่าสุดของ Google
 
-### Advantages
-- **Highest Accuracy**: Capable of very high-quality translation with contextual understanding
-- **Flexibility**: Can customize prompts to adjust translation style
-- **Glossary Support**: Can maintain translation consistency using glossaries
+### ข้อดี
+- **ความแม่นยำสูงสุด**: สามารถแปลคุณภาพสูงมากด้วยความเข้าใจบริบท
+- **ความยืดหยุ่น**: สามารถปรับแต่ง prompt เพื่อปรับสไตล์การแปล
+- **รองรับอภิธานศัพท์**: สามารถรักษาความสอดคล้องของการแปลโดยใช้อภิธานศัพท์
 
-### Disadvantages
-- **API Key Required**: Requires API key acquisition and setup from Google AI Studio
-- **Pay-per-use**: Charges based on usage (though minimal)
-- **Speed**: Takes longer processing time than other modules due to LLM base
+### ข้อเสีย
+- **ต้องการ API key**: ต้องการการได้รับและตั้งค่า API key จาก Google AI Studio
+- **ชำระตามการใช้งาน**: คิดค่าใช้จ่ายตามการใช้งาน (แม้ว่าจะน้อยมาก)
+- **ความเร็ว**: ใช้เวลาประมวลผลนานกว่าโมดูลอื่นเนื่องจากฐาน LLM
 
-### Recommended Use Cases
-- When highest quality translation is required
-- When customized translation style is needed
-- When context-aware translation is important
+### กรณีการใช้งานที่แนะนำ
+- เมื่อต้องการการแปลคุณภาพสูงสุด
+- เมื่อต้องการสไตล์การแปลที่ปรับแต่งเอง
+- เมื่อการแปลที่ตระหนักถึงบริบทเป็นสิ่งสำคัญ
 
 ---
 
-## ChatGPT API (OR Local LLM)
+## ChatGPT API (หรือ Local LLM)
 
-A translation module using ChatGPT API or local LLM.
+โมดูลการแปลที่ใช้ ChatGPT API หรือ LLM ในเครื่อง
 
-### Advantages
-- **Highest Accuracy**: High-quality translation by large language models
-- **Flexibility**: Can customize prompts to adjust translation style
-- **Glossary Support**: Can maintain translation consistency using glossaries
-- **Local LLM Support**: Can also use your own LLM server
+### ข้อดี
+- **ความแม่นยำสูงสุด**: การแปลคุณภาพสูงโดยโมเดลภาษาขนาดใหญ่
+- **ความยืดหยุ่น**: สามารถปรับแต่ง prompt เพื่อปรับสไตล์การแปล
+- **รองรับอภิธานศัพท์**: สามารถรักษาความสอดคล้องของการแปลโดยใช้อภิธานศัพท์
+- **รองรับ LLM ในเครื่อง**: สามารถใช้เซิร์ฟเวอร์ LLM ของคุณเองได้
 
-### Disadvantages
-- **API Key Required**: Requires API key setup for each service (except local LLM)
-- **Pay-per-use**: Charges based on usage (except local LLM)
-- **Speed**: Longer processing time
-- **Local LLM Requirements**: High-spec PC required when running your own LLM
+### ข้อเสีย
+- **ต้องการ API key**: ต้องการการตั้งค่า API key สำหรับแต่ละบริการ (ยกเว้น Local LLM)
+- **ชำระตามการใช้งาน**: คิดค่าใช้จ่ายตามการใช้งาน (ยกเว้น Local LLM)
+- **ความเร็ว**: เวลาประมวลผลนานขึ้น
+- **ความต้องการ Local LLM**: ต้องการพีซีสเปคสูงเมื่อรัน LLM ของคุณเอง
 
-### Recommended Use Cases
-- When highest quality translation is required
-- When customized translation style is needed
-- When privacy is important while wanting high-quality translation (local LLM)
+### กรณีการใช้งานที่แนะนำ
+- เมื่อต้องการการแปลคุณภาพสูงสุด
+- เมื่อต้องการสไตล์การแปลที่ปรับแต่งเอง
+- เมื่อความเป็นส่วนตัวสำคัญในขณะที่ต้องการการแปลคุณภาพสูง (Local LLM)
 
 ---
 
 ## PLaMo
 
-A translation module using local LLM specialized for Japanese.
+โมดูลการแปลที่ใช้ LLM ในเครื่องที่เชี่ยวชาญสำหรับภาษาญี่ปุ่น
 
-### Advantages
-- **Japanese Specialized**: Optimized for Japanese translation
-- **Completely Free**: Open source model with no charges
-- **Privacy**: Runs locally, data is not sent externally
-- **Offline**: No internet connection required
+### ข้อดี
+- **เชี่ยวชาญภาษาญี่ปุ่น**: ปรับให้เหมาะสมสำหรับการแปลภาษาญี่ปุ่น
+- **ฟรีทั้งหมด**: โมเดลโอเพนซอร์สไม่มีค่าใช้จ่าย
+- **ความเป็นส่วนตัว**: ทำงานในเครื่อง ข้อมูลไม่ถูกส่งออกภายนอก
+- **ออฟไลน์**: ไม่ต้องการการเชื่อมต่ออินเทอร์เน็ต
 
-### Disadvantages
-- **High-spec Requirements**: Requires high-performance PC including GPU
-- **Memory Usage**: Requires large amount of memory (8GB or more recommended)
-- **Speed**: Processing takes time without GPU
+### ข้อเสีย
+- **ความต้องการสเปคสูง**: ต้องการพีซีประสิทธิภาพสูงรวมถึง GPU
+- **การใช้หน่วยความจำ**: ต้องการหน่วยความจำจำนวนมาก (แนะนำ 8GB ขึ้นไป)
+- **ความเร็ว**: การประมวลผลใช้เวลาโดยไม่มี GPU
 
-### Recommended Use Cases
-- When you own a high-performance PC
-- When privacy is the top priority
-- When Japanese translation quality is important
+### กรณีการใช้งานที่แนะนำ
+- เมื่อคุณมีพีซีประสิทธิภาพสูง
+- เมื่อความเป็นส่วนตัวเป็นความสำคัญสูงสุด
+- เมื่อคุณภาพการแปลภาษาญี่ปุ่นเป็นสิ่งสำคัญ
 
 ---
 
-## How to Choose a Module
+## วิธีเลือกโมดูล
 
-| Purpose                        | Recommended Module                           |
-| ------------------------------ | -------------------------------------------- |
-| Start using immediately        | **Bergamot** or **Google Translate**        |
-| Highest quality translation    | **Google AI** or **ChatGPT API**            |
-| Keep costs down                | **Bergamot** or **DeepL (within free tier)** |
-| Privacy focused                | **Bergamot** or **PLaMo**                   |
-| High frequency usage           | **Bergamot** or **DeepL**                   |
+| วัตถุประสงค์                     | โมดูลที่แนะนำ                                |
+| -------------------------------- | ------------------------------------------- |
+| เริ่มใช้งานทันที                 | **Bergamot** หรือ **Google Translate**     |
+| การแปลคุณภาพสูงสุด              | **Google AI** หรือ **ChatGPT API**         |
+| ลดค่าใช้จ่าย                    | **Bergamot** หรือ **DeepL (ภายในแผนฟรี)**  |
+| เน้นความเป็นส่วนตัว             | **Bergamot** หรือ **PLaMo**                |
+| การใช้งานบ่อยครั้ง              | **Bergamot** หรือ **DeepL**                |

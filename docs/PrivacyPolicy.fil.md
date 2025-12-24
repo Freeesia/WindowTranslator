@@ -1,63 +1,63 @@
 ---
-title: Privacy Policy
-description: WindowTranslator Privacy Policy
+title: Patakaran sa Privacy
+description: Patakaran sa Privacy ng WindowTranslator
 ---
 
-This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+Ang Patakaran sa Privacy na ito ay nangangasiwa sa paggamit ng "WindowTranslator" (dito ay tatawaging "ang Aplikasyon").
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## Panimula
+Ang Aplikasyon ay open source at available sa GitHub ( https://github.com/Freeesia/WindowTranslator ).  
+Ang Aplikasyon ay karaniwang hindi nangongolekta ng personal na impormasyon o datos ng paggamit mula sa mga user. Gayunpaman, kapag ang mga user ay tahasang pumili na magpadala ng mga error report, ang minimal na impormasyon na kinakailangan para sa teknikal na solusyon ng problema ay kinokolekta.
 
-## Collection of Personal Information
+## Pagkolekta ng Personal na Impormasyon
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### Impormasyon na Kinokolekta ng Aplikasyon  
+Ang Aplikasyon ay hindi direktang nangongolekta ng personal na datos tulad ng user input, kasaysayan ng pakikipag-ugnayan, o impormasyon ng device sa panahon ng normal na paggamit.
+Gayunpaman, kapag ang mga user ay tahasang pumili na magpadala ng mga error report, ang kinakailangang impormasyon para sa teknikal na solusyon ng problema ay kinokolekta.
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+### Mga Log ng Error at Crash Report  
+Ang Aplikasyon ay nangongolekta ng sumusunod na impormasyon lamang kapag ang mga user ay tahasang nagsagawa ng pagsusumite ng error report:
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+- Impormasyon ng operasyon ng aplikasyon
+- Impormasyon ng hardware specification ng PC
+- Impormasyon ng OS environment
+- Mga kalagayan ng pagkakaroon ng error
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+Ang impormasyong ito ay ginagamit lamang para sa teknikal na solusyon ng problema at pagpapabuti ng kalidad ng aplikasyon, at hindi naglalaman ng personal na nakakakilanlan na impormasyon.
+Ang pagsusumite ng error report ay ganap na kusang-loob at hindi kailanman ipapadala nang awtomatiko nang walang pahintulot ng user.
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+## Paghawak ng Google User Data  
+Kapag nag-access sa mga serbisyo ng Google Apps Script, ang Aplikasyon ay kumukuha lamang ng minimum na kinakailangang mga authentication token.  
+Walang personal na impormasyon ng user na ginagamit lampas sa authentication na ito.
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### Paggamit ng Nakolektang Data  
+Ang nakuhang impormasyon ng authentication ay ginagamit lamang upang magsagawa ng Google Apps Script sa loob ng Aplikasyon.  
+Ang authentication na ito ay mahigpit na limitado sa layunin ng pagpapagana ng paggamit ng mga serbisyo ng Google.
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### Pagbabahagi o Paglipat ng Data  
+Ang provider ng Aplikasyon ay hindi nangongolekta, nag-iimbak, nagbabahagi, o naglilipat ng anumang impormasyon ng authentication o iba pang Google user data.  
+Lahat ng datos ng authentication ay nakaimbak sa PC ng user at ginagamit lamang para sa pag-access sa mga serbisyo ng Google.
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### Proteksyon ng Data  
+Ang datos ng authentication ay ligtas na nakaimbak sa PC ng user, at ang provider ng Aplikasyon ay walang anumang karapatan sa pag-access sa datos na ito.  
+Ang mga karagdagang hakbang sa seguridad ay depende sa pamamahala ng seguridad ng PC ng mismong user.
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### Pagpapanatili at Pagtanggal ng Data  
+Ang mga authentication token ay nakaimbak lamang sa PC ng user.  
+Ang pagtanggal ng mga token na ito ay nakukumpleto sa pamamagitan ng pag-alis ng user sa folder na matatagpuan sa `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## Paggamit ng mga Translation Engine at Third-Party Libraries  
+Ang Aplikasyon ay dinisenyo upang suportahan ang maraming translation engine, kabilang ang Google Translate at DeepL.  
+Ang mga translation engine at nauugnay na library na ito ay maaaring mangolekta ng user data o impormasyon ng paggamit alinsunod sa kanilang mga kani-kaniyang patakaran sa privacy.  
+Mahigpit na inirerekomenda sa mga user na suriin ang mga patakaran sa privacy ng mga serbisyo ng pagsasalin na ginagamit nila.
 
-## Contact Information  
-For any questions or feedback regarding this Privacy Policy, please contact:  
+## Impormasyon sa Pakikipag-ugnayan  
+Para sa anumang mga katanungan o feedback tungkol sa Patakarang Privacy na ito, mangyaring makipag-ugnayan sa:  
 GitHub Account: [Freeesia](https://github.com/Freeesia)
 
-## Changes to This Privacy Policy  
-This Privacy Policy may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+## Mga Pagbabago sa Patakarang Privacy na Ito  
+Ang Patakarang Privacy na ito ay maaaring baguhin nang walang paunang abiso dahil sa mga pagbabago sa batas o functionality ng aplikasyon.  
+Ang anumang mga pagbabago ay agad na ipaaabot sa pamamagitan ng Aplikasyon o ng GitHub repository.
 
 > [!WARNING]
-> Note: This file is machine translated from the original Japanese version, which is the master version.
+> Tandaan: Ang file na ito ay machine translated mula sa orihinal na Japanese version, na siyang master version.

@@ -1,147 +1,147 @@
-# Translation Modules
+# Модули перевода
 
-WindowTranslator allows you to choose from multiple translation modules.  
-Each module has its own characteristics, and by selecting the appropriate module for your use case, you can use translation more comfortably.
+WindowTranslator позволяет выбирать из нескольких модулей перевода.  
+Каждый модуль имеет свои характеристики, и, выбрав подходящий модуль для вашего случая, вы сможете использовать перевод более комфортно.
 
-## Bergamot ![Default](https://img.shields.io/badge/Default-brightgreen)
+## Bergamot ![По умолчанию](https://img.shields.io/badge/По_умолчанию-brightgreen)
 
-A machine translation module that works offline.
+Модуль машинного перевода, работающий в автономном режиме.
 
-### Advantages
-- **Completely Free**: No charges whatsoever
-- **No Translation Limits**: You can translate as many times as you want
-- **Fast**: Translation is quick as it's processed locally
-- **Privacy**: No internet connection required, data is not sent externally
-- **Stability**: Not affected by network conditions
+### Преимущества
+- **Полностью бесплатно**: Никаких платежей
+- **Без ограничений на перевод**: Вы можете переводить столько раз, сколько хотите
+- **Быстро**: Перевод быстрый, так как обрабатывается локально
+- **Конфиденциальность**: Не требуется подключение к интернету, данные не передаются наружу
+- **Стабильность**: Не зависит от состояния сети
 
-### Disadvantages
-- **Translation Accuracy**: Lower translation accuracy compared to cloud-based services
-- **Memory Usage**: Uses a certain amount of memory for translation processing
-- **Language Support**: Only some language pairs are supported
+### Недостатки
+- **Точность перевода**: Более низкая точность перевода по сравнению с облачными сервисами
+- **Использование памяти**: Использует определенный объем памяти для обработки перевода
+- **Языковая поддержка**: Поддерживаются только некоторые языковые пары
 
-### Recommended Use Cases
-- When you want to use it for free
-- Use in offline environments
-- When privacy is important
-- When translating frequently
+### Рекомендуемые случаи использования
+- Когда вы хотите использовать бесплатно
+- Использование в автономных средах
+- Когда важна конфиденциальность
+- При частом переводе
 
 ---
 
 ## Google Translate
 
-A translation module using Google's translation service.
+Модуль перевода, использующий службу перевода Google.
 
-### Advantages
-- **Completely Free**: Can be used without an API key
-- **Multilingual Support**: Supports many language pairs
-- **Easy**: No special configuration required
+### Преимущества
+- **Полностью бесплатно**: Можно использовать без API-ключа
+- **Многоязычная поддержка**: Поддерживает множество языковых пар
+- **Легко**: Не требуется специальная настройка
 
-### Disadvantages
-- **Translation Limits**: Limited number of characters that can be translated per day
-- **Translation Accuracy**: May be less accurate compared to other paid services
-- **Speed**: Affected by network conditions
-- **Stability**: May suddenly become unavailable due to usage restrictions
+### Недостатки
+- **Ограничения перевода**: Ограниченное количество символов, которые можно переводить в день
+- **Точность перевода**: Может быть менее точным по сравнению с другими платными сервисами
+- **Скорость**: Зависит от условий сети
+- **Стабильность**: Может внезапно стать недоступным из-за ограничений использования
 
-### Recommended Use Cases
-- Infrequent use
-- When you want to start using immediately
-- When you want to translate various language pairs
+### Рекомендуемые случаи использования
+- Нечастое использование
+- Когда хотите начать использовать сразу
+- Когда хотите переводить различные языковые пары
 
 ---
 
 ## DeepL
 
-A module using DeepL's translation service, known for high-quality translations.
+Модуль, использующий службу перевода DeepL, известную высококачественными переводами.
 
-### Advantages
-- **High Accuracy**: Provides natural, high-quality translations
-- **Generous Free Tier**: Up to 500,000 characters per month for free (Free API)
-- **Fast**: Quick translation processing
-- **Glossary Support**: Can maintain translation consistency using glossaries
+### Преимущества
+- **Высокая точность**: Обеспечивает естественные высококачественные переводы
+- **Щедрый бесплатный тариф**: До 500 000 символов в месяц бесплатно (Free API)
+- **Быстро**: Быстрая обработка перевода
+- **Поддержка глоссария**: Может поддерживать согласованность перевода с использованием глоссариев
 
-### Disadvantages
-- **API Registration Required**: Requires DeepL API registration and API key setup
-- **Free Tier Limits**: Migration to paid plan required when exceeding free tier
-- **Language Support**: Limited language support compared to Google and others
+### Недостатки
+- **Требуется регистрация API**: Требуется регистрация API DeepL и настройка API-ключа
+- **Ограничения бесплатного тарифа**: Переход на платный план при превышении бесплатного тарифа
+- **Языковая поддержка**: Ограниченная языковая поддержка по сравнению с Google и другими
 
-### Recommended Use Cases
-- When high-quality translation is required
-- Moderate frequency of use
+### Рекомендуемые случаи использования
+- Когда требуется высококачественный перевод
+- Умеренная частота использования
 
 ---
 
 ## Google AI (Gemini)
 
-A translation module leveraging Google's latest AI technology.
+Модуль перевода, использующий новейшие технологии искусственного интеллекта Google.
 
-### Advantages
-- **Highest Accuracy**: Capable of very high-quality translation with contextual understanding
-- **Flexibility**: Can customize prompts to adjust translation style
-- **Glossary Support**: Can maintain translation consistency using glossaries
+### Преимущества
+- **Наивысшая точность**: Способен на очень высококачественный перевод с пониманием контекста
+- **Гибкость**: Можно настраивать подсказки для настройки стиля перевода
+- **Поддержка глоссария**: Может поддерживать согласованность перевода с использованием глоссариев
 
-### Disadvantages
-- **API Key Required**: Requires API key acquisition and setup from Google AI Studio
-- **Pay-per-use**: Charges based on usage (though minimal)
-- **Speed**: Takes longer processing time than other modules due to LLM base
+### Недостатки
+- **Требуется API-ключ**: Требуется получение и настройка API-ключа из Google AI Studio
+- **Оплата по использованию**: Плата в зависимости от использования (хотя минимальная)
+- **Скорость**: Занимает больше времени обработки, чем другие модули, из-за базы LLM
 
-### Recommended Use Cases
-- When highest quality translation is required
-- When customized translation style is needed
-- When context-aware translation is important
+### Рекомендуемые случаи использования
+- Когда требуется перевод высочайшего качества
+- Когда нужен настраиваемый стиль перевода
+- Когда важен контекстно-зависимый перевод
 
 ---
 
-## ChatGPT API (OR Local LLM)
+## ChatGPT API (или Local LLM)
 
-A translation module using ChatGPT API or local LLM.
+Модуль перевода, использующий ChatGPT API или локальный LLM.
 
-### Advantages
-- **Highest Accuracy**: High-quality translation by large language models
-- **Flexibility**: Can customize prompts to adjust translation style
-- **Glossary Support**: Can maintain translation consistency using glossaries
-- **Local LLM Support**: Can also use your own LLM server
+### Преимущества
+- **Наивысшая точность**: Высококачественный перевод большими языковыми моделями
+- **Гибкость**: Можно настраивать подсказки для настройки стиля перевода
+- **Поддержка глоссария**: Может поддерживать согласованность перевода с использованием глоссариев
+- **Поддержка локального LLM**: Также можно использовать собственный сервер LLM
 
-### Disadvantages
-- **API Key Required**: Requires API key setup for each service (except local LLM)
-- **Pay-per-use**: Charges based on usage (except local LLM)
-- **Speed**: Longer processing time
-- **Local LLM Requirements**: High-spec PC required when running your own LLM
+### Недостатки
+- **Требуется API-ключ**: Требуется настройка API-ключа для каждого сервиса (кроме локального LLM)
+- **Оплата по использованию**: Плата в зависимости от использования (кроме локального LLM)
+- **Скорость**: Более длительное время обработки
+- **Требования к локальному LLM**: Требуется высокопроизводительный ПК при запуске собственного LLM
 
-### Recommended Use Cases
-- When highest quality translation is required
-- When customized translation style is needed
-- When privacy is important while wanting high-quality translation (local LLM)
+### Рекомендуемые случаи использования
+- Когда требуется перевод высочайшего качества
+- Когда нужен настраиваемый стиль перевода
+- Когда важна конфиденциальность при желании высококачественного перевода (локальный LLM)
 
 ---
 
 ## PLaMo
 
-A translation module using local LLM specialized for Japanese.
+Модуль перевода, использующий локальный LLM, специализированный для японского языка.
 
-### Advantages
-- **Japanese Specialized**: Optimized for Japanese translation
-- **Completely Free**: Open source model with no charges
-- **Privacy**: Runs locally, data is not sent externally
-- **Offline**: No internet connection required
+### Преимущества
+- **Специализация на японском**: Оптимизирован для перевода на японский язык
+- **Полностью бесплатно**: Модель с открытым исходным кодом без платежей
+- **Конфиденциальность**: Работает локально, данные не передаются наружу
+- **Автономный**: Не требуется подключение к интернету
 
-### Disadvantages
-- **High-spec Requirements**: Requires high-performance PC including GPU
-- **Memory Usage**: Requires large amount of memory (8GB or more recommended)
-- **Speed**: Processing takes time without GPU
+### Недостатки
+- **Требования к высокой производительности**: Требуется высокопроизводительный ПК, включая GPU
+- **Использование памяти**: Требуется большой объем памяти (рекомендуется 8 ГБ или более)
+- **Скорость**: Обработка занимает время без GPU
 
-### Recommended Use Cases
-- When you own a high-performance PC
-- When privacy is the top priority
-- When Japanese translation quality is important
+### Рекомендуемые случаи использования
+- Когда у вас есть высокопроизводительный ПК
+- Когда конфиденциальность является главным приоритетом
+- Когда важно качество японского перевода
 
 ---
 
-## How to Choose a Module
+## Как выбрать модуль
 
-| Purpose                        | Recommended Module                           |
-| ------------------------------ | -------------------------------------------- |
-| Start using immediately        | **Bergamot** or **Google Translate**        |
-| Highest quality translation    | **Google AI** or **ChatGPT API**            |
-| Keep costs down                | **Bergamot** or **DeepL (within free tier)** |
-| Privacy focused                | **Bergamot** or **PLaMo**                   |
-| High frequency usage           | **Bergamot** or **DeepL**                   |
+| Цель                               | Рекомендуемый модуль                          |
+| ---------------------------------- | --------------------------------------------- |
+| Начать использовать сразу          | **Bergamot** или **Google Translate**       |
+| Перевод высочайшего качества       | **Google AI** или **ChatGPT API**            |
+| Снизить затраты                    | **Bergamot** или **DeepL (в рамках бесплатного тарифа)** |
+| Ориентация на конфиденциальность   | **Bergamot** или **PLaMo**                   |
+| Частое использование               | **Bergamot** или **DeepL**                   |

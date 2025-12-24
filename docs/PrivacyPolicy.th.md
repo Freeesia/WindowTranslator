@@ -1,63 +1,63 @@
 ---
-title: Privacy Policy
-description: WindowTranslator Privacy Policy
+title: นโยบายความเป็นส่วนตัว
+description: นโยบายความเป็นส่วนตัวของ WindowTranslator
 ---
 
-This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+นโยบายความเป็นส่วนตัวนี้ควบคุมการใช้ "WindowTranslator" (ต่อไปนี้จะเรียกว่า "แอปพลิเคชัน")
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## บทนำ
+แอปพลิเคชันเป็นโอเพนซอร์สและพร้อมใช้งานบน GitHub ( https://github.com/Freeesia/WindowTranslator )  
+แอปพลิเคชันโดยทั่วไปไม่เก็บรวบรวมข้อมูลส่วนบุคคลหรือข้อมูลการใช้งานจากผู้ใช้ อย่างไรก็ตาม เมื่อผู้ใช้เลือกที่จะส่งรายงานข้อผิดพลาดอย่างชัดเจน จะมีการเก็บรวมข้อมูลที่จำเป็นขั้นต่ำสุดสำหรับการแก้ไขปัญหาทางเทคนิค
 
-## Collection of Personal Information
+## การเก็บรวบรวมข้อมูลส่วนบุคคล
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### ข้อมูลที่เก็บรวบรวมโดยแอปพลิเคชัน  
+แอปพลิเคชันไม่เก็บรวบรวมข้อมูลส่วนบุคคลโดยตรง เช่น ข้อมูลที่ผู้ใช้ป้อน ประวัติการโต้ตอบ หรือข้อมูลอุปกรณ์ในระหว่างการใช้งานปกติ
+อย่างไรก็ตาม เมื่อผู้ใช้เลือกที่จะส่งรายงานข้อผิดพลาดอย่างชัดเจน จะมีการเก็บรวบรวมข้อมูลที่จำเป็นสำหรับการแก้ไขปัญหาทางเทคนิค
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+### บันทึกข้อผิดพลาดและรายงานการขัดข้อง  
+แอปพลิเคชันเก็บรวบรวมข้อมูลต่อไปนี้เฉพาะเมื่อผู้ใช้ทำการส่งรายงานข้อผิดพลาดอย่างชัดเจน:
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+- ข้อมูลการทำงานของแอปพลิเคชัน
+- ข้อมูลสเปคฮาร์ดแวร์ของพีซี
+- ข้อมูลสภาพแวดล้อม OS
+- สถานการณ์ที่เกิดข้อผิดพลาด
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+ข้อมูลนี้ใช้เพื่อการแก้ไขปัญหาทางเทคนิคและการปรับปรุงคุณภาพแอปพลิเคชันเท่านั้น และไม่รวมข้อมูลที่สามารถระบุตัวตนได้
+การส่งรายงานข้อผิดพลาดเป็นแบบสมัครใจทั้งหมดและจะไม่ถูกส่งโดยอัตโนมัติโดยไม่ได้รับความยินยอมจากผู้ใช้
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+## การจัดการข้อมูลผู้ใช้ Google  
+เมื่อเข้าถึงบริการ Google Apps Script แอปพลิเคชันจะได้รับเฉพาะโทเค็นการตรวจสอบสิทธิ์ที่จำเป็นขั้นต่ำเท่านั้น  
+ไม่มีการใช้ข้อมูลส่วนบุคคลของผู้ใช้นอกเหนือจากการตรวจสอบสิทธิ์นี้
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### การใช้ข้อมูลที่เก็บรวบรวม  
+ข้อมูลการตรวจสอบสิทธิ์ที่ได้รับจะใช้เพื่อการรัน Google Apps Script ภายในแอปพลิเคชันเท่านั้น  
+การตรวจสอบสิทธิ์นี้จำกัดอย่างเข้มงวดเพื่อวัตถุประสงค์ในการเปิดใช้งานบริการของ Google
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### การแชร์หรือการถ่ายโอนข้อมูล  
+ผู้ให้บริการแอปพลิเคชันไม่เก็บรวบรวม จัดเก็บ แชร์ หรือถ่ายโอนข้อมูลการตรวจสอบสิทธิ์หรือข้อมูลผู้ใช้ Google อื่นๆ  
+ข้อมูลการตรวจสอบสิทธิ์ทั้งหมดจะถูกเก็บไว้บนพีซีของผู้ใช้และใช้เพื่อการเข้าถึงบริการของ Google เท่านั้น
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### การปกป้องข้อมูล  
+ข้อมูลการตรวจสอบสิทธิ์จะถูกเก็บอย่างปลอดภัยบนพีซีของผู้ใช้ และผู้ให้บริการแอปพลิเคชันไม่มีสิทธิ์เข้าถึงข้อมูลนี้  
+มาตรการรักษาความปลอดภัยเพิ่มเติมขึ้นอยู่กับการจัดการความปลอดภัยของพีซีของผู้ใช้เอง
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### การเก็บรักษาและการลบข้อมูล  
+โทเค็นการตรวจสอบสิทธิ์จะถูกเก็บไว้บนพีซีของผู้ใช้เท่านั้น  
+การลบโทเค็นเหล่านี้จะเสร็จสมบูรณ์โดยผู้ใช้ลบโฟลเดอร์ที่ตั้งอยู่ที่ `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## การใช้เครื่องมือแปลและไลบรารีของบุคคลที่สาม  
+แอปพลิเคชันได้รับการออกแบบมาเพื่อรองรับเครื่องมือแปลหลายตัว รวมถึง Google Translate และ DeepL  
+เครื่องมือแปลและไลบรารีที่เกี่ยวข้องเหล่านี้อาจเก็บรวบรวมข้อมูลผู้ใช้หรือข้อมูลการใช้งานตามนโยบายความเป็นส่วนตัวของตน  
+ขอแนะนำอย่างยิ่งให้ผู้ใช้ตรวจสอบนโยบายความเป็นส่วนตัวของบริการแปลที่พวกเขาใช้
 
-## Contact Information  
-For any questions or feedback regarding this Privacy Policy, please contact:  
-GitHub Account: [Freeesia](https://github.com/Freeesia)
+## ข้อมูลติดต่อ  
+หากมีคำถามหรือความคิดเห็นเกี่ยวกับนโยบายความเป็นส่วนตัวนี้ โปรดติดต่อ:  
+บัญชี GitHub: [Freeesia](https://github.com/Freeesia)
 
-## Changes to This Privacy Policy  
-This Privacy Policy may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+## การเปลี่ยนแปลงนโยบายความเป็นส่วนตัวนี้  
+นโยบายความเป็นส่วนตัวนี้อาจมีการแก้ไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้าเนื่องจากการเปลี่ยนแปลงในกฎหมายหรือฟังก์ชันแอปพลิเคชัน  
+การเปลี่ยนแปลงใดๆ จะถูกสื่อสารทันทีผ่านแอปพลิเคชันหรือ GitHub repository
 
 > [!WARNING]
-> Note: This file is machine translated from the original Japanese version, which is the master version.
+> หมายเหตุ: ไฟล์นี้แปลด้วยเครื่องจากฉบับภาษาญี่ปุ่นต้นฉบับซึ่งเป็นฉบับหลัก

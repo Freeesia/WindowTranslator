@@ -1,63 +1,63 @@
 ---
-title: Privacy Policy
-description: WindowTranslator Privacy Policy
+title: Политика конфиденциальности
+description: Политика конфиденциальности WindowTranslator
 ---
 
-This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+Эта Политика конфиденциальности регулирует использование "WindowTranslator" (далее именуемое "Приложение").
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## Введение
+Приложение является открытым исходным кодом и доступно на GitHub ( https://github.com/Freeesia/WindowTranslator ).  
+Приложение обычно не собирает личную информацию или данные об использовании от своих пользователей. Однако, когда пользователи явно выбирают отправку отчетов об ошибках, собирается минимальная информация, необходимая для решения технических проблем.
 
-## Collection of Personal Information
+## Сбор личной информации
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### Информация, собираемая Приложением  
+Приложение не собирает напрямую личные данные, такие как пользовательский ввод, история взаимодействий или информация об устройстве во время обычного использования.
+Однако, когда пользователи явно выбирают отправку отчетов об ошибках, собирается необходимая информация для решения технических проблем.
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+### Журналы ошибок и отчеты о сбоях  
+Приложение собирает следующую информацию только когда пользователи явно выполняют отправку отчета об ошибке:
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+- Информация о работе приложения
+- Информация о спецификациях оборудования ПК
+- Информация об ОС
+- Обстоятельства возникновения ошибки
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+Эта информация используется исключительно для решения технических проблем и улучшения качества приложения и не содержит личной идентифицирующей информации.
+Отправка отчетов об ошибках полностью добровольна и никогда не будет отправлена автоматически без согласия пользователя.
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+## Обработка данных пользователей Google  
+При доступе к сервисам Google Apps Script приложение получает только минимально необходимые токены аутентификации.  
+Никакая личная информация пользователя не используется за пределами этой аутентификации.
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### Использование собранных данных  
+Полученная информация аутентификации используется исключительно для выполнения Google Apps Script в приложении.  
+Эта аутентификация строго ограничена целью обеспечения использования сервисов Google.
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### Совместное использование или передача данных  
+Поставщик приложения не собирает, не хранит, не передает и не передает третьим лицам никакую информацию аутентификации или другие данные пользователей Google.  
+Все данные аутентификации хранятся на ПК пользователя и используются исключительно для доступа к сервисам Google.
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### Защита данных  
+Данные аутентификации надежно хранятся на ПК пользователя, и поставщик приложения не имеет никаких прав доступа к этим данным.  
+Дополнительные меры безопасности зависят от управления безопасностью ПК самого пользователя.
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### Хранение и удаление данных  
+Токены аутентификации хранятся только на ПК пользователя.  
+Удаление этих токенов завершается удалением пользователем папки, расположенной по адресу `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## Использование механизмов перевода и сторонних библиотек  
+Приложение предназначено для поддержки нескольких механизмов перевода, включая Google Translate и DeepL.  
+Эти механизмы перевода и связанные библиотеки могут собирать пользовательские данные или информацию об использовании в соответствии с их соответствующими политиками конфиденциальности.  
+Пользователям настоятельно рекомендуется ознакомиться с политиками конфиденциальности используемых ими служб перевода.
 
-## Contact Information  
-For any questions or feedback regarding this Privacy Policy, please contact:  
-GitHub Account: [Freeesia](https://github.com/Freeesia)
+## Контактная информация  
+По любым вопросам или отзывам относительно этой Политики конфиденциальности, пожалуйста, свяжитесь:  
+Аккаунт GitHub: [Freeesia](https://github.com/Freeesia)
 
-## Changes to This Privacy Policy  
-This Privacy Policy may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+## Изменения в этой Политике конфиденциальности  
+Эта Политика конфиденциальности может быть изменена без предварительного уведомления из-за изменений в законодательстве или функциональности приложения.  
+О любых изменениях будет незамедлительно сообщено через Приложение или репозиторий GitHub.
 
 > [!WARNING]
-> Note: This file is machine translated from the original Japanese version, which is the master version.
+> Примечание: Этот файл машинно переведен с оригинальной японской версии, которая является основной.

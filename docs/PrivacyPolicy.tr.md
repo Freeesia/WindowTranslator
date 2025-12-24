@@ -1,63 +1,63 @@
 ---
-title: Privacy Policy
-description: WindowTranslator Privacy Policy
+title: Gizlilik Politikası
+description: WindowTranslator Gizlilik Politikası
 ---
 
-This Privacy Policy governs the use of "WindowTranslator" (hereinafter referred to as "the Application").
+Bu Gizlilik Politikası "WindowTranslator" (bundan böyle "Uygulama" olarak anılacaktır) kullanımını yönetir.
 
-## Introduction
-The Application is open source and available on GitHub ( https://github.com/Freeesia/WindowTranslator ).  
-The Application generally does not collect personal information or usage data from its users. However, when users explicitly choose to send error reports, minimal information necessary for technical problem resolution is collected.
+## Giriş
+Uygulama açık kaynaklıdır ve GitHub'da mevcuttur ( https://github.com/Freeesia/WindowTranslator ).  
+Uygulama genel olarak kullanıcılarından kişisel bilgi veya kullanım verisi toplamaz. Ancak, kullanıcılar açıkça hata raporları göndermeyi seçtiklerinde, teknik sorun çözümü için gerekli minimum bilgi toplanır.
 
-## Collection of Personal Information
+## Kişisel Bilgi Toplama
 
-### Information Collected by the Application  
-The Application does not directly collect personal data such as user input, interaction history, or device information during normal use.
-However, when users explicitly choose to send error reports, necessary information for technical problem resolution is collected.
+### Uygulama Tarafından Toplanan Bilgiler  
+Uygulama, normal kullanım sırasında kullanıcı girişi, etkileşim geçmişi veya cihaz bilgisi gibi kişisel verileri doğrudan toplamaz.
+Ancak, kullanıcılar açıkça hata raporları göndermeyi seçtiklerinde, teknik sorun çözümü için gerekli bilgiler toplanır.
 
-### Error Logs and Crash Reports  
-The Application collects the following information only when users explicitly perform error report submission:
+### Hata Günlükleri ve Çökme Raporları  
+Uygulama, aşağıdaki bilgileri yalnızca kullanıcılar açıkça hata raporu gönderme işlemini gerçekleştirdiğinde toplar:
 
-- Application operation information
-- PC hardware specification information
-- OS environment information
-- Error occurrence circumstances
+- Uygulama çalışma bilgileri
+- PC donanım özelliği bilgileri
+- İşletim sistemi ortam bilgileri
+- Hata oluşma koşulları
 
-This information is used solely for technical problem resolution and application quality improvement, and does not include personally identifiable information.
-Error report submission is completely voluntary and will never be sent automatically without user consent.
+Bu bilgiler yalnızca teknik sorun çözümü ve uygulama kalitesini artırmak için kullanılır ve kişisel olarak tanımlanabilir bilgi içermez.
+Hata raporu gönderimi tamamen gönüllüdür ve kullanıcı onayı olmadan asla otomatik olarak gönderilmez.
 
-## Handling of Google User Data  
-When accessing Google Apps Script services, the Application obtains only the minimum required authentication tokens.  
-No personal information of the user is used beyond this authentication.
+## Google Kullanıcı Verilerinin İşlenmesi  
+Google Apps Script hizmetlerine erişirken, Uygulama yalnızca gerekli minimum kimlik doğrulama belirteçlerini alır.  
+Bu kimlik doğrulamanın ötesinde kullanıcının hiçbir kişisel bilgisi kullanılmaz.
 
-### Use of Collected Data  
-The obtained authentication information is used solely to execute Google Apps Script within the Application.  
-This authentication is strictly limited to the purpose of enabling the use of Google services.
+### Toplanan Verilerin Kullanımı  
+Elde edilen kimlik doğrulama bilgileri yalnızca Uygulama içinde Google Apps Script'i çalıştırmak için kullanılır.  
+Bu kimlik doğrulaması, Google hizmetlerinin kullanımını sağlama amacıyla kesinlikle sınırlıdır.
 
-### Sharing or Transfer of Data  
-The Application provider does not collect, store, share, or transfer any authentication information or other Google user data.  
-All authentication data is stored on the user’s PC and used solely for accessing Google services.
+### Verilerin Paylaşılması veya Aktarılması  
+Uygulama sağlayıcısı, kimlik doğrulama bilgilerini veya diğer Google kullanıcı verilerini toplamaz, saklamaz, paylaşmaz veya aktarmaz.  
+Tüm kimlik doğrulama verileri kullanıcının PC'sinde saklanır ve yalnızca Google hizmetlerine erişim için kullanılır.
 
-### Data Protection  
-Authentication data is securely stored on the user’s PC, and the Application provider does not have any access rights to this data.  
-Additional security measures depend on the user’s own PC security management.
+### Veri Koruması  
+Kimlik doğrulama verileri kullanıcının PC'sinde güvenli bir şekilde saklanır ve Uygulama sağlayıcısının bu verilere herhangi bir erişim hakkı yoktur.  
+Ek güvenlik önlemleri, kullanıcının kendi PC güvenlik yönetimine bağlıdır.
 
-### Data Retention and Deletion  
-Authentication tokens are stored only on the user’s PC.  
-Deletion of these tokens is completed by the user removing the folder located at `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin`.
+### Veri Saklama ve Silme  
+Kimlik doğrulama belirteçleri yalnızca kullanıcının PC'sinde saklanır.  
+Bu belirteçlerin silinmesi, kullanıcının `%APPDATA%\StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin` konumundaki klasörü kaldırmasıyla tamamlanır.
 
-## Use of Translation Engines and Third-Party Libraries  
-The Application is designed to support multiple translation engines, including Google Translate and DeepL.  
-These translation engines and associated libraries may collect user data or usage information in accordance with their respective privacy policies.  
-Users are strongly advised to review the privacy policies of the translation services they use.
+## Çeviri Motorları ve Üçüncü Taraf Kütüphanelerin Kullanımı  
+Uygulama, Google Translate ve DeepL dahil olmak üzere birden fazla çeviri motorunu destekleyecek şekilde tasarlanmıştır.  
+Bu çeviri motorları ve ilişkili kütüphaneler, kendi gizlilik politikalarına uygun olarak kullanıcı verilerini veya kullanım bilgilerini toplayabilir.  
+Kullanıcılara, kullandıkları çeviri hizmetlerinin gizlilik politikalarını gözden geçirmeleri şiddetle tavsiye edilir.
 
-## Contact Information  
-For any questions or feedback regarding this Privacy Policy, please contact:  
-GitHub Account: [Freeesia](https://github.com/Freeesia)
+## İletişim Bilgileri  
+Bu Gizlilik Politikası hakkında herhangi bir soru veya geri bildirim için lütfen iletişime geçin:  
+GitHub Hesabı: [Freeesia](https://github.com/Freeesia)
 
-## Changes to This Privacy Policy  
-This Privacy Policy may be amended without prior notice due to changes in law or application functionality.  
-Any changes will be promptly communicated via the Application or the GitHub repository.
+## Bu Gizlilik Politikasındaki Değişiklikler  
+Bu Gizlilik Politikası, yasa veya uygulama işlevselliğindeki değişiklikler nedeniyle önceden bildirimde bulunulmaksızın değiştirilebilir.  
+Herhangi bir değişiklik, Uygulama veya GitHub deposu aracılığıyla derhal iletilecektir.
 
 > [!WARNING]
-> Note: This file is machine translated from the original Japanese version, which is the master version.
+> Not: Bu dosya, ana sürüm olan orijinal Japonca sürümünden makine çevirisidir.

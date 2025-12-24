@@ -1,53 +1,53 @@
-# OCR Modules
+# OCR Modülleri
 
-WindowTranslator allows you to choose from multiple OCR modules for recognizing text on screen.  
-Each module has its own characteristics, and selecting the appropriate module for your use case will enable more accurate text recognition.
+WindowTranslator, ekrandaki metni tanımak için birden fazla OCR modülü arasından seçim yapmanıza olanak tanır.  
+Her modülün kendine özgü özellikleri vardır ve kullanım durumunuz için uygun modülü seçmek daha doğru metin tanıma sağlar.
 
-## New Windows Character Recognition (Beta) ![Default](https://img.shields.io/badge/Default-brightgreen)
+## Yeni Windows Karakter Tanıma (Beta) ![Varsayılan](https://img.shields.io/badge/Varsayılan-brightgreen)
 
-A local OCR module provided by Microsoft.
+Microsoft tarafından sağlanan yerel bir OCR modülü.
 
-### Advantages
-- **Recognition Accuracy**: Boasts the highest recognition accuracy
-- **Fast**: Very fast processing speed
+### Avantajlar
+- **Tanıma Doğruluğu**: En yüksek tanıma doğruluğuna sahiptir
+- **Hızlı**: Çok hızlı işleme hızı
 
-### Disadvantages
-- **Memory Usage**: May use over 1GB of memory just for recognition processing
-- **Operating Environment**: May not work in some environments (Windows 10 or later recommended)
+### Dezavantajlar
+- **Bellek Kullanımı**: Sadece tanıma işlemi için 1GB'den fazla bellek kullanabilir
+- **Çalışma Ortamı**: Bazı ortamlarda çalışmayabilir (Windows 10 veya üzeri önerilir)
 
 ---
 
-## Windows Standard Character Recognition
+## Windows Standart Karakter Tanıma
 
-The OCR engine that comes standard with Windows 10 and later.
+Windows 10 ve sonraki sürümlerde standart olarak gelen OCR motoru.
 
-### Advantages
-- **Memory Usage**: Lightweight with low memory usage
-- **Operating Environment**: Widely available on Windows 10 and later
+### Avantajlar
+- **Bellek Kullanımı**: Hafif ve düşük bellek kullanımı
+- **Çalışma Ortamı**: Windows 10 ve sonraki sürümlerde yaygın olarak kullanılabilir
 
-### Disadvantages
-- **Recognition Accuracy**: May be weak with complex fonts or handwritten text
-- **Setup**: Manual installation of language data may be required
+### Dezavantajlar
+- **Tanıma Doğruluğu**: Karmaşık yazı tipleri veya el yazısı metinlerde zayıf olabilir
+- **Kurulum**: Dil verilerinin manuel kurulumu gerekebilir
 
 ---
 
 ## Tesseract OCR
 
-An open-source OCR engine.
+Açık kaynaklı bir OCR motoru.
 
-### Advantages
-- **Multilingual Support**: Supports over 100 languages
-- **Stability**: Reliable engine with long history
+### Avantajlar
+- **Çok Dilli Destek**: 100'den fazla dili destekler
+- **Kararlılık**: Uzun geçmişe sahip güvenilir motor
 
-### Disadvantages
-- **Recognition Accuracy**: May be inferior compared to other OCR
+### Dezavantajlar
+- **Tanıma Doğruluğu**: Diğer OCR'lere kıyasla daha düşük olabilir
 
 ---
 
-## Choosing a Module
+## Modül Seçimi
 
-Please select the module that works in the following order of high recognition accuracy:
+Lütfen yüksek tanıma doğruluğu sırasına göre çalışan modülü seçin:
 
-1. New Windows Character Recognition (Beta)
-2. Windows Standard Character Recognition
+1. Yeni Windows Karakter Tanıma (Beta)
+2. Windows Standart Karakter Tanıma
 3. Tesseract OCR

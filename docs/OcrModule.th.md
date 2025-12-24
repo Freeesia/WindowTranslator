@@ -1,53 +1,53 @@
-# OCR Modules
+# โมดูล OCR
 
-WindowTranslator allows you to choose from multiple OCR modules for recognizing text on screen.  
-Each module has its own characteristics, and selecting the appropriate module for your use case will enable more accurate text recognition.
+WindowTranslator ช่วยให้คุณเลือกจากโมดูล OCR หลายตัวสำหรับการรู้จำข้อความบนหน้าจอ  
+แต่ละโมดูลมีลักษณะเฉพาะของตัวเอง และการเลือกโมดูลที่เหมาะสมสำหรับกรณีการใช้งานของคุณจะช่วยให้การรู้จำข้อความแม่นยำยิ่งขึ้น
 
-## New Windows Character Recognition (Beta) ![Default](https://img.shields.io/badge/Default-brightgreen)
+## การรู้จำอักขระ Windows ใหม่ (เบต้า) ![ค่าเริ่มต้น](https://img.shields.io/badge/ค่าเริ่มต้น-brightgreen)
 
-A local OCR module provided by Microsoft.
+โมดูล OCR ในเครื่องที่จัดทำโดย Microsoft
 
-### Advantages
-- **Recognition Accuracy**: Boasts the highest recognition accuracy
-- **Fast**: Very fast processing speed
+### ข้อดี
+- **ความแม่นยำในการรู้จำ**: มีความแม่นยำในการรู้จำสูงสุด
+- **ความเร็ว**: ความเร็วในการประมวลผลสูงมาก
 
-### Disadvantages
-- **Memory Usage**: May use over 1GB of memory just for recognition processing
-- **Operating Environment**: May not work in some environments (Windows 10 or later recommended)
+### ข้อเสีย
+- **การใช้หน่วยความจำ**: อาจใช้หน่วยความจำมากกว่า 1GB สำหรับการประมวลผลการรู้จำเท่านั้น
+- **สภาพแวดล้อมการทำงาน**: อาจไม่ทำงานในบางสภาพแวดล้อม (แนะนำ Windows 10 ขึ้นไป)
 
 ---
 
-## Windows Standard Character Recognition
+## การรู้จำอักขระมาตรฐาน Windows
 
-The OCR engine that comes standard with Windows 10 and later.
+เครื่องมือ OCR ที่มาพร้อมกับ Windows 10 และเวอร์ชันที่ใหม่กว่า
 
-### Advantages
-- **Memory Usage**: Lightweight with low memory usage
-- **Operating Environment**: Widely available on Windows 10 and later
+### ข้อดี
+- **การใช้หน่วยความจำ**: เบาและใช้หน่วยความจำต่ำ
+- **สภาพแวดล้อมการทำงาน**: ใช้ได้อย่างแพร่หลายบน Windows 10 และเวอร์ชันที่ใหม่กว่า
 
-### Disadvantages
-- **Recognition Accuracy**: May be weak with complex fonts or handwritten text
-- **Setup**: Manual installation of language data may be required
+### ข้อเสีย
+- **ความแม่นยำในการรู้จำ**: อาจอ่อนแอกับฟอนต์ที่ซับซ้อนหรือข้อความที่เขียนด้วยลายมือ
+- **การตั้งค่า**: อาจต้องติดตั้งข้อมูลภาษาด้วยตนเอง
 
 ---
 
 ## Tesseract OCR
 
-An open-source OCR engine.
+เครื่องมือ OCR แบบโอเพนซอร์ส
 
-### Advantages
-- **Multilingual Support**: Supports over 100 languages
-- **Stability**: Reliable engine with long history
+### ข้อดี
+- **รองรับหลายภาษา**: รองรับมากกว่า 100 ภาษา
+- **ความเสถียร**: เครื่องมือที่เชื่อถือได้พร้อมประวัติที่ยาวนาน
 
-### Disadvantages
-- **Recognition Accuracy**: May be inferior compared to other OCR
+### ข้อเสีย
+- **ความแม่นยำในการรู้จำ**: อาจด้อยกว่าเมื่อเทียบกับ OCR อื่นๆ
 
 ---
 
-## Choosing a Module
+## การเลือกโมดูล
 
-Please select the module that works in the following order of high recognition accuracy:
+โปรดเลือกโมดูลที่ทำงานตามลำดับความแม่นยำในการรู้จำที่สูง:
 
-1. New Windows Character Recognition (Beta)
-2. Windows Standard Character Recognition
+1. การรู้จำอักขระ Windows ใหม่ (เบต้า)
+2. การรู้จำอักขระมาตรฐาน Windows
 3. Tesseract OCR
