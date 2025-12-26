@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Capture" xml:space="preserve">
+    <value>หน้าต่างจับภาพ</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>การซ้อนทับ</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>เฉพาะขณะกด</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>กดเพื่อเปิด/ปิด</value>
+  </data>
+  <data name="Recognize" xml:space="preserve">
+    <value>การตั้งค่าการรู้จำ</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>มาตราส่วน</value>
+  </data>
+  <data name="MergeThrethold" xml:space="preserve">
+    <value>เกณฑ์การรวม</value>
+  </data>
+  <data name="XPosThrethold" xml:space="preserve">
+    <value>เกณฑ์ตำแหน่ง X</value>
+  </data>
+  <data name="YPosThrethold" xml:space="preserve">
+    <value>เกณฑ์ตำแหน่ง Y</value>
+  </data>
+  <data name="LeadingThrethold" xml:space="preserve">
+    <value>เกณฑ์ระยะบรรทัด</value>
+  </data>
+  <data name="SpacingThreshold" xml:space="preserve">
+    <value>เกณฑ์ช่องว่าง</value>
+  </data>
+  <data name="FontSizeThrethold" xml:space="preserve">
+    <value>เกณฑ์ขนาดฟอนต์</value>
+  </data>
+  <data name="IsAvoidMergeList" xml:space="preserve">
+    <value>อักขระที่ต้องหลีกเลี่ยงการรวม</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>ขนาดบัฟเฟอร์</value>
+  </data>
+  <data name="BasicOcrParam" xml:space="preserve">
+    <value>พารามิเตอร์ OCR พื้นฐาน</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>อื่นๆ</value>
+  </data>
+  <data name="Buffer" xml:space="preserve">
+    <value>ฟังก์ชันบัฟเฟอร์</value>
+  </data>
+  <data name="IsEnableRecover" xml:space="preserve">
+    <value>การแก้ไขข้อผิดพลาดในการรู้จำ</value>
+  </data>
+  <data name="IsSuppressVibe" xml:space="preserve">
+    <value>การระงับการสั่นสะเทือน</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>การตั้งค่าภาษา</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>ภาษาต้นทางและภาษาเป้าหมายเหมือนกัน โปรดระบุภาษาที่แตกต่างกัน</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>โมดูลการแปล</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>โมดูลแคช</value>
+  </data>
+</root>
