@@ -121,13 +121,13 @@
     <value>PLaMo model file not found.</value>
   </data>
   <data name="ModelNotInitialized" xml:space="preserve">
-    <value>PLaMo model is not initialized.</value>
+    <value>Model PLaMo nie został zainicjalizowany.</value>
   </data>
   <data name="ContextSize_Desc" xml:space="preserve">
     <value>Larger values allow for translating longer texts.</value>
   </data>
   <data name="DownloadFailed" xml:space="preserve">
-    <value>Failed to download PLaMo model.
+    <value>Nie udało się pobrać modelu PLaMo.
 {0}</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -135,10 +135,10 @@
     <value>VRAM Usage</value>
   </data>
   <data name="VRAM_Desc" xml:space="preserve">
-    <value>Amount of GPU memory to use. -1: GPU only. 0: CPU only. (Unit: GB)</value>
+    <value>Ilość pamięci GPU do użycia. -1: Tylko GPU. 0: Tylko CPU. (Jednostka: GB)</value>
   </data>
   <data name="ContextSize" xml:space="preserve">
-    <value>Context Length</value>
+    <value>Długość kontekstu</value>
   </data>
   <data name="PLaMoOptions" xml:space="preserve">
     <value>PLaMo</value>

@@ -59,10 +59,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Install" xml:space="preserve">
-    <value>Install</value>
+    <value>Instaluj</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Anuluj</value>
   </data>
   <data name="ConfirmInstall" xml:space="preserve">
     <value>Visual C++ Redistributable is required to use TesseractOcr.  
@@ -83,6 +83,6 @@ This may take a few minutes.
 &gt; [Download and install manually](https://aka.ms/vs/17/release/vc_redist.x64.exe)</value>
   </data>
   <data name="NotInstalledVcRedist" xml:space="preserve">
-    <value>Visual C++ Redistributable is not installed</value>
+    <value>Visual C++ Redistributable nie jest zainstalowane</value>
   </data>
 </root>

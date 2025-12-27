@@ -124,52 +124,52 @@
     <value>Dependent modules not found. Not available in this environment.</value>
   </data>
   <data name="CopyFaild" xml:space="preserve">
-    <value>Failed to copy OneOcr DLL. {0}</value>
+    <value>Nie udało się skopiować OneOcr DLL. {0}</value>
   </data>
   <data name="InitFaild" xml:space="preserve">
-    <value>Failed to create OCR initialization options. Error code: {0}</value>
+    <value>Nie udało się utworzyć opcji inicjalizacji OCR. Kod błędu: {0}</value>
   </data>
   <data name="SetLazyLoadFaild" xml:space="preserve">
-    <value>Failed to set OCR model lazy loading. Error code: {0}</value>
+    <value>Nie udało się ustawić leniwego ładowania modelu OCR. Kod błędu: {0}</value>
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>Failed to create OCR pipeline. Error code: {0}
-Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
+    <value>Nie udało się utworzyć potoku OCR. Kod błędu: {0}
+Spróbuj zaktualizować aplikację "Wycinanie ekranu" lub "Zdjęcia Microsoft".</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
-    <value>Failed to create OCR process options. Error code: {0}</value>
+    <value>Nie udało się utworzyć opcji procesu OCR. Kod błędu: {0}</value>
   </data>
   <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
-    <value>Failed to set OCR maximum recognition line count. Error code: {0}</value>
+    <value>Nie udało się ustawić maksymalnej liczby rozpoznawanych linii OCR. Kod błędu: {0}</value>
   </data>
   <data name="RunPipelineFaild" xml:space="preserve">
     <value>Failed to run OCR pipeline. Error code: {0}</value>
   </data>
   <data name="GetLineCountFaild" xml:space="preserve">
-    <value>Failed to get OCR line count. Error code: {0}</value>
+    <value>Nie udało się uzyskać liczby linii OCR. Kod błędu: {0}</value>
   </data>
   <data name="GetLineFaild" xml:space="preserve">
-    <value>Failed to get OCR line. Line number: {0}, Error code: {1}</value>
+    <value>Nie udało się uzyskać linii OCR. Numer linii: {0}, Kod błędu: {1}</value>
   </data>
   <data name="GetLineContentFaild" xml:space="preserve">
-    <value>Failed to get OCR line text content. Line number: {0}, Error code: {1}</value>
+    <value>Nie udało się uzyskać treści tekstowej linii OCR. Numer linii: {0}, Kod błędu: {1}</value>
   </data>
   <data name="GetLineBoundingBoxFaild" xml:space="preserve">
-    <value>Failed to get OCR line bounding box. Line number: {0}, Error code: {1}</value>
+    <value>Nie udało się uzyskać ramki linii OCR. Numer linii: {0}, Kod błędu: {1}</value>
   </data>
   <data name="NotFoundModuleWithVersion" xml:space="preserve">
     <value>Dependent modules not found. Not available in this environment. {0}</value>
   </data>
   <data name="UpdateDialogTitle" xml:space="preserve">
-    <value>Update Snipping Tool</value>
+    <value>Zaktualizuj narzędzie Wycinanie ekranu</value>
   </data>
   <data name="UpdateDialogContent" xml:space="preserve">
-    <value>To use OneOcr, you need to update the "Snipping Tool" app.
+    <value>Aby korzystać z OneOcr, musisz zaktualizować aplikację "Wycinanie ekranu".
 
-Please open Microsoft Store to update.</value>
+Otwórz Microsoft Store, aby zaktualizować.</value>
   </data>
   <data name="OpenStoreButton" xml:space="preserve">
-    <value>Open Store</value>
+    <value>Otwórz sklep</value>
   </data>
   <data name="DoNotUpdateButton" xml:space="preserve">
     <value>Don't Update</value>
@@ -178,16 +178,16 @@ Please open Microsoft Store to update.</value>
     <value>Checking for Updates...</value>
   </data>
   <data name="CheckingUpdateContent" xml:space="preserve">
-    <value>Checking for "Snipping Tool" updates...
+    <value>Sprawdzanie aktualizacji "Wycinanie ekranu"...
 
-Please complete the update in Microsoft Store.
-The process will continue automatically when the update is complete.
+Proszę zakończyć aktualizację w Microsoft Store.
+Proces będzie kontynuowany automatycznie po zakończeniu aktualizacji.
 
-> #### If the update doesn't complete
-> Please manually update from "Downloads and Updates" in Microsoft Store and try again.
-> [Open Downloads and Updates](ms-windows-store://downloadsandupdates)</value>
+> #### Jeśli aktualizacja się nie zakończy
+> Proszę ręcznie zaktualizować w sekcji "Pobrania i aktualizacje" w Microsoft Store i spróbuj ponownie.
+> [Otwórz Pobrania i aktualizacje](ms-windows-store://downloadsandupdates)</value>
   </data>
   <data name="AbortButton" xml:space="preserve">
-    <value>Abort</value>
+    <value>Przerwij</value>
   </data>
 </root>

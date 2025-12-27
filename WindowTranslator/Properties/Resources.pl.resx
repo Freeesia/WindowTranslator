@@ -181,82 +181,82 @@
     <value>O programie</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>Check third party licenses</value>
+    <value>Sprawdź licencje stron trzecich</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>Updates available: {0}</value>
+    <value>Dostępne aktualizacje: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
     <value>Używasz najnowszej wersji.</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>Update Information</value>
+    <value>Informacje o aktualizacji</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
     <value>Zaktualizuj do najnowszej wersji</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Check details</value>
+    <value>Sprawdź szczegóły</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>Only while you're pressing</value>
+    <value>Tylko podczas naciskania</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Press to turn ON/OFF</value>
+    <value>Naciśnij, aby włączyć/wyłączyć</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Toggle overlay display</value>
+    <value>Przełącz wyświetlanie nakładki</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>Make overlay displays captureable</value>
+    <value>Umożliw zrobienie zrzutu nakładki</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>Translated Process</value>
+    <value>Przetłumaczony proces</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>Recognition module</value>
+    <value>Moduł rozpoznawania</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
     <value>Shortcuts</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>Overlay switch</value>
+    <value>Przełącznik nakładki</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>A new version, {0}, has been released</value>
+    <value>Została wydana nowa wersja {0}</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>New version {0} installation</value>
+    <value>Instalacja nowej wersji {0}</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>Check for updates</value>
+    <value>Sprawdź aktualizacje</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>New version check</value>
+    <value>Sprawdzenie nowej wersji</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Anuluj</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>Automatically start at system boot</value>
+    <value>Automatyczne uruchomienie przy starcie systemu</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>General settings</value>
+    <value>Ustawienia ogólne</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Display method</value>
+    <value>Metoda wyświetlania</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>Per-item settings</value>
+    <value>Ustawienia dla poszczególnych elementów</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Build date</value>
+    <value>Data kompilacji</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
     <value>developer</value>
@@ -268,7 +268,7 @@
     <value>license</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Do not translate</value>
+    <value>Nie tłumacz</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
     <value>Cache setting</value>
@@ -277,7 +277,7 @@
     <value>Threshold for close text</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>Do not cache</value>
+    <value>Nie zapisuj w pamięci podręcznej</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
     <value>Windows Standard Character Recognition</value>
@@ -307,7 +307,7 @@
     <value>Show busy icon</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Translate only when overlay is enabled</value>
+    <value>Tłumacz tylko gdy nakładka jest włączona</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>

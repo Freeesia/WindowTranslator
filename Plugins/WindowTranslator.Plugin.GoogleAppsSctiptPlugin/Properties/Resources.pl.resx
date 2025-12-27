@@ -62,18 +62,18 @@
     <value>ID wdrożenia skryptu</value>
   </data>
   <data name="GasOptions" xml:space="preserve">
-    <value>Google Translate</value>
+    <value>Google Tłumacz</value>
   </data>
   <data name="GasTranslator" xml:space="preserve">
-    <value>Google Translate</value>
+    <value>Google Tłumacz</value>
   </data>
   <data name="UnexpectedResponse" xml:space="preserve">
-    <value>An unexpected response is being returned from Google Translate.
-You may have exceeded the hourly translation limit.
-Please wait a while and try again, or use another translation module.</value>
+    <value>Zwracana jest nieoczekiwana odpowiedź z Google Tłumacz.
+Możliwe, że przekroczyłeś godzinny limit tłumaczeń.
+Proszę poczekać chwilę i spróbować ponownie lub użyj innego modułu tłumaczenia.</value>
   </data>
   <data name="PermissionDenied" xml:space="preserve">
-    <value>Some or all of the permissions required by the translation module were not granted.
-When you try to translate again, you will be prompted for permission again.</value>
+    <value>Nie przyznano części lub wszystkich wymaganych uprawnień.
+Przy ponownym tłumaczeniu zostaniesz ponownie poproszony o uprawnienia.</value>
   </data>
 </root>

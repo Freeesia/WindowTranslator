@@ -118,19 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CorrectMode_Image" xml:space="preserve">
-    <value>Correction by image recognition</value>
+    <value>Korekta przez rozpoznawanie obrazu</value>
   </data>
   <data name="CorrectMode_None" xml:space="preserve">
-    <value>Uncorrected</value>
+    <value>Niepoprawione</value>
   </data>
   <data name="CorrectMode_Text" xml:space="preserve">
     <value>Text-only correction</value>
   </data>
   <data name="CorrectMode" xml:space="preserve">
-    <value>Recognition correction</value>
+    <value>Korekta rozpoznania</value>
   </data>
   <data name="Model" xml:space="preserve">
-    <value>Model to be used</value>
+    <value>Model do użycia</value>
   </data>
   <data name="ApiKey" xml:space="preserve">
     <value>Klucz API</value>
@@ -139,10 +139,10 @@
     <value>Local LLM Connection</value>
   </data>
   <data name="CorrectSample" xml:space="preserve">
-    <value>Correction Sample</value>
+    <value>Przykład korekty</value>
   </data>
   <data name="TranslateContext" xml:space="preserve">
-    <value>Contextual information to be used during translation</value>
+    <value>Informacje kontekstowe używane podczas tłumaczenia</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
     <value>glossary path</value>
@@ -151,28 +151,28 @@
     <value>Empty when using OpenAI</value>
   </data>
   <data name="LLMOptions" xml:space="preserve">
-    <value>ChatGPT API Settings</value>
+    <value>Ustawienia API ChatGPT</value>
   </data>
   <data name="LLMTranslator" xml:space="preserve">
     <value>ChatGPT API Translation</value>
   </data>
   <data name="WaitCorrect" xml:space="preserve">
-    <value>Wait for correction to complete before proceeding with translation</value>
+    <value>Poczekaj na zakończenie korekty przed przystąpieniem do tłumaczenia</value>
   </data>
   <data name="NeedSettings" xml:space="preserve">
-    <value>LLM functionality is not initialized. Please configure LLM options in the settings dialog</value>
+    <value>Funkcjonalność LLM nie została zainicjalizowana. Skonfiguruj opcje LLM w oknie ustawień</value>
   </data>
   <data name="InvalidOptions" xml:space="preserve">
-    <value>"ChatGPT API Translation" is selected as the translation module or recognition correction is enabled.
+    <value>"Tłumaczenie API ChatGPT" jest wybrany jako moduł tłumaczenia lub włączona jest korekta rozpoznawania.
 
-Using the ChatGPT API requires an API key.
-Please set the API key in "Target Settings" → "ChatGPT API Settings" tab.
+Używanie API ChatGPT wymaga klucza API.
+Proszę ustawić klucz API w zakładce "Ustawienia docelowe" → "Ustawienia API ChatGPT".
 
-※ When using a local LLM, an API key is also required due to library constraints.</value>
+※ Używając lokalnego LLM, klucz API jest również wymagany ze względu na ograniczenia biblioteki.</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
-    <value>API key input is required to use ChatGPT features. Please set the API key from the settings dialog.
+    <value>Wprowadzenie klucza API jest wymagane do korzystania z funkcji ChatGPT. Proszę ustawić klucz API w oknie ustawień.
 
-※ When using a local LLM, an API key is also required due to library constraints.</value>
+※ Używając lokalnego LLM, klucz API jest również wymagany ze względu na ograniczenia biblioteki.</value>
   </data>
 </root>
