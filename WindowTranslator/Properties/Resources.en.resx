@@ -386,9 +386,7 @@
     <value>Please select a window other than WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>The selected window "{0}" cannot determine the process and cannot be captured.
-Monitors are not supported.
-</value>
+    <value>The selected window "{0}" cannot determine the process and cannot be captured.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Settings Validation Error</value>
