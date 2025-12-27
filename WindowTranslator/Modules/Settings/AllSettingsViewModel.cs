@@ -377,6 +377,7 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("tr-TR"),
         CultureInfo.GetCultureInfo("th-TH"),
         CultureInfo.GetCultureInfo("fil-PH"),
+        CultureInfo.GetCultureInfo("pl-PL"),
     ];
 
     [Browsable(false)]
