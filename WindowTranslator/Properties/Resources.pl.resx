@@ -217,7 +217,7 @@
     <value>Moduł rozpoznawania</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>Shortcuts</value>
+    <value>Skróty</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
     <value>Przełącznik nakładki</value>
@@ -253,7 +253,7 @@
     <value>Ustawienia dla poszczególnych elementów</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Wersja</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
     <value>Data kompilacji</value>
@@ -274,7 +274,7 @@
     <value>Cache setting</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>Threshold for close text</value>
+    <value>Próg dla tekstu bliskiego</value>
   </data>
   <data name="NoCache" xml:space="preserve">
     <value>Nie zapisuj w pamięci podręcznej</value>
@@ -283,25 +283,25 @@
     <value>Windows Standard Character Recognition</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Application Name</value>
+    <value>Nazwa aplikacji</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
     <value>Gift games on Steam</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>Application Information</value>
+    <value>Informacje o aplikacji</value>
   </data>
   <data name="Address" xml:space="preserve">
     <value>Contact Address</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value>Technical Information</value>
+    <value>Informacje techniczne</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Zamknij</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Apply</value>
+    <value>Zastosuj</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
     <value>Show busy icon</value>
@@ -310,35 +310,35 @@
     <value>Tłumacz tylko gdy nakładka jest włączona</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Display overlay translation only for text at mouse pointer position</value>
+    <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay background opacity</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Send error information to the report system. The following information will be sent:
-* Application information
-* PC specifications and environment information
-* Translation target application name
-* Translation target image
+    <value>Wyślij informacje o błędach do systemu raportowania. Zostaną wysłane następujące informacje:
+* Informacje o aplikacji
+* Specyfikacja komputera i informacje o środowisku
+* Nazwa aplikacji docelowej tłumaczenia
+* Obraz docelowy tłumaczenia
 * Translation target settings
 
 &gt; %{color:red}**Personal information will not be sent, but please ensure that personal information is not included in the translation target screen.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Send Information</value>
+    <value>Wyślij informacje</value>
   </data>
   <data name="Sent" xml:space="preserve">
     <value>Sent</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Copy Information</value>
+    <value>Kopiuj informacje</value>
   </data>
   <data name="Copied" xml:space="preserve">
     <value>Copied</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Potwierdź</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>
@@ -350,7 +350,7 @@
     <value>Attaching</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Export</value>
+    <value>Eksportuj</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>Clear</value>
@@ -359,78 +359,78 @@
     <value>Auto Scroll</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>Export Logs</value>
+    <value>Eksportuj dzienniki</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>Export Failed</value>
+    <value>Eksport nie powiódł się</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>Export Completed</value>
+    <value>Eksport zakończony</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
     <value>Logs exported to `{0}`.</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
-    <value>Text Files</value>
+    <value>Pliki tekstowe</value>
   </data>
   <data name="FaildOcr" xml:space="preserve">
-    <value>OCR failed</value>
+    <value>OCR nie powiódł się</value>
   </data>
   <data name="FaildTranslate" xml:space="preserve">
-    <value>Translation failed</value>
+    <value>Tłumaczenie nie powiodło się</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>Failed to embed into window.</value>
+    <value>Nie udało się osadzić w oknie.</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
-    <value>Please select a window other than WindowTranslator</value>
+    <value>Proszę wybrać okno inne niż WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>The selected window "{0}" cannot determine the process and cannot be captured.
-Monitors are not supported.
+    <value>Wybrane okno "{0}" nie może określić procesu i nie może zostać przechwycone.
+Monitory nie są obsługiwane.
 </value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
-    <value>Settings Validation Error</value>
+    <value>Błąd weryfikacji ustawień</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>Save and Close</value>
+    <value>Zapisz i zamknij</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
-    <value>Default Settings</value>
+    <value>Ustawienia domyślne</value>
   </data>
   <data name="AutoStart" xml:space="preserve">
     <value>Autostart</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0} has been registered for auto-start.</value>
+    <value>{0} został zarejestrowany do automatycznego uruchamiania.</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
-    <value>Auto-start for {0} has been disabled.</value>
+    <value>Automatyczne uruchamianie dla {0} zostało wyłączone.</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>Language Settings</value>
+    <value>Ustawienia języka</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>Source and target languages are the same. Please specify different languages.</value>
+    <value>Język źródłowy i docelowy są takie same. Proszę wybrać różne języki.</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
-    <value>OCR functionality for {0} is not available. Please install the target language feature</value>
+    <value>Funkcja OCR dla {0} jest niedostępna. Proszę zainstalować funkcję języka docelowego</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
     <value>Nie udało się zastosować ustawień.</value>
   </data>
   <data name="UnhundledErrorMessage" xml:space="preserve">
-    <value>An unknown error has occurred</value>
+    <value>Wystąpił nieznany błąd</value>
   </data>
   <data name="ReviewRequest" xml:space="preserve">
-    <value>Review Request</value>
+    <value>Prośba o opinię</value>
   </data>
   <data name="ReviewRequestMessage" xml:space="preserve">
-    <value>Thank you for using WindowTranslator. Would you mind leaving a review on the Microsoft Store?</value>
+    <value>Dziękujemy za korzystanie z WindowTranslator. Czy mógłbyś zostawić opinię w sklepie Microsoft Store?</value>
   </data>
   <data name="WriteReview" xml:space="preserve">
-    <value>Write a Review</value>
+    <value>Napisz opinię</value>
   </data>
   <data name="ReviewLater" xml:space="preserve">
     <value>Later</value>
