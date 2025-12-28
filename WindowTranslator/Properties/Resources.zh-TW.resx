@@ -418,7 +418,7 @@
     <value>無法使用{0}的OCR功能。請安裝目標語言功能</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>應用設定失敗。</value>
+    <value>設定套用失敗。</value>
   </data>
   <data name="UnhundledErrorMessage" xml:space="preserve">
     <value>發生未知錯誤</value>
@@ -439,9 +439,9 @@
     <value>不再顯示</value>
   </data>
   <data name="RunAsIs" xml:space="preserve">
-    <value>そのまま実行</value>
+    <value>立即啟動</value>
   </data>
   <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: 設定検証エラー</value>
+    <value>{0}: 設定驗證失敗</value>
   </data>
 </root>
