@@ -164,9 +164,9 @@
     <value>更新剪取工具</value>
   </data>
   <data name="UpdateDialogContent" xml:space="preserve">
-    <value>要使用OneOcr，需要更新「剪取工具」應用程式。
+    <value>要使用 OneOcr，需要更新「剪取工具」應用程式。
 
-請開啟Microsoft Store進行更新。</value>
+請開啟 Microsoft Store 進行更新。</value>
   </data>
   <data name="OpenStoreButton" xml:space="preserve">
     <value>開啟Store</value>
@@ -180,12 +180,12 @@
   <data name="CheckingUpdateContent" xml:space="preserve">
     <value>正在檢查「剪取工具」的更新...
 
-請在Microsoft Store中完成更新。
+請在 Microsoft Store 中完成更新。
 更新完成後將自動繼續。
 
 > #### 如果更新未完成
-> 請在Microsoft Store的「下載與更新」中手動完成更新，然後重試。
-> [開啟下載與更新](ms-windows-store://downloadsandupdates)</value>
+> 請在 Microsoft Store 的「更新與下載」中手動完成更新，然後重試。
+> [開啟更新與下載](ms-windows-store://downloadsandupdates)</value>
   </data>
   <data name="AbortButton" xml:space="preserve">
     <value>中止</value>
