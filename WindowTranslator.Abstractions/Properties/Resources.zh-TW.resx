@@ -181,9 +181,9 @@
     <value>來源語言和目標語言相同。請指定不同的語言。</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>翻訳モジュール</value>
+    <value>翻譯模塊</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>キャッシュモジュール</value>
+    <value>快取模塊</value>
   </data>
 </root>
