@@ -124,14 +124,14 @@
     <value>PLaMo模型未初始化。</value>
   </data>
   <data name="ContextSize_Desc" xml:space="preserve">
-    <value>值越大可以翻譯的文本越長。</value>
+    <value>值越大，可以翻譯的文本就越長。</value>
   </data>
   <data name="DownloadFailed" xml:space="preserve">
     <value>PLaMo模型下載失敗。
 {0}</value>
   </data>
   <data name="VRAM" xml:space="preserve">
-    <value>VRAM使用量</value>
+    <value>VRAM 使用量</value>
   </data>
   <data name="VRAM_Desc" xml:space="preserve">
     <value>要使用的GPU記憶體量。-1: 僅使用GPU。0: 僅使用CPU。(單位: GB)</value>
