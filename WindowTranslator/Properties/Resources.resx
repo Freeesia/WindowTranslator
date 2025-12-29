@@ -444,4 +444,10 @@
   <data name="InvalidSettings" xml:space="preserve">
     <value>{0}: 設定検証エラー</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **このまま保存しても動作しません。**
+***
+
+</value>
+  </data>
 </root>
