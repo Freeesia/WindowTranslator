@@ -39,7 +39,9 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             }
 
             // 検証エラーがある場合、エラーダイアログを表示
-            var result = await presentationService.ShowMessageAsync(new(string.Format(Resources.InvalidSettings, name), string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")))
+            var result = await presentationService.ShowMessageAsync(new(
+                string.Format(Resources.InvalidSettings, name),
+                Resources.InvalidSettingsContent + string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")))
             {
                 PrimaryButtonText = Resources.Settings,
                 SecondaryButtonText = Resources.RunAsIs,

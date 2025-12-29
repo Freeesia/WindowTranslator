@@ -450,4 +450,10 @@
   <data name="RunAsIs" xml:space="preserve">
     <value>그대로 실행</value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **그대로 실행하면 제대로 작동하지 않을 가능성이 높습니다**
+***
+
+</value>
+  </data>
 </root>

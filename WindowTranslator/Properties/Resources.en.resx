@@ -450,4 +450,10 @@ Monitors are not supported.
   <data name="RunAsIs" xml:space="preserve">
     <value>Run as is</value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Running as-is may not work properly**
+***
+
+</value>
+  </data>
 </root>

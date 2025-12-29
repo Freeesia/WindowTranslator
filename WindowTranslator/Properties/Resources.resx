@@ -450,4 +450,10 @@
 
 </value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **そのまま実行しても動作しない可能性が高いです**
+***
+
+</value>
+  </data>
 </root>

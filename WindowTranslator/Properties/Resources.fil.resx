@@ -445,7 +445,13 @@ Ang monitor ay hindi suportado.
     <value>{0}: Error sa pagpapatunay ng setting</value>
   </data>
   <data name="SettingInvalidContent" xml:space="preserve">
-    <value>:tired-face: **Hindi gagana kahit na i-save.**
+    <value>:tired-face: **Hindi ito gagana kahit naka-save.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Ang pagpapatakbo kung ano ang nakasulat ay maaaring hindi gumana nang maayos**
 ***
 
 </value>

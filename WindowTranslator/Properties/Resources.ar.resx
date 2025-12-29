@@ -441,4 +441,10 @@
   <data name="RunAsIs" xml:space="preserve">
     <value>تشغيل كما هو</value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **قد لا يعمل التشغيل كما هو بشكل صحيح**
+***
+
+</value>
+  </data>
 </root>

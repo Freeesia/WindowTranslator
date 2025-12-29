@@ -436,6 +436,15 @@
     <value>{0}: Ошибка проверки настроек</value>
   </data>
   <data name="SettingInvalidContent" xml:space="preserve">
-    <value>Не будет работать даже после сохранения</value>
+    <value>:tired-face: **Даже если сохранить, работать не будет.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Запуск как есть может не работать должным образом**
+***
+
+</value>
   </data>
 </root>

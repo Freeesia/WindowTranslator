@@ -449,4 +449,10 @@ Monitor tidak didukung.</value>
   <data name="RunAsIs" xml:space="preserve">
     <value>Jalankan apa adanya</value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Menjalankan apa adanya mungkin tidak berfungsi dengan baik**
+***
+
+</value>
+  </data>
 </root>

@@ -445,7 +445,13 @@
     <value>{0}: ข้อผิดพลาดในการตรวจสอบการตั้งค่า</value>
   </data>
   <data name="SettingInvalidContent" xml:space="preserve">
-    <value>:tired-face: **จะไม่ทำงานแม้จะบันทึกแบบนี้**
+    <value>:tired-face: **แม้จะบันทึกไว้ก็ไม่ทำงาน**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **การรันตามที่เป็นอยู่อาจไม่ทำงานอย่างถูกต้อง**
 ***
 
 </value>

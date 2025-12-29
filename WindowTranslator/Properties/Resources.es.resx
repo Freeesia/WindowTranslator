@@ -441,4 +441,10 @@
   <data name="RunAsIs" xml:space="preserve">
     <value>Ejecutar tal cual</value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Ejecutar tal cual puede no funcionar correctamente**
+***
+
+</value>
+  </data>
 </root>

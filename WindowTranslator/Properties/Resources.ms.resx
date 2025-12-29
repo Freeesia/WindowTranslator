@@ -449,4 +449,10 @@ Monitor tidak disokong.</value>
   <data name="RunAsIs" xml:space="preserve">
     <value>Jalankan seperti sedia ada</value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Menjalankan seperti sedia ada mungkin tidak berfungsi dengan betul**
+***
+
+</value>
+  </data>
 </root>

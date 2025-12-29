@@ -450,4 +450,10 @@ Monitör desteklenmiyor.
 
 </value>
   </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Olduğu gibi çalıştırmak düzgün çalışmayabilir**
+***
+
+</value>
+  </data>
 </root>
