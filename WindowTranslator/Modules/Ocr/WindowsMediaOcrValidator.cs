@@ -12,6 +12,11 @@ public class WindowsMediaOcrValidator(IContentDialogService dialogService) : ITa
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
     {
+        // 翻訳モジュールで利用しない場合は無条件で有効
+        if (settings.SelectedPlugins[nameof(IOcrModule)] != nameof(WindowsMediaOcr))
+        {
+            return ValidateResult.Valid;
+        }
         var culture = new CultureInfo(settings.Language.Source);
         try
         {
