@@ -439,9 +439,21 @@
     <value>不再顯示</value>
   </data>
   <data name="RunAsIs" xml:space="preserve">
-    <value>立即啟動</value>
+    <value>按原樣執行</value>
   </data>
   <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: 設定驗證失敗</value>
+    <value>{0}: 設定驗證錯誤</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **儲存這些設定將無法運作。**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **按原樣執行可能無法正常運作**
+***
+
+</value>
   </data>
 </root>
