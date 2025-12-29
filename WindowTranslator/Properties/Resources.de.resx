@@ -438,4 +438,22 @@ Monitore werden nicht unterstützt.
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Nie wieder anzeigen</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Das Speichern dieser Einstellungen funktioniert nicht.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Einstellungsvalidierungsfehler</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Wie es ist ausführen</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Die Ausführung ohne Änderungen funktioniert möglicherweise nicht ordnungsgemäß**
+***
+
+</value>
+  </data>
 </root>

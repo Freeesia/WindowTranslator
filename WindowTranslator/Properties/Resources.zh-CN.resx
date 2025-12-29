@@ -438,4 +438,22 @@
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>不再显示</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **保存这些设置将无法工作。**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: 设置验证错误</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>按原样运行</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **按原样运行可能无法正常工作**
+***
+
+</value>
+  </data>
 </root>

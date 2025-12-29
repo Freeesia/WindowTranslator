@@ -438,4 +438,22 @@ Monitors are not supported.
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Never Show Again</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Saving these settings will not work.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Settings validation error</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Run as is</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Running as-is may not work properly**
+***
+
+</value>
+  </data>
 </root>

@@ -293,6 +293,11 @@ internal class Resources
     public static string InvalidSettings => ResourceManager.GetString("InvalidSettings", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// ":tired-face: **そのまま実行しても動作しない可能性が高いです**&amp;#13;&a..." に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string InvalidSettingsContent => ResourceManager.GetString("InvalidSettingsContent", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsEnableAutoTarget => ResourceManager.GetString("IsEnableAutoTarget", resourceCulture) ?? string.Empty;
@@ -476,6 +481,11 @@ internal class Resources
     /// "送信完了" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Sent => ResourceManager.GetString("Sent", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// ":tired-face: **このまま保存しても動作しません。**&amp;#13;&amp;#10..." に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string SettingInvalidContent => ResourceManager.GetString("SettingInvalidContent", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "設定" に類似しているローカライズされた文字列を検索します。

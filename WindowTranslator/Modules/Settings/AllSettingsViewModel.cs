@@ -281,8 +281,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         {
             var r = await this.dialogService.ShowSimpleDialogAsync(new()
             {
-                Title = Resources.SettingsInvalid,
-                Content = string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : Resources.DefaultSetting)}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
+                Title = "⚠️" + Resources.SettingsInvalid,
+                Content = Resources.SettingInvalidContent
+                    + string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : Resources.DefaultSetting)}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
                 PrimaryButtonText = Resources.SaveAndClose,
                 CloseButtonText = Resources.Cancel,
             });

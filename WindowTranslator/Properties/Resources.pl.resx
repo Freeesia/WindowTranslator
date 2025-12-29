@@ -259,19 +259,19 @@
     <value>Data kompilacji</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>developer</value>
+    <value>Deweloper</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>Public page</value>
+    <value>Strona publiczna</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>license</value>
+    <value>Licencja</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
     <value>Nie tłumacz</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>Cache setting</value>
+    <value>Ustawienia pamięci podręcznej</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
     <value>Próg dla tekstu bliskiego</value>
@@ -280,19 +280,19 @@
     <value>Nie zapisuj w pamięci podręcznej</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Windows Standard Character Recognition</value>
+    <value>Standardowe rozpoznawanie znaków Windows</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Nazwa aplikacji</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Gift games on Steam</value>
+    <value>Podaruj gry na Steam</value>
   </data>
   <data name="Application" xml:space="preserve">
     <value>Informacje o aplikacji</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value>Contact Address</value>
+    <value>Adres kontaktowy</value>
   </data>
   <data name="Develop" xml:space="preserve">
     <value>Informacje techniczne</value>
@@ -304,7 +304,7 @@
     <value>Zastosuj</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Show busy icon</value>
+    <value>Wyświetlaj ikonę zajętości</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
     <value>Tłumacz tylko gdy nakładka jest włączona</value>
@@ -313,7 +313,7 @@
     <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Overlay background opacity</value>
+    <value>Krycie tła nakładki</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
     <value>Wyślij informacje o błędach do systemu raportowania. Zostaną wysłane następujące informacje:
@@ -321,42 +321,42 @@
 * Specyfikacja komputera i informacje o środowisku
 * Nazwa aplikacji docelowej tłumaczenia
 * Obraz docelowy tłumaczenia
-* Translation target settings
+* Ustawienia celu tłumaczenia
 
-&gt; %{color:red}**Personal information will not be sent, but please ensure that personal information is not included in the translation target screen.**%</value>
+&gt; %{color:red}**Dane osobowe nie zostaną przesłane, ale upewnij się, że dane osobowe nie są zawarte na ekranie celu tłumaczenia.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
     <value>Wyślij informacje</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Sent</value>
+    <value>Wysłano</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Kopiuj informacje</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>Copied</value>
+    <value>Skopiowano</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Potwierdź</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>Submit</value>
+    <value>Wyślij</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>Log</value>
+    <value>Dziennik</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>Attaching</value>
+    <value>Dołączanie</value>
   </data>
   <data name="Export" xml:space="preserve">
     <value>Eksportuj</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>Wyczyść</value>
   </data>
   <data name="AutoScroll" xml:space="preserve">
-    <value>Auto Scroll</value>
+    <value>Automatyczne przewijanie</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
     <value>Eksportuj dzienniki</value>
@@ -368,7 +368,7 @@
     <value>Eksport zakończony</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>Logs exported to `{0}`.</value>
+    <value>Dzienniki wyeksportowane do `{0}`.</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
     <value>Pliki tekstowe</value>
@@ -433,9 +433,27 @@ Monitory nie są obsługiwane.
     <value>Napisz opinię</value>
   </data>
   <data name="ReviewLater" xml:space="preserve">
-    <value>Later</value>
+    <value>Później</value>
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
-    <value>Never Show Again</value>
+    <value>Nie pokazuj ponownie</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Zapisanie tych ustawień nie zadziała.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Błąd walidacji ustawień</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Uruchom jak jest</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Uruchomienie bez zmian może nie działać poprawnie**
+***
+
+</value>
   </data>
 </root>
