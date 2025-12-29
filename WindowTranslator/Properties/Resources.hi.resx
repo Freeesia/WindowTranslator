@@ -414,7 +414,7 @@
     <value>स्रोत और लक्ष्य भाषाएँ समान हैं। कृपया विभिन्न भाषाएँ निर्दिष्ट करें।</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
-    <value>{0}のOCR機能が使えません。対象の言語機能をインストールしてください</value>
+    <value>{0} के लिए OCR कार्यक्षमता उपलब्ध नहीं है। कृपया लक्ष्य भाषा सुविधा स्थापित करें</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
     <value>सेटिंग्स लागू करने में विफल।</value>
@@ -438,9 +438,21 @@
     <value>फिर कभी न दिखाएं</value>
   </data>
   <data name="RunAsIs" xml:space="preserve">
-    <value>そのまま実行</value>
+    <value>जैसा है चलाएं</value>
   </data>
   <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: 設定検証エラー</value>
+    <value>{0}: सेटिंग्स सत्यापन त्रुटि</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **इन सेटिंग्स को सहेजने से काम नहीं चलेगा।**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **जैसा है चलाने से यह ठीक से काम नहीं कर सकता**
+***
+
+</value>
   </data>
 </root>
