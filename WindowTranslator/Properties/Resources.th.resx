@@ -118,336 +118,336 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Source" xml:space="preserve">
-    <value>Język źródłowy (rozpoznany)</value>
+    <value>ภาษาต้นทาง (การจดจำ)</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>Język docelowy (wyświetlany)</value>
+    <value>ภาษาเป้าหมาย (การแสดงผล)</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>Wybór modułu tłumaczenia</value>
+    <value>โมดูลการแปล</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>Wybór modułu pamięci podręcznej</value>
+    <value>โมดูลแคช</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
-    <value>Tryb wyświetlania wyników tłumaczenia</value>
+    <value>โหมดการแสดงผลการแปล</value>
   </data>
   <data name="AutoTargets" xml:space="preserve">
-    <value>Automatyczny cel tłumaczenia</value>
+    <value>เป้าหมายการแปลอัตโนมัติ</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Tłumacz automatycznie po uruchomieniu procesu wybranego do tłumaczenia</value>
+    <value>แปลอัตโนมัติเมื่อเริ่มกระบวนการที่เคยถูกเลือกเป็นเป้าหมายการแปลก่อนหน้านี้</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
-    <value>Ustawienia ogólne</value>
+    <value>การตั้งค่าทั่วไป</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>Inne</value>
+    <value>อื่นๆ</value>
   </data>
   <data name="Plugin" xml:space="preserve">
-    <value>Ustawienia wtyczek</value>
+    <value>การตั้งค่าปลั๊กอิน</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Ustawienia języka</value>
+    <value>การตั้งค่าภาษา</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>nakładka</value>
+    <value>โอเวอร์เลย์</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>okno przechwytywania</value>
+    <value>หน้าต่างแคปเจอร์</value>
   </data>
   <data name="InMemoryCache" xml:space="preserve">
-    <value>Pamięć podręczna w pamięci RAM</value>
+    <value>แคชในหน่วยความจำ</value>
   </data>
   <data name="LocalCache" xml:space="preserve">
-    <value>Pamięć podręczna plików lokalnych</value>
+    <value>แคชไฟล์ในเครื่อง</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Ustawienia</value>
+    <value>การตั้งค่า</value>
   </data>
   <data name="Attach" xml:space="preserve">
-    <value>Dołącz</value>
+    <value>แนบ</value>
   </data>
   <data name="Detach" xml:space="preserve">
-    <value>Odłącz</value>
+    <value>ถอด</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>Zakończ</value>
+    <value>ออก</value>
   </data>
   <data name="MutexError" xml:space="preserve">
-    <value>WindowTranslator jest już uruchomiony.</value>
+    <value>WindowTranslator กำลังทำงานอยู่แล้ว</value>
   </data>
   <data name="About" xml:space="preserve">
-    <value>O programie</value>
+    <value>เกี่ยวกับแอปนี้</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>Sprawdź licencje stron trzecich</value>
+    <value>ตรวจสอบใบอนุญาตของบุคคลที่สาม</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>Dostępne aktualizacje: {0}</value>
+    <value>มีการอัปเดต: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
-    <value>Używasz najnowszej wersji.</value>
+    <value>คุณกำลังใช้เวอร์ชันล่าสุด</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>Informacje o aktualizacji</value>
+    <value>ข้อมูลการอัปเดต</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
-    <value>Zaktualizuj do najnowszej wersji</value>
+    <value>อัปเดตเป็นเวอร์ชันล่าสุด</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Sprawdź szczegóły</value>
+    <value>ตรวจสอบข้อมูลโดยละเอียด</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>Tylko podczas naciskania</value>
+    <value>เฉพาะขณะกด</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Naciśnij, aby włączyć/wyłączyć</value>
+    <value>กดเพื่อสลับ ON/OFF</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Przełącz wyświetlanie nakładki</value>
+    <value>สลับการแสดงโอเวอร์เลย์</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>Umożliw zrobienie zrzutu nakładki</value>
+    <value>ทำให้การแสดงโอเวอร์เลย์สามารถแคปเจอร์ได้</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>Przetłumaczony proces</value>
+    <value>กระบวนการเป้าหมายการแปล</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>Moduł rozpoznawania</value>
+    <value>โมดูลการจดจำ</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>Skróty</value>
+    <value>ทางลัด</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>Przełącznik nakładki</value>
+    <value>สลับโอเวอร์เลย์</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>Została wydana nowa wersja {0}</value>
+    <value>เวอร์ชันใหม่ {0} ถูกเผยแพร่แล้ว</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>Instalacja nowej wersji {0}</value>
+    <value>ติดตั้งเวอร์ชันใหม่ {0}</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>Sprawdź aktualizacje</value>
+    <value>ตรวจสอบเนื้อหาการอัปเดต</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>Sprawdzenie nowej wersji</value>
+    <value>ตรวจสอบเวอร์ชันใหม่</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Anuluj</value>
+    <value>ยกเลิก</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>ตกลง</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>Automatyczne uruchomienie przy starcie systemu</value>
+    <value>เริ่มต้นอัตโนมัติเมื่อเปิดพีซี</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>Ustawienia ogólne</value>
+    <value>การตั้งค่าทั่วไป</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Metoda wyświetlania</value>
+    <value>วิธีการแสดงผล</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>Ustawienia dla poszczególnych elementów</value>
+    <value>การตั้งค่าสำหรับแต่ละเป้าหมาย</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Wersja</value>
+    <value>เวอร์ชัน</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Data kompilacji</value>
+    <value>วันที่สร้าง</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>Deweloper</value>
+    <value>นักพัฒนา</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>Strona publiczna</value>
+    <value>หน้าเผยแพร่</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>Licencja</value>
+    <value>ใบอนุญาต</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Nie tłumacz</value>
+    <value>ไม่แปล</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>Ustawienia pamięci podręcznej</value>
+    <value>การตั้งค่าแคช</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>Próg dla tekstu bliskiego</value>
+    <value>เกณฑ์ข้อความที่ใกล้เคียง</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>Nie zapisuj w pamięci podręcznej</value>
+    <value>ไม่แคช</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Standardowe rozpoznawanie znaków Windows</value>
+    <value>การจดจำอักขระมาตรฐาน Windows</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Nazwa aplikacji</value>
+    <value>ชื่อแอป</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Podaruj gry na Steam</value>
+    <value>ให้ของขวัญเกมบน Steam</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>Informacje o aplikacji</value>
+    <value>ข้อมูลแอป</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value>Adres kontaktowy</value>
+    <value>ที่อยู่ติดต่อ</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value>Informacje techniczne</value>
+    <value>ข้อมูลทางเทคนิค</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Zamknij</value>
+    <value>ปิด</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Zastosuj</value>
+    <value>นำไปใช้</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Wyświetlaj ikonę zajętości</value>
+    <value>แสดงไอคอนกำลังประมวลผล</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Tłumacz tylko gdy nakładka jest włączona</value>
+    <value>แปลเฉพาะเมื่อเปิดใช้งานโอเวอร์เลย์เท่านั้น</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
+    <value>แสดงการแปลโอเวอร์เลย์เฉพาะข้อความที่ตำแหน่งเมาส์เท่านั้น</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Krycie tła nakładki</value>
+    <value>ความทึบแสงของพื้นหลังโอเวอร์เลย์</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Wyślij informacje o błędach do systemu raportowania. Zostaną wysłane następujące informacje:
-* Informacje o aplikacji
-* Specyfikacja komputera i informacje o środowisku
-* Nazwa aplikacji docelowej tłumaczenia
-* Obraz docelowy tłumaczenia
-* Ustawienia celu tłumaczenia
+    <value>ส่งข้อมูลข้อผิดพลาดไปยังระบบรายงาน ข้อมูลต่อไปนี้จะถูกส่ง:
+* ข้อมูลแอป
+* สเปคและข้อมูลสภาพแวดล้อมของพีซี
+* ชื่อแอปเป้าหมายการแปล
+* รูปภาพเป้าหมายการแปล
+* การตั้งค่าเป้าหมายการแปล
 
-&gt; %{color:red}**Dane osobowe nie zostaną przesłane, ale upewnij się, że dane osobowe nie są zawarte na ekranie celu tłumaczenia.**%</value>
+&gt; %{color:red}**ข้อมูลส่วนบุคคลจะไม่ถูกส่ง แต่โปรดตรวจสอบให้แน่ใจว่าหน้าจอเป้าหมายการแปลไม่มีข้อมูลส่วนบุคคล**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Wyślij informacje</value>
+    <value>ส่งข้อมูล</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Wysłano</value>
+    <value>ส่งเสร็จสิ้น</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Kopiuj informacje</value>
+    <value>คัดลอกข้อมูล</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>Skopiowano</value>
+    <value>คัดลอกแล้ว</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Potwierdź</value>
+    <value>ยืนยัน</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>Wyślij</value>
+    <value>ส่ง</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>Dziennik</value>
+    <value>บันทึก</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>Dołączanie</value>
+    <value>กำลังแนบ</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Eksportuj</value>
+    <value>ส่งออก</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Wyczyść</value>
+    <value>ล้าง</value>
   </data>
   <data name="AutoScroll" xml:space="preserve">
-    <value>Automatyczne przewijanie</value>
+    <value>เลื่อนอัตโนมัติ</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>Eksportuj dzienniki</value>
+    <value>ส่งออกบันทึก</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>Eksport nie powiódł się</value>
+    <value>การส่งออกล้มเหลว</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>Eksport zakończony</value>
+    <value>ส่งออกเสร็จสิ้น</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>Dzienniki wyeksportowane do `{0}`.</value>
+    <value>ส่งออกบันทึกไปยัง `{0}` แล้ว</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
-    <value>Pliki tekstowe</value>
+    <value>ไฟล์ข้อความ</value>
   </data>
   <data name="FaildOcr" xml:space="preserve">
-    <value>OCR nie powiódł się</value>
+    <value>OCR ล้มเหลว</value>
   </data>
   <data name="FaildTranslate" xml:space="preserve">
-    <value>Tłumaczenie nie powiodło się</value>
+    <value>การแปลล้มเหลว</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>Nie udało się osadzić w oknie.</value>
+    <value>การฝังหน้าต่างล้มเหลว</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
-    <value>Proszę wybrać okno inne niż WindowTranslator</value>
+    <value>โปรดเลือกหน้าต่างอื่นที่ไม่ใช่ WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Wybrane okno "{0}" nie może określić procesu i nie może zostać przechwycone.
-Monitory nie są obsługiwane.
+    <value>ไม่สามารถแคปเจอร์หน้าต่างที่เลือก「{0}」เนื่องจากไม่สามารถระบุกระบวนการได้
+มอนิเตอร์ไม่ได้รับการสนับสนุน
 </value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
-    <value>Błąd weryfikacji ustawień</value>
+    <value>ข้อผิดพลาดในการตรวจสอบการตั้งค่า</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>Zapisz i zamknij</value>
+    <value>บันทึกและปิด</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
-    <value>Ustawienia domyślne</value>
+    <value>การตั้งค่าเริ่มต้น</value>
   </data>
   <data name="AutoStart" xml:space="preserve">
-    <value>Autostart</value>
+    <value>เริ่มต้นอัตโนมัติ</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0} został zarejestrowany do automatycznego uruchamiania.</value>
+    <value>ลงทะเบียน {0} เป็นการเริ่มต้นอัตโนมัติแล้ว</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
-    <value>Automatyczne uruchamianie dla {0} zostało wyłączone.</value>
+    <value>ยกเลิกการเริ่มต้นอัตโนมัติของ {0} แล้ว</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>Ustawienia języka</value>
+    <value>การตั้งค่าภาษา</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>Język źródłowy i docelowy są takie same. Proszę wybrać różne języki.</value>
+    <value>ภาษาต้นทางและภาษาเป้าหมายเหมือนกัน โปรดระบุภาษาที่แตกต่างกัน</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
-    <value>Funkcja OCR dla {0} jest niedostępna. Proszę zainstalować funkcję języka docelowego</value>
+    <value>ไม่สามารถใช้ฟังก์ชัน OCR ของ {0} โปรดติดตั้งฟังก์ชันภาษาเป้าหมาย</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>Nie udało się zastosować ustawień.</value>
+    <value>การนำการตั้งค่าไปใช้ล้มเหลว</value>
   </data>
   <data name="UnhundledErrorMessage" xml:space="preserve">
-    <value>Wystąpił nieznany błąd</value>
+    <value>เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ</value>
   </data>
   <data name="ReviewRequest" xml:space="preserve">
-    <value>Prośba o opinię</value>
+    <value>ขอรีวิว</value>
   </data>
   <data name="ReviewRequestMessage" xml:space="preserve">
-    <value>Dziękujemy za korzystanie z WindowTranslator. Czy mógłbyś zostawić opinię w sklepie Microsoft Store?</value>
+    <value>ขอบคุณที่ใช้ WindowTranslator คุณช่วยเขียนรีวิวบน Microsoft Store ได้ไหม?</value>
   </data>
   <data name="WriteReview" xml:space="preserve">
-    <value>Napisz opinię</value>
+    <value>เขียนรีวิว</value>
   </data>
   <data name="ReviewLater" xml:space="preserve">
-    <value>Później</value>
+    <value>ภายหลัง</value>
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
-    <value>Nie pokazuj ponownie</value>
+    <value>ไม่แสดงอีก</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>รันตามที่เป็นอยู่</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: ข้อผิดพลาดในการตรวจสอบการตั้งค่า</value>
   </data>
   <data name="SettingInvalidContent" xml:space="preserve">
-    <value>:tired-face: **Zapisanie tych ustawień nie zadziała.**
+    <value>:tired-face: **จะไม่ทำงานแม้จะบันทึกแบบนี้**
 ***
 
 </value>
-  </data>
-  <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: Błąd walidacji ustawień</value>
-  </data>
-  <data name="RunAsIs" xml:space="preserve">
-    <value>Uruchom jak jest</value>
   </data>
 </root>

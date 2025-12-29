@@ -118,336 +118,336 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Source" xml:space="preserve">
-    <value>Język źródłowy (rozpoznany)</value>
+    <value>Kaynak dil (tanıma)</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>Język docelowy (wyświetlany)</value>
+    <value>Hedef dil (görüntüleme)</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>Wybór modułu tłumaczenia</value>
+    <value>Çeviri modülü</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>Wybór modułu pamięci podręcznej</value>
+    <value>Önbellek modülü</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
-    <value>Tryb wyświetlania wyników tłumaczenia</value>
+    <value>Çeviri sonucu görüntüleme modu</value>
   </data>
   <data name="AutoTargets" xml:space="preserve">
-    <value>Automatyczny cel tłumaczenia</value>
+    <value>Otomatik çeviri hedefleri</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Tłumacz automatycznie po uruchomieniu procesu wybranego do tłumaczenia</value>
+    <value>Daha önce çeviri hedefi olarak seçilen bir işlem başlatıldığında otomatik olarak çevir</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
-    <value>Ustawienia ogólne</value>
+    <value>Genel ayarlar</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>Inne</value>
+    <value>Diğer</value>
   </data>
   <data name="Plugin" xml:space="preserve">
-    <value>Ustawienia wtyczek</value>
+    <value>Eklenti ayarları</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Ustawienia języka</value>
+    <value>Dil ayarları</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>nakładka</value>
+    <value>Kaplama</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>okno przechwytywania</value>
+    <value>Yakalama penceresi</value>
   </data>
   <data name="InMemoryCache" xml:space="preserve">
-    <value>Pamięć podręczna w pamięci RAM</value>
+    <value>Bellekteki önbellek</value>
   </data>
   <data name="LocalCache" xml:space="preserve">
-    <value>Pamięć podręczna plików lokalnych</value>
+    <value>Yerel dosya önbelleği</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Ustawienia</value>
+    <value>Ayarlar</value>
   </data>
   <data name="Attach" xml:space="preserve">
-    <value>Dołącz</value>
+    <value>Ekle</value>
   </data>
   <data name="Detach" xml:space="preserve">
-    <value>Odłącz</value>
+    <value>Ayır</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>Zakończ</value>
+    <value>Çıkış</value>
   </data>
   <data name="MutexError" xml:space="preserve">
-    <value>WindowTranslator jest już uruchomiony.</value>
+    <value>WindowTranslator zaten çalışıyor</value>
   </data>
   <data name="About" xml:space="preserve">
-    <value>O programie</value>
+    <value>Bu uygulama hakkında</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>Sprawdź licencje stron trzecich</value>
+    <value>Üçüncü taraf lisanslarını kontrol et</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>Dostępne aktualizacje: {0}</value>
+    <value>Güncelleme mevcut: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
-    <value>Używasz najnowszej wersji.</value>
+    <value>En son sürümü kullanıyorsunuz.</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>Informacje o aktualizacji</value>
+    <value>Güncelleme bilgisi</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
-    <value>Zaktualizuj do najnowszej wersji</value>
+    <value>En son sürüme güncelle</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Sprawdź szczegóły</value>
+    <value>Ayrıntılı bilgileri kontrol et</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>Tylko podczas naciskania</value>
+    <value>Yalnızca basılı tutulduğunda</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Naciśnij, aby włączyć/wyłączyć</value>
+    <value>AÇIK/KAPALI geçişi için bas</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Przełącz wyświetlanie nakładki</value>
+    <value>Kaplama görüntüsünü değiştir</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>Umożliw zrobienie zrzutu nakładki</value>
+    <value>Kaplama görüntülerini yakalanabilir yap</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>Przetłumaczony proces</value>
+    <value>Çevrilmiş İşlem</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>Moduł rozpoznawania</value>
+    <value>Tanıma modülü</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>Skróty</value>
+    <value>Kısayollar</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>Przełącznik nakładki</value>
+    <value>Kaplama anahtarı</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>Została wydana nowa wersja {0}</value>
+    <value>Yeni bir sürüm {0} yayınlandı</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>Instalacja nowej wersji {0}</value>
+    <value>Yeni sürüm {0} kurulumu</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>Sprawdź aktualizacje</value>
+    <value>Güncellemeleri kontrol et</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>Sprawdzenie nowej wersji</value>
+    <value>Yeni sürüm kontrolü</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Anuluj</value>
+    <value>İptal</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>Tamam</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>Automatyczne uruchomienie przy starcie systemu</value>
+    <value>Sistem başlangıcında otomatik başlat</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>Ustawienia ogólne</value>
+    <value>Genel ayarlar</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Metoda wyświetlania</value>
+    <value>Görüntüleme yöntemi</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>Ustawienia dla poszczególnych elementów</value>
+    <value>İçe bağına ayarlar</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Wersja</value>
+    <value>Sürüm</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Data kompilacji</value>
+    <value>Derleme tarihi</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>Deweloper</value>
+    <value>Geliştirici</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>Strona publiczna</value>
+    <value>Genel sayfa</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>Licencja</value>
+    <value>Lisans</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Nie tłumacz</value>
+    <value>Çevirme</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>Ustawienia pamięci podręcznej</value>
+    <value>Önbellek ayarı</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>Próg dla tekstu bliskiego</value>
+    <value>Yakın metin için eşik</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>Nie zapisuj w pamięci podręcznej</value>
+    <value>Önbelleğe alma</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Standardowe rozpoznawanie znaków Windows</value>
+    <value>Windows Standart Karakter Tanıma</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Nazwa aplikacji</value>
+    <value>Uygulama Adı</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Podaruj gry na Steam</value>
+    <value>Steam oyunları hediye et</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>Informacje o aplikacji</value>
+    <value>Uygulama Bilgisi</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value>Adres kontaktowy</value>
+    <value>İletişim Adresi</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value>Informacje techniczne</value>
+    <value>Teknik Bilgi</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Zamknij</value>
+    <value>Kapat</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Zastosuj</value>
+    <value>Uygula</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Wyświetlaj ikonę zajętości</value>
+    <value>İşlem simgesini göster</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Tłumacz tylko gdy nakładka jest włączona</value>
+    <value>Yalnızca kaplama etkinleştirildiğinde çevir</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
+    <value>Kaplama çevirisini yalnızca fare işaretçisi konumundaki metin için göster</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Krycie tła nakładki</value>
+    <value>Kaplama arka plan opaklığı</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Wyślij informacje o błędach do systemu raportowania. Zostaną wysłane następujące informacje:
-* Informacje o aplikacji
-* Specyfikacja komputera i informacje o środowisku
-* Nazwa aplikacji docelowej tłumaczenia
-* Obraz docelowy tłumaczenia
-* Ustawienia celu tłumaczenia
+    <value>Hata bilgilerini raporlama sistemine gönderin. Aşağıdaki bilgiler gönderilecektir:
+* Uygulama bilgisi
+* PC özellikleri ve ortam bilgisi
+* Çeviri hedef uygulama adı
+* Çeviri hedef görüntüsü
+* Çeviri hedef ayarları
 
-&gt; %{color:red}**Dane osobowe nie zostaną przesłane, ale upewnij się, że dane osobowe nie są zawarte na ekranie celu tłumaczenia.**%</value>
+&gt; %{color:red}**Kişisel bilgiler gönderilmeyecektir ancak çeviri hedef ekranında kişisel bilgi olmadığından emin olun.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Wyślij informacje</value>
+    <value>Bilgi gönder</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Wysłano</value>
+    <value>Gönderim tamamlandı</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Kopiuj informacje</value>
+    <value>Bilgiyi kopyala</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>Skopiowano</value>
+    <value>Kopyalandı</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Potwierdź</value>
+    <value>Onayla</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>Wyślij</value>
+    <value>Gönder</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>Dziennik</value>
+    <value>Günlük</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>Dołączanie</value>
+    <value>Ekleniyor</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Eksportuj</value>
+    <value>Dışa Aktar</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Wyczyść</value>
+    <value>Temizle</value>
   </data>
   <data name="AutoScroll" xml:space="preserve">
-    <value>Automatyczne przewijanie</value>
+    <value>Otomatik kaydırma</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>Eksportuj dzienniki</value>
+    <value>Günlükleri dışa aktar</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>Eksport nie powiódł się</value>
+    <value>Dışa aktarma başarısız</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>Eksport zakończony</value>
+    <value>Dışa aktarma tamamlandı</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>Dzienniki wyeksportowane do `{0}`.</value>
+    <value>Günlükler `{0}` konumuna aktarıldı.</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
-    <value>Pliki tekstowe</value>
+    <value>Metin dosyası</value>
   </data>
   <data name="FaildOcr" xml:space="preserve">
-    <value>OCR nie powiódł się</value>
+    <value>OCR başarısız</value>
   </data>
   <data name="FaildTranslate" xml:space="preserve">
-    <value>Tłumaczenie nie powiodło się</value>
+    <value>Çeviri başarısız</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>Nie udało się osadzić w oknie.</value>
+    <value>Pencere gömme başarısız.</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
-    <value>Proszę wybrać okno inne niż WindowTranslator</value>
+    <value>Lütfen WindowTranslator dışında bir pencere seçin</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Wybrane okno "{0}" nie może określić procesu i nie może zostać przechwycone.
-Monitory nie są obsługiwane.
+    <value>Seçilen pencere "{0}" işlemi belirleyemez bu nedenle yakalama mümkün değil.
+Monitör desteklenmiyor.
 </value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
-    <value>Błąd weryfikacji ustawień</value>
+    <value>Ayar doğrulama hatası</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>Zapisz i zamknij</value>
+    <value>Kaydet ve Kapat</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
-    <value>Ustawienia domyślne</value>
+    <value>Varsayılan ayar</value>
   </data>
   <data name="AutoStart" xml:space="preserve">
-    <value>Autostart</value>
+    <value>Otomatik başlat</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0} został zarejestrowany do automatycznego uruchamiania.</value>
+    <value>{0} otomatik başlatmaya kaydedildi.</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
-    <value>Automatyczne uruchamianie dla {0} zostało wyłączone.</value>
+    <value>{0} otomatik başlatması iptal edildi.</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>Ustawienia języka</value>
+    <value>Dil ayarları</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>Język źródłowy i docelowy są takie same. Proszę wybrać różne języki.</value>
+    <value>Kaynak dil ve hedef dil aynı. Farklı diller belirtin.</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
-    <value>Funkcja OCR dla {0} jest niedostępna. Proszę zainstalować funkcję języka docelowego</value>
+    <value>{0} için OCR işlevi kullanılamıyor. Hedef dil özelliğini yükleyin</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>Nie udało się zastosować ustawień.</value>
+    <value>Ayarları uygulama başarısız.</value>
   </data>
   <data name="UnhundledErrorMessage" xml:space="preserve">
-    <value>Wystąpił nieznany błąd</value>
+    <value>Bilinmeyen bir hata oluştu</value>
   </data>
   <data name="ReviewRequest" xml:space="preserve">
-    <value>Prośba o opinię</value>
+    <value>İnceleme İsteği</value>
   </data>
   <data name="ReviewRequestMessage" xml:space="preserve">
-    <value>Dziękujemy za korzystanie z WindowTranslator. Czy mógłbyś zostawić opinię w sklepie Microsoft Store?</value>
+    <value>WindowTranslator kullandığınız için teşekkür ederiz. Microsoft Store'da inceleme yazabilir misiniz?</value>
   </data>
   <data name="WriteReview" xml:space="preserve">
-    <value>Napisz opinię</value>
+    <value>İnceleme Yaz</value>
   </data>
   <data name="ReviewLater" xml:space="preserve">
-    <value>Później</value>
+    <value>Daha sonra</value>
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
-    <value>Nie pokazuj ponownie</value>
+    <value>Bir daha gösterme</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Olduğu gibi çalıştır</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Ayar doğrulama hatası</value>
   </data>
   <data name="SettingInvalidContent" xml:space="preserve">
-    <value>:tired-face: **Zapisanie tych ustawień nie zadziała.**
+    <value>:tired-face: **Kaydedilse bile çalışmayacak.**
 ***
 
 </value>
-  </data>
-  <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: Błąd walidacji ustawień</value>
-  </data>
-  <data name="RunAsIs" xml:space="preserve">
-    <value>Uruchom jak jest</value>
   </data>
 </root>

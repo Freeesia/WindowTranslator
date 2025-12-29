@@ -118,336 +118,324 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Source" xml:space="preserve">
-    <value>Język źródłowy (rozpoznany)</value>
+    <value>Исходный язык (распознавание)</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>Język docelowy (wyświetlany)</value>
+    <value>Целевой язык (отображение)</value>
   </data>
   <data name="TranslateModule" xml:space="preserve">
-    <value>Wybór modułu tłumaczenia</value>
+    <value>Модуль перевода</value>
   </data>
   <data name="CacheModule" xml:space="preserve">
-    <value>Wybór modułu pamięci podręcznej</value>
+    <value>Модуль кэша</value>
   </data>
   <data name="ViewMode" xml:space="preserve">
-    <value>Tryb wyświetlania wyników tłumaczenia</value>
+    <value>Режим отображения результата перевода</value>
   </data>
   <data name="AutoTargets" xml:space="preserve">
-    <value>Automatyczny cel tłumaczenia</value>
+    <value>Цели автоматического перевода</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Tłumacz automatycznie po uruchomieniu procesu wybranego do tłumaczenia</value>
+    <value>Автоматически переводить при запуске процесса, ранее выбранного в качестве цели перевода</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
-    <value>Ustawienia ogólne</value>
+    <value>Общие настройки</value>
   </data>
   <data name="Misc" xml:space="preserve">
-    <value>Inne</value>
+    <value>Прочее</value>
   </data>
   <data name="Plugin" xml:space="preserve">
-    <value>Ustawienia wtyczek</value>
+    <value>Настройки плагина</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Ustawienia języka</value>
+    <value>Настройки языка</value>
   </data>
   <data name="Overlay" xml:space="preserve">
-    <value>nakładka</value>
+    <value>Оверлей</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>okno przechwytywania</value>
+    <value>Окно захвата</value>
   </data>
   <data name="InMemoryCache" xml:space="preserve">
-    <value>Pamięć podręczna w pamięci RAM</value>
+    <value>Кэш в памяти</value>
   </data>
   <data name="LocalCache" xml:space="preserve">
-    <value>Pamięć podręczna plików lokalnych</value>
+    <value>Локальный файловый кэш</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Ustawienia</value>
+    <value>Настройки</value>
   </data>
   <data name="Attach" xml:space="preserve">
-    <value>Dołącz</value>
+    <value>Прикрепить</value>
   </data>
   <data name="Detach" xml:space="preserve">
-    <value>Odłącz</value>
+    <value>Открепить</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>Zakończ</value>
+    <value>Выход</value>
   </data>
   <data name="MutexError" xml:space="preserve">
-    <value>WindowTranslator jest już uruchomiony.</value>
+    <value>WindowTranslator уже запущен</value>
   </data>
   <data name="About" xml:space="preserve">
-    <value>O programie</value>
+    <value>О приложении</value>
   </data>
   <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
-    <value>Sprawdź licencje stron trzecich</value>
+    <value>Проверить лицензии третьих сторон</value>
   </data>
   <data name="HasUpdate" xml:space="preserve">
-    <value>Dostępne aktualizacje: {0}</value>
+    <value>Доступно обновление: {0}</value>
   </data>
   <data name="IsLatest" xml:space="preserve">
-    <value>Używasz najnowszej wersji.</value>
+    <value>Вы используете последнюю версию.</value>
   </data>
   <data name="UpdateInfo" xml:space="preserve">
-    <value>Informacje o aktualizacji</value>
+    <value>Информация об обновлении</value>
   </data>
   <data name="UpdateCommand" xml:space="preserve">
-    <value>Zaktualizuj do najnowszej wersji</value>
+    <value>Обновить до последней версии</value>
   </data>
   <data name="OpenChangelogCommand" xml:space="preserve">
-    <value>Sprawdź szczegóły</value>
+    <value>Проверить подробную информацию</value>
   </data>
   <data name="Hold" xml:space="preserve">
-    <value>Tylko podczas naciskania</value>
+    <value>Только при удержании</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Naciśnij, aby włączyć/wyłączyć</value>
+    <value>Нажмите для переключения ВКЛ/ВЫКЛ</value>
   </data>
   <data name="OverlaySwitch" xml:space="preserve">
-    <value>Przełącz wyświetlanie nakładki</value>
+    <value>Переключить отображение оверлея</value>
   </data>
   <data name="IsEnableCaptureOverlay" xml:space="preserve">
-    <value>Umożliw zrobienie zrzutu nakładki</value>
+    <value>Сделать оверлеи захватываемыми</value>
   </data>
   <data name="TargetProcesses" xml:space="preserve">
-    <value>Przetłumaczony proces</value>
+    <value>Переведенный процесс</value>
   </data>
   <data name="OcrModule" xml:space="preserve">
-    <value>Moduł rozpoznawania</value>
+    <value>Модуль распознавания</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
-    <value>Skróty</value>
+    <value>Горячие клавиши</value>
   </data>
   <data name="OverlayShortcut" xml:space="preserve">
-    <value>Przełącznik nakładki</value>
+    <value>Переключение оверлея</value>
   </data>
   <data name="NewVersionAvailable" xml:space="preserve">
-    <value>Została wydana nowa wersja {0}</value>
+    <value>Выпущена новая версия {0}</value>
   </data>
   <data name="InstallNewVersion" xml:space="preserve">
-    <value>Instalacja nowej wersji {0}</value>
+    <value>Установка новой версии {0}</value>
   </data>
   <data name="CheckUpdateNotes" xml:space="preserve">
-    <value>Sprawdź aktualizacje</value>
+    <value>Проверить обновления</value>
   </data>
   <data name="CheckNewVersion" xml:space="preserve">
-    <value>Sprawdzenie nowej wersji</value>
+    <value>Проверка новой версии</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Anuluj</value>
+    <value>Отмена</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>ОК</value>
   </data>
   <data name="AutoStartWithPC" xml:space="preserve">
-    <value>Automatyczne uruchomienie przy starcie systemu</value>
+    <value>Автоматически запускать при загрузке системы</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>Ustawienia ogólne</value>
+    <value>Общие настройки</value>
   </data>
   <data name="DisplayMethod" xml:space="preserve">
-    <value>Metoda wyświetlania</value>
+    <value>Метод отображения</value>
   </data>
   <data name="TargetSpecificSettings" xml:space="preserve">
-    <value>Ustawienia dla poszczególnych elementów</value>
+    <value>Настройки для каждого элемента</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Wersja</value>
+    <value>Версия</value>
   </data>
   <data name="BuildDate" xml:space="preserve">
-    <value>Data kompilacji</value>
+    <value>Дата сборки</value>
   </data>
   <data name="DevelopedBy" xml:space="preserve">
-    <value>Deweloper</value>
+    <value>разработчик</value>
   </data>
   <data name="PublishPage" xml:space="preserve">
-    <value>Strona publiczna</value>
+    <value>Публичная страница</value>
   </data>
   <data name="License" xml:space="preserve">
-    <value>Licencja</value>
+    <value>лицензия</value>
   </data>
   <data name="NoTranslateModule" xml:space="preserve">
-    <value>Nie tłumacz</value>
+    <value>Не переводить</value>
   </data>
   <data name="CacheParam" xml:space="preserve">
-    <value>Ustawienia pamięci podręcznej</value>
+    <value>Настройка кэша</value>
   </data>
   <data name="FuzzyMatchThreshold" xml:space="preserve">
-    <value>Próg dla tekstu bliskiego</value>
+    <value>Порог для близкого текста</value>
   </data>
   <data name="NoCache" xml:space="preserve">
-    <value>Nie zapisuj w pamięci podręcznej</value>
+    <value>Не кэшировать</value>
   </data>
   <data name="WindowsMediaOcr" xml:space="preserve">
-    <value>Standardowe rozpoznawanie znaków Windows</value>
+    <value>Стандартное распознавание символов Windows</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Nazwa aplikacji</value>
+    <value>Название приложения</value>
   </data>
   <data name="SteamWishlist" xml:space="preserve">
-    <value>Podaruj gry na Steam</value>
+    <value>Подарить игры в Steam</value>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>Informacje o aplikacji</value>
+    <value>Информация о приложении</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value>Adres kontaktowy</value>
+    <value>Контактный адрес</value>
   </data>
   <data name="Develop" xml:space="preserve">
-    <value>Informacje techniczne</value>
+    <value>Техническая информация</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Zamknij</value>
+    <value>Закрыть</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Zastosuj</value>
+    <value>Применить</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Wyświetlaj ikonę zajętości</value>
+    <value>Отображать значок обработки</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Tłumacz tylko gdy nakładka jest włączona</value>
+    <value>Переводить только при включении оверлея</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
+    <value>Отображать перевод оверлея только для текста в позиции указателя мыши</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Krycie tła nakładki</value>
+    <value>Непрозрачность фона оверлея</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Wyślij informacje o błędach do systemu raportowania. Zostaną wysłane następujące informacje:
-* Informacje o aplikacji
-* Specyfikacja komputera i informacje o środowisku
-* Nazwa aplikacji docelowej tłumaczenia
-* Obraz docelowy tłumaczenia
-* Ustawienia celu tłumaczenia
-
-&gt; %{color:red}**Dane osobowe nie zostaną przesłane, ale upewnij się, że dane osobowe nie są zawarte na ekranie celu tłumaczenia.**%</value>
+    <value>Отправить информацию об ошибке в систему отчетов. Будет отправлена следующая информация. Информация о приложении. Характеристики ПК и информация о среде. Имя целевого приложения перевода. Изображение цели перевода. Настройки цели перевода. Персональная информация не будет отправлена но убедитесь что экран цели перевода не содержит персональной информации.</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Wyślij informacje</value>
+    <value>Отправить информацию</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Wysłano</value>
+    <value>Отправка завершена</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Kopiuj informacje</value>
+    <value>Скопировать информацию</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>Skopiowano</value>
+    <value>Скопировано</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Potwierdź</value>
+    <value>Подтвердить</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>Wyślij</value>
+    <value>Отправить</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>Dziennik</value>
+    <value>Журнал</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>Dołączanie</value>
+    <value>Прикрепление</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Eksportuj</value>
+    <value>Экспорт</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Wyczyść</value>
+    <value>Очистить</value>
   </data>
   <data name="AutoScroll" xml:space="preserve">
-    <value>Automatyczne przewijanie</value>
+    <value>Автопрокрутка</value>
   </data>
   <data name="ExportLogs" xml:space="preserve">
-    <value>Eksportuj dzienniki</value>
+    <value>Экспорт журналов</value>
   </data>
   <data name="ExportLogsFailed" xml:space="preserve">
-    <value>Eksport nie powiódł się</value>
+    <value>Экспорт не удался</value>
   </data>
   <data name="ExportLogsSuccess" xml:space="preserve">
-    <value>Eksport zakończony</value>
+    <value>Экспорт завершен</value>
   </data>
   <data name="ExportLogsSuccessDetail" xml:space="preserve">
-    <value>Dzienniki wyeksportowane do `{0}`.</value>
+    <value>Журналы экспортированы в {0}.</value>
   </data>
   <data name="ExportLogsFilterText" xml:space="preserve">
-    <value>Pliki tekstowe</value>
+    <value>Текстовый файл</value>
   </data>
   <data name="FaildOcr" xml:space="preserve">
-    <value>OCR nie powiódł się</value>
+    <value>OCR не удался</value>
   </data>
   <data name="FaildTranslate" xml:space="preserve">
-    <value>Tłumaczenie nie powiodło się</value>
+    <value>Перевод не удался</value>
   </data>
   <data name="FaildOverlay" xml:space="preserve">
-    <value>Nie udało się osadzić w oknie.</value>
+    <value>Встраивание окна не удалось.</value>
   </data>
   <data name="SelectOtherWindow" xml:space="preserve">
-    <value>Proszę wybrać okno inne niż WindowTranslator</value>
+    <value>Пожалуйста выберите окно отличное от WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Wybrane okno "{0}" nie może określić procesu i nie może zostać przechwycone.
-Monitory nie są obsługiwane.
-</value>
+    <value>Выбранное окно {0} не может определить процесс поэтому захват невозможен. Монитор не поддерживается.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
-    <value>Błąd weryfikacji ustawień</value>
+    <value>Ошибка проверки настроек</value>
   </data>
   <data name="SaveAndClose" xml:space="preserve">
-    <value>Zapisz i zamknij</value>
+    <value>Сохранить и закрыть</value>
   </data>
   <data name="DefaultSetting" xml:space="preserve">
-    <value>Ustawienia domyślne</value>
+    <value>Настройки по умолчанию</value>
   </data>
   <data name="AutoStart" xml:space="preserve">
-    <value>Autostart</value>
+    <value>Автозапуск</value>
   </data>
   <data name="RegisterAutoStart" xml:space="preserve">
-    <value>{0} został zarejestrowany do automatycznego uruchamiania.</value>
+    <value>{0} зарегистрирован для автозапуска.</value>
   </data>
   <data name="UnregisterAutoStart" xml:space="preserve">
-    <value>Automatyczne uruchamianie dla {0} zostało wyłączone.</value>
+    <value>Автозапуск {0} отменен.</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>Ustawienia języka</value>
+    <value>Настройки языка</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
-    <value>Język źródłowy i docelowy są takie same. Proszę wybrać różne języki.</value>
+    <value>Исходный язык и целевой язык одинаковы. Укажите разные языки.</value>
   </data>
   <data name="OcrLanguageNotAvailable" xml:space="preserve">
-    <value>Funkcja OCR dla {0} jest niedostępna. Proszę zainstalować funkcję języka docelowego</value>
+    <value>Функция OCR для {0} недоступна. Установите функцию целевого языка</value>
   </data>
   <data name="FaildApplySettings" xml:space="preserve">
-    <value>Nie udało się zastosować ustawień.</value>
+    <value>Не удалось применить настройки.</value>
   </data>
   <data name="UnhundledErrorMessage" xml:space="preserve">
-    <value>Wystąpił nieznany błąd</value>
+    <value>Произошла неизвестная ошибка</value>
   </data>
   <data name="ReviewRequest" xml:space="preserve">
-    <value>Prośba o opinię</value>
+    <value>Запрос отзыва</value>
   </data>
   <data name="ReviewRequestMessage" xml:space="preserve">
-    <value>Dziękujemy za korzystanie z WindowTranslator. Czy mógłbyś zostawić opinię w sklepie Microsoft Store?</value>
+    <value>Спасибо за использование WindowTranslator. Не могли бы вы написать отзыв в Microsoft Store?</value>
   </data>
   <data name="WriteReview" xml:space="preserve">
-    <value>Napisz opinię</value>
+    <value>Написать отзыв</value>
   </data>
   <data name="ReviewLater" xml:space="preserve">
-    <value>Później</value>
+    <value>Позже</value>
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
-    <value>Nie pokazuj ponownie</value>
-  </data>
-  <data name="SettingInvalidContent" xml:space="preserve">
-    <value>:tired-face: **Zapisanie tych ustawień nie zadziała.**
-***
-
-</value>
-  </data>
-  <data name="InvalidSettings" xml:space="preserve">
-    <value>{0}: Błąd walidacji ustawień</value>
+    <value>Больше не показывать</value>
   </data>
   <data name="RunAsIs" xml:space="preserve">
-    <value>Uruchom jak jest</value>
+    <value>Запустить как есть</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Ошибка проверки настроек</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>Не будет работать даже после сохранения</value>
   </data>
 </root>
