@@ -435,4 +435,10 @@
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Erreur de validation des paramètres</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Exécuter tel quel</value>
+  </data>
 </root>

@@ -444,4 +444,10 @@
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: 설정 유효성 검사 오류</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>그대로 실행</value>
+  </data>
 </root>

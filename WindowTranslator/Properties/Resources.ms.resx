@@ -443,4 +443,10 @@ Monitor tidak disokong.</value>
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Ralat pengesahan tetapan</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Jalankan seperti sedia ada</value>
+  </data>
 </root>

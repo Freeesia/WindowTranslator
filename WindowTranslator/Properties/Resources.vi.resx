@@ -444,4 +444,10 @@ Màn hình không được hỗ trợ.
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Lỗi xác thực cài đặt</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Chạy như hiện tại</value>
+  </data>
 </root>

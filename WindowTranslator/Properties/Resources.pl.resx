@@ -444,4 +444,10 @@ Monitory nie są obsługiwane.
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Błąd walidacji ustawień</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Uruchom jak jest</value>
+  </data>
 </root>

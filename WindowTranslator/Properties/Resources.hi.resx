@@ -440,4 +440,13 @@
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: सेटिंग्स सत्यापन त्रुटि</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>{0} के लिए OCR कार्यक्षमता उपलब्ध नहीं है। कृपया लक्ष्य भाषा सुविधा स्थापित करें</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>जैसा है चलाएं</value>
+  </data>
 </root>

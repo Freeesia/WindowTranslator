@@ -444,4 +444,10 @@ Monitore werden nicht unterstützt.
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Einstellungsvalidierungsfehler</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Wie es ist ausführen</value>
+  </data>
 </root>

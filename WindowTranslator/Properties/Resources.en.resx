@@ -444,4 +444,10 @@ Monitors are not supported.
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Settings validation error</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Run as is</value>
+  </data>
 </root>

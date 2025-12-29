@@ -443,4 +443,10 @@ Monitor tidak didukung.</value>
 
 </value>
   </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Erro de validação de configurações</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Executar como está</value>
+  </data>
 </root>
