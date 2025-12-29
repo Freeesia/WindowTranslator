@@ -438,4 +438,10 @@ Màn hình không được hỗ trợ.
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Không hiển thị lại</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Lưu các cài đặt này sẽ không hoạt động.**
+***
+
+</value>
+  </data>
 </root>

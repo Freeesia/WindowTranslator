@@ -438,4 +438,10 @@
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>不再显示</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **保存这些设置将无法工作。**
+***
+
+</value>
+  </data>
 </root>

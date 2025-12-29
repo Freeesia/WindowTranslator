@@ -438,4 +438,10 @@ Monitory nie są obsługiwane.
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Never Show Again</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Zapisanie tych ustawień nie zadziała.**
+***
+
+</value>
+  </data>
 </root>

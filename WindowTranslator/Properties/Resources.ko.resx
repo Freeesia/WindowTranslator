@@ -438,4 +438,10 @@
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>다시 표시 안 함</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **이대로 저장해도 작동하지 않습니다.**
+***
+
+</value>
+  </data>
 </root>

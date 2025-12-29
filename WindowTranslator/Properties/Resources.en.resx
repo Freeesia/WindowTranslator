@@ -438,4 +438,10 @@ Monitors are not supported.
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Never Show Again</value>
   </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Saving these settings will not work.**
+***
+
+</value>
+  </data>
 </root>
