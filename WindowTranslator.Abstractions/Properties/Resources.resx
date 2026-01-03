@@ -215,6 +215,7 @@
   </data>
   <data name="KeywordEdit" xml:space="preserve">
     <value>キーワード編集</value>
+  </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>言語設定</value>
   </data>

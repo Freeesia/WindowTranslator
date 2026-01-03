@@ -28,8 +28,7 @@ public partial class PriorityRectViewModel : ObservableObject
     /// PriorityRectからViewModelを作成
     /// </summary>
     public static PriorityRectViewModel FromPriorityRect(PriorityRect rect)
-    {
-        return new PriorityRectViewModel
+        => new()
         {
             X = rect.X,
             Y = rect.Y,
@@ -37,20 +36,17 @@ public partial class PriorityRectViewModel : ObservableObject
             Height = rect.Height,
             Keyword = rect.Keyword
         };
-    }
 
     /// <summary>
     /// ViewModelからPriorityRectを作成
     /// </summary>
     public PriorityRect ToPriorityRect()
-    {
-        return new PriorityRect(X, Y, Width, Height, Keyword);
-    }
+        => new(X, Y, Width, Height, Keyword);
 
     /// <summary>
     /// 表示用の文字列
     /// </summary>
-    public string DisplayText => $"({X:P1}, {Y:P1}) - {Width:P1} x {Height:P1}" + 
+    public string DisplayText => $"({X:P1}, {Y:P1}) - {Width:P1} x {Height:P1}" +
                                   (string.IsNullOrWhiteSpace(Keyword) ? "" : $" [{Keyword}]");
 }
 
@@ -69,10 +65,6 @@ public partial class PriorityRectListViewModel : ObservableObject
 
     [ObservableProperty]
     private int imageHeight = 1080;
-
-    public PriorityRectListViewModel()
-    {
-    }
 
     public PriorityRectListViewModel(IEnumerable<PriorityRect> rects)
     {

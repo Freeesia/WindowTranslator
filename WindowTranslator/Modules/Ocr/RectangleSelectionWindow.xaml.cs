@@ -36,11 +36,11 @@ public partial class RectangleSelectionWindow : Window
     {
         this.startPoint = e.GetPosition(this.SelectionCanvas);
         this.isSelecting = true;
-        this.SelectionRect.Visibility = Visibility.Visible;
+        this.SelectionRect.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         Canvas.SetLeft(this.SelectionRect, this.startPoint.X);
         Canvas.SetTop(this.SelectionRect, this.startPoint.Y);
-        this.SelectionRect.Width = 0;
-        this.SelectionRect.Height = 0;
+        this.SelectionRect.SetCurrentValue(WidthProperty, (double)0);
+        this.SelectionRect.SetCurrentValue(HeightProperty, (double)0);
     }
 
     private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -58,10 +58,10 @@ public partial class RectangleSelectionWindow : Window
 
         Canvas.SetLeft(this.SelectionRect, x);
         Canvas.SetTop(this.SelectionRect, y);
-        this.SelectionRect.Width = width;
-        this.SelectionRect.Height = height;
+        this.SelectionRect.SetCurrentValue(WidthProperty, width);
+        this.SelectionRect.SetCurrentValue(HeightProperty, height);
 
-        this.InfoText.Text = $"選択中: ({x:F0}, {y:F0}) - ({width:F0} x {height:F0})";
+        this.InfoText.SetCurrentValue(TextBlock.TextProperty, $"選択中: ({x:F0}, {y:F0}) - ({width:F0} x {height:F0})");
     }
 
     private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -82,8 +82,8 @@ public partial class RectangleSelectionWindow : Window
         if (width < 10 || height < 10)
         {
             MessageBox.Show("矩形が小さすぎます。もう一度選択してください。", "矩形選択", MessageBoxButton.OK, MessageBoxImage.Warning);
-            this.SelectionRect.Visibility = Visibility.Collapsed;
-            this.InfoText.Text = "矩形を選択してください（Escキーでキャンセル）";
+            this.SelectionRect.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+            this.InfoText.SetCurrentValue(TextBlock.TextProperty, "矩形を選択してください（Escキーでキャンセル）");
             return;
         }
 
