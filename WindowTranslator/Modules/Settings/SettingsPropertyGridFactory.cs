@@ -18,6 +18,7 @@ using TextBlock = System.Windows.Controls.TextBlock;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace WindowTranslator.Modules.Settings;
+
 internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 {
     private static readonly EnableAttribute enableAttribute = new(true);
@@ -102,22 +103,17 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
     private static string BuildHelpUri(string pageName)
     {
         const string baseUrl = "https://wt.studiofreesia.com/";
-        
+
         // 現在のUI言語を取得
         var culture = CultureInfo.CurrentUICulture;
-        
+
         // 言語コードをドキュメントファイルのサフィックスにマッピング
         var languageSuffix = culture.Name switch
         {
             "ja-JP" or "ja" => "", // 日本語はデフォルト（サフィックスなし）
-            "en-US" or "en" => ".en",
-            "de-DE" or "de" => ".de",
-            "ko-KR" or "ko" => ".kr",
             "zh-Hans" or "zh-CN" => ".zh-cn",
             "zh-Hant" or "zh-TW" => ".zh-tw",
-            "vi-VN" or "vi" => ".vi",
-            "hi-IN" or "hi" => ".hi",
-            _ => ".en" // デフォルトは英語
+            _ => "." + culture.TwoLetterISOLanguageName.ToLowerInvariant(),
         };
 
         return $"{baseUrl}{pageName}{languageSuffix}";
