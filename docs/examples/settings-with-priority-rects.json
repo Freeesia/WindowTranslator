@@ -1,0 +1,82 @@
+{
+  "Targets": {
+    "Default": {
+      "Language": {
+        "Source": "ja",
+        "Target": "en"
+      },
+      "SelectedPlugins": {
+        "IOcrModule": "WindowsMediaOcr",
+        "ITranslateModule": "BergamotTranslator"
+      },
+      "PluginParams": {
+        "BasicOcrParam": {
+          "Scale": 1.0,
+          "XPosThrethold": 0.005,
+          "YPosThrethold": 0.005,
+          "LeadingThrethold": 0.8,
+          "SpacingThreshold": 1.1,
+          "FontSizeThrethold": 0.25,
+          "IsAvoidMergeList": false,
+          "BufferSize": 3,
+          "IsSuppressVibe": true,
+          "IsEnableRecover": true,
+          "PriorityRects": [
+            {
+              "X": 0.1,
+              "Y": 0.05,
+              "Width": 0.8,
+              "Height": 0.1,
+              "Keyword": "タイトルバー"
+            },
+            {
+              "X": 0.05,
+              "Y": 0.15,
+              "Width": 0.2,
+              "Height": 0.7,
+              "Keyword": "メニュー"
+            },
+            {
+              "X": 0.3,
+              "Y": 0.4,
+              "Width": 0.6,
+              "Height": 0.3,
+              "Keyword": "ダイアログ"
+            }
+          ]
+        }
+      }
+    },
+    "ExampleGame": {
+      "Language": {
+        "Source": "ja",
+        "Target": "en"
+      },
+      "SelectedPlugins": {
+        "IOcrModule": "TesseractOcr",
+        "ITranslateModule": "BergamotTranslator"
+      },
+      "PluginParams": {
+        "BasicOcrParam": {
+          "Scale": 1.5,
+          "PriorityRects": [
+            {
+              "X": 0.15,
+              "Y": 0.8,
+              "Width": 0.7,
+              "Height": 0.15,
+              "Keyword": "字幕"
+            },
+            {
+              "X": 0.05,
+              "Y": 0.05,
+              "Width": 0.3,
+              "Height": 0.15,
+              "Keyword": "ステータス"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

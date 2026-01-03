@@ -1,6 +1,8 @@
 ﻿#if WINDOWS
+using System.Runtime.InteropServices;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using WinRT;
 
 namespace WindowTranslator;
 
@@ -99,5 +101,61 @@ public static class BitmapUtility
             // ここで何かログを残すことも可能ですが、今回は省略します
         }
     }
+
+    /// <summary>
+    /// 画像を切り出す
+    /// </summary>
+    /// <param name="source">元の画像</param>
+    /// <param name="rect">切り出す矩形（絶対座標）</param>
+    /// <returns>切り出された画像</returns>
+    public unsafe static SoftwareBitmap Crop(this SoftwareBitmap source, RectInfo rect)
+    {
+        var x = (int)Math.Max(0, rect.X);
+        var y = (int)Math.Max(0, rect.Y);
+        var width = (int)Math.Min(rect.Width, source.PixelWidth - x);
+        var height = (int)Math.Min(rect.Height, source.PixelHeight - y);
+
+        if (width <= 0 || height <= 0)
+        {
+            throw new ArgumentException("Invalid rectangle dimensions");
+        }
+
+        var cropped = new SoftwareBitmap(source.BitmapPixelFormat, width, height, source.BitmapAlphaMode);
+
+        using var sourceBuffer = source.LockBuffer(BitmapBufferAccessMode.Read);
+        using var croppedBuffer = cropped.LockBuffer(BitmapBufferAccessMode.Write);
+        using var sourceReference = sourceBuffer.CreateReference();
+        using var croppedReference = croppedBuffer.CreateReference();
+
+        sourceReference.As<IMemoryBufferByteAccess>().GetBuffer(out var sourceData, out var sourceCapacity);
+        croppedReference.As<IMemoryBufferByteAccess>().GetBuffer(out var croppedData, out var croppedCapacity);
+
+        var bytesPerPixel = 4; // BGRA8
+        var sourceStride = sourceBuffer.GetPlaneDescription(0).Stride;
+        var croppedStride = croppedBuffer.GetPlaneDescription(0).Stride;
+
+        for (int row = 0; row < height; row++)
+        {
+            var sourceOffset = ((y + row) * sourceStride) + (x * bytesPerPixel);
+            var croppedOffset = row * croppedStride;
+
+            for (int col = 0; col < width * bytesPerPixel; col++)
+            {
+                croppedData[croppedOffset + col] = sourceData[sourceOffset + col];
+            }
+        }
+
+        return cropped;
+    }
+
+}
+
+
+[ComImport]
+[Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+file unsafe interface IMemoryBufferByteAccess
+{
+    void GetBuffer(out byte* buffer, out uint capacity);
 }
 #endif
