@@ -9,28 +9,34 @@
 
 WindowTranslator is a tool for translating windows of applications on Windows.
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md) | [PT-BR](./README.pt-BR.md) | [FR](./README.fr.md) | [ES](./README.es.md) | [AR](./README.ar.md) | [TR](./README.tr.md) | [TH](./README.th.md) | [RU](./README.ru.md) | [FIL](./README.fil.md) | [PL](./README.pl.md)
 
 ## Table of Contents
 - [ WindowTranslator](#-windowtranslator)
   - [Table of Contents](#table-of-contents)
   - [Download](#download)
-    - [Installer Version ](#installer-version-)
+    - [Microsoft Store Version ](#microsoft-store-version-)
+    - [Installer Version](#installer-version)
     - [Portable Version](#portable-version)
   - [How to Use](#how-to-use)
     - [Bergamot ](#bergamot-)
   - [Other Features](#other-features)
 
 ## Download
-### Installer Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
+### Microsoft Store Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
 
-Download `WindowTranslator-(version).msi` from the [GitHub release page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
-Installation guide video⬇️  
-[![Installation Guide Video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
+Install from the [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
+Works even in environments where .NET is not installed.
+
+### Installer Version
+
+Download `WindowTranslator-(version).msi` from the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and run it to install.  
+Installation tutorial video is here⬇️  
+[![Installation tutorial video](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### Portable Version
 
-Download the zip file from the [GitHub release page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
+Download the zip file from the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
 - `WindowTranslator-(version).zip` : Requires .NET environment  
 - `WindowTranslator-full-(version).zip` : .NET independent
 
@@ -48,12 +54,12 @@ Download the zip file from the [GitHub release page](https://github.com/Freeesia
    > OCR function installation may be required.
    > Please follow the instructions to install.
 5. After a while, the translation results will be displayed as an overlay.  
-   ![Translation Result](images/result.png)
+   ![Translation Results](images/result.png)
 
 > [!NOTE]
 > Various translation modules are available in WindowTranslator.  
 > Google Translate has a low limit on the amount of text that can be translated. If you use it frequently, consider using other modules.  
-> You can check the list of available translation modules in the videos below or on the [Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳).
+> You can check the list of available translation modules in the videos below or on the [Documentation](https://wt.studiofreesia.com/TranslateModule.en).
 > 
 > |                |                                                           How to Use Video                                                            | Advantages                    | Disadvantages                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |

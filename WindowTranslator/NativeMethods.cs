@@ -1,15 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 namespace Windows.Win32;
 internal static partial class PInvoke
 {
-    [SupportedOSPlatform("windows5.0")]
-    [OverloadResolutionPriority(2)]
-    internal static unsafe Foundation.HWND CreateWindowEx(UI.WindowsAndMessaging.WINDOW_EX_STYLE dwExStyle, string lpClassName, string lpWindowName, UI.WindowsAndMessaging.WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, Foundation.HWND hWndParent, SafeHandle hMenu, SafeHandle hInstance, IntPtr lpParam)
-        => CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam.ToPointer());
-
     [SupportedOSPlatform("windows5.0")]
     internal static unsafe string GetWindowText(Foundation.HWND hWnd)
     {
@@ -51,4 +47,47 @@ internal static partial class PInvoke
     [DllImport("USER32.dll", ExactSpelling = true, EntryPoint = "SetWindowLongPtrW", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [SupportedOSPlatform("windows5.0")]
     private static extern int _SetWindowLongPtr(Foundation.HWND hWnd, UI.WindowsAndMessaging.WINDOW_LONG_PTR_INDEX nIndex, nint dwNewLong);
+
+    /// <summary>
+    /// ウィンドウがcloaked（非表示）状態かどうかを判定します。
+    /// 注意: このメソッドは仮想デスクトップによる非表示を完全には検出できません。
+    /// 仮想デスクトップの判定には IVirtualDesktopManager.IsWindowOnCurrentVirtualDesktop を併用してください。
+    /// </summary>
+    public static unsafe bool IsCloaked(Foundation.HWND hwnd)
+    {
+        var cloaked = 0;
+        var hr = DwmGetWindowAttribute(hwnd, Graphics.Dwm.DWMWINDOWATTRIBUTE.DWMWA_CLOAKED, &cloaked, sizeof(int));
+        if (hr.Failed)
+        {
+            return false;
+        }
+        return cloaked != 0;
+    }
+
+    public static bool IsIgnoreWindow(Foundation.HWND hWnd)
+    {
+        // 非表示ウィンドウとcloakedウィンドウをスキップ
+        if (!IsWindowVisible(hWnd) || IsCloaked(hWnd))
+        {
+            return true;
+        }
+        // ツールチップやコンテキストメニューは無視
+        Span<char> className = stackalloc char[256];
+        var l = GetClassName(hWnd, className);
+        if (className[..l] is "tooltips_class32" or "#32768")
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static unsafe (int w, int h) GetWindowSizeForWgcCompare(Foundation.HWND hwnd)
+    {
+        // 1) 影を含まない枠サイズを取得（WGCのキャプチャ領域に近い）
+        Foundation.RECT rect;
+        if (DwmGetWindowAttribute(hwnd, Graphics.Dwm.DWMWINDOWATTRIBUTE.DWMWA_EXTENDED_FRAME_BOUNDS, &rect, (uint)Marshal.SizeOf<Foundation.RECT>()) != 0)
+            throw new InvalidOperationException("DwmGetWindowAttribute failed.");
+
+        return (rect.Width, rect.Height);
+    }
 }

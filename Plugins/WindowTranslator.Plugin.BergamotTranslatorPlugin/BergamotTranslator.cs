@@ -26,14 +26,14 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
-        var path = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}{dst}", "config.yml");
+        var path = Path.Combine(SystemUtility.ModelsPath, $"{src}{dst}", "config.yml");
         if (File.Exists(path))
         {
             this.service = new BlockingService(path);
             return;
         }
-        var path1 = Path.Combine(PathUtility.UserDir, "bergamot", $"{src}en", "config.yml");
-        var path2 = Path.Combine(PathUtility.UserDir, "bergamot", $"en{dst}", "config.yml");
+        var path1 = Path.Combine(SystemUtility.ModelsPath, $"{src}en", "config.yml");
+        var path2 = Path.Combine(SystemUtility.ModelsPath, $"en{dst}", "config.yml");
         if (File.Exists(path1) && File.Exists(path2))
         {
             this.service = new BlockingService(path1, path2);
@@ -117,7 +117,7 @@ public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> 
     private async ValueTask<bool> DownloadIfNotExists(string src, string dst)
     {
         var langPair = $"{src}{dst}";
-        var modelDir = Path.Combine(PathUtility.UserDir, "bergamot", langPair);
+        var modelDir = Path.Combine(SystemUtility.ModelsPath, langPair);
         var configPath = Path.Combine(modelDir, "config.yml");
 
         // すでに設定ファイルが存在する場合は処理をスキップ

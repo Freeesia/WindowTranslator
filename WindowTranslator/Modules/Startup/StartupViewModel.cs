@@ -1,16 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Composition.WindowsRuntimeHelpers;
-using Kamishibai;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Composition.WindowsRuntimeHelpers;
+using Kamishibai;
+using Microsoft.Extensions.DependencyInjection;
 using Windows.Graphics.Capture;
-using Windows.Win32.Foundation;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
 using static Windows.Win32.PInvoke;
@@ -23,16 +23,18 @@ public partial class StartupViewModel
     private readonly IPresentationService presentationService;
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
+    private readonly IVirtualDesktopManager desktopManager;
     private readonly ObservableCollection<MenuItemViewModel> attachingWindows;
     private IWindow? logView;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
-    public StartupViewModel(IPresentationService presentationService, IServiceProvider serviceProvider, IMainWindowModule mainWindowModule)
+    public StartupViewModel(IPresentationService presentationService, IServiceProvider serviceProvider, IMainWindowModule mainWindowModule, IVirtualDesktopManager desktopManager)
     {
         this.presentationService = presentationService;
         this.serviceProvider = serviceProvider;
         this.mainWindowModule = mainWindowModule;
+        this.desktopManager = desktopManager;
         this.attachingWindows = new(this.mainWindowModule.OpenedWindows.Select(CreateMenu));
         this.mainWindowModule.OpenedWindows.CollectionChanged += OpenedWindows_CollectionChanged;
         this.TaskBarIconMenus =
@@ -99,7 +101,7 @@ public partial class StartupViewModel
                 }
                 return;
             }
-            p = FindProcessByWindowTitle(item.DisplayName);
+            p = FindProcessByWindowTitle(item.DisplayName, item.Size);
             if (p is null)
             {
                 this.presentationService.ShowMessage(string.Format(Resources.UnknownWindow, item.DisplayName), icon: Kamishibai.MessageBoxImage.Error, owner: window);
@@ -117,14 +119,7 @@ public partial class StartupViewModel
         }
         catch (Exception ex)
         {
-            if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
-            {
-                this.presentationService.ShowMessage(ex.Message, icon: Kamishibai.MessageBoxImage.Exclamation, owner: window);
-            }
-            else
-            {
-                await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildOverlay, ex, p.Name, string.Empty, owner: window);
-            }
+            await this.presentationService.OpenErrorDialogAsync(Resources.FaildOverlay, ex, p.Name, string.Empty, window);
         }
         if (!beforeVisible)
         {
@@ -137,7 +132,7 @@ public partial class StartupViewModel
     {
         using var scope = this.serviceProvider.CreateScope();
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
-        await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
+        await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, null, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });
     }
 
     [RelayCommand]
@@ -158,23 +153,56 @@ public partial class StartupViewModel
     public static void Exit()
         => Application.Current.Shutdown();
 
-    private static ProcessInfo? FindProcessByWindowTitle(string targetTitle)
+    private ProcessInfo? FindProcessByWindowTitle(string targetTitle, Windows.Graphics.SizeInt32 targetSize)
     {
-        var hWnd = FindWindowEx(HWND.Null, HWND.Null, null, null);
+        ProcessInfo? result = null;
+        ProcessInfo? candidate = null;
 
-        while (hWnd != IntPtr.Zero)
+        EnumWindows((hWnd, _) =>
         {
-            var windowTitle = GetWindowText(hWnd);
-            if (windowTitle == targetTitle)
+            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
             {
-                _ = GetWindowThreadProcessId(hWnd, out var processId);
-                var p = Process.GetProcessById(processId);
-                return new ProcessInfo(windowTitle, processId, hWnd, p.ProcessName);
+                return true;
             }
 
-            hWnd = FindWindowEx(HWND.Null, hWnd, null, null);
-        }
-        return null;
+            var windowTitle = GetWindowText(hWnd);
+            if (windowTitle != targetTitle)
+            {
+                return true;
+            }
+
+            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            {
+                return true;
+            }
+
+            Process p;
+            try
+            {
+                p = Process.GetProcessById(unchecked((int)processId));
+            }
+            catch (ArgumentException)
+            {
+                return true;
+            }
+
+            // ウィンドウサイズを取得
+            var (width, height) = GetWindowSizeForWgcCompare(hWnd);
+            // サイズが完全一致する場合は即座に結果を設定して終了
+            if (width == targetSize.Width && height == targetSize.Height)
+            {
+                result = new ProcessInfo(windowTitle, p.Id, hWnd, p.ProcessName);
+                return false; // 列挙を終了
+            }
+
+            // タイトルは一致するが、サイズが異なる場合は候補として保持
+            candidate ??= new ProcessInfo(windowTitle, p.Id, hWnd, p.ProcessName);
+
+            return true;
+        }, IntPtr.Zero);
+
+        // 完全一致が見つかった場合はそれを返し、そうでなければ候補を返す
+        return result ?? candidate;
     }
 
     private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);

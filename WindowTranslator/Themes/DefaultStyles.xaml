@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ctrl="clr-namespace:WindowTranslator.Controls"
+    xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
     xmlns:md="https://github.com/whistyun/MdXaml"
     xmlns:mdp="clr-namespace:MdXaml.Plugins;assembly=MdXaml.Plugins"
     xmlns:pt="http://propertytools.org/wpf"
@@ -23,7 +24,7 @@
 
                         <Border
                             Grid.Row="1"
-                            Padding="16"
+                            Padding="8"
                             Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
                             CornerRadius="8">
@@ -107,6 +108,13 @@
         </Style.Resources>
     </Style>
     <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type ui:ContentDialog}">
+        <Setter Property="TitleTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <emoji:TextBlock Text="{Binding}" TextWrapping="WrapWithOverflow" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -117,7 +125,26 @@
                         MarkdownStyle="{StaticResource mdStyle}">
                         <md:MarkdownScrollViewer.Plugins>
                             <mdp:MdXamlPlugins>
-                                <ctrl:LineBreakSplitPluginSetup />
+                                <ctrl:CustomPluginSetup />
+                            </mdp:MdXamlPlugins>
+                        </md:MarkdownScrollViewer.Plugins>
+                    </md:MarkdownScrollViewer>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ui:MessageBox}}" TargetType="{x:Type ui:MessageBox}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <md:MarkdownScrollViewer
+                        Margin="8"
+                        ClickAction="OpenBrowser"
+                        Markdown="{Binding}"
+                        MarkdownStyle="{StaticResource mdStyle}">
+                        <md:MarkdownScrollViewer.Plugins>
+                            <mdp:MdXamlPlugins>
+                                <ctrl:CustomPluginSetup />
                             </mdp:MdXamlPlugins>
                         </md:MarkdownScrollViewer.Plugins>
                     </md:MarkdownScrollViewer>

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using GenerativeAI;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
@@ -9,13 +11,19 @@ namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 public partial class GoogleAIOptions : IPluginParam
 {
+    static GoogleAIOptions()
+    {
+        // EnumにTypeConverterする際はカスタムTypeDescriptionProviderを登録する必要がある
+        TypeDescriptor.AddProvider(new GoogleAIModelTypeDescriptionProvider(), typeof(GoogleAIModel));
+    }
+
     [SelectorStyle(SelectorStyle.ComboBox)]
     public CorrectMode CorrectMode { get; set; }
 
     public bool WaitCorrect { get; set; }
 
     [SelectorStyle(SelectorStyle.ComboBox)]
-    public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini15Flash;
+    public GoogleAIModel Model { get; set; } = GoogleAIModel.Gemini25FlashLite;
 
     [LocalizedDescription(typeof(Resources), $"{nameof(PreviewModel)}_Desc")]
     public string? PreviewModel { get; set; }
@@ -38,8 +46,6 @@ public partial class GoogleAIOptions : IPluginParam
 
 public enum GoogleAIModel
 {
-    Gemini15Flash,
-    Gemini15Pro,
     Gemini20FlashLite,
     Gemini20Flash,
     Gemini25Flash,
@@ -61,8 +67,6 @@ public static class GoogleAIModelExtensions
 {
     public static string GetName(this GoogleAIModel model) => model switch
     {
-        GoogleAIModel.Gemini15Flash => GoogleAIModels.Gemini15Flash,
-        GoogleAIModel.Gemini15Pro => GoogleAIModels.Gemini15Pro,
         GoogleAIModel.Gemini20FlashLite => "models/gemini-2.0-flash-lite",
         GoogleAIModel.Gemini20Flash => GoogleAIModels.Gemini2Flash,
         GoogleAIModel.Gemini25Flash => "models/gemini-2.5-flash",
@@ -97,5 +101,91 @@ public class GoogleAIValidator : ITargetSettingsValidator
 
             APIキーはGeminiの[APIキーページ](https://aistudio.google.com/app/apikey)から取得できます。
             """));
+    }
+}
+
+/// <summary>
+/// GoogleAIModel用のカスタムTypeDescriptionProvider
+/// </summary>
+file class GoogleAIModelTypeDescriptionProvider() : TypeDescriptionProvider(TypeDescriptor.GetProvider(typeof(GoogleAIModel)))
+{
+    public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object? instance)
+        => new GoogleAIModelTypeDescriptor(base.GetTypeDescriptor(objectType, instance));
+}
+
+/// <summary>
+/// GoogleAIModel用のカスタムTypeDescriptor
+/// </summary>
+file class GoogleAIModelTypeDescriptor(ICustomTypeDescriptor? parent) : CustomTypeDescriptor(parent)
+{
+    public override TypeConverter GetConverter()
+        => new GoogleAIModelTypeConverter();
+}
+
+/// <summary>
+/// GoogleAIModel用のカスタムTypeConverter
+/// 古い設定ファイルからの数値と文字列の読み込みをサポートします。
+/// </summary>
+file class GoogleAIModelTypeConverter() : EnumConverter(typeof(GoogleAIModel))
+{
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
+        => sourceType == typeof(string) || sourceType == typeof(int) || base.CanConvertFrom(context, sourceType);
+
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+    {
+        // 数値として読み込む（古い設定ファイルの互換性のため）
+        if (value is int numericValue)
+        {
+            // 古いEnum値をマッピング
+            // 0: Gemini15Flash -> Gemini25FlashLite
+            // 1: Gemini15Pro -> Gemini25Pro
+            // 2: Gemini20FlashLite (変更なし、ただし新しいインデックスは0)
+            // 3: Gemini20Flash (変更なし、ただし新しいインデックスは1)
+            // 4: Gemini25Flash (変更なし、ただし新しいインデックスは2)
+            // 5: Gemini25Pro (変更なし、ただし新しいインデックスは3)
+            // 6: Gemini25FlashLite (変更なし、ただし新しいインデックスは4)
+            return numericValue switch
+            {
+                0 => GoogleAIModel.Gemini25FlashLite, // Gemini15Flash -> Gemini25FlashLite
+                1 => GoogleAIModel.Gemini25Pro,       // Gemini15Pro -> Gemini25Pro
+                2 => GoogleAIModel.Gemini20FlashLite, // Gemini20FlashLite
+                3 => GoogleAIModel.Gemini20Flash,     // Gemini20Flash
+                4 => GoogleAIModel.Gemini25Flash,     // Gemini25Flash
+                5 => GoogleAIModel.Gemini25Pro,       // Gemini25Pro
+                6 => GoogleAIModel.Gemini25FlashLite, // Gemini25FlashLite
+                _ => GoogleAIModel.Gemini25FlashLite, // デフォルト
+            };
+        }
+
+        // 文字列として読み込む
+        if (value is string stringValue)
+        {
+            if (Enum.TryParse<GoogleAIModel>(stringValue, out var result))
+            {
+                return result;
+            }
+            // 古い名前からの移行をサポート
+            return stringValue switch
+            {
+                "Gemini15Flash" => GoogleAIModel.Gemini25FlashLite,
+                "Gemini15Pro" => GoogleAIModel.Gemini25Pro,
+                _ => GoogleAIModel.Gemini25FlashLite,
+            };
+        }
+
+        return base.ConvertFrom(context, culture, value);
+    }
+
+    public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
+        => destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
+    {
+        if (destinationType == typeof(string) && value is GoogleAIModel model)
+        {
+            return model.ToString();
+        }
+
+        return base.ConvertTo(context, culture, value, destinationType);
     }
 }

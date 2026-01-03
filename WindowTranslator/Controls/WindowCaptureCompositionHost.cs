@@ -77,9 +77,9 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
             brush.Surface = compositionHost.Compositor?.CreateCompositionSurfaceForSwapChain(swapChain);
 
             var content = compositor.CreateSpriteVisual();
-            content.AnchorPoint = new Vector2(0.5f);
+            content.AnchorPoint = new(0.5f);
             content.RelativeOffsetAdjustment = new Vector3(0.5f, 0.5f, 0);
-            content.RelativeSizeAdjustment = Vector2.One;
+            content.RelativeSizeAdjustment = new(1.0f);
             content.Brush = brush;
 
             compositionHost.Child = content;
@@ -158,7 +158,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 (HWND)hwndParent.Handle,
                 null!,
                 null!,
-                IntPtr.Zero);
+                []);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
             SetWindowPos(hwndHost, new(1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);

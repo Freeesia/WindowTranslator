@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using PropertyTools.DataAnnotations;
@@ -41,11 +42,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         WriteIndented = true,
     };
     private readonly IUpdateChecker updateChecker;
+    private readonly IReviewRequestService reviewRequestService;
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
+    private readonly ILogger<AllSettingsViewModel> logger;
     private readonly IConfigurationRoot? rootConfig;
     private readonly string target;
     [ObservableProperty]
@@ -98,18 +101,23 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool IsVisibleAbout { get; } = !AppInfo.SuppressMode;
 
+    public bool IsVisibleReviewButton => this.reviewRequestService.CanOpenReview;
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
         [Inject] IServiceProvider sp,
         [Inject] IUpdateChecker updateChecker,
+        [Inject] IReviewRequestService reviewRequestService,
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
-        string target)
+        [Inject] ILogger<AllSettingsViewModel> logger,
+        string target,
+        bool? applyMode = null)
     {
         var items = provider.GetPlugins();
         var ocrModules = items.Where(p => typeof(IOcrModule).IsAssignableFrom(p.Type)).Select(Convert).ToArray();
@@ -128,7 +136,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
             .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
 
-        this.ApplyMode = !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
+        this.ApplyMode = applyMode ?? !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
             selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
@@ -141,11 +149,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.SelectedTarget = selected;
 
         this.updateChecker = updateChecker;
+        this.reviewRequestService = reviewRequestService;
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
         this.validators = validators;
         this.mainWindowModule = mainWindowModule;
+        this.logger = logger;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
@@ -206,6 +216,10 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     => new(plugin.Type.Name, plugin.Name, plugin.Type.IsDefined(typeof(DefaultModuleAttribute)));
 
     [RelayCommand]
+    public Task OpenReviewAsync()
+        => this.reviewRequestService.OpenReviewPageAsync();
+
+    [RelayCommand]
     public void DeleteAutoTarget(string item)
         => this.AutoTargets.Remove(item);
 
@@ -257,41 +271,19 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         var results = new Dictionary<string, IReadOnlyList<ValidateResult>>();
         foreach (var (name, target) in string.IsNullOrEmpty(this.target) ? settings.Targets.ToArray() : [new KeyValuePair<string, TargetSettings>(this.target, settings.Targets[this.target])])
         {
-            var r = new List<ValidateResult>();
-            if (target.Language.Source == target.Language.Target)
+            var validationResults = await this.validators.ValidateAsync(target);
+            if (validationResults.Any())
             {
-                r.Add(ValidateResult.Invalid(Resources.TranslateLanguage, Resources.SameSourceTargetLanguage));
-            }
-
-            if (!target.SelectedPlugins.TryGetValue(nameof(ITranslateModule), out var t) || string.IsNullOrEmpty(t))
-            {
-                r.Add(ValidateResult.Invalid(Resources.TranslateModule, """
-                    翻訳モジュールが選択されていません。
-                    「対象ごとの設定」→「全体設定」タブの「翻訳モジュール」を設定してください。
-                    """));
-            }
-            if (!target.SelectedPlugins.TryGetValue(nameof(ICacheModule), out var c) || string.IsNullOrEmpty(c))
-            {
-                r.Add(ValidateResult.Invalid(Resources.CacheModule, """
-                    キャッシュモジュールが選択されていません。
-                    「対象ごとの設定」→「全体設定」タブの「キャッシュモジュール」を設定してください。
-                    """));
-            }
-            foreach (var validator in this.validators)
-            {
-                r.Add(await validator.Validate(target));
-            }
-            if (r.Any(r => !r.IsValid))
-            {
-                results.Add(name, r.Where(r => !r.IsValid).ToArray());
+                results.Add(name, validationResults);
             }
         }
         if (results.Any())
         {
             var r = await this.dialogService.ShowSimpleDialogAsync(new()
             {
-                Title = Resources.SettingsInvalid,
-                Content = string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : Resources.DefaultSetting)}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
+                Title = "⚠️" + Resources.SettingsInvalid,
+                Content = Resources.SettingInvalidContent
+                    + string.Join("\n\n", results.Select(p => $"## {(p.Key is { Length: > 0 } n ? n : Resources.DefaultSetting)}\n{string.Join("\n", p.Value.Select(r => $"### {r.Title}\n{r.Message}"))}")),
                 PrimaryButtonText = Resources.SaveAndClose,
                 CloseButtonText = Resources.Cancel,
             });
@@ -299,6 +291,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             {
                 return;
             }
+            this.logger.LogWarning("Settings are invalid, but user chose to save them anyway.");
         }
 
         // 値の保存
@@ -321,14 +314,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             }
             catch (Exception ex)
             {
-                if (ex is AppUserException || (ex is AggregateException { InnerExceptions: var exs } && exs.OfType<AppUserException>().Any()))
-                {
-                    this.presentationService.ShowMessage(ex.Message, icon: Kamishibai.MessageBoxImage.Exclamation, owner: window);
-                }
-                else
-                {
-                    await this.presentationService.OpenErrorReportDialogAsync(Resources.FaildApplySettings, ex, this.target, string.Empty, owner: window);
-                }
+                await this.presentationService.OpenErrorDialogAsync(Resources.FaildApplySettings, ex, this.target, string.Empty, owner: window);
             }
         }
         else
@@ -386,6 +372,13 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("zh-Hant"),
         CultureInfo.GetCultureInfo("vi-VN"),
         CultureInfo.GetCultureInfo("hi-IN"),
+        CultureInfo.GetCultureInfo("ms-MY"),
+        CultureInfo.GetCultureInfo("id-ID"),
+        CultureInfo.GetCultureInfo("ar-SA"),
+        CultureInfo.GetCultureInfo("tr-TR"),
+        CultureInfo.GetCultureInfo("th-TH"),
+        CultureInfo.GetCultureInfo("fil-PH"),
+        CultureInfo.GetCultureInfo("pl-PL"),
     ];
 
     [Browsable(false)]
@@ -414,6 +407,7 @@ public partial class TargetSettingsViewModel(
     [ItemsSourceProperty(nameof(OcrModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
+    [HelpUri("OcrModule")]
     public string OcrModule { get; set; }
         = settings.SelectedPlugins.GetValueOrDefault(
             nameof(IOcrModule),
@@ -423,6 +417,7 @@ public partial class TargetSettingsViewModel(
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
+    [HelpUri("TranslateModule")]
     public string TranslateModule { get; set; }
         = settings.SelectedPlugins.GetValueOrDefault(
             nameof(ITranslateModule),

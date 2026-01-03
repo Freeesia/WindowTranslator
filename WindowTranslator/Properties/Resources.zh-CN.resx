@@ -420,4 +420,40 @@
   <data name="FaildApplySettings" xml:space="preserve">
     <value>应用设置失败。</value>
   </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>发生未知错误</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>请求评论</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>感谢您使用 WindowTranslator。您能在 Microsoft Store 上留下评论吗？</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>撰写评论</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>稍后</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>不再显示</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **保存这些设置将无法工作。**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: 设置验证错误</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>按原样运行</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **按原样运行可能无法正常工作**
+***
+
+</value>
+  </data>
 </root>

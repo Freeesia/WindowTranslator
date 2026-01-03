@@ -121,9 +121,24 @@
     <value>API-Schlüssel</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>Glossarpfad</value>
+    <value>Glossar-Pfad</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
-    <value>Der DeepL-API-Schlüssel ist nicht festgelegt. Bitte setzen Sie den DeepL-API-Schlüssel im Einstellungsdialog.</value>
+    <value>Der DeepL-API-Schlüssel ist nicht konfiguriert. Bitte setzen Sie den DeepL-API-Schlüssel im Einstellungsdialog.</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL-Autorisierungsfehler. Ein ungültiger API-Schlüssel ist konfiguriert. Bitte versuchen Sie, den API-Schlüssel neu zu erstellen.</value>
+  </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>DeepL-Nutzungslimit wurde erreicht. Aktuelle Nutzung: {0} / {1} Zeichen</value>
+  </data>
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>Nutzung überprüfen</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Nutzung</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>Unbekannt</value>
   </data>
 </root>

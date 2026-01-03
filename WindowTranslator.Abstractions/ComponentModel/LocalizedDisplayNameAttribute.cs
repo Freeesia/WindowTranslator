@@ -12,7 +12,7 @@ namespace WindowTranslator.ComponentModel;
 /// <param name="displayName">キー</param>
 public class LocalizedDisplayNameAttribute(Type resourceType, string displayName) : DisplayNameAttribute(displayName)
 {
-    private static readonly ConcurrentDictionary<Type, ResourceManager> resourceCache = new();
+    private static readonly ConcurrentDictionary<Type, CustomResourceManager> resourceCache = new();
 
     /// <summary>
     /// リソースの型を取得または設定します。
@@ -24,7 +24,7 @@ public class LocalizedDisplayNameAttribute(Type resourceType, string displayName
     {
         get
         {
-            var resourceManager = resourceCache.GetOrAdd(ResourceType, type => new ResourceManager(type));
+            var resourceManager = resourceCache.GetOrAdd(ResourceType, type => new CustomResourceManager(type));
             return resourceManager.GetString(this.DisplayNameValue, CultureInfo.CurrentUICulture) ?? this.DisplayNameValue;
         }
     }

@@ -114,15 +114,12 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
 
         // 固定または属性等で管理する salt
         byte[] salt = Encoding.UTF8.GetBytes("wX9&7QjrkK%@");
-
-        // PBKDF2 を使って、パスワードから鍵と IV を生成
-        using var pdb = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256);
-        byte[] key = pdb.GetBytes(32); // 256 ビット（AES-256 用）
-        byte[] iv = pdb.GetBytes(16);  // 128 ビット（IV のサイズ）
-
         using var aes = Aes.Create();
-        aes.Key = key;
-        aes.IV = iv;
+        // PBKDF2 を使って、パスワードから鍵と IV を生成
+        Span<byte> buf = stackalloc byte[48];
+        Rfc2898DeriveBytes.Pbkdf2(password, salt.AsSpan(), buf, 10000, HashAlgorithmName.SHA256);
+        aes.Key = buf[..32].ToArray();
+        aes.IV = buf[32..].ToArray();
         aes.Padding = PaddingMode.PKCS7;
 
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);

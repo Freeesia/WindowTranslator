@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Markup;
+using System.Windows.Threading;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,18 +23,19 @@ using WindowTranslator.ComponentModel;
 using WindowTranslator.Logging;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
-using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.ErrorReport;
+using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
+using WindowTranslator.Modules.Validate;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using MessageBoxImage = Kamishibai.MessageBoxImage;
 
-//Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
-//Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN");
+//Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
+//Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 
 #if DEBUG
 var createdNew = true;
@@ -140,6 +143,11 @@ else
         .AddHostedService(sp => sp.GetRequiredService<UpdateChecker>());
 }
 
+// レビュー依頼サービスの登録
+builder.Services.AddSingleton<ReviewRequestService>()
+    .AddSingleton<IReviewRequestService>(sp => sp.GetRequiredService<ReviewRequestService>())
+    .AddHostedService(sp => sp.GetRequiredService<ReviewRequestService>());
+
 builder.Services.AddScoped<IProcessInfoStoreInternal, ProcessInfoStore>()
     .AddScoped<IProcessInfoStore>(sp => sp.GetRequiredService<IProcessInfoStoreInternal>());
 builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
@@ -148,12 +156,14 @@ builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
 builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
 builder.Services.AddPresentation<ErrorReportDialog, ErrorReportViewModel>();
 builder.Services.AddPresentation<LogWindow, LogViewModel>();
+builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
+builder.Services.AddTransient<IConfigureNamedOptions<TargetSettings>, ConfigureTargetSettings>();
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
 builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
@@ -179,7 +189,19 @@ if (SentrySdk.IsEnabled)
 }
 AppInfo.SuppressMode = app.Configuration.GetValue<bool>(nameof(AppInfo.SuppressMode));
 
-await app.RunAsync();
+try
+{
+    await app.RunAsync();
+}
+catch (Exception e)
+{
+    var ds = new ContentDialogService();
+    var w = new ErrorReportDialog(ds)
+    {
+        DataContext = new ErrorReportViewModel(ds, null, Resources.UnhundledErrorMessage, e, string.Empty),
+    };
+    w.ShowDialog();
+}
 
 static Type? GetDefaultPlugin<TInterface>(IServiceProvider serviceProvider, IEnumerable<Type> implementingTypes)
     => implementingTypes.OrderByDescending(t => t.IsDefined(typeof(DefaultModuleAttribute)))
@@ -245,7 +267,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
     }
 }
 
-class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
@@ -253,6 +275,17 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
     public void Configure(TargetSettings options)
     {
         var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.Bind(options);
+    }
+
+    public void Configure(string? name, TargetSettings options)
+    {
+        name = (string.IsNullOrEmpty(name) ? this.store.Name : name) ?? string.Empty;
+        var section = this.configuration.GetSection(name);
         if (!section.Exists())
         {
             section = this.configuration.GetSection(Options.DefaultName);

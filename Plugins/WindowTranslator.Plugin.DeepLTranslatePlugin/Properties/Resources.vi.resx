@@ -121,9 +121,24 @@
     <value>Khóa API</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>Đường dẫn thuật ngữ</value>
+    <value>Đường dẫn từ điển thuật ngữ</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
     <value>Khóa API DeepL chưa được thiết lập. Vui lòng đặt khóa API DeepL từ hộp thoại cài đặt.</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>Lỗi xác thực DeepL. Đã cấu hình khóa API không hợp lệ. Vui lòng thử tạo lại khóa API.</value>
+  </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>Đã đạt giới hạn sử dụng DeepL. Mức sử dụng hiện tại: {0} / {1} ký tự</value>
+  </data>
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>Kiểm tra mức sử dụng</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Mức sử dụng</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>Không xác định</value>
   </data>
 </root>

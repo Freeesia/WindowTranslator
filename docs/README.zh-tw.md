@@ -9,23 +9,29 @@
 
 WindowTranslator是一款用於翻譯Windows應用程式視窗的工具。
 
-[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md)
+[JA](README.md) | [EN](./README.en.md) | [DE](./README.de.md) | [KR](./README.kr.md) | [ZH-CN](./README.zh-cn.md) | [ZH-TW](./README.zh-tw.md) | [VI](./README.vi.md) | [HI](./README.hi.md) | [MS](./README.ms.md) | [ID](./README.id.md) | [PT-BR](./README.pt-BR.md) | [FR](./README.fr.md) | [ES](./README.es.md) | [AR](./README.ar.md) | [TR](./README.tr.md) | [TH](./README.th.md) | [RU](./README.ru.md) | [FIL](./README.fil.md) | [PL](./README.pl.md)
 
 ## 目錄
 - [ WindowTranslator](#-windowtranslator)
   - [目錄](#目錄)
   - [下載](#下載)
-    - [安裝版 ](#安裝版-)
+    - [Microsoft Store 版本 ](#microsoft-store-版本-)
+    - [安裝版](#安裝版)
     - [可攜版](#可攜版)
   - [使用方法](#使用方法)
     - [Bergamot ](#bergamot-)
   - [其他功能](#其他功能)
 
 ## 下載
-### 安裝版 ![推薦](https://img.shields.io/badge/推薦-brightgreen)
+### Microsoft Store 版本 ![推薦](https://img.shields.io/badge/推薦-brightgreen)
+
+從 [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct) 安裝。
+即使在未安裝 .NET 的環境中也能正常運作。
+
+### 安裝版
 
 從[GitHub發布頁面](https://github.com/Freeesia/WindowTranslator/releases/latest)下載`WindowTranslator-(版本).msi`並運行安裝。  
-安裝指南影片⬇️  
+安裝指南影片在這裡⬇️  
 [![安裝指南影片](https://github.com/user-attachments/assets/b5babc02-715b-43bc-ba97-f23078ffd39b)](https://youtu.be/wvcbCLA9chQ?t=7)
 
 ### 可攜版
@@ -42,18 +48,18 @@ WindowTranslator是一款用於翻譯Windows應用程式視窗的工具。
    ![翻譯按鈕](images/translate.png)
 2. 選擇要翻譯的應用程式視窗，然後點擊「確定」按鈕。  
    ![視窗選擇](images/select.png)
-3. 在「一般設定」選項卡中的「語言設定」中選擇來源語言和目標語言。  
+3. 在「全體設定」選項卡中的「語言設定」中選擇翻譯來源語言和翻譯目標語言。  
    ![語言設定](images/language.png)
 4. 完成設定後，點擊「確定」按鈕關閉設定畫面。  
    > 可能需要安裝OCR功能。
    > 請按照指示進行安裝。
-5. 片刻後，翻譯結果將以疊加形式顯示。  
+5. 稍後翻譯結果將以覆蓋層形式顯示。  
    ![翻譯結果](images/result.png)
 
 > [!NOTE]
 > WindowTranslator提供各種翻譯模組。  
 > Google翻譯可翻譯的文字量較少，如果您經常使用，請考慮使用其他模組。  
-> 您可以在下面的影片或[Wiki](https://github.com/Freeesia/WindowTranslator/wiki#翻訳)中查看可用翻譯模組列表。
+> 您可以在下面的影片或[文件](https://wt.studiofreesia.com/TranslateModule.zh-tw)中查看可用翻譯模組列表。
 > 
 > |                |                                                          使用方法影片                                                           | 優點                    | 缺點                        |
 > | :------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------- | :----------------------------------- |
@@ -66,8 +72,8 @@ WindowTranslator是一款用於翻譯Windows應用程式視窗的工具。
 
 ## 其他功能
 
-除了翻譯模組外，WindowTranslator還具有各種功能。  
-如果您想了解更多，請查看[Wiki](https://github.com/Freeesia/WindowTranslator/wiki)。
+除了翻譯模組外，WindowTranslator還搭載了各種功能。  
+如果想了解更多，請查看[Wiki](https://github.com/Freeesia/WindowTranslator/wiki)。
 
 ---
 [隱私政策](PrivacyPolicy.md)

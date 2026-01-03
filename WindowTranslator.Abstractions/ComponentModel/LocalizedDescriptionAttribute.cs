@@ -12,7 +12,7 @@ namespace WindowTranslator.ComponentModel;
 /// <param name="description">キー</param>
 public class LocalizedDescriptionAttribute(Type resourceType, string description) : DescriptionAttribute(description)
 {
-    private static readonly ConcurrentDictionary<Type, ResourceManager> resourceCache = new();
+    private static readonly ConcurrentDictionary<Type, CustomResourceManager> resourceCache = new();
 
     /// <summary>
     /// リソースの型を取得または設定します。
@@ -24,7 +24,7 @@ public class LocalizedDescriptionAttribute(Type resourceType, string description
     {
         get
         {
-            var resourceManager = resourceCache.GetOrAdd(ResourceType, type => new ResourceManager(type));
+            var resourceManager = resourceCache.GetOrAdd(ResourceType, type => new CustomResourceManager(type));
             return resourceManager.GetString(this.DescriptionValue, CultureInfo.CurrentUICulture) ?? this.DescriptionValue;
         }
     }

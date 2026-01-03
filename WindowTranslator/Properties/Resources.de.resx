@@ -420,4 +420,40 @@ Monitore werden nicht unterstützt.
   <data name="FaildApplySettings" xml:space="preserve">
     <value>Fehler beim Anwenden der Einstellungen.</value>
   </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Ein unbekannter Fehler ist aufgetreten</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Bewertung anfordern</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Vielen Dank, dass Sie WindowTranslator verwenden. Würden Sie eine Bewertung im Microsoft Store hinterlassen?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Bewertung schreiben</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Später</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Nie wieder anzeigen</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Das Speichern dieser Einstellungen funktioniert nicht.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Einstellungsvalidierungsfehler</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Wie es ist ausführen</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Die Ausführung ohne Änderungen funktioniert möglicherweise nicht ordnungsgemäß**
+***
+
+</value>
+  </data>
 </root>

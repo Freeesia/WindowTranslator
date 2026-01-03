@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace WindowTranslator.Plugin.OneOcrPlugin;
 
@@ -9,7 +11,20 @@ static class Utility
     public const string OneOcrModel = "oneocr.onemodel";
     private const string OnnxRuntimeDll = "onnxruntime.dll";
     public const string ErrorPath = "Error.txt";
-    public static string OneOcrPath { get; } = Path.Combine(PathUtility.UserDir, "OneOcr");
+    public const string ScreenSketchAppName = "Microsoft.ScreenSketch";
+    public const string ScreenSketchProductId = "9MZ95KL8MR0L";
+
+    // 動作するScreenSketchのバージョン
+    private static readonly Dictionary<int, Version> MinimumVersions = new()
+    {
+        [10] = new("10.2008.3001.0"),  // Win10
+        [11] = new("11.2508.29.0"),    // Win11
+    };
+
+    public static string OneOcrPath { get; } = Path.Combine(PathUtility.SharedDir, "OneOcr");
+
+    private static int GetOsVersion()
+        => Environment.OSVersion.Version is { Major: 10, Build: < 22000 } ? 10 : 11;
 
     private static async ValueTask<string?> GetInstallLocation(string appName)
     {
@@ -34,9 +49,40 @@ static class Utility
         return path;
     }
 
+    /// <summary>
+    /// Get-AppxPackageを使用してScreenSketchのバージョンを取得する
+    /// </summary>
+    /// <returns>バージョン文字列。見つからない場合はnull</returns>
+    private static async ValueTask<Version?> GetInstallVersion(string appName)
+    {
+        var info = new ProcessStartInfo("powershell.exe", $"-Command \"(Get-AppxPackage -Name {appName}).Version\"")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+        };
+        using var p = Process.Start(info);
+        await p!.WaitForExitAsync().ConfigureAwait(false);
+        if (p.ExitCode != 0)
+        {
+            return null;
+        }
+        var version = await p.StandardOutput.ReadToEndAsync();
+        version = version.Trim();
+        if (string.IsNullOrEmpty(version))
+        {
+            return null;
+        }
+        if (!Version.TryParse(version, out var v))
+        {
+            throw new InvalidOperationException($"Failed to parse {appName} version. : {version}");
+        }
+        return v;
+    }
+
     public static async ValueTask<string?> FindOneOcrPath()
     {
-        var scketch = await GetInstallLocation("Microsoft.ScreenSketch").ConfigureAwait(false);
+        var scketch = await GetInstallLocation(ScreenSketchAppName).ConfigureAwait(false);
         if (!string.IsNullOrEmpty(scketch))
         {
             var path = Path.Combine(scketch, "SnippingTool");
@@ -45,7 +91,54 @@ static class Utility
                 return path;
             }
         }
-        return await GetInstallLocation("Microsoft.Windows.Photos").ConfigureAwait(false);
+        return null;
+    }
+
+    /// <summary>
+    /// ScreenSketchのバージョンをチェックし、必要に応じてMicrosoft Storeを開く
+    /// </summary>
+    /// <returns>バージョンが十分か、または更新が必要かを示す情報</returns>
+    public static async ValueTask<bool> CheckScreenSketchVersionAsync(ILogger logger)
+    {
+        // インストール済みのScreenSketchバージョンを取得
+        var installedVersion = await GetInstallVersion(ScreenSketchAppName).ConfigureAwait(false);
+
+        if (installedVersion == null)
+        {
+            logger.LogWarning("ScreenSketch is not installed.");
+            // ScreenSketchがインストールされていない
+            return false;
+        }
+
+        // 必要な最小バージョンを取得
+        if (!MinimumVersions.TryGetValue(GetOsVersion(), out var minVersion))
+        {
+            logger.LogWarning("Unsupported OS version: {OSVersion}", Environment.OSVersion.Version);
+            // サポートされていないOSバージョン（OSバージョンに応じたチェックをスキップ）
+            return false;
+        }
+
+        // バージョン比較
+        if (installedVersion >= minVersion)
+        {
+            // バージョンが十分新しい
+            return true;
+        }
+
+        logger.LogInformation("ScreenSketch version is outdated. Installed: {InstalledVersion}, Required: {RequiredVersion}", installedVersion, minVersion);
+        // バージョンが古い
+        return false;
+    }
+
+    /// <summary>
+    /// Microsoft Storeを開いてScreenSketchの更新を促す
+    /// </summary>
+    public static void OpenStoreForUpdate()
+    {
+        Process.Start(new ProcessStartInfo($"ms-windows-store://pdp/?ProductId={ScreenSketchProductId}")
+        {
+            UseShellExecute = true
+        });
     }
 
     public static bool NeedCopyDll()
@@ -162,5 +255,21 @@ static class Utility
             centerX + dx * cos - dy * sin,
             centerY + dx * sin + dy * cos
         );
+    }
+
+    private static void MigrateModelsIfNeeded()
+    {
+        var oldPath = Path.Combine(PathUtility.UserDir, "OneOcr");
+        if (Directory.Exists(oldPath) && !Directory.Exists(OneOcrPath))
+        {
+            Directory.CreateDirectory(PathUtility.SharedDir);
+            Directory.Move(oldPath, OneOcrPath);
+        }
+    }
+
+    [ModuleInitializer]
+    internal static void Initialize()
+    {
+        MigrateModelsIfNeeded();
     }
 }

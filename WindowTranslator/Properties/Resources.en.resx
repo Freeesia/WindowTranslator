@@ -420,4 +420,40 @@ Monitors are not supported.
   <data name="FaildApplySettings" xml:space="preserve">
     <value>Failed to apply settings.</value>
   </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>An unknown error has occurred</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Review Request</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Thank you for using WindowTranslator. Would you mind leaving a review on the Microsoft Store?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Write a Review</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Never Show Again</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Saving these settings will not work.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Settings validation error</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Run as is</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Running as-is may not work properly**
+***
+
+</value>
+  </data>
 </root>

@@ -31,6 +31,76 @@
         </Style>
         <local:SettingsPropertyGridFactory x:Key="factory" />
         <local:SettingsPropertyGridOperator x:Key="operator" />
+        <Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
+            <Setter Property="Background" Value="{ui:ThemeResource SubtleFillColorTertiaryBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid x:Name="Root">
+                            <Border
+                                x:Name="Border"
+                                MinWidth="180"
+                                MinHeight="36"
+                                Margin="0"
+                                Padding="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,1,1,0"
+                                CornerRadius="8,8,0,0">
+                                <ContentPresenter
+                                    x:Name="ContentSite"
+                                    Margin="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ContentSource="Header"
+                                    RecognizesAccessKey="True" />
+                            </Border>
+                            <Rectangle
+                                x:Name="ActiveRectangle"
+                                Height="3"
+                                Margin="8,0,8,2"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
+                                Fill="{DynamicResource TreeViewItemSelectionIndicatorForeground}"
+                                RadiusX="2"
+                                RadiusY="2"
+                                Visibility="Collapsed" />
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="SelectionStates">
+                                    <VisualState x:Name="Unselected" />
+                                    <VisualState x:Name="Selected" />
+
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="MouseOver" />
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Opacity)"
+                                                From="0.0"
+                                                To="0.5"
+                                                Duration="0:0:.16" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Panel.ZIndex" Value="100" />
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource TabViewItemHeaderBackgroundSelected}" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource TabViewSelectedItemBorderBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TabViewItemForegroundSelected}" />
+                                <Setter TargetName="ActiveRectangle" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </ui:FluentWindow.Resources>
     <Grid>
         <DockPanel>
@@ -305,20 +375,29 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.About}" Visibility="{Binding IsVisibleAbout, Converter={StaticResource b2vConv}}">
-                    <pt:PropertyGrid
-                        Grid.Column="2"
-                        Margin="8"
-                        ControlFactory="{StaticResource factory}"
-                        Operator="{StaticResource operator}"
-                        SelectedObject="{x:Static root:AppInfo.Instance}"
-                        TabVisibility="Collapsed">
-                        <pt:PropertyGrid.Resources>
-                            <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
-                                <Setter Property="Padding" Value="4,8" />
-                            </Style>
-                            <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
-                        </pt:PropertyGrid.Resources>
-                    </pt:PropertyGrid>
+                    <DockPanel>
+                        <ui:Button
+                            Command="{Binding OpenReviewCommand}"
+                            Content="{x:Static properties:Resources.WriteReview}"
+                            DockPanel.Dock="Bottom"
+                            Icon="{ui:SymbolIcon Star24}"
+                            Margin="8"
+                            Visibility="{Binding IsVisibleReviewButton, Converter={StaticResource b2vConv}}" />
+                        <pt:PropertyGrid
+                            Grid.Column="2"
+                            Margin="8"
+                            ControlFactory="{StaticResource factory}"
+                            Operator="{StaticResource operator}"
+                            SelectedObject="{x:Static root:AppInfo.Instance}"
+                            TabVisibility="Collapsed">
+                            <pt:PropertyGrid.Resources>
+                                <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                                    <Setter Property="Padding" Value="4,8" />
+                                </Style>
+                                <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource TextFillColorDisabled}" />
+                            </pt:PropertyGrid.Resources>
+                        </pt:PropertyGrid>
+                    </DockPanel>
                 </TabItem>
             </TabControl>
         </DockPanel>

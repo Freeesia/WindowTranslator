@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Source" xml:space="preserve">
+    <value>Idioma de origen (reconocimiento)</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Idioma de destino (visualización)</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>Módulo de traducción</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>Módulo de caché</value>
+  </data>
+  <data name="ViewMode" xml:space="preserve">
+    <value>Modo de visualización de resultados</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>Objetivos de traducción automática</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>Traducir automáticamente cuando se inicie un proceso seleccionado</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Configuración general</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>Otros</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>Configuración de plugins</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Configuración de idioma</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>Superposición</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>Ventana de captura</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>Caché en memoria</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Caché de archivos local</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>Adjuntar</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>Desconectar</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Salir</value>
+  </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>WindowTranslator ya está en ejecución.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>Verificar licencias de terceros</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>Actualización disponible: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>Está utilizando la última versión.</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>Información de actualización</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>Actualizar a la última versión</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>Ver detalles</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Solo mientras se presiona</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Presionar para activar/desactivar</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>Alternar visualización de superposición</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>Hacer capturable la superposición</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>Procesos objetivo de traducción</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>Módulo de reconocimiento</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>Atajos</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>Cambio de superposición</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>Una nueva versión {0} está disponible</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>Instalación de la nueva versión {0}</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>Verificar actualizaciones</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>Verificar nueva versión</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>Iniciar automáticamente al arrancar el sistema</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Configuración general</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>Método de visualización</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>Configuración por objetivo</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versión</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>Fecha de compilación</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>Desarrollador</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>Página pública</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Licencia</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>No traducir</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>Configuración de caché</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>Umbral para texto similar</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>No almacenar en caché</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Reconocimiento de caracteres estándar de Windows</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Nombre de la aplicación</value>
+  </data>
+  <data name="SteamWishlist" xml:space="preserve">
+    <value>Regalar juegos en Steam</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>Información de la aplicación</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Contacto</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>Información técnica</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Aplicar</value>
+  </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>Mostrar icono de ocupado</value>
+  </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Traducir solo cuando la superposición está habilitada</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>Mostrar traducción solo para texto bajo el puntero</value>
+  </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Opacidad del fondo de superposición</value>
+  </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Enviar información de error al sistema de reportes.</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Enviar información</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Enviado</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copiar información</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copiado</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Registro</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Adjuntando</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportar</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Limpiar</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Desplazamiento automático</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Exportar registros</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Falló la exportación</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Exportación completada</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>Registros exportados a `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Archivos de texto</value>
+  </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>Falló el OCR</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>Falló la traducción</value>
+  </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Falló la integración en la ventana.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Seleccione una ventana que no sea WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>La ventana seleccionada "{0}" no puede determinar el proceso.</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Error de validación de configuración</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Guardar y cerrar</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Configuración predeterminada</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Inicio automático</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} ha sido registrado para inicio automático.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>El inicio automático para {0} ha sido deshabilitado.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Configuración de idioma</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Los idiomas de origen y destino son iguales.</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>La funcionalidad OCR para {0} no está disponible.</value>
+  </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>Falló la aplicación de configuración.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Ha ocurrido un error desconocido</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Solicitud de reseña</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Gracias por usar WindowTranslator. ¿Podría dejar una reseña?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Escribir una reseña</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Más tarde</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>No mostrar de nuevo</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Guardar estas configuraciones no funcionará.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Error de validación de configuración</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Ejecutar tal cual</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Ejecutar tal cual puede no funcionar correctamente**
+***
+
+</value>
+  </data>
+</root>
