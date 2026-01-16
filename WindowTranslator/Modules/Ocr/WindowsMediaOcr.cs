@@ -42,7 +42,7 @@ public sealed partial class WindowsMediaOcr(
         var newHeight = (uint)(bitmap.PixelHeight * scale);
         if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
         {
-            throw new InvalidOperationException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
+            throw new AppUserException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
         }
 
         // 拡大率に基づくリサイズ処理
