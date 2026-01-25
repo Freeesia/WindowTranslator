@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>マウスポインター位置のテキストのみオーバレイ翻訳を表示する</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>マウスポインター判定の余白</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>マウスポインター周辺の判定領域に追加するピクセル数</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>オーバーレイ背景の不透明度</value>
   </data>

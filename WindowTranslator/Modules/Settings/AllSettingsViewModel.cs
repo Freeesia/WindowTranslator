@@ -264,6 +264,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 DisplayBusy = t.DisplayBusy,
                 IsOneShotMode = t.IsOneShotMode,
                 OverlayOpacity = t.OverlayOpacity,
+                MousePointerHitTestPadding = t.MousePointerHitTestPadding,
             }),
         };
 
@@ -465,6 +466,13 @@ public partial class TargetSettingsViewModel(
     [property: SortIndex(9)]
     [ObservableProperty]
     private bool isOneShotMode = settings.IsOneShotMode;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
+    [property: Spinnable(Minimum = 0, Maximum = 100)]
+    [property: SortIndex(10)]
+    [ObservableProperty]
+    private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

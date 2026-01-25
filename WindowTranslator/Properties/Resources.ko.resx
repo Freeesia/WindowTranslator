@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>마우스 포인터 위치의 텍스트에만 오버레이 번역을 표시</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>마우스 포인터 판정 여백</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>마우스 포인터 판정 영역에 추가하는 픽셀 수</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>오버레이 배경 불투명도</value>
   </data>

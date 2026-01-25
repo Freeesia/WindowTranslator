@@ -304,53 +304,59 @@
     <value>Terapkan</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Show busy icon</value>
+    <value>Mostrar ícone de ocupado</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Terjemahkan hanya saat hamparan diaktifkan</value>
+    <value>Traduzir apenas quando a sobreposição estiver ativada</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
-    <value>Tampilkan terjemahan hamparan hanya untuk teks di posisi pointer mouse</value>
+    <value>Exibir tradução da sobreposição apenas para texto na posição do ponteiro do mouse</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Margem do teste de acerto do ponteiro do mouse</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Pixels adicionais adicionados ao redor da área de teste de acerto do ponteiro do mouse</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Overlay background opacity</value>
+    <value>Opacidade do fundo da sobreposição</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
-    <value>Kirim informasi kesalahan ke sistem laporan. Informasi berikut akan dikirim:
-* Informasi aplikasi
-* Spesifikasi PC dan informasi lingkungan
-* Nama aplikasi target terjemahan
-* Gambar target terjemahan
-* Pengaturan target terjemahan
+    <value>Enviar informações de erro para o sistema de relatórios. As seguintes informações serão enviadas:
+* Informações do aplicativo
+* Especificações do PC e informações do ambiente
+* Nome do aplicativo alvo da tradução
+* Imagem do alvo da tradução
+* Configurações do alvo da tradução
 
-&gt; %{color:red}**Informasi pribadi tidak akan dikirim, tetapi pastikan informasi pribadi tidak termasuk dalam layar target terjemahan.**%</value>
+&gt; %{color:red}**Informações pessoais não serão enviadas, mas certifique-se de que a tela do alvo da tradução não contenha informações pessoais.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Send Information</value>
+    <value>Enviar informações</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Sent</value>
+    <value>Enviado</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Salin Informasi</value>
+    <value>Copiar informações</value>
   </data>
   <data name="Copied" xml:space="preserve">
-    <value>Disalin</value>
+    <value>Copiado</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Konfirmasi</value>
+    <value>Confirmar</value>
   </data>
   <data name="Submit" xml:space="preserve">
-    <value>Submit</value>
+    <value>Enviar</value>
   </data>
   <data name="Log" xml:space="preserve">
-    <value>Log</value>
+    <value>Registro</value>
   </data>
   <data name="Attaching" xml:space="preserve">
-    <value>Melampirkan</value>
+    <value>Anexando</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Ekspor</value>
+    <value>Exportar</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>Kosongkan</value>
