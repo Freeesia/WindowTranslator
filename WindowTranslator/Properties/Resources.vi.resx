@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Vùng đệm kiểm tra trỏ chuột</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Số pixel bổ sung quanh vùng kiểm tra của con trỏ chuột</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Độ mờ nền lớp phủ</value>
   </data>

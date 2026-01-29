@@ -304,7 +304,7 @@
     <value>Terapkan</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Show busy icon</value>
+    <value>Tampilkan ikon sibuk</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
     <value>Terjemahkan hanya saat hamparan diaktifkan</value>
@@ -312,8 +312,14 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Tampilkan terjemahan hamparan hanya untuk teks di posisi pointer mouse</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Padding uji hit pointer mouse</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Jumlah piksel tambahan di sekitar area uji hit pointer mouse</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Overlay background opacity</value>
+    <value>Opasitas latar belakang hamparan</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
     <value>Kirim informasi kesalahan ke sistem laporan. Informasi berikut akan dikirim:
@@ -326,10 +332,10 @@
 &gt; %{color:red}**Informasi pribadi tidak akan dikirim, tetapi pastikan informasi pribadi tidak termasuk dalam layar target terjemahan.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Send Information</value>
+    <value>Kirim informasi</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Sent</value>
+    <value>Terkirim</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Salin Informasi</value>
