@@ -76,7 +76,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>OCR पाइपलाइन बनाने में विफल। त्रुटि कोड: {0}
-कृपया "Snipping Tool" या "Microsoft Photos" ऐप अपडेट करने का प्रयास करें।</value>
+कृपया "Snipping Tool" ऐप अपडेट करने का प्रयास करें।</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>OCR प्रोसेस विकल्प बनाने में विफल। त्रुटि कोड: {0}</value>
