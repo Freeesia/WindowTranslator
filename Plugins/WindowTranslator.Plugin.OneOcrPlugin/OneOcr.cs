@@ -82,7 +82,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         var res = CreateOcrInitOptions(out this.context);
         if (res != 0)
         {
-            throw new AppUserException(string.Format(Resources.InitFaild, res));
+            throw new InvalidOperationException(string.Format(Resources.InitFaild, res));
         }
 
         // モデル遅延読み込みの設定
@@ -90,7 +90,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         res = OcrInitOptionsSetUseModelDelayLoad(this.context, 0);
         if (res != 0)
         {
-            throw new AppUserException(string.Format(Resources.SetLazyLoadFaild, res));
+            throw new InvalidOperationException(string.Format(Resources.SetLazyLoadFaild, res));
         }
 
         // OCRパイプラインを作成
@@ -101,21 +101,21 @@ public sealed class OneOcr : IOcrModule, IDisposable
                 $"""
                 OCRパイプラインの作成に失敗しました。エラーコード: {res}
                 """);
-            throw new AppUserException(string.Format(Resources.CreatePipelineFaild, res));
+            throw new InvalidOperationException(string.Format(Resources.CreatePipelineFaild, res));
         }
 
         // OCRプロセスオプション作成
         res = CreateOcrProcessOptions(out this.opt);
         if (res != 0)
         {
-            throw new AppUserException(string.Format(Resources.CreateProcessOptionsFaild, res));
+            throw new InvalidOperationException(string.Format(Resources.CreateProcessOptionsFaild, res));
         }
 
         // 最大認識行数を設定
         res = OcrProcessOptionsSetMaxRecognitionLineCount(opt, maxLineCount);
         if (res != 0)
         {
-            throw new AppUserException(string.Format(Resources.SetMaxRecognitionLineCountFaild, res));
+            throw new InvalidOperationException(string.Format(Resources.SetMaxRecognitionLineCountFaild, res));
         }
     }
 
