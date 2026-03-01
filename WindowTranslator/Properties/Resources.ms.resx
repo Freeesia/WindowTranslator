@@ -304,7 +304,7 @@
     <value>Guna</value>
   </data>
   <data name="DisplayBusy" xml:space="preserve">
-    <value>Show busy icon</value>
+    <value>Tunjukkan ikon sibuk</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
     <value>Terjemah hanya apabila hamparan didayakan</value>
@@ -312,8 +312,14 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Paparkan terjemahan hamparan hanya untuk teks pada kedudukan penunjuk tetikus</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Padding ujian sentuh penunjuk tetikus</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Bilangan piksel tambahan di sekeliling kawasan ujian sentuh penunjuk tetikus</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Overlay background opacity</value>
+    <value>Kelegapan latar belakang hamparan</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
     <value>Hantar maklumat ralat ke sistem laporan. Maklumat berikut akan dihantar:
@@ -326,10 +332,10 @@
 &gt; %{color:red}**Maklumat peribadi tidak akan dihantar, tetapi sila pastikan maklumat peribadi tidak disertakan dalam skrin sasaran terjemahan.**%</value>
   </data>
   <data name="SendRerpot" xml:space="preserve">
-    <value>Send Information</value>
+    <value>Hantar maklumat</value>
   </data>
   <data name="Sent" xml:space="preserve">
-    <value>Sent</value>
+    <value>Dihantar</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Salin Maklumat</value>

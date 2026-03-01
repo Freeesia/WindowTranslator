@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>แสดงการแปลโอเวอร์เลย์เฉพาะข้อความที่ตำแหน่งเมาส์เท่านั้น</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>ระยะขยายพื้นที่ตรวจจับเมาส์</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>จำนวนพิกเซลที่เพิ่มรอบพื้นที่ตรวจจับเมาส์</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>ความทึบแสงของพื้นหลังโอเวอร์เลย์</value>
   </data>
