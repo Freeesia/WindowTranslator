@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GitHubCopilotOptions" xml:space="preserve">
+    <value>Pengaturan GitHub Copilot</value>
+  </data>
+  <data name="GitHubCopilotTranslator" xml:space="preserve">
+    <value>Terjemahan GitHub Copilot</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Jalur glosarium</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>「Terjemahan GitHub Copilot」telah dipilih sebagai modul terjemahan.
+
+Untuk menggunakan terjemahan GitHub Copilot, GitHub Copilot CLI harus dipasang dan masuk.
+
+Untuk pemasangan GitHub Copilot CLI, silakan merujuk [dokumentasi GitHub Copilot CLI](https://docs.github.com/id/copilot/github-copilot-in-the-cli).</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model yang akan digunakan</value>
+  </data>
+  <data name="Model_Desc" xml:space="preserve">
+    <value>ID model yang tersedia di GitHub Copilot (contoh: gpt-4o, claude-sonnet-4.5)</value>
+  </data>
+  <data name="NotInitialized" xml:space="preserve">
+    <value>Fungsi GitHub Copilot belum diinisialisasi. Pastikan GitHub Copilot CLI sudah terpasang.</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Informasi konteks yang digunakan saat penerjemahan</value>
+  </data>
+</root>

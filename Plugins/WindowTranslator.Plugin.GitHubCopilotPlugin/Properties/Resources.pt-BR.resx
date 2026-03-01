@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GitHubCopilotOptions" xml:space="preserve">
+    <value>Configurações do GitHub Copilot</value>
+  </data>
+  <data name="GitHubCopilotTranslator" xml:space="preserve">
+    <value>Tradução GitHub Copilot</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Caminho do glossário</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>「Tradução GitHub Copilot」está selecionado como módulo de tradução.
+
+Para usar a tradução GitHub Copilot, o GitHub Copilot CLI deve estar instalado e conectado.
+
+Para instalação do GitHub Copilot CLI, consulte a [documentação do GitHub Copilot CLI](https://docs.github.com/pt/copilot/github-copilot-in-the-cli).</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Modelo a ser usado</value>
+  </data>
+  <data name="Model_Desc" xml:space="preserve">
+    <value>ID do modelo disponível no GitHub Copilot (ex: gpt-4o, claude-sonnet-4.5)</value>
+  </data>
+  <data name="NotInitialized" xml:space="preserve">
+    <value>A funcionalidade do GitHub Copilot não foi inicializada. Certifique-se de que o GitHub Copilot CLI está instalado.</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Informações de contexto usadas durante a tradução</value>
+  </data>
+</root>
