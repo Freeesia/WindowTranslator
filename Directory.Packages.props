@@ -11,6 +11,7 @@
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="DeepL.net" Version="1.15.0" />
     <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
+    <PackageVersion Include="GitHub.Copilot.SDK" Version="0.1.29" />
     <PackageVersion Include="Google.Apis.Auth" Version="1.73.0" />
     <PackageVersion Include="Google.Apis.Script.v1" Version="1.68.0.3294" />
     <PackageVersion Include="Google_GenerativeAI" Version="3.3.0" />
@@ -21,7 +22,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.102" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GitHubCopilotOptions" xml:space="preserve">
+    <value>GitHub Copilot 设置</value>
+  </data>
+  <data name="GitHubCopilotTranslator" xml:space="preserve">
+    <value>GitHub Copilot 翻译</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>术语表路径</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>翻译模块已选择「GitHub Copilot 翻译」。
+
+要使用 GitHub Copilot 翻译，需要安装并登录 GitHub Copilot CLI。
+
+有关 GitHub Copilot CLI 的安装，请参阅 [GitHub Copilot CLI 文档](https://docs.github.com/zh/copilot/github-copilot-in-the-cli)。</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>要使用的模型</value>
+  </data>
+  <data name="Model_Desc" xml:space="preserve">
+    <value>GitHub Copilot 上可用的模型 ID（例如：gpt-4o、claude-sonnet-4.5）</value>
+  </data>
+  <data name="NotInitialized" xml:space="preserve">
+    <value>GitHub Copilot 功能未初始化。请确认 GitHub Copilot CLI 已安装。</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>翻译时使用的上下文信息</value>
+  </data>
+</root>
