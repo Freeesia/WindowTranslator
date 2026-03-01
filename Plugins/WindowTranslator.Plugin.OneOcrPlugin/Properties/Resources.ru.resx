@@ -133,7 +133,7 @@
     <value>Не удалось установить отложенную загрузку модели OCR. Код ошибки: {0}</value>
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>Не удалось создать конвейер OCR. Код ошибки: {0} Попробуйте обновить приложение Snipping Tool или Microsoft Photos.</value>
+    <value>Не удалось создать конвейер OCR. Код ошибки: {0} Попробуйте обновить приложение Snipping Tool.</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Не удалось создать параметры процесса OCR. Код ошибки: {0}</value>
