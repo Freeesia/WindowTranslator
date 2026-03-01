@@ -62,7 +62,8 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
                 }
                 this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
             }
-            var req = new ScriptRunRequest("translate", [this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode(), srcTexts.Select(t => t.SourceText).ToArray()]);
+            var sourceTexts = srcTexts.Select(t => t.SourceText).ToArray();
+            var req = new ScriptRunRequest("translate", [this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode(), sourceTexts]);
             var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
             if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
             {
@@ -74,7 +75,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
             if (scriptResponse?.Error is { } error)
             {
                 this.logger.LogWarning("Google翻訳のスクリプト実行エラー: {Message}", error.Message);
-                throw new InvalidOperationException(error.Message);
+                throw new InvalidOperationException(Resources.UnexpectedResponse);
             }
             return scriptResponse?.Response?.Result ?? [];
         }
