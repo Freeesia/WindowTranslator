@@ -1,21 +1,15 @@
-function doPost(e) {
-  // リクエストボディをパースして文字列配列を取得
-  var requestBody = JSON.parse(e.postData.contents);
-  var texts = requestBody.texts;
-  var sourceLanguage = requestBody.sourceLanguage
-  var targetLanguage = requestBody.targetLanguage;
-
-  // 翻訳結果を格納する配列
+/**
+ * Apps Script API (scripts.run) から呼び出す翻訳関数
+ * @param {string} sourceLanguage - 翻訳元言語コード
+ * @param {string} targetLanguage - 翻訳先言語コード
+ * @param {string[]} texts - 翻訳対象の文字列配列
+ * @returns {string[]} 翻訳結果の文字列配列
+ */
+function translate(sourceLanguage, targetLanguage, texts) {
   var translatedTexts = [];
-
-  // 各文字列を翻訳
   for (var i = 0; i < texts.length; i++) {
     var translatedText = LanguageApp.translate(texts[i], sourceLanguage, targetLanguage);
     translatedTexts.push(translatedText);
   }
-
-  // 翻訳結果をjsonとして返す
-  var jsonResponse = JSON.stringify(translatedTexts);
-  return ContentService.createTextOutput(jsonResponse)
-    .setMimeType(ContentService.MimeType.JSON);
+  return translatedTexts;
 }
