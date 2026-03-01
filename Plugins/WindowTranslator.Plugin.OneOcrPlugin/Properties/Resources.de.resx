@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>Fehler beim Erstellen der OCR-Pipeline. Fehlercode: {0}
-Bitte versuchen Sie, die Apps "Ausschneiden und skizzieren" oder "Microsoft Fotos" zu aktualisieren.</value>
+Bitte versuchen Sie, die App "Ausschneiden und skizzieren" zu aktualisieren.</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Fehler beim Erstellen der OCR-Verarbeitungsoptionen. Fehlercode: {0}</value>
