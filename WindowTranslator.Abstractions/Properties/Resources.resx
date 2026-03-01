@@ -174,6 +174,48 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>振動の抑制</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>優先矩形</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>優先的にOCRを行う矩形</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>設定した矩形を優先的にOCR処理します。リストの順序が優先度を表します。</value>
+  </data>
+  <data name="AddPriorityRect" xml:space="preserve">
+    <value>矩形を追加</value>
+  </data>
+  <data name="RemovePriorityRect" xml:space="preserve">
+    <value>矩形を削除</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>上へ移動</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>下へ移動</value>
+  </data>
+  <data name="EditKeyword" xml:space="preserve">
+    <value>キーワード編集</value>
+  </data>
+  <data name="RectangleSelection" xml:space="preserve">
+    <value>矩形選択</value>
+  </data>
+  <data name="SelectRectangle" xml:space="preserve">
+    <value>矩形を選択してください（Escキーでキャンセル）</value>
+  </data>
+  <data name="Selecting" xml:space="preserve">
+    <value>選択中</value>
+  </data>
+  <data name="RectangleTooSmall" xml:space="preserve">
+    <value>矩形が小さすぎます。もう一度選択してください。</value>
+  </data>
+  <data name="EnterKeyword" xml:space="preserve">
+    <value>キーワードを入力してください（翻訳のコンテキストとして使用されます）</value>
+  </data>
+  <data name="KeywordEdit" xml:space="preserve">
+    <value>キーワード編集</value>
+  </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>言語設定</value>
   </data>

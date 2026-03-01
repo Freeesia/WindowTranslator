@@ -174,4 +174,46 @@
   <data name="IsSuppressVibe" xml:space="preserve">
     <value>Vibration suppression</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>Priority Rectangle</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Priority OCR Rectangles</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>OCR will prioritize the configured rectangles. The order of the list represents priority.</value>
+  </data>
+  <data name="AddPriorityRect" xml:space="preserve">
+    <value>Add Rectangle</value>
+  </data>
+  <data name="RemovePriorityRect" xml:space="preserve">
+    <value>Remove Rectangle</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="EditKeyword" xml:space="preserve">
+    <value>Edit Keyword</value>
+  </data>
+  <data name="RectangleSelection" xml:space="preserve">
+    <value>Rectangle Selection</value>
+  </data>
+  <data name="SelectRectangle" xml:space="preserve">
+    <value>Please select a rectangle (Press Esc to cancel)</value>
+  </data>
+  <data name="Selecting" xml:space="preserve">
+    <value>Selecting</value>
+  </data>
+  <data name="RectangleTooSmall" xml:space="preserve">
+    <value>The rectangle is too small. Please select again.</value>
+  </data>
+  <data name="EnterKeyword" xml:space="preserve">
+    <value>Enter keyword (will be used as translation context)</value>
+  </data>
+  <data name="KeywordEdit" xml:space="preserve">
+    <value>Keyword Edit</value>
+  </data>
 </root>

@@ -37,6 +37,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
     private readonly double fontSizeThrethold;
     private readonly bool isAvoidMergeList;
     private readonly double scale = 1.0; // スケールのデフォルト値
+    private readonly List<PriorityRect> priorityRects;
 
     static OneOcr()
     {
@@ -77,6 +78,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.fontSizeThrethold = ocrParam.Value.FontSizeThrethold;
         this.isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
         this.scale = ocrParam.Value.Scale;
+        this.priorityRects = ocrParam.Value.PriorityRects ?? [];
 
         // OCR初期化オプションの作成
         var res = CreateOcrInitOptions(out this.context);
@@ -126,20 +128,77 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
+        // 優先矩形が指定されている場合は、それらのみを認識
+        if (this.priorityRects.Count > 0)
+        {
+            return await RecognizePriorityRectsAsync(bitmap);
+        }
+
+        // 優先矩形がない場合は通常の全体認識
+        return await RecognizeFullScreenAsync(bitmap);
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
+    {
+        var allResults = new List<TextRect>();
+
+        foreach (var priorityRect in this.priorityRects)
+        {
+            // 元の画像サイズで絶対座標を計算
+            var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight);
+
+            // 元の画像から矩形を切り出し
+            using var croppedBitmap = bitmap.Crop(absRect);
+            
+            // 切り出した画像をスケーリング
+            using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale);
+            
+            // スケーリングされた切り出し画像をOCR
+            var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
+
+            // 座標をスケール変換して元の画像座標系に変換
+            // RecognizeRegionAsyncの結果はスケール済み画像の座標なので、スケールで割る
+            allResults.AddRange(rectResults.Select(text => 
+                new TextRect(
+                    text.SourceText,
+                    text.X / this.scale + absRect.X,
+                    text.Y / this.scale + absRect.Y,
+                    text.Width / this.scale,
+                    text.Height / this.scale,
+                    text.FontSize / this.scale,
+                    text.MultiLine,
+                    text.Foreground,
+                    text.Background
+                ) { Context = priorityRect.Keyword }));
+        }
+
+        return allResults;
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
+    {
         // 拡大率に基づくリサイズ処理
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
+
+        var results = await RecognizeRegionAsync(workingBitmap);
+
+        if (workingBitmap != bitmap)
+        {
+            workingBitmap.Dispose();
+        }
+
+        return results;
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    {
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
         textRects = ProcessTextRects(textRects, workingBitmap.PixelWidth, workingBitmap.PixelHeight);
 
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
-        }
-
-        var wFat = bitmap.PixelWidth * 0.004;
+        var wFat = workingBitmap.PixelWidth * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い
