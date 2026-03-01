@@ -19,8 +19,10 @@ namespace WindowTranslator.Plugin.GoogleAppsSctiptPlugin;
 
 public sealed class GasTranslator : ITranslateModule, IDisposable
 {
-    private const string DeployId = "AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ";
-    private static readonly string[] Scopes = ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/script.scriptapp"];
+    private const string DeployId = "AKfycbyyy3RHgU6oRiiBKcKbxi3dOQWvSOzanhUuK_S5uy37YHkXy-53i_T8cvPKtYfj9BECBw";
+    private static readonly string[] Scopes = [
+        "https://www.googleapis.com/auth/script.scriptapp",
+    ];
     private static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web);
     private readonly FileDataStore authStore = new(@"StudioFreesia\WindowTranslator\GoogleAppsScriptPlugin");
     private readonly LanguageOptions langOptions;
@@ -38,7 +40,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         var deployId = this.isPublicScript ? DeployId : gasOptions.Value.DeployId;
         this.client = new()
         {
-            BaseAddress = new($"https://script.google.com/macros/s/{deployId}/exec"),
+            BaseAddress = new($"https://script.googleapis.com/v1/scripts/{deployId}:run"),
         };
     }
 
@@ -60,7 +62,7 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
                 }
                 this.client.DefaultRequestHeaders.Authorization = new(credential.Token.TokenType, credential.Token.AccessToken);
             }
-            var req = new TranslateRequest([.. srcTexts.Select(t => t.SourceText)], this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode());
+            var req = new ScriptRunRequest("translate", [this.langOptions.Source.GetLangCode(), this.langOptions.Target.GetLangCode(), srcTexts.Select(t => t.SourceText).ToArray()]);
             var res = await this.client.PostAsJsonAsync(string.Empty, req, JsonSerializerOptions).ConfigureAwait(false);
             if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
             {
@@ -68,8 +70,13 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
                 throw new(Resources.PermissionDenied);
             }
             res.EnsureSuccessStatusCode();
-            var translatedTexts = await res.Content.ReadFromJsonAsync<string[]>(JsonSerializerOptions).ConfigureAwait(false);
-            return translatedTexts ?? [];
+            var scriptResponse = await res.Content.ReadFromJsonAsync<ScriptRunResponse>(JsonSerializerOptions).ConfigureAwait(false);
+            if (scriptResponse?.Error is { } error)
+            {
+                this.logger.LogWarning("Google翻訳のスクリプト実行エラー: {Message}", error.Message);
+                throw new InvalidOperationException(error.Message);
+            }
+            return scriptResponse?.Response?.Result ?? [];
         }
         // Jsonエラーということは指定した以外のレスポンスが返ってきた（上限到達等でHTMLが返る可能性）
         catch (JsonException e)
@@ -84,7 +91,10 @@ public sealed class GasTranslator : ITranslateModule, IDisposable
         }
     }
 
-    private record TranslateRequest(string[] Texts, string SourceLanguage, string TargetLanguage);
+    private record ScriptRunRequest(string Function, object[] Parameters);
+    private record ScriptRunResponse(bool Done, ScriptExecutionResponse? Response, ScriptRunError? Error);
+    private record ScriptExecutionResponse(string[]? Result);
+    private record ScriptRunError(int Code, string Message, string Status);
 
     private async ValueTask<UserCredential> GetCredential()
         => await GoogleWebAuthorizationBroker.AuthorizeAsync(
