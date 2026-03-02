@@ -6,7 +6,6 @@ using CsvHelper.Configuration;
 using GitHub.Copilot.SDK;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
-using WindowTranslator.Plugin.GitHubCopilotPlugin.Properties;
 
 namespace WindowTranslator.Plugin.GitHubCopilotPlugin;
 
@@ -56,7 +55,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         </出力テキストのJsonフォーマット>
         """;
 
-        this.client = new CopilotClient();
+        this.client = new CopilotClient(new() { CliPath = Utility.GetBundledCliPath() });
 
         if (File.Exists(options.Value.GlossaryPath))
         {
@@ -102,14 +101,16 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
         var content = JsonSerializer.Serialize(srcTexts.Select(s => new { text = s.SourceText, context = s.Context }).ToArray(), jsonOptions);
 
-        await using var session = await this.client.CreateSessionAsync(new SessionConfig
+        await using var session = await this.client.CreateSessionAsync(new()
         {
             Model = this.model,
-            SystemMessage = new SystemMessageConfig
+            SystemMessage = new()
             {
                 Mode = SystemMessageMode.Replace,
                 Content = system,
             },
+            OnPermissionRequest = PermissionHandler.ApproveAll,
+            ReasoningEffort = "low",
         }).ConfigureAwait(false);
 
         var response = await session.SendAndWaitAsync(new MessageOptions { Prompt = content }).ConfigureAwait(false);
