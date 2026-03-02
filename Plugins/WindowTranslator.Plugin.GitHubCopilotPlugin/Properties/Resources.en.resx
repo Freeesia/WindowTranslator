@@ -34,9 +34,6 @@ For GitHub Copilot CLI installation, refer to the [GitHub Copilot CLI documentat
   <data name="Model_Desc" xml:space="preserve">
     <value>ID of the model available on GitHub Copilot (e.g., gpt-4o, claude-sonnet-4.5)</value>
   </data>
-  <data name="NotInitialized" xml:space="preserve">
-    <value>GitHub Copilot functionality is not initialized. Please make sure the GitHub Copilot CLI is installed.</value>
-  </data>
   <data name="TranslateContext" xml:space="preserve">
     <value>Contextual information to be used during translation</value>
   </data>

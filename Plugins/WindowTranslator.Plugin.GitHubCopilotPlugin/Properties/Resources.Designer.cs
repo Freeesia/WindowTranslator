@@ -93,11 +93,6 @@ internal class Resources
     public static string Model_Desc => ResourceManager.GetString("Model_Desc", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "GitHub Copilot機能が初期化されていません。..." に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string NotInitialized => ResourceManager.GetString("NotInitialized", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "翻訳時に利用する文脈情報" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string TranslateContext => ResourceManager.GetString("TranslateContext", resourceCulture) ?? string.Empty;

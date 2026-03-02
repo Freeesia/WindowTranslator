@@ -135,9 +135,6 @@
   <data name="GlossaryPath" xml:space="preserve">
     <value>用語集パス</value>
   </data>
-  <data name="NotInitialized" xml:space="preserve">
-    <value>GitHub Copilot機能が初期化されていません。GitHub Copilot CLIがインストールされているか確認してください。</value>
-  </data>
   <data name="InvalidOptions" xml:space="preserve">
     <value>翻訳モジュールに「GitHub Copilot翻訳」が選択されています。
 

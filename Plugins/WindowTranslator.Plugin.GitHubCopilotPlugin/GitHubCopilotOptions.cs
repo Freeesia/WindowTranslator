@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GitHub.Copilot.SDK;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
@@ -8,8 +9,33 @@ namespace WindowTranslator.Plugin.GitHubCopilotPlugin;
 
 public class GitHubCopilotOptions : IPluginParam
 {
+    private static readonly string[] DefaultModels = ["gpt-4o", "gpt-4o-mini", "claude-sonnet-4.5", "claude-haiku-3.5", "o3-mini", "o4-mini"];
+    private static IReadOnlyList<string> availableModels = DefaultModels;
+    private static readonly Task loadModelsTask = LoadModelsFromSdkAsync();
+
+    private static async Task LoadModelsFromSdkAsync()
+    {
+        try
+        {
+            await using var client = new CopilotClient();
+            var models = await client.ListModelsAsync().ConfigureAwait(false);
+            if (models is { Count: > 0 })
+            {
+                availableModels = [.. models.Select(m => m.Id).Order()];
+            }
+        }
+        catch
+        {
+            // CLIが未インストールの場合などはデフォルトモデル一覧を使用
+        }
+    }
+
+    [SelectorStyle(SelectorStyle.ComboBox)]
+    [ItemsSourceProperty(nameof(AvailableModels))]
     [LocalizedDescription(typeof(Resources), $"{nameof(Model)}_Desc")]
     public string Model { get; set; } = "gpt-4o";
+
+    public IEnumerable<string> AvailableModels => availableModels;
 
     [Height(120)]
     [DataType(DataType.MultilineText)]
@@ -59,3 +85,4 @@ public class GitHubCopilotValidator : ITargetSettingsValidator
         return null;
     }
 }
+
