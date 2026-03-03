@@ -22,8 +22,10 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
     private readonly string model;
     private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
     private readonly CopilotClient client;
+    private readonly SemaphoreSlim sessionSemaphore = new(1, 1);
     private IReadOnlyList<string> common = [];
     private string? context;
+    private CopilotSession? session;
 
     public string Name => $"{nameof(GitHubCopilotTranslator)}: {this.model}";
 
@@ -72,6 +74,39 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
     private record Response(string[] Translated);
 
+    private async ValueTask<CopilotSession> GetOrCreateSessionAsync()
+    {
+        if (this.session is not null)
+        {
+            return this.session;
+        }
+        await this.sessionSemaphore.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if (this.session is not null)
+            {
+                return this.session;
+            }
+            var system = string.Join(Environment.NewLine, [this.preSystem, this.context, this.userContext, this.postSystem]);
+            this.session = await this.client.CreateSessionAsync(new()
+            {
+                Model = this.model,
+                SystemMessage = new()
+                {
+                    Mode = SystemMessageMode.Replace,
+                    Content = system,
+                },
+                OnPermissionRequest = PermissionHandler.ApproveAll,
+                ReasoningEffort = "low",
+            }).ConfigureAwait(false);
+            return this.session;
+        }
+        finally
+        {
+            this.sessionSemaphore.Release();
+        }
+    }
+
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
         var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
@@ -98,21 +133,10 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
             """);
         }
 
-        var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
-        var content = JsonSerializer.Serialize(srcTexts.Select(s => new { text = s.SourceText, context = s.Context }).ToArray(), jsonOptions);
+        var jsonData = JsonSerializer.Serialize(srcTexts.Select(s => new { text = s.SourceText, context = s.Context }).ToArray(), jsonOptions);
+        var content = sb.Length > 0 ? sb.Append(jsonData).ToString() : jsonData;
 
-        await using var session = await this.client.CreateSessionAsync(new()
-        {
-            Model = this.model,
-            SystemMessage = new()
-            {
-                Mode = SystemMessageMode.Replace,
-                Content = system,
-            },
-            OnPermissionRequest = PermissionHandler.ApproveAll,
-            ReasoningEffort = "low",
-        }).ConfigureAwait(false);
-
+        var session = await this.GetOrCreateSessionAsync().ConfigureAwait(false);
         var response = await session.SendAndWaitAsync(new MessageOptions { Prompt = content }).ConfigureAwait(false);
         var json = response?.Data?.Content?.Trim() ?? string.Empty;
         var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
@@ -140,6 +164,11 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        if (this.session is not null)
+        {
+            await this.session.DisposeAsync().ConfigureAwait(false);
+        }
+        this.sessionSemaphore.Dispose();
         await this.client.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
