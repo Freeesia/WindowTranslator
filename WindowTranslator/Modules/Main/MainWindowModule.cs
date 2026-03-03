@@ -80,7 +80,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             return;
         }
 
-        var scope = new AsyncServiceScope(provider.CreateScope());
+        var scope = provider.CreateAsyncScope();
         try
         {
             var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<CommonSettings>>();

@@ -5,6 +5,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using GitHub.Copilot.SDK;
 using Microsoft.Extensions.Options;
+using ValueTaskSupplement;
 using WindowTranslator.Modules;
 
 namespace WindowTranslator.Plugin.GitHubCopilotPlugin;
@@ -22,10 +23,10 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
     private readonly string model;
     private readonly IDictionary<string, string> glossary = new Dictionary<string, string>();
     private readonly CopilotClient client;
-    private readonly SemaphoreSlim sessionSemaphore = new(1, 1);
+    private readonly AsyncLazy<CopilotSession> session;
     private IReadOnlyList<string> common = [];
     private string? context;
-    private CopilotSession? session;
+    private volatile bool sessionStarted;
 
     public string Name => $"{nameof(GitHubCopilotTranslator)}: {this.model}";
 
@@ -59,6 +60,8 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
         this.client = new CopilotClient(new() { CliPath = Utility.GetBundledCliPath() });
 
+        this.session = new(this.CreateSessionAsync);
+
         if (File.Exists(options.Value.GlossaryPath))
         {
             using var reader = new StreamReader(options.Value.GlossaryPath);
@@ -74,37 +77,22 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
     private record Response(string[] Translated);
 
-    private async ValueTask<CopilotSession> GetOrCreateSessionAsync()
+    private async ValueTask<CopilotSession> CreateSessionAsync()
     {
-        if (this.session is not null)
+        var system = string.Join(Environment.NewLine, [this.preSystem, this.context, this.userContext, this.postSystem]);
+        var s = await this.client.CreateSessionAsync(new()
         {
-            return this.session;
-        }
-        await this.sessionSemaphore.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (this.session is not null)
+            Model = this.model,
+            SystemMessage = new()
             {
-                return this.session;
-            }
-            var system = string.Join(Environment.NewLine, [this.preSystem, this.context, this.userContext, this.postSystem]);
-            this.session = await this.client.CreateSessionAsync(new()
-            {
-                Model = this.model,
-                SystemMessage = new()
-                {
-                    Mode = SystemMessageMode.Replace,
-                    Content = system,
-                },
-                OnPermissionRequest = PermissionHandler.ApproveAll,
-                ReasoningEffort = "low",
-            }).ConfigureAwait(false);
-            return this.session;
-        }
-        finally
-        {
-            this.sessionSemaphore.Release();
-        }
+                Mode = SystemMessageMode.Replace,
+                Content = system,
+            },
+            OnPermissionRequest = PermissionHandler.ApproveAll,
+            ReasoningEffort = "low",
+        }).ConfigureAwait(false);
+        this.sessionStarted = true;
+        return s;
     }
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
@@ -136,7 +124,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         var jsonData = JsonSerializer.Serialize(srcTexts.Select(s => new { text = s.SourceText, context = s.Context }).ToArray(), jsonOptions);
         var content = sb.Length > 0 ? sb.Append(jsonData).ToString() : jsonData;
 
-        var session = await this.GetOrCreateSessionAsync().ConfigureAwait(false);
+        var session = await this.session.AsValueTask().ConfigureAwait(false);
         var response = await session.SendAndWaitAsync(new MessageOptions { Prompt = content }).ConfigureAwait(false);
         var json = response?.Data?.Content?.Trim() ?? string.Empty;
         var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
@@ -164,11 +152,10 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (this.session is not null)
+        if (this.sessionStarted)
         {
-            await this.session.DisposeAsync().ConfigureAwait(false);
+            await (await this.session.AsValueTask().ConfigureAwait(false)).DisposeAsync().ConfigureAwait(false);
         }
-        this.sessionSemaphore.Dispose();
         await this.client.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }

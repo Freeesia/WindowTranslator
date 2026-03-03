@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="GitHub.Copilot.SDK" />
+    <PackageReference Include="ValueTaskSupplement" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
