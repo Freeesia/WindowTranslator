@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Source" xml:space="preserve">
+    <value>Zdrojový (rozpoznaný) jazyk</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Cílový (zobrazovaný) jazyk</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>Výběr modulu překladu</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>Výběr modulu mezipaměti</value>
+  </data>
+  <data name="ViewMode" xml:space="preserve">
+    <value>Režim zobrazení výsledku překladu</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>Cíl automatického překladu</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>Automaticky překládat, když se spustí proces, který byl jednou vybrán k překladu</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Celkové nastavení</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>Ostatní</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>Nastavení pluginů</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Nastavení jazyka</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>Překryvná vrstva</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>Okno zachycení</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>Mezipaměť v paměti</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Místní souborová mezipaměť</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Nastavení</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>Připojit</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>Odpojit</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Ukončit</value>
+  </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>WindowTranslator je již spuštěn.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>O aplikaci</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>Zkontrolovat licence třetích stran</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>Jsou dostupné aktualizace: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>Používáte nejnovější verzi.</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>Informace o aktualizaci</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>Aktualizovat na nejnovější verzi</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>Zobrazit podrobnosti</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Pouze při stisknutí</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Stisknutím přepnout ZAP/VYP</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>Přepnout zobrazení překryvu</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>Umožnit zachycení překryvné vrstvy</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>Překládaný proces</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>Modul rozpoznávání</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>Klávesové zkratky</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>Přepnutí překryvu</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>Byla vydána nová verze {0}</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>Instalace nové verze {0}</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>Zkontrolovat aktualizace</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>Kontrola nové verze</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>Automaticky spustit při startu systému</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Obecná nastavení</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>Způsob zobrazení</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>Nastavení jednotlivých položek</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Verze</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>Datum sestavení</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>vývojář</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>Veřejná stránka</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>licence</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>Nepřekládat</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>Nastavení mezipaměti</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>Práh podobnosti textu</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>Neukládat do mezipaměti</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Standardní rozpoznávání znaků ve Windows</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Název aplikace</value>
+  </data>
+  <data name="SteamWishlist" xml:space="preserve">
+    <value>Darujte hry na Steamu</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>Informace o aplikaci</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Kontaktní adresa</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>Technické informace</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Použít</value>
+  </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>Zobrazit ikonu zaneprázdnění</value>
+  </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Překládat pouze při zapnutém překryvu</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>Zobrazovat překlad v překryvu pouze pro text v pozici ukazatele myši</value>
+  </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Neprůhlednost pozadí překryvu</value>
+  </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Odeslat informace o chybě do systému hlášení. Budou odeslány následující informace:
+* Informace o aplikaci
+* Specifikace počítače a informace o prostředí
+* Název cílové aplikace překladu
+* Obrázek cíle překladu
+* Nastavení cíle překladu
+
+> %{color:red}**Osobní údaje nebudou odeslány, ale ujistěte se prosím, že obrazovka cílové aplikace překladu neobsahuje osobní údaje.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Odeslat informace</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Odesláno</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Kopírovat informace</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Zkopírováno</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Potvrdit</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Odeslat</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Protokol</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Připojování</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportovat</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Vyčistit</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Automatické posouvání</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Exportovat protokoly</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Export se nezdařil</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Export dokončen</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>Protokoly byly exportovány do `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Textové soubory</value>
+  </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>OCR se nezdařilo</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>Překlad se nezdařil</value>
+  </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Nepodařilo se vložit do okna.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Vyberte prosím jiné okno než WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>U vybraného okna "{0}" nelze určit proces a nelze jej zachytit.
+Monitory nejsou podporovány.
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Chyba ověření nastavení</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Uložit a zavřít</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Výchozí nastavení</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Automatické spuštění</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} byl zaregistrován pro automatické spuštění.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>Automatické spuštění pro {0} bylo zakázáno.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Nastavení jazyka</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>Zdrojový a cílový jazyk jsou stejné. Zadejte prosím různé jazyky.</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>Funkce OCR pro {0} není k dispozici. Nainstalujte prosím jazykovou funkci cílového jazyka</value>
+  </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>Nepodařilo se použít nastavení.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Došlo k neznámé chybě</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Žádost o recenzi</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Děkujeme, že používáte WindowTranslator. Mohli byste prosím zanechat recenzi v Microsoft Store?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Napsat recenzi</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Později</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Už nezobrazovat</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Spustit tak, jak je</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Chyba ověření nastavení</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Uložení tohoto nastavení nebude fungovat.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Spuštění beze změn nemusí fungovat správně**
+***
+
+</value>
+  </data>
+</root>
