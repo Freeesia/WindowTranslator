@@ -98,4 +98,13 @@ public class BasicOcrParam : IPluginParam
     /// </summary>
     [Category("Buffer")]
     public bool IsEnableRecover { get; set; } = true;
+
+    /// <summary>
+    /// 優先的にOCRを行う矩形のリスト
+    /// </summary>
+    /// <remarks>
+    /// リストの順序が優先度を表す（前方が高優先度）
+    /// </remarks>
+    [Category("PriorityRect")]
+    public List<PriorityRect> PriorityRects { get; set; } = [];
 }
