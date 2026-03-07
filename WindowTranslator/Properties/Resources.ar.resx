@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>عرض الترجمة فقط للنص تحت المؤشر</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>هامش اختبار مؤشر الماوس</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>عدد وحدات البكسل المضافة حول منطقة اختبار مؤشر الماوس</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>شفافية خلفية الطبقة العلوية</value>
   </data>

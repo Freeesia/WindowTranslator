@@ -64,5 +64,15 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty ScaleProperty =
         DependencyProperty.Register(nameof(Scale), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(1.0));
 
+    public double MousePointerHitTestPadding
+    {
+        get => (double)GetValue(MousePointerHitTestPaddingProperty);
+        set => SetValue(MousePointerHitTestPaddingProperty, value);
+    }
+
+    /// <summary>Identifies the <see cref="MousePointerHitTestPadding"/> dependency property.</summary>
+    public static readonly DependencyProperty MousePointerHitTestPaddingProperty =
+        DependencyProperty.Register(nameof(MousePointerHitTestPadding), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(0.0));
+
 
 }
