@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="DeployId" xml:space="preserve">
+    <value>ID nasazení skriptu</value>
+  </data>
+  <data name="GasOptions" xml:space="preserve">
+    <value>Google Translate</value>
+  </data>
+  <data name="GasTranslator" xml:space="preserve">
+    <value>Google Translate</value>
+  </data>
+  <data name="UnexpectedResponse" xml:space="preserve">
+    <value>Google Translate vrací neočekávanou odpověď.
+Možná jste překročili hodinový limit překladu.
+Počkejte chvíli a zkuste to znovu, nebo použijte jiný překladový modul.</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>Některá nebo všechna oprávnění požadovaná překladovým modulem nebyla udělena.
+Při příštím pokusu o překlad budete znovu vyzváni k udělení oprávnění.</value>
+  </data>
+</root>
