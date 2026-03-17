@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Panlingo.LanguageIdentification.FastText;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Panlingo.LanguageIdentification.FastText;
 using Windows.Graphics.Imaging;
+using Windows.Media;
 using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
@@ -37,6 +38,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
     private readonly double fontSizeThrethold;
     private readonly bool isAvoidMergeList;
     private readonly double scale = 1.0; // スケールのデフォルト値
+    private readonly int brightness; // 明るさ（-127 - 128）
+    private readonly int contrast; // コントラスト（-99 - 100)
 
     static OneOcr()
     {
@@ -117,6 +120,22 @@ public sealed class OneOcr : IOcrModule, IDisposable
         {
             throw new InvalidOperationException(string.Format(Resources.SetMaxRecognitionLineCountFaild, res));
         }
+
+        string brightnessKey = "OCR_BRIGHTNESS_WindowTranslator";
+        string envBrightness = Environment.GetEnvironmentVariable(brightnessKey) ?? "0";
+        if (!int.TryParse(envBrightness, out this.brightness) || this.brightness < -127 || 128 < this.brightness)
+        {
+            this.logger.LogWarning("環境変数 '{brightnessKey}' の値(-127 - 128) '{envBrightness}' は範囲外の為、明るさの調整は行われません。", brightnessKey, envBrightness);
+            this.brightness = 0;
+        }
+
+        string contrastKey = "OCR_CONTRAST_WindowTranslator";
+        string envContrast = Environment.GetEnvironmentVariable(contrastKey) ?? "0";
+        if (!int.TryParse(envContrast, out this.contrast) || this.contrast < -99 || 100 < this.contrast)
+        {
+            this.logger.LogWarning("環境変数 '{contrastKey}' の値(-99 - 100) '{envContrast}' は範囲外の為、明るさの調整は行われません。", contrastKey, envContrast);
+            this.brightness = 0;
+        }
     }
 
     public void Dispose()
@@ -124,10 +143,81 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.fastText.Dispose();
     }
 
+    private static async ValueTask<SoftwareBitmap> CloneBitmapSafe(SoftwareBitmap src)
+    {
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+        var converted = SoftwareBitmap.Convert(
+            src,
+            BitmapPixelFormat.Bgra8,
+            BitmapAlphaMode.Premultiplied
+        );
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+
+        using var frame = VideoFrame.CreateWithSoftwareBitmap(converted);
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+        using var copyFrame = VideoFrame.CreateWithSoftwareBitmap(
+            new SoftwareBitmap(
+                converted.BitmapPixelFormat,
+                converted.PixelWidth,
+                converted.PixelHeight,
+                BitmapAlphaMode.Premultiplied
+            )
+        );
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+
+        await frame.CopyToAsync(copyFrame);
+
+        return copyFrame.SoftwareBitmap;
+    }
+
+    async ValueTask<SoftwareBitmap> AdjustBrightnessContrast(SoftwareBitmap src)
+    {
+        if (this.brightness == 0 && this.contrast == 0)
+        {
+            return src; // 調整不要な場合は元のビットマップを返す
+        }
+
+        // 元の SoftwareBitmap を触らず、安全コピーを作る
+        var bmp = await CloneBitmapSafe(src);
+
+        using var buffer = bmp.LockBuffer(BitmapBufferAccessMode.ReadWrite);
+        using var reference = buffer.CreateReference();
+
+        double realContrast = (this.contrast <= -100.0) ?
+            0.01 :
+            (this.contrast + 100.0) / 100.0; // コントラストの計算に使用する値
+
+        unsafe
+        {
+            byte* data;
+            uint capacity;
+            reference.As<IMemoryBufferByteAccess>().GetBuffer(out data, out capacity);
+
+            for (uint i = 0; i < capacity; i += 4)
+            {
+                double b = data[i + 0];
+                double g = data[i + 1];
+                double r = data[i + 2];
+
+                r = (r - 128) * realContrast + 128 + this.brightness;
+                g = (g - 128) * realContrast + 128 + this.brightness;
+                b = (b - 128) * realContrast + 128 + this.brightness;
+
+                data[i + 0] = (byte)Math.Clamp(b, 0, 255);
+                data[i + 1] = (byte)Math.Clamp(g, 0, 255);
+                data[i + 2] = (byte)Math.Clamp(r, 0, 255);
+            }
+        }
+
+        return bmp;
+    }
+
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
+        // 明るさとコントラストの調整を行う（必要な場合のみ）
+        var workingBitmap = await AdjustBrightnessContrast(bitmap);
         // 拡大率に基づくリサイズ処理
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
+        workingBitmap = await workingBitmap.ResizeSoftwareBitmapAsync(this.scale);
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
