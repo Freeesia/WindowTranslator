@@ -75,10 +75,14 @@ public static class BitmapUtility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AdjustBrightnessContrast(Span<byte> data, int brightness, int contrast)
     {
+        // XMLコメントで規定されたレンジにクランプする
+        brightness = Math.Clamp(brightness, -127, 128);
+        contrast = Math.Clamp(contrast, -99, 100);
+
         // 固定小数点コントラスト係数 (×64スケール)
         // realContrast = (contrast + 100) / 100.0, range [0.01, 2.0]
         // contrastFixed = round(realContrast * 64), range [1, 128]
-        var contrastFixed = (short)Math.Round((Math.Max(contrast, -99) + 100.0) / 100.0 * 64);
+        var contrastFixed = (short)Math.Round((contrast + 100.0) / 100.0 * 64);
         var offset = (short)(128 + brightness);
 
         if (!Vector.IsHardwareAccelerated || data.Length < Vector<byte>.Count)
