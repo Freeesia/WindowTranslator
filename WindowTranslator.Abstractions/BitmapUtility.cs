@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using WinRT;
 
 namespace WindowTranslator;
 
@@ -61,7 +62,7 @@ public static class BitmapUtility
 
         using var buffer = bitmap.LockBuffer(BitmapBufferAccessMode.ReadWrite);
         using var reference = buffer.CreateReference();
-        ((IMemoryBufferByteAccess)reference).GetBuffer(out var data, out var capacity);
+        reference.As<IMemoryBufferByteAccess>().GetBuffer(out var data, out var capacity);
 
         AdjustBrightnessContrast(new Span<byte>(data, (int)capacity), brightness, contrast);
     }
@@ -225,6 +226,7 @@ public static class BitmapUtility
     }
 }
 
+[ComImport]
 [Guid("5b0d3235-4dba-4d44-865e-8f1d0e4fd04d")]
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 unsafe interface IMemoryBufferByteAccess
