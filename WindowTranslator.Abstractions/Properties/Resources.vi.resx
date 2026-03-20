@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Tỷ lệ mở rộng</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Độ sáng</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Độ tương phản</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Hợp nhất ngưỡng</value>
   </data>
