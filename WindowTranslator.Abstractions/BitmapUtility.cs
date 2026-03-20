@@ -1,4 +1,7 @@
 ﻿#if WINDOWS
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 
@@ -45,6 +48,120 @@ public static class BitmapUtility
         token.ThrowIfCancellationRequested();
         return await decoder.GetSoftwareBitmapAsync(source.BitmapPixelFormat, source.BitmapAlphaMode);
     }
+
+    /// <summary>
+    /// 明るさとコントラストをインプレースで調整する（BGRA8形式専用）
+    /// </summary>
+    /// <param name="bitmap">調整対象のビットマップ（BGRA8形式）</param>
+    /// <param name="brightness">明るさ（-127 - 128）</param>
+    /// <param name="contrast">コントラスト（-99 - 100）</param>
+    public static unsafe void AdjustBrightnessContrastInPlace(this SoftwareBitmap bitmap, int brightness, int contrast)
+    {
+        if (brightness == 0 && contrast == 0) return;
+
+        using var buffer = bitmap.LockBuffer(BitmapBufferAccessMode.ReadWrite);
+        using var reference = buffer.CreateReference();
+        ((IMemoryBufferByteAccess)reference).GetBuffer(out var data, out var capacity);
+
+        AdjustBrightnessContrast(new Span<byte>(data, (int)capacity), brightness, contrast);
+    }
+
+    /// <summary>
+    /// 明るさとコントラストの調整処理（BGRA形式のSpanに適用、SIMDによる高速化）
+    /// </summary>
+    /// <param name="data">BGRA形式のピクセルデータ</param>
+    /// <param name="brightness">明るさ（-127 - 128）</param>
+    /// <param name="contrast">コントラスト（-99 - 100）</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AdjustBrightnessContrast(Span<byte> data, int brightness, int contrast)
+    {
+        // 固定小数点コントラスト係数 (×64スケール)
+        // realContrast = (contrast + 100) / 100.0, range [0.01, 2.0]
+        // contrastFixed = round(realContrast * 64), range [1, 128]
+        var contrastFixed = (short)Math.Round((Math.Max(contrast, -99) + 100.0) / 100.0 * 64);
+        var offset = (short)(128 + brightness);
+
+        if (!Vector.IsHardwareAccelerated || data.Length < Vector<byte>.Count)
+        {
+            AdjustBrightnessContrastScalar(data, contrastFixed, offset);
+            return;
+        }
+
+        // アルファチャンネルマスク: BGRA形式でA(index%4==3)は0x00, それ以外は0xFF
+        // Vector<byte>.Count は常に4の倍数なのでマスクはBGRA境界に合わせられる
+        Span<byte> maskData = stackalloc byte[Vector<byte>.Count];
+        for (int i = 0; i < maskData.Length; i++)
+            maskData[i] = (byte)(i % 4 == 3 ? 0 : 0xFF);
+        var colorMask = Vector.LoadUnsafe(ref MemoryMarshal.GetReference(maskData));
+
+        var contrastVec = new Vector<short>(contrastFixed);
+        var offsetVec = new Vector<short>(offset);
+        var sub128 = new Vector<short>(128);
+        var zeroVec = Vector<short>.Zero;
+        var maxVec = new Vector<short>(255);
+
+        ref var current = ref MemoryMarshal.GetReference(data);
+        ref var end = ref Unsafe.Add(ref current, data.Length);
+        ref var to = ref Unsafe.Add(ref current, data.Length - Vector<byte>.Count);
+
+        while (Unsafe.IsAddressLessThan(ref current, ref to))
+        {
+            var chunk = Vector.LoadUnsafe(ref current);
+
+            // アルファバイトを保存 (chunk & ~colorMask)
+            var alphaSaved = Vector.AndNot(chunk, colorMask);
+
+            // バイトをshortに拡張してSIMD演算
+            Vector.Widen(chunk, out var loU, out var hiU);
+            var lo = loU.As<ushort, short>();
+            var hi = hiU.As<ushort, short>();
+
+            // (c - 128) * contrastFixed >> 6 + offset
+            // 中間値の範囲: (±128) * 128 = ±16384、shortの範囲内
+            lo -= sub128;
+            lo *= contrastVec;
+            lo = Vector.ShiftRightArithmetic(lo, 6);
+            lo += offsetVec;
+            lo = Vector.Min(Vector.Max(lo, zeroVec), maxVec);
+
+            hi -= sub128;
+            hi *= contrastVec;
+            hi = Vector.ShiftRightArithmetic(hi, 6);
+            hi += offsetVec;
+            hi = Vector.Min(Vector.Max(hi, zeroVec), maxVec);
+
+            // shortからバイトに縮小
+            var result = Vector.Narrow(lo.As<short, ushort>(), hi.As<short, ushort>());
+
+            // アルファを復元: (処理済みRGB) | (元のアルファ)
+            result = (result & colorMask) | alphaSaved;
+
+            result.StoreUnsafe(ref current);
+            current = ref Unsafe.Add(ref current, Vector<byte>.Count);
+        }
+
+        // 残りのピクセルをスカラーで処理
+        if (Unsafe.IsAddressLessThan(ref current, ref end))
+        {
+            var remaining = (int)Unsafe.ByteOffset(ref current, ref end);
+            AdjustBrightnessContrastScalar(MemoryMarshal.CreateSpan(ref current, remaining), contrastFixed, offset);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AdjustBrightnessContrastScalar(Span<byte> data, short contrastFixed, short offset)
+    {
+        for (int i = 0; i + 3 < data.Length; i += 4)
+        {
+            data[i + 0] = ClampByte(((data[i + 0] - 128) * contrastFixed >> 6) + offset); // B
+            data[i + 1] = ClampByte(((data[i + 1] - 128) * contrastFixed >> 6) + offset); // G
+            data[i + 2] = ClampByte(((data[i + 2] - 128) * contrastFixed >> 6) + offset); // R
+            // data[i + 3]: A は変更しない
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static byte ClampByte(int val) => (byte)Math.Clamp(val, 0, 255);
 
     /// <summary>
     /// 画像を指定されたパスに保存する
@@ -99,5 +216,12 @@ public static class BitmapUtility
             // ここで何かログを残すことも可能ですが、今回は省略します
         }
     }
+}
+
+[Guid("5b0d3235-4dba-4d44-865e-8f1d0e4fd04d")]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+unsafe interface IMemoryBufferByteAccess
+{
+    void GetBuffer(out byte* buffer, out uint capacity);
 }
 #endif

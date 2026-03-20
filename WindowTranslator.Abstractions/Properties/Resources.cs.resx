@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Míra zvětšení</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Jas</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Práh sloučení</value>
   </data>

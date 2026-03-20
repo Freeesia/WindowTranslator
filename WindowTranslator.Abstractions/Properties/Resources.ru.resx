@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Масштаб</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Яркость</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Контрастность</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Порог объединения</value>
   </data>

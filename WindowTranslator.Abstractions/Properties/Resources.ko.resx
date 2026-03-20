@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>확대율</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>밝기</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>대비</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>임계 값을 병합하십시오</value>
   </data>

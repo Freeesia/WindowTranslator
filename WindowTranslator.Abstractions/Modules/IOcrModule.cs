@@ -35,6 +35,20 @@ public class BasicOcrParam : IPluginParam
     public double Scale { get; set; } = 1.0;
 
     /// <summary>
+    /// 明るさ（-127 - 128）
+    /// </summary>
+    [Category("Recognize")]
+    [Slidable(-127, 128, 1, 10, true, 1)]
+    public int Brightness { get; set; } = 0;
+
+    /// <summary>
+    /// コントラスト（-99 - 100）
+    /// </summary>
+    [Category("Recognize")]
+    [Slidable(-99, 100, 1, 10, true, 1)]
+    public int Contrast { get; set; } = 0;
+
+    /// <summary>
     /// X位置のしきい値
     /// </summary>
     [Category("MergeThrethold")]

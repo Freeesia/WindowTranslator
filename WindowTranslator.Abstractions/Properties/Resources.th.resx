@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>มาตราส่วน</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>ความสว่าง</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>คอนทราสต์</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>เกณฑ์การรวม</value>
   </data>
