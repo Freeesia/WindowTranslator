@@ -106,9 +106,12 @@ public static class BitmapUtility
 
         ref var current = ref MemoryMarshal.GetReference(data);
         ref var end = ref Unsafe.Add(ref current, data.Length);
-        ref var to = ref Unsafe.Add(ref current, data.Length - Vector<byte>.Count);
+        int vectorSize = Vector<byte>.Count;
+        int dataLength = data.Length;
+        int simdLength = dataLength - dataLength % vectorSize;
+        ref var simdEnd = ref Unsafe.Add(ref current, simdLength);
 
-        while (Unsafe.IsAddressLessThan(ref current, ref to))
+        while (Unsafe.IsAddressLessThan(ref current, ref simdEnd))
         {
             var chunk = Vector.LoadUnsafe(ref current);
 
