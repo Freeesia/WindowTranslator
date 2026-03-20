@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>ضریب بزرگ‌نمایی</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>روشنایی</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>کنتراست</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>آستانه ادغام</value>
   </data>

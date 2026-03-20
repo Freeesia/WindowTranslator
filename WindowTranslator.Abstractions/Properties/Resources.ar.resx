@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>معامل التكبير</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>السطوع</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>التباين</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>عتبة الدمج</value>
   </data>

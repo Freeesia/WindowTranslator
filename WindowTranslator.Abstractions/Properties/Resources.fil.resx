@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Sukat</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Liwanag</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrasto</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Threshold ng Pagsama</value>
   </data>

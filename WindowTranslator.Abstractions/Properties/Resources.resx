@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>拡大率</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>明るさ</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>コントラスト</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>マージ閾値</value>
   </data>
