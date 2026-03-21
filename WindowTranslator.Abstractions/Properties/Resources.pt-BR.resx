@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Nível de ampliação</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Brilho</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Contraste</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Limiar de mesclagem</value>
   </data>

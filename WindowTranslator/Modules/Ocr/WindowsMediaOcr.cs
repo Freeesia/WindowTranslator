@@ -30,6 +30,8 @@ public sealed partial class WindowsMediaOcr(
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
+    private readonly int brightness = ocrParam.Value.Brightness;
+    private readonly int contrast = ocrParam.Value.Contrast;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new AppUserException(string.Format(Properties.Resources.OcrLanguageNotAvailable, langOptions.Value.Source));
     private readonly ILogger<WindowsMediaOcr> logger = logger;
@@ -42,11 +44,24 @@ public sealed partial class WindowsMediaOcr(
         var newHeight = (uint)(bitmap.PixelHeight * scale);
         if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
         {
-            throw new InvalidOperationException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
+            throw new AppUserException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
         }
 
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
+        this.cts.Token.ThrowIfCancellationRequested();
+
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
+        {
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
+        }
         this.cts.Token.ThrowIfCancellationRequested();
 
         var t = this.logger.LogDebugTime("OCR Recognize");

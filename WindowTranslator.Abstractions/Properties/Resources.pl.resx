@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Współczynnik powiększenia</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Jasność</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Próg scalania</value>
   </data>

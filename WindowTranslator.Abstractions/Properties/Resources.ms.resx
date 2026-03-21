@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Kadar pembesaran</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Kecerahan</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontras</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Ambang gabungan</value>
   </data>

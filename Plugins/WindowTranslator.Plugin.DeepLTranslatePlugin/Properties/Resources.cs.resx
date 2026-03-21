@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AuthKey" xml:space="preserve">
+    <value>API klíč</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Cesta ke glosáři</value>
+  </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>Klíč DeepL API není nastaven. Nastavte prosím klíč DeepL API v dialogu nastavení.</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>Chyba autorizace DeepL. Je nastaven neplatný API klíč. Zkuste prosím API klíč znovu vytvořit.</value>
+  </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>Byl dosažen limit využití DeepL. Aktuální využití: {0} / {1} znaků</value>
+  </data>
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>Zkontrolovat využití</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Využití</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>Neznámé</value>
+  </data>
+</root>
