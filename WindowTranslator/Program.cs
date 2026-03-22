@@ -113,18 +113,20 @@ builder.Services.AddPluginFramework()
     .AddPluginType<ITargetSettingsValidator>()
     .AddPluginType<IPluginParam>();
 
+var pluginFolderCatalog = new CompositePluginCatalog();
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 
+builder.Services.AddPluginCatalog(pluginFolderCatalog);
 builder.Configuration
     .AddCommandLine(args)
     .AddJsonFile(PathUtility.UserSettings, true, true);
