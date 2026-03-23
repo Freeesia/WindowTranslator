@@ -165,7 +165,7 @@ public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> 
         {
             var tmpPath = Path.Combine(tmpDir, content.Name);
             this.logger.LogInformation("Downloading {FileName}...", content.Name);
-            await this.client.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
+            await this.client.DownloadFileAsync(content, tmpPath).ConfigureAwait(false);
             this.logger.LogInformation("Downloaded {FileName}", content.Name);
 
             var fileName = await ExtractFileIfNeeded(tmpPath, modelDir);
@@ -257,14 +257,18 @@ public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> 
 
 file static class Extensions
 {
-    public static async ValueTask DownloadFileAsync(this IGitHubClient client, string owner, string repo, RepositoryContent content, string path)
+    // mozilla/firefox-translations-models はアーカイブされ、GitHub LFSオブジェクトが削除された。
+    // モデルはGoogle Cloud Storageバケットに移行されたため、そこからダウンロードする。
+    private const string GcsBaseUrl = "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data";
+
+    public static async ValueTask DownloadFileAsync(this IGitHubClient client, RepositoryContent content, string path)
     {
         var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
         res.HttpResponse.IsSuccessStatusCode();
         if (res.HttpResponse.Body is string lfs && lfs.StartsWith("version https://git-lfs.github.com/spec/v1", StringComparison.Ordinal))
         {
-            var url = $"https://media.githubusercontent.com/media/{owner}/{repo}/refs/heads/main/{content.Path}";
-            await client.DownloadFileAsync(new(url), path).ConfigureAwait(false);
+            var url = new Uri($"{GcsBaseUrl}/{content.Path}");
+            await client.DownloadFileAsync(url, path).ConfigureAwait(false);
         }
         else if (res.HttpResponse.Body is string d)
         {
