@@ -88,7 +88,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
                 Mode = SystemMessageMode.Replace,
                 Content = system,
             },
-            OnPermissionRequest = PermissionHandler.ApproveAll,
+            OnPermissionRequest = static (_, _) => Task.FromResult(new PermissionRequestResult() { Kind = PermissionRequestResultKind.NoResult }),
             ReasoningEffort = "low",
         }).ConfigureAwait(false);
         this.sessionStarted = true;
@@ -125,7 +125,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         var content = sb.Length > 0 ? sb.Append(jsonData).ToString() : jsonData;
 
         var session = await this.session.AsValueTask().ConfigureAwait(false);
-        var response = await session.SendAndWaitAsync(new MessageOptions { Prompt = content }).ConfigureAwait(false);
+        var response = await session.SendAndWaitAsync(content).ConfigureAwait(false);
         var json = response?.Data?.Content?.Trim() ?? string.Empty;
         var res = JsonSerializer.Deserialize<Response>(json, jsonOptions);
         return res?.Translated ?? [];
@@ -158,5 +158,50 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         }
         await this.client.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
+    }
+}
+
+file static class CopilotClientExtensions
+{
+    public static async Task<AssistantMessageEvent?> SendAndWaitAsync(this CopilotSession session, string prompt)
+    {
+        var effectiveTimeout = TimeSpan.FromSeconds(60);
+        var tcs = new TaskCompletionSource<AssistantMessageEvent?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        AssistantMessageEvent? lastAssistantMessage = null;
+
+        using var subscription = session.On(evt =>
+        {
+            switch (evt)
+            {
+                case AssistantMessageEvent assistantMessage:
+                    lastAssistantMessage = assistantMessage;
+                    break;
+
+                case SessionIdleEvent:
+                    tcs.TrySetResult(lastAssistantMessage);
+                    break;
+
+                case SessionErrorEvent { Data: var err }:
+                    tcs.TrySetException(new AppUserException($"""
+                    ## {err.ErrorType}: {err.StatusCode}
+
+                    {err.Message}
+                    ({err.Url})
+
+                    ```
+                    {err.Stack}
+                    ```
+                    """));
+                    break;
+            }
+        });
+
+        await session.SendAsync(new() { Prompt = prompt });
+
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(effectiveTimeout);
+
+        using var registration = cts.Token.Register(() => tcs.TrySetException(new TimeoutException($"SendAndWaitAsync timed out after {effectiveTimeout}")));
+        return await tcs.Task;
     }
 }
