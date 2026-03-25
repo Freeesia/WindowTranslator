@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.IO.Compression;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using BergamotTranslatorSharp;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
@@ -71,6 +70,7 @@ public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSetti
     private static readonly SemaphoreSlim Semaphore = new(1, 1);
     private static readonly StorageClient StorageClient = StorageClient.CreateUnauthenticated();
     private static readonly string[] ArchitecturePriority = ["base", "base-memory", "tiny"];
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private readonly ILogger<BergamotValidator> logger = logger;
 
@@ -137,7 +137,7 @@ public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSetti
             using var stream = new MemoryStream();
             await StorageClient.DownloadObjectAsync(BucketName, ModelsJsonObject, stream).ConfigureAwait(false);
             stream.Position = 0;
-            _cachedModels = await JsonSerializer.DeserializeAsync<GcsModelsRoot>(stream).ConfigureAwait(false)
+            _cachedModels = await JsonSerializer.DeserializeAsync<GcsModelsRoot>(stream, JsonOptions).ConfigureAwait(false)
                 ?? throw new InvalidOperationException("models.jsonの解析に失敗しました");
             this.logger.LogInformation("Downloaded models index");
             return _cachedModels;
@@ -301,29 +301,29 @@ public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSetti
 
 /// <summary>GCS の db/models.json のルート構造</summary>
 internal record GcsModelsRoot(
-    [property: JsonPropertyName("baseUrl")] string BaseUrl,
-    [property: JsonPropertyName("models")] Dictionary<string, List<GcsModel>> Models
+    string BaseUrl,
+    Dictionary<string, List<GcsModel>> Models
 );
 
 /// <summary>特定の言語ペア・アーキテクチャのモデルエントリ</summary>
 internal record GcsModel(
-    [property: JsonPropertyName("architecture")] string Architecture,
-    [property: JsonPropertyName("releaseStatus")] string ReleaseStatus,
-    [property: JsonPropertyName("sourceLanguage")] string SourceLanguage,
-    [property: JsonPropertyName("targetLanguage")] string TargetLanguage,
-    [property: JsonPropertyName("files")] GcsModelFiles Files
+    string Architecture,
+    string ReleaseStatus,
+    string SourceLanguage,
+    string TargetLanguage,
+    GcsModelFiles Files
 );
 
 /// <summary>モデルに含まれるファイル群</summary>
 internal record GcsModelFiles(
-    [property: JsonPropertyName("model")] GcsModelFile Model,
-    [property: JsonPropertyName("lexicalShortlist")] GcsModelFile? LexicalShortlist,
-    [property: JsonPropertyName("vocab")] GcsModelFile? Vocab,
-    [property: JsonPropertyName("srcVocab")] GcsModelFile? SrcVocab,
-    [property: JsonPropertyName("trgVocab")] GcsModelFile? TrgVocab
+    GcsModelFile Model,
+    GcsModelFile? LexicalShortlist,
+    GcsModelFile? Vocab,
+    GcsModelFile? SrcVocab,
+    GcsModelFile? TrgVocab
 );
 
 /// <summary>GCSオブジェクトパスを持つファイル参照</summary>
 internal record GcsModelFile(
-    [property: JsonPropertyName("path")] string Path
+    string Path
 );
