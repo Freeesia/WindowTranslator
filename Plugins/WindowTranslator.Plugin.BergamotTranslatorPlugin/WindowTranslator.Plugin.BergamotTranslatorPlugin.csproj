@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="BergamotTranslatorSharp" />
-    <PackageReference Include="Octokit" ExcludeAssets="runtime" />
+    <PackageReference Include="Google.Cloud.Storage.V1" />
   </ItemGroup>
 
   <ItemGroup>

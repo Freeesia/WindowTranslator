@@ -13,6 +13,7 @@
     <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
     <PackageVersion Include="Google.Apis.Auth" Version="1.73.0" />
     <PackageVersion Include="Google.Apis.Script.v1" Version="1.68.0.3294" />
+    <PackageVersion Include="Google.Cloud.Storage.V1" Version="4.14.0" />
     <PackageVersion Include="Google_GenerativeAI" Version="3.3.0" />
     <PackageVersion Include="Kamishibai.Hosting" Version="3.1.0" />
     <PackageVersion Include="ksemenenko.ColorThief" Version="1.1.1.4" />
