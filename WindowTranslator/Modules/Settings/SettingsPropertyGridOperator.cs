@@ -1,12 +1,20 @@
 ﻿using PropertyTools.Wpf;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyTools.DataAnnotations;
+using WindowTranslator.ComponentModel;
 
 namespace WindowTranslator.Modules.Settings;
+
+internal interface IEditableItemsPropertyItem
+{
+    IEnumerable? EditableCandidates { get; set; }
+}
+
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
     public SettingsPropertyGridOperator()
@@ -86,6 +94,14 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         {
             pi.SortIndex = order;
         }
+        if (attribute is EditableItemsSourceAttribute editableAttr && pi is IEditableItemsPropertyItem editableItem)
+        {
+            var sourceProp = TypeDescriptor.GetProperties(instance)[editableAttr.ItemsSourcePropertyName];
+            if (sourceProp?.GetValue(instance) is IEnumerable candidates)
+            {
+                editableItem.EditableCandidates = candidates;
+            }
+        }
         base.SetAttribute(attribute, pi, instance);
     }
 
@@ -93,9 +109,11 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         => new ParentablePropertyItem(pd, propertyDescriptors);
 
     private class ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
-        : PropertyItem(propertyDescriptor, propertyDescriptors)
+        : PropertyItem(propertyDescriptor, propertyDescriptors), IEditableItemsPropertyItem
     {
         private readonly Stack<string> parents = new();
+
+        public IEnumerable? EditableCandidates { get; set; }
 
         public void AddParent(string parent)
             => parents.Push(parent);
