@@ -133,6 +133,7 @@ builder.Configuration
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
 builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
+builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
 builder.Services.AddHostedService<WindowMonitor>();
 if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
 {
