@@ -69,7 +69,7 @@ public class OcrBufferFilter(IOptionsSnapshot<TargetSettings> target, IOptionsSn
                     Y = pastText.Y,
                     Width = Math.Max(text.Width, pastText.Width),
                     Height = pastText.Height,
-                    FontSize = pastText.FontSize
+                    FontSize = (text.FontSize + pastText.FontSize) / 2
                 };
             }
             currentTextsList.Add(text);
