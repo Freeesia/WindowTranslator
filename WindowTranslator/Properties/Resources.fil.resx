@@ -312,8 +312,14 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Ipakita ang overlay translation para sa teksto sa posisyon ng mouse pointer lamang</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Padding ng hit test ng mouse pointer</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Karagdagang mga pixel sa paligid ng hit test area ng mouse pointer</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
-    <value>Opacity ng background ng overlay</value>
+    <value>Opasidad ng background ng overlay</value>
   </data>
   <data name="SendReportToolTip" xml:space="preserve">
     <value>Ipadala ang error information sa reporting system. Ang sumusunod na impormasyon ay ipapadala:
