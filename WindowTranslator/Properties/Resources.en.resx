@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Mouse pointer hit test padding</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Additional pixels added around the mouse pointer hit test area</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay background opacity</value>
   </data>
