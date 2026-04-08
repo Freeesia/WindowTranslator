@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Mostrar traducción solo para texto bajo el puntero</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Margen de prueba del puntero del ratón</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Píxeles adicionales alrededor del área de prueba del puntero del ratón</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Opacidad del fondo de superposición</value>
   </data>
