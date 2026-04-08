@@ -13,7 +13,11 @@ public class LLMOptions : IPluginParam
 
     public bool WaitCorrect { get; set; }
 
+    [EditableItemsSource(nameof(ModelCandidates))]
     public string? Model { get; set; } = "gpt-4o-mini";
+
+    [System.ComponentModel.Browsable(false)]
+    public IReadOnlyList<string> ModelCandidates { get; set; } = [];
 
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }

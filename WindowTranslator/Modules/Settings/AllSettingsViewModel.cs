@@ -46,6 +46,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
+    private readonly IModelHistoryStore modelHistoryStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
     private readonly ILogger<AllSettingsViewModel> logger;
@@ -112,6 +113,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
+        [Inject] IModelHistoryStore modelHistoryStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
@@ -134,12 +136,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         this.Targets = [.. options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
-            .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
+            .Select(t => new TargetSettingsViewModel(t.Key, sp, modelHistoryStore, t.Value, ocrModules, translateModules, cacheModules))];
 
         this.ApplyMode = applyMode ?? !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
+            selected = new(target, sp, modelHistoryStore, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
             this.Targets.Add(selected);
         }
         if (!string.IsNullOrEmpty(target))
@@ -153,6 +155,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
+        this.modelHistoryStore = modelHistoryStore;
         this.validators = validators;
         this.mainWindowModule = mainWindowModule;
         this.logger = logger;
@@ -301,6 +304,14 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.Clear();
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
+
+        // 編集可能ComboBoxの履歴保存
+        foreach (var (param, propertyName, value) in GetEditableItemsSourceValues(this.Targets))
+        {
+            this.modelHistoryStore.AddHistory($"{param.GetType().Name}.{propertyName}", value);
+        }
+        this.modelHistoryStore.Save();
+
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -329,6 +340,24 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         return new DisposeAction(() => this.IsBusy = false);
     }
 
+    private static IEnumerable<(IPluginParam Param, string PropertyName, string Value)> GetEditableItemsSourceValues(IEnumerable<TargetSettingsViewModel> targets)
+    {
+        foreach (var target in targets)
+        {
+            foreach (var param in target.Params)
+            {
+                foreach (System.ComponentModel.PropertyDescriptor pd in System.ComponentModel.TypeDescriptor.GetProperties(param))
+                {
+                    var attr = pd.Attributes.OfType<EditableItemsSourceAttribute>().FirstOrDefault();
+                    if (attr != null && pd.GetValue(param) is string value && !string.IsNullOrWhiteSpace(value))
+                    {
+                        yield return (param, pd.Name, value);
+                    }
+                }
+            }
+        }
+    }
+
     public void Dispose()
     {
         this.updateChecker.UpdateAvailable -= UpdateChecker_UpdateAvailable;
@@ -348,6 +377,7 @@ public record ModuleItem(string Name, string DisplayName, bool IsDefault);
 public partial class TargetSettingsViewModel(
     string name,
     IServiceProvider sp,
+    IModelHistoryStore modelHistoryStore,
     TargetSettings settings,
     IReadOnlyList<ModuleItem> ocrModules,
     IReadOnlyList<ModuleItem> translateModules,
@@ -479,6 +509,18 @@ public partial class TargetSettingsViewModel(
         {
             configureMethod.Invoke(configure, [name, p]);
         }
+
+        // EditableItemsSourceAttributeが付与されたプロパティに履歴を設定
+        foreach (System.ComponentModel.PropertyDescriptor pd in System.ComponentModel.TypeDescriptor.GetProperties(p))
+        {
+            var attr = pd.Attributes.OfType<EditableItemsSourceAttribute>().FirstOrDefault();
+            if (attr != null)
+            {
+                var sourceProp = System.ComponentModel.TypeDescriptor.GetProperties(p)[attr.ItemsSourcePropertyName];
+                sourceProp?.SetValue(p, modelHistoryStore.GetHistory($"{p.GetType().Name}.{pd.Name}"));
+            }
+        }
+
         return p;
     }).ToArray();
 }
