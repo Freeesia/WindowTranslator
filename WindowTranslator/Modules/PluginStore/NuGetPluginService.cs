@@ -33,7 +33,10 @@ public sealed class NuGetPluginService : IDisposable
 
     public NuGetPluginService(ILogger<NuGetPluginService> logger)
     {
-        this.httpClient = new HttpClient();
+        this.httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(30),
+        };
         this.logger = logger;
     }
 
