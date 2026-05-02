@@ -16,6 +16,40 @@ public sealed class NuGetPluginService : IDisposable
     private const string PluginTag = "windowtranslator-plugin";
     private const string NuGetFlatContainerBase = "https://api.nuget.org/v3-flatcontainer";
 
+    /// <summary>
+    /// モジュール/パラメータクラス名からNuGetパッケージIDへのマッピング。
+    /// アプリバンドルから除外されたプラグインの後方互換性自動インストールに使用します。
+    /// </summary>
+    public static readonly IReadOnlyDictionary<string, string> KnownClassToPackage =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // WindowTranslator.Plugin.FoMPlugin
+            ["FoMFilterModule"] = "WindowTranslator.Plugin.FoMPlugin",
+            ["FoMOptions"] = "WindowTranslator.Plugin.FoMPlugin",
+            // WindowTranslator.Plugin.PLaMoPlugin
+            ["PLaMoTranslator"] = "WindowTranslator.Plugin.PLaMoPlugin",
+            ["PLaMoOptions"] = "WindowTranslator.Plugin.PLaMoPlugin",
+            // WindowTranslator.Plugin.GitHubCopilotPlugin
+            ["GitHubCopilotTranslator"] = "WindowTranslator.Plugin.GitHubCopilotPlugin",
+            ["GitHubCopilotOptions"] = "WindowTranslator.Plugin.GitHubCopilotPlugin",
+            // WindowTranslator.Plugin.DeepLTranslatePlugin
+            ["DeepLTranslator"] = "WindowTranslator.Plugin.DeepLTranslatePlugin",
+            ["DeepLOptions"] = "WindowTranslator.Plugin.DeepLTranslatePlugin",
+            // WindowTranslator.Plugin.GoogleAIPlugin
+            ["GoogleAITranslator"] = "WindowTranslator.Plugin.GoogleAIPlugin",
+            ["GoogleAIOcr"] = "WindowTranslator.Plugin.GoogleAIPlugin",
+            ["GoogleAIOptions"] = "WindowTranslator.Plugin.GoogleAIPlugin",
+            // WindowTranslator.Plugin.GoogleAppsSctiptPlugin
+            ["GasTranslator"] = "WindowTranslator.Plugin.GoogleAppsSctiptPlugin",
+            ["GasOptions"] = "WindowTranslator.Plugin.GoogleAppsSctiptPlugin",
+            // WindowTranslator.Plugin.LLMPlugin
+            ["LLMTranslator"] = "WindowTranslator.Plugin.LLMPlugin",
+            ["LLMOcr"] = "WindowTranslator.Plugin.LLMPlugin",
+            ["LLMOptions"] = "WindowTranslator.Plugin.LLMPlugin",
+            // WindowTranslator.Plugin.TesseractOCRPlugin
+            ["TesseractOcr"] = "WindowTranslator.Plugin.TesseractOCRPlugin",
+        };
+
     private static readonly string UserPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
     private static readonly string ManifestPath = Path.Combine(UserPluginsDir, "nuget-manifest.json");
 
@@ -38,6 +72,95 @@ public sealed class NuGetPluginService : IDisposable
             Timeout = TimeSpan.FromSeconds(30),
         };
         this.logger = logger;
+    }
+
+    /// <summary>
+    /// 指定したパッケージの最新バージョンをインストールします。
+    /// </summary>
+    public async Task InstallLatestPackageAsync(string packageId, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var versionsUrl = $"{NuGetFlatContainerBase}/{packageId.ToLowerInvariant()}/index.json";
+        var response = await this.httpClient.GetAsync(versionsUrl, cancellationToken).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var versions = await JsonSerializer.DeserializeAsync<NuGetVersionListResponse>(content, JsonOptions, cancellationToken).ConfigureAwait(false);
+        var latestVersion = versions?.Versions?.LastOrDefault()
+            ?? throw new InvalidOperationException($"パッケージ {packageId} のバージョン一覧を取得できませんでした。");
+        await InstallPackageAsync(packageId, latestVersion, progress, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 設定ファイルで参照されているがインストールされていないプラグインを自動インストールします。
+    /// アプリバンドルから除外されたプラグインの後方互換性維持のために使用します。
+    /// </summary>
+    public async Task AutoInstallFromSettingsAsync(string settingsPath, CancellationToken cancellationToken = default)
+    {
+        if (!File.Exists(settingsPath))
+        {
+            return;
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(await File.ReadAllTextAsync(settingsPath, cancellationToken).ConfigureAwait(false));
+            var neededPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            if (doc.RootElement.TryGetProperty("Targets", out var targets))
+            {
+                foreach (var target in targets.EnumerateObject())
+                {
+                    // SelectedPlugins の値（モジュールクラス名）をチェック
+                    if (target.Value.TryGetProperty("SelectedPlugins", out var selectedPlugins))
+                    {
+                        foreach (var plugin in selectedPlugins.EnumerateObject())
+                        {
+                            var className = plugin.Value.GetString();
+                            if (className is not null && KnownClassToPackage.TryGetValue(className, out var packageId))
+                            {
+                                neededPackages.Add(packageId);
+                            }
+                        }
+                    }
+
+                    // PluginParams のキー（パラメータクラス名）をチェック
+                    if (target.Value.TryGetProperty("PluginParams", out var pluginParams))
+                    {
+                        foreach (var param in pluginParams.EnumerateObject())
+                        {
+                            if (KnownClassToPackage.TryGetValue(param.Name, out var packageId))
+                            {
+                                neededPackages.Add(packageId);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (neededPackages.Count == 0)
+            {
+                return;
+            }
+
+            var installed = await GetInstalledPackagesAsync(cancellationToken).ConfigureAwait(false);
+            var installedIds = installed.Select(p => p.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var packageId in neededPackages.Where(id => !installedIds.Contains(id)))
+            {
+                this.logger.LogInformation("設定で参照されているプラグインを自動インストール: {PackageId}", packageId);
+                try
+                {
+                    await InstallLatestPackageAsync(packageId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogWarning(ex, "プラグイン {PackageId} の自動インストールに失敗しました。", packageId);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning(ex, "設定からのプラグイン自動インストール処理中にエラーが発生しました。");
+        }
     }
 
     /// <summary>
@@ -393,4 +516,8 @@ internal record NuGetSearchData(
     [property: JsonPropertyName("authors")] string[]? Authors,
     [property: JsonPropertyName("projectUrl")] string? ProjectUrl,
     [property: JsonPropertyName("licenseUrl")] string? LicenseUrl
+);
+
+internal record NuGetVersionListResponse(
+    [property: JsonPropertyName("versions")] string[]? Versions
 );

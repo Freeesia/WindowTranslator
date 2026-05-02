@@ -59,6 +59,14 @@ var d = SplashWindow.ShowSplash();
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
 
+// ペンディング削除処理と設定参照プラグインの自動インストール（カタログ初期化より前に実行する必要がある）
+{
+    using var earlyLoggerFactory = LoggerFactory.Create(b => b.SetMinimumLevel(LogLevel.Warning));
+    using var earlyNuGetService = new NuGetPluginService(earlyLoggerFactory.CreateLogger<NuGetPluginService>());
+    earlyNuGetService.ProcessPendingDeletions();
+    await earlyNuGetService.AutoInstallFromSettingsAsync(PathUtility.UserSettings);
+}
+
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
 builder.Host.ConfigureLogging((c, l) =>
@@ -122,10 +130,9 @@ if (Directory.Exists(appPluginDir))
 }
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
-if (Directory.Exists(userPluginsDir))
-{
-    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
-}
+pluginFolderCatalog.AddCatalog(new NuGetPluginCatalog(
+    userPluginsDir,
+    new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);
 builder.Configuration
@@ -187,9 +194,6 @@ app.Loaded += (_, e) =>
     d.Dispose();
     e.Window.Activate();
 };
-
-// 起動時にペンディング削除を処理する
-app.Services.GetRequiredService<NuGetPluginService>().ProcessPendingDeletions();
 
 if (SentrySdk.IsEnabled)
 {
