@@ -456,4 +456,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>插件商店</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>安装</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>卸载</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>确定要卸载 {0} 吗？下次启动时将完全移除。</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>有更新</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>已安装: {0} → 最新: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>已安装: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>已安装版本</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>最新版本</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>无法从 NuGet 获取插件列表。请检查您的网络连接。</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>请重启 WindowTranslator 以应用插件更改。</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>项目页面</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>许可证信息</value>
+  </data>
 </root>

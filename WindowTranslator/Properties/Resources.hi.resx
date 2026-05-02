@@ -455,4 +455,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin Store</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Are you sure you want to uninstall {0}? It will be fully removed on next startup.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Installed: {0} → Latest: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Installed: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Installed version</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Latest version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Failed to retrieve plugin list from NuGet. Please check your network connection.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation complete</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Installation failed</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Please restart WindowTranslator to apply plugin changes.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Project page</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>License information</value>
+  </data>
 </root>

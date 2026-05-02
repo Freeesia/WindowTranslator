@@ -447,4 +447,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>متجر المكونات الإضافية</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>تثبيت</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>مثبت</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>إلغاء التثبيت</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>هل أنت متأكد من رغبتك في إلغاء تثبيت {0}؟ سيتم حذفه بالكامل عند التشغيل التالي.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>يتوفر تحديث</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>مثبت: {0} → الأحدث: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>مثبت: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>الإصدار المثبت</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>أحدث إصدار</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>فشل استرداد قائمة المكونات الإضافية من NuGet. يرجى التحقق من اتصالك بالشبكة.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>اكتمل التثبيت</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>فشل التثبيت</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>يرجى إعادة تشغيل WindowTranslator لتطبيق تغييرات المكون الإضافي.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>صفحة المشروع</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>معلومات الترخيص</value>
+  </data>
 </root>

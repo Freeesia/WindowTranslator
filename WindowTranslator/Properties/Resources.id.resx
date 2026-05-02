@@ -455,4 +455,55 @@ Monitor tidak didukung.</value>
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Toko Plugin</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Pasang</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Terpasang</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Perbarui</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Apakah Anda yakin ingin menghapus {0}? Ini akan dihapus sepenuhnya saat startup berikutnya.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Pembaruan tersedia</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Terpasang: {0} → Terbaru: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Terpasang: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Versi terpasang</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Versi terbaru</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Gagal mengambil daftar plugin dari NuGet. Silakan periksa koneksi jaringan Anda.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalasi selesai</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Instalasi gagal</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Silakan restart WindowTranslator untuk menerapkan perubahan plugin.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Halaman proyek</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informasi lisensi</value>
+  </data>
 </root>

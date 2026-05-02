@@ -343,4 +343,55 @@ Monitory nejsou podporovány.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Obchod s pluginy</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Nainstalovat</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Nainstalováno</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualizovat</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Odinstalovat</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Opravdu chcete odinstalovat {0}? Bude zcela odstraněn při příštím spuštění.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Dostupná aktualizace</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Nainstalováno: {0} → Nejnovější: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Nainstalováno: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Nainstalovaná verze</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Nejnovější verze</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Nepodařilo se načíst seznam pluginů z NuGet. Zkontrolujte připojení k síti.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalace dokončena</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Instalace se nezdařila</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Restartujte WindowTranslator, aby se změny pluginu projevily.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Stránka projektu</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informace o licenci</value>
+  </data>
 </root>

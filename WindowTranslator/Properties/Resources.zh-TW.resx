@@ -456,4 +456,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>外掛程式商店</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>安裝</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>已安裝</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>解除安裝</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>確定要解除安裝 {0} 嗎？下次啟動時將完全移除。</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>有更新</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>已安裝: {0} → 最新: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>已安裝: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>已安裝版本</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>最新版本</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>無法從 NuGet 取得外掛程式清單。請檢查您的網路連線。</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>安裝完成</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>安裝失敗</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>請重新啟動 WindowTranslator 以套用外掛程式變更。</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>專案頁面</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>授權資訊</value>
+  </data>
 </root>

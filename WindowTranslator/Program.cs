@@ -26,6 +26,7 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Modules.Validate;
@@ -161,6 +162,8 @@ builder.Services.AddPresentation<LogWindow, LogViewModel>();
 builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
+builder.Services.AddSingleton<NuGetPluginService>();
+builder.Services.AddTransient<PluginStoreViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
@@ -184,6 +187,9 @@ app.Loaded += (_, e) =>
     d.Dispose();
     e.Window.Activate();
 };
+
+// 起動時にペンディング削除を処理する
+app.Services.GetRequiredService<NuGetPluginService>().ProcessPendingDeletions();
 
 if (SentrySdk.IsEnabled)
 {

@@ -455,4 +455,55 @@ Monitor tidak didukung.</value>
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Loja de Plugins</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Instalar</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Instalado</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Desinstalar</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Tem certeza que deseja desinstalar {0}? Ele será completamente removido na próxima inicialização.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Atualização disponível</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Instalado: {0} → Mais recente: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Instalado: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Versão instalada</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Versão mais recente</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Falha ao recuperar lista de plugins do NuGet. Verifique sua conexão de rede.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalação concluída</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Falha na instalação</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Reinicie o WindowTranslator para aplicar as alterações de plugin.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Página do projeto</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informações de licença</value>
+  </data>
 </root>

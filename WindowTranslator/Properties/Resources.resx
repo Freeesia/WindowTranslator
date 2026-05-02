@@ -456,4 +456,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>プラグインストア</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>インストール</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>インストール済み</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>アンインストール</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>{0} をアンインストールしますか？次回起動時に完全に削除されます。</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>更新あり</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>インストール済み: {0} → 最新: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>インストール済み: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>インストール済みバージョン</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>最新バージョン</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>NuGetからのプラグイン一覧の取得に失敗しました。ネットワーク接続を確認してください。</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>インストール完了</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>インストール失敗</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>プラグインの変更を適用するには、WindowTranslatorを再起動してください。</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>プロジェクトページ</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>ライセンス情報</value>
+  </data>
 </root>

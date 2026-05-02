@@ -447,4 +447,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Boutique de plugins</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Installer</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installé</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Mettre à jour</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Désinstaller</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Voulez-vous vraiment désinstaller {0} ? Il sera complètement supprimé au prochain démarrage.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Mise à jour disponible</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Installé : {0} → Dernier : {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Installé : {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Version installée</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Dernière version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Échec de la récupération de la liste des plugins depuis NuGet. Vérifiez votre connexion réseau.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation terminée</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Échec de l'installation</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Veuillez redémarrer WindowTranslator pour appliquer les modifications de plugin.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Page du projet</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informations de licence</value>
+  </data>
 </root>
