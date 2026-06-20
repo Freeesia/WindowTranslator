@@ -20,7 +20,10 @@ public partial class AllSettingsDialog : FluentWindow
         InitializeComponent();
         this.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
         contentDialogService.SetDialogHost(this.RootContentDialog);
-        ((SettingsPropertyGridOperator)this.Resources["operator"]).HistoryStore = modelHistoryStore;
+        if (this.Resources["operator"] is SettingsPropertyGridOperator op)
+        {
+            op.HistoryStore = modelHistoryStore;
+        }
     }
 }
 

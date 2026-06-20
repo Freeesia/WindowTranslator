@@ -97,7 +97,7 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         {
             pi.SortIndex = order;
         }
-        if (attribute is EditableItemsSourceAttribute && pi is IEditableItemsPropertyItem editableItem)
+        if (attribute is EditableItemsSourceAttribute _ && pi is IEditableItemsPropertyItem editableItem)
         {
             editableItem.EditableCandidates = this.HistoryStore?.GetHistory($"{instance.GetType().Name}.{pi.Descriptor.Name}") ?? [];
         }
