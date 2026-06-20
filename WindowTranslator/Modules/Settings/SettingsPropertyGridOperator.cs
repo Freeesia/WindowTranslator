@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Windows.Input;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Settings;
 
@@ -17,6 +18,8 @@ internal interface IEditableItemsPropertyItem
 
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
+    public IModelHistoryStore? HistoryStore { get; set; }
+
     public SettingsPropertyGridOperator()
     {
         this.ModifyCamelCaseDisplayNames = false;
@@ -94,13 +97,9 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         {
             pi.SortIndex = order;
         }
-        if (attribute is EditableItemsSourceAttribute editableAttr && pi is IEditableItemsPropertyItem editableItem)
+        if (attribute is EditableItemsSourceAttribute && pi is IEditableItemsPropertyItem editableItem)
         {
-            var sourceProp = TypeDescriptor.GetProperties(instance)[editableAttr.ItemsSourcePropertyName];
-            if (sourceProp?.GetValue(instance) is IEnumerable candidates)
-            {
-                editableItem.EditableCandidates = candidates;
-            }
+            editableItem.EditableCandidates = this.HistoryStore?.GetHistory($"{instance.GetType().Name}.{pi.Descriptor.Name}") ?? [];
         }
         base.SetAttribute(attribute, pi, instance);
     }

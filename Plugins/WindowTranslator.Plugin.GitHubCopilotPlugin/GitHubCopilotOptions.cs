@@ -7,12 +7,9 @@ namespace WindowTranslator.Plugin.GitHubCopilotPlugin;
 
 public class GitHubCopilotOptions : IPluginParam
 {
-    [EditableItemsSource(nameof(ModelCandidates))]
+    [EditableItemsSource]
     [LocalizedDescription(typeof(Resources), $"{nameof(Model)}_Desc")]
     public string Model { get; set; } = "gpt-5-mini";
-
-    [System.ComponentModel.Browsable(false)]
-    public IReadOnlyList<string> ModelCandidates { get; set; } = [];
 
     [Height(120)]
     [DataType(DataType.MultilineText)]

@@ -136,12 +136,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
         this.Targets = [.. options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
-            .Select(t => new TargetSettingsViewModel(t.Key, sp, modelHistoryStore, t.Value, ocrModules, translateModules, cacheModules))];
+            .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
 
         this.ApplyMode = applyMode ?? !string.IsNullOrEmpty(target) && options.Value.Targets.ContainsKey(target);
         if (this.Targets.FirstOrDefault(t => t.Name == target) is not { } selected)
         {
-            selected = new(target, sp, modelHistoryStore, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
+            selected = new(target, sp, options.Value.Targets.TryGetValue(string.Empty, out var d) ? d : new(), ocrModules, translateModules, cacheModules);
             this.Targets.Add(selected);
         }
         if (!string.IsNullOrEmpty(target))
@@ -377,7 +377,6 @@ public record ModuleItem(string Name, string DisplayName, bool IsDefault);
 public partial class TargetSettingsViewModel(
     string name,
     IServiceProvider sp,
-    IModelHistoryStore modelHistoryStore,
     TargetSettings settings,
     IReadOnlyList<ModuleItem> ocrModules,
     IReadOnlyList<ModuleItem> translateModules,
@@ -506,17 +505,6 @@ public partial class TargetSettingsViewModel(
         foreach (var configure in configures)
         {
             configureMethod.Invoke(configure, [name, p]);
-        }
-
-        // EditableItemsSourceAttributeが付与されたプロパティに履歴を設定
-        foreach (System.ComponentModel.PropertyDescriptor pd in System.ComponentModel.TypeDescriptor.GetProperties(p))
-        {
-            var attr = pd.Attributes.OfType<EditableItemsSourceAttribute>().FirstOrDefault();
-            if (attr != null)
-            {
-                var sourceProp = System.ComponentModel.TypeDescriptor.GetProperties(p)[attr.ItemsSourcePropertyName];
-                sourceProp?.SetValue(p, modelHistoryStore.GetHistory($"{p.GetType().Name}.{pd.Name}"));
-            }
         }
 
         return p;

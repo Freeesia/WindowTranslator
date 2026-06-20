@@ -1,14 +1,10 @@
 namespace WindowTranslator.ComponentModel;
 
 /// <summary>
-/// プロパティを編集可能なComboBoxとして表示し、候補一覧をバインドするプロパティ名を指定する属性です。
+/// プロパティを編集可能なComboBoxとして表示するためのマーカー属性です。
+/// 候補一覧はView側の履歴ストアから自動的に提供されます。
 /// </summary>
-/// <param name="itemsSourcePropertyName">候補一覧を提供するプロパティの名前</param>
 [AttributeUsage(AttributeTargets.Property)]
-public class EditableItemsSourceAttribute(string itemsSourcePropertyName) : Attribute
+public class EditableItemsSourceAttribute : Attribute
 {
-    /// <summary>
-    /// 候補一覧を提供するプロパティの名前を取得します。
-    /// </summary>
-    public string ItemsSourcePropertyName { get; } = itemsSourcePropertyName;
 }
