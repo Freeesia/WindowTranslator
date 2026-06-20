@@ -1,9 +1,7 @@
-﻿using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
-using WindowTranslator.ComponentModel;
 using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
@@ -16,11 +14,8 @@ namespace WindowTranslator.Modules.Settings;
 /// </summary>
 public partial class AllSettingsDialog : FluentWindow
 {
-    private readonly IModelHistoryStore modelHistoryStore;
-
     public AllSettingsDialog(IContentDialogService contentDialogService, IModelHistoryStore modelHistoryStore)
     {
-        this.modelHistoryStore = modelHistoryStore;
         SystemThemeWatcher.Watch(this);
         InitializeComponent();
         this.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
@@ -28,36 +23,6 @@ public partial class AllSettingsDialog : FluentWindow
         if (this.Resources["operator"] is SettingsPropertyGridOperator op)
         {
             op.HistoryStore = modelHistoryStore;
-        }
-    }
-
-    protected override void OnClosed(EventArgs e)
-    {
-        base.OnClosed(e);
-        if (this.DataContext is AllSettingsViewModel viewModel)
-        {
-            var cache = new Dictionary<Type, PropertyDescriptorCollection>();
-            foreach (var target in viewModel.Targets)
-            {
-                foreach (var param in target.Params)
-                {
-                    var paramType = param.GetType();
-                    if (!cache.TryGetValue(paramType, out var properties))
-                    {
-                        properties = TypeDescriptor.GetProperties(param);
-                        cache[paramType] = properties;
-                    }
-                    foreach (PropertyDescriptor pd in properties)
-                    {
-                        var attr = pd.Attributes.OfType<EditableItemsSourceAttribute>().FirstOrDefault();
-                        if (attr != null && pd.GetValue(param) is string value && !string.IsNullOrWhiteSpace(value))
-                        {
-                            this.modelHistoryStore.AddHistory($"{paramType.Name}.{pd.Name}", value);
-                        }
-                    }
-                }
-            }
-            this.modelHistoryStore.Save();
         }
     }
 }
