@@ -4,21 +4,20 @@
 
 ### PR #606 での誤解
 
-**ユーザーの指示：**
-> `IPluginParam` は永続化モデルのインターフェイスなので不要なプロパティを追加したくない。
-> `ModelCandidates`を削除して、View側で管理するようにして。
+**ユーザーの指示（PRレビューコメント）：**
+> `SettingsPropertyGrid`への機能追加なので`SettingsPropertyGrid`でほぼ完結するようにして。
+> `IModelHistoryStore`をコントロールに渡す処理だけアプリ層の実装として許容する。
 
 **一言一句の分析：**
 
 | 句 | AIの誤った解釈 | 正しい解釈 |
 |---|---|---|
-| `ModelCandidates`を削除して | `LLMOptions`/`GitHubCopilotOptions` から `ModelCandidates` プロパティを削除する | 同じ（正しかった） |
-| View側で管理するようにして | `EditableItemsSourceAttribute` のアーキテクチャを変更し、マーカー属性化 + `HistoryStore` 注入方式に変える | `ModelCandidates` プロパティの定義場所をView側（ViewModel）に移動する。`EditableItemsSourceAttribute` の構造自体は変えない |
+| `SettingsPropertyGrid`でほぼ完結するようにして | `AllSettingsDialog.xaml.cs` に `IModelHistoryStore` を注入し、`operator` に渡す処理をView層に置いた | 履歴の読み込み・保存・`EditableItemsSourceAttribute` の検出をすべて `SettingsPropertyGrid` 内部で完結させる |
+| `IModelHistoryStore`をコントロールに渡す処理だけアプリ層の実装として許容する | 「コントロールに渡す」= `operator.HistoryStore = modelHistoryStore` をView層で行う（部分的に正しかった） | `SettingsPropertyGrid` 自体に `IModelHistoryStore HistoryStore` DPを持たせ、アプリ層はそこに渡すだけ。読み取り・保存ロジックはすべてコントロール内 |
 
-**誤解の原因：**
-「View側で管理する」という指示を、実装方法の変更を含む権限として拡大解釈した。
-しかし指示が求めていたのは「プロパティの定義場所を移動する」だけだった。
-`EditableItemsSourceAttribute` は指示に登場していないため、変更対象ではなかった。
+**誤解の原因：**  
+「`SettingsPropertyGrid`でほぼ完結する」という指示を、`SettingsPropertyGridOperator` まで含めた広い範囲での対応と解釈した。  
+また指示の取得漏れがあった：`get_comments`（一般コメント）のみ取得し、`get_review_comments`（レビューコメント）を取得しなかったため、この指示自体を見逃す場面があった。
 
 ---
 
@@ -41,7 +40,8 @@
 - 「より良い実装」への自発的な変更は禁止
 - `copilot-instructions.md` の「指定された指示には必ず従う」を厳守する
 
-### 4. 指示に登場しない変更を行う前に確認する
+### 5. PRへの指示はレビューコメントも必ず確認する
 
-- 指示に明記されていない既存の仕組みを変えようとしている自分に気づいたら、一度立ち止まる
-- 変更範囲が指示から大きく外れると判断した場合は、実装前にユーザーに確認を求める
+- PRに対して指示が出ている場合、`get_comments`（一般コメント）だけでなく `get_review_comments`（インラインレビューコメント）も取得する
+- レビューコメントには行単位の具体的な指示が含まれることが多く、見逃すと誤った分析・実装につながる
+
