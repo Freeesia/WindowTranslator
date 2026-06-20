@@ -99,7 +99,19 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         }
         if (attribute is EditableItemsSourceAttribute _ && pi is IEditableItemsPropertyItem editableItem)
         {
-            editableItem.EditableCandidates = this.HistoryStore?.GetHistory($"{instance.GetType().Name}.{pi.Descriptor.Name}") ?? [];
+            var key = $"{instance.GetType().Name}.{pi.Descriptor.Name}";
+            editableItem.EditableCandidates = this.HistoryStore?.GetHistory(key) ?? [];
+            if (this.HistoryStore is { } store)
+            {
+                pi.Descriptor.AddValueChanged(instance, (s, e) =>
+                {
+                    if (pi.Descriptor.GetValue(instance) is string value && !string.IsNullOrWhiteSpace(value))
+                    {
+                        store.AddHistory(key, value);
+                        store.Save();
+                    }
+                });
+            }
         }
         base.SetAttribute(attribute, pi, instance);
     }
