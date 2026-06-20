@@ -119,4 +119,12 @@ dotnet nuget-license -t -ignore ignore-packages.json -override package-informati
 * `IAsyncEnumerable<TextRect>` を `IFilterModule` のパイプラインで使用（ストリーミング処理）
 * Windows固有APIは `#if WINDOWS` で条件コンパイル（`WindowTranslator.Abstractions` はクロスプラットフォームビルド対応）
 
+## 指示の日本語解釈
+
+### 「〇〇で完結するようにして」は既存のものへの指示
+
+- 「〇〇でほぼ完結するようにして」「〇〇に追加して」という指示は、**既存の「〇〇」に機能を追加する**ことを意味する
+- 「〇〇」という名前の新しいクラス・ファイル・コンポーネントを**新規作成する指示ではない**
+- 指示に「新しく作れ」「新規作成して」などの明示的な生成指示がない限り、既存のものに対する変更として解釈する
+
 
