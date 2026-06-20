@@ -46,7 +46,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
     private readonly IAutoTargetStore autoTargetStore;
-    private readonly IModelHistoryStore modelHistoryStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
     private readonly ILogger<AllSettingsViewModel> logger;
@@ -113,7 +112,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
         [Inject] IAutoTargetStore autoTargetStore,
-        [Inject] IModelHistoryStore modelHistoryStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
@@ -155,7 +153,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.dialogService = dialogService;
         this.presentationService = presentationService;
         this.autoTargetStore = autoTargetStore;
-        this.modelHistoryStore = modelHistoryStore;
         this.validators = validators;
         this.mainWindowModule = mainWindowModule;
         this.logger = logger;
@@ -305,13 +302,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
 
-        // 編集可能ComboBoxの履歴保存
-        foreach (var (param, propertyName, value) in GetEditableItemsSourceValues(this.Targets))
-        {
-            this.modelHistoryStore.AddHistory($"{param.GetType().Name}.{propertyName}", value);
-        }
-        this.modelHistoryStore.Save();
-
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -338,24 +328,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     {
         this.IsBusy = true;
         return new DisposeAction(() => this.IsBusy = false);
-    }
-
-    private static IEnumerable<(IPluginParam Param, string PropertyName, string Value)> GetEditableItemsSourceValues(IEnumerable<TargetSettingsViewModel> targets)
-    {
-        foreach (var target in targets)
-        {
-            foreach (var param in target.Params)
-            {
-                foreach (System.ComponentModel.PropertyDescriptor pd in System.ComponentModel.TypeDescriptor.GetProperties(param))
-                {
-                    var attr = pd.Attributes.OfType<EditableItemsSourceAttribute>().FirstOrDefault();
-                    if (attr != null && pd.GetValue(param) is string value && !string.IsNullOrWhiteSpace(value))
-                    {
-                        yield return (param, pd.Name, value);
-                    }
-                }
-            }
-        }
     }
 
     public void Dispose()
