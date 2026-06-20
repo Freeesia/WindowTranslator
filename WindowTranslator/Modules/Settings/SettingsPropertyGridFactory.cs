@@ -25,6 +25,8 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
     private static readonly EnableAttribute enableAttribute = new(true);
     private static readonly EnableAttribute disableAttribute = new(false);
 
+    public SettingsPropertyGridOperator? Operator { get; set; }
+
     public override FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options)
     {
         FrameworkElement? fe = null;
@@ -53,6 +55,18 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
                 ItemsSource = editableItem.EditableCandidates,
             };
             comboBox.SetBinding(ComboBox.TextProperty, property.CreateBinding(UpdateSourceTrigger.PropertyChanged));
+            if (this.Operator?.HistoryStore is not null)
+            {
+                var key = $"{property.Descriptor.ComponentType?.Name}.{property.PropertyName}";
+                comboBox.LostFocus += (s, e) =>
+                {
+                    if (this.Operator?.HistoryStore is { } store && comboBox.Text is { Length: > 0 } text)
+                    {
+                        store.AddHistory(key, text);
+                        store.Save();
+                    }
+                };
+            }
             fe = comboBox;
         }
 
