@@ -1,5 +1,6 @@
 ﻿using PropertyTools.DataAnnotations;
 using PropertyTools.Wpf;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
@@ -40,6 +41,19 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         {
             fe = new ShortcutBox();
             fe.SetBinding(TextBox.TextProperty, property.CreateBinding());
+        }
+
+        // EditableItemsSourceAttributeが指定されている場合、編集可能ComboBoxを生成
+        if (fe == null && property is IEditableItemsPropertyItem editableItem && editableItem.EditableCandidates != null)
+        {
+            var comboBox = new ComboBox
+            {
+                IsEditable = true,
+                IsTextSearchEnabled = true,
+                ItemsSource = editableItem.EditableCandidates,
+            };
+            comboBox.SetBinding(ComboBox.TextProperty, property.CreateBinding(UpdateSourceTrigger.PropertyChanged));
+            fe = comboBox;
         }
 
         fe ??= base.CreateControl(property, options);

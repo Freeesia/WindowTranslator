@@ -301,6 +301,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.Clear();
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
+
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -479,6 +480,7 @@ public partial class TargetSettingsViewModel(
         {
             configureMethod.Invoke(configure, [name, p]);
         }
+
         return p;
     }).ToArray();
 }

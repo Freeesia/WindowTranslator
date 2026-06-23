@@ -120,4 +120,15 @@ dotnet nuget-license -t -ignore ignore-packages.json -override package-informati
 * `IAsyncEnumerable<TextRect>` を `IFilterModule` のパイプラインで使用（ストリーミング処理）
 * Windows固有APIは `#if WINDOWS` で条件コンパイル（`WindowTranslator.Abstractions` はクロスプラットフォームビルド対応）
 
+## 指示の日本語解釈
+
+### 助詞「に」と「を」で既存／新規を区別する
+
+日本語の助詞が対象の存在を示す：
+
+- **「〇〇**に**追加して」「〇〇**で**完結するようにして」** → 〇〇は**既存のもの**。新規作成ではなく、既存の〇〇に機能を追加・変更する
+- **「〇〇**を**追加して」「〇〇**を**作って」** → 〇〇はまだ存在しない。**新規作成**する
+
+この区別を誤ると、既存コンポーネントへの修正指示を新規クラス作成と誤解するため、必ず助詞を確認してから変更範囲を判断する。
+
 

@@ -1,14 +1,25 @@
 ﻿using PropertyTools.Wpf;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyTools.DataAnnotations;
+using WindowTranslator.ComponentModel;
+using WindowTranslator.Stores;
 
 namespace WindowTranslator.Modules.Settings;
+
+internal interface IEditableItemsPropertyItem
+{
+    IEnumerable? EditableCandidates { get; set; }
+}
+
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
+    public IModelHistoryStore? HistoryStore { get; set; }
+
     public SettingsPropertyGridOperator()
     {
         this.ModifyCamelCaseDisplayNames = false;
@@ -86,6 +97,22 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         {
             pi.SortIndex = order;
         }
+        if (attribute is EditableItemsSourceAttribute _ && pi is IEditableItemsPropertyItem editableItem)
+        {
+            var key = $"{instance.GetType().Name}.{pi.Descriptor.Name}";
+            editableItem.EditableCandidates = this.HistoryStore?.GetHistory(key) ?? [];
+            if (this.HistoryStore is { } store)
+            {
+                pi.Descriptor.AddValueChanged(instance, (s, e) =>
+                {
+                    if (pi.Descriptor.GetValue(instance) is string value && !string.IsNullOrWhiteSpace(value))
+                    {
+                        store.AddHistory(key, value);
+                        store.Save();
+                    }
+                });
+            }
+        }
         base.SetAttribute(attribute, pi, instance);
     }
 
@@ -93,9 +120,11 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         => new ParentablePropertyItem(pd, propertyDescriptors);
 
     private class ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
-        : PropertyItem(propertyDescriptor, propertyDescriptors)
+        : PropertyItem(propertyDescriptor, propertyDescriptors), IEditableItemsPropertyItem
     {
         private readonly Stack<string> parents = new();
+
+        public IEnumerable? EditableCandidates { get; set; }
 
         public void AddParent(string parent)
             => parents.Push(parent);
