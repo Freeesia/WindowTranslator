@@ -456,4 +456,55 @@ Monitore werden nicht unterstützt.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin-Store</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Installieren</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installiert</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Deinstallieren</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Möchten Sie {0} wirklich deinstallieren? Es wird beim nächsten Start vollständig entfernt.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update verfügbar</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Installiert: {0} → Aktuell: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Installiert: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Installierte Version</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Neueste Version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Fehler beim Abrufen der Plugin-Liste von NuGet. Bitte überprüfen Sie Ihre Netzwerkverbindung.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation abgeschlossen</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Installation fehlgeschlagen</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Bitte starten Sie WindowTranslator neu, um Plugin-Änderungen anzuwenden.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Projektseite</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Lizenzinformationen</value>
+  </data>
 </root>

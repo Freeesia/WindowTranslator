@@ -6,6 +6,15 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
+  <!-- NuGet パッケージとして公開する際の共通設定 -->
+  <PropertyGroup>
+    <PackageTags Condition="'$(PackageTags)' == ''">windowtranslator-plugin</PackageTags>
+    <PackageProjectUrl Condition="'$(PackageProjectUrl)' == ''">https://github.com/Freeesia/WindowTranslator</PackageProjectUrl>
+    <Authors Condition="'$(Authors)' == ''">Freeesia</Authors>
+    <!-- ExcludeFromAppBundle=true のプラグインはビルド後にアプリのpluginsフォルダにコピーされません -->
+    <ExcludeFromAppBundle Condition="'$(ExcludeFromAppBundle)' == ''">false</ExcludeFromAppBundle>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Extensions.Options" ExcludeAssets="runtime" />

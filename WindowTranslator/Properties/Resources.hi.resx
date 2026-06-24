@@ -455,4 +455,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>प्लगइन स्टोर</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>इंस्टॉल करें</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>इंस्टॉल है</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>अपडेट करें</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>अनइंस्टॉल करें</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>क्या आप {0} को अनइंस्टॉल करना चाहते हैं? यह अगली बार शुरू होने पर पूरी तरह हटा दिया जाएगा।</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>अपडेट उपलब्ध</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>इंस्टॉल: {0} → नवीनतम: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>इंस्टॉल: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>इंस्टॉल किया गया संस्करण</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>नवीनतम संस्करण</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>NuGet से प्लगइन सूची प्राप्त करने में विफल। कृपया अपना नेटवर्क कनेक्शन जांचें।</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>इंस्टॉलेशन पूर्ण</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>इंस्टॉलेशन विफल</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>प्लगइन परिवर्तन लागू करने के लिए कृपया WindowTranslator को पुनः आरंभ करें।</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>प्रोजेक्ट पेज</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>लाइसेंस जानकारी</value>
+  </data>
 </root>
