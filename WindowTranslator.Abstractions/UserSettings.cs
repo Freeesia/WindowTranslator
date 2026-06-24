@@ -88,6 +88,11 @@ public class TargetSettings
     public bool IsOneShotMode { get; set; }
 
     /// <summary>
+    /// マウスポインター判定の余白（ピクセル）
+    /// </summary>
+    public double MousePointerHitTestPadding { get; set; }
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
