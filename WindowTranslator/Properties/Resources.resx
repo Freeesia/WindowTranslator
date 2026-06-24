@@ -386,9 +386,7 @@
     <value>WindowTranslator以外のウィンドウを選択してください</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。
-モニターはサポート対象外です。
-</value>
+    <value>選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>設定検証エラー</value>

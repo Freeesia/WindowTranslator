@@ -386,8 +386,7 @@
     <value>कृपया WindowTranslator के अलावा कोई अन्य विंडो चुनें</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>चयनित विंडो "{0}" प्रक्रिया निर्धारित नहीं कर सकती और कैप्चर नहीं की जा सकती।
-मॉनिटर समर्थित नहीं हैं।</value>
+    <value>चयनित विंडो "{0}" प्रक्रिया निर्धारित नहीं कर सकती और कैप्चर नहीं की जा सकती।</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>सेटिंग्स सत्यापन त्रुटि</value>

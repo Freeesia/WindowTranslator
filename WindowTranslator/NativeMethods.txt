@@ -35,6 +35,9 @@ GetWindowTextLength
 GetWindowThreadProcessId
 GetClassName
 DwmGetWindowAttribute
+EnumDisplayMonitors
+GetMonitorInfo
+MonitorFromPoint
 
 
 // WindowMonitor

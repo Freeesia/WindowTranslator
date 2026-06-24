@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -10,6 +11,7 @@ using Composition.WindowsRuntimeHelpers;
 using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.Graphics.Capture;
+using Windows.Win32.Graphics.Gdi;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
@@ -101,7 +103,20 @@ public partial class StartupViewModel
                 }
                 return;
             }
+            
+            // まずウィンドウとして検索
             p = FindProcessByWindowTitle(item.DisplayName, item.Size);
+            
+            // ウィンドウが見つからない場合、ディスプレイとして処理
+            if (p is null)
+            {
+                var displayInfo = FindDisplayBySize(item.Size);
+                if (displayInfo is not null)
+                {
+                    p = new ProcessInfo(item.DisplayName, -1, displayInfo.Value.MonitorHandle, $"DISPLAY__{displayInfo.Value.Index}");
+                }
+            }
+            
             if (p is null)
             {
                 this.presentationService.ShowMessage(string.Format(Resources.UnknownWindow, item.DisplayName), icon: Kamishibai.MessageBoxImage.Error, owner: window);
@@ -203,6 +218,39 @@ public partial class StartupViewModel
 
         // 完全一致が見つかった場合はそれを返し、そうでなければ候補を返す
         return result ?? candidate;
+    }
+
+    private (IntPtr MonitorHandle, int Index)? FindDisplayBySize(Windows.Graphics.SizeInt32 targetSize)
+    {
+        var monitors = new List<(IntPtr Handle, int Width, int Height)>();
+        
+        // モニターを列挙
+        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
+        {
+            var monitorInfo = new MONITORINFOEXW();
+            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+            
+            if (GetMonitorInfo(hMonitor, ref monitorInfo.monitorInfo))
+            {
+                var width = monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left;
+                var height = monitorInfo.monitorInfo.rcMonitor.bottom - monitorInfo.monitorInfo.rcMonitor.top;
+                monitors.Add((hMonitor, width, height));
+            }
+            
+            return true;
+        }, IntPtr.Zero);
+
+        // サイズが一致するモニターを探す
+        for (int i = 0; i < monitors.Count; i++)
+        {
+            var (handle, width, height) = monitors[i];
+            if (width == targetSize.Width && height == targetSize.Height)
+            {
+                return (handle, i);
+            }
+        }
+
+        return null;
     }
 
     private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);
