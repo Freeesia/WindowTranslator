@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Install" xml:space="preserve">
-    <value>インストール</value>
+    <value>安装</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>キャンセル</value>
+    <value>取消</value>
   </data>
   <data name="ConfirmInstall" xml:space="preserve">
     <value>TesseractOcrを利用するにはVisual C++ Redistributableが必要です。  
@@ -131,7 +131,7 @@
 &gt; [手動でインストールする](https://aka.ms/vs/17/release/vc_redist.x64.exe) </value>
   </data>
   <data name="InstallingTitle" xml:space="preserve">
-    <value>Visual C++ Redistributableのインストール中...</value>
+    <value>正在安装Visual C++ Redistributable...</value>
   </data>
   <data name="InstallingMessage" xml:space="preserve">
     <value>Visual C++ Redistributableをインストール中...
@@ -142,6 +142,6 @@
 &gt; [手動でインストールする](https://aka.ms/vs/17/release/vc_redist.x64.exe)</value>
   </data>
   <data name="NotInstalledVcRedist" xml:space="preserve">
-    <value>Visual C++ Redistributableがインストールされていません</value>
+    <value>未安装Visual C++ Redistributable</value>
   </data>
 </root>
