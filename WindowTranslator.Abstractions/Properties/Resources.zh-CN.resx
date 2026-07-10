@@ -181,7 +181,7 @@
     <value>振动抑制</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
-    <value>言語設定</value>
+    <value>语言设置</value>
   </data>
   <data name="SameSourceTargetLanguage" xml:space="preserve">
     <value>翻訳元言語と翻訳先言語が同一です。異なる言語を指定してください。</value>
