@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AuthKey" xml:space="preserve">
+    <value>API kulcs</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Szószedet elérési útja</value>
+  </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>A DeepL API kulcs nincs beállítva. Kérjük, állítsa be a DeepL API kulcsot a beállítások párbeszédpanelből.</value>
+  </data>
+  <data name="AuthError" xml:space="preserve">
+    <value>DeepL engedélyezési hiba. Érvénytelen API kulcs van beállítva. Kérjük, próbálja meg újra létrehozni az API kulcsot.</value>
+  </data>
+  <data name="QuotaExceeded" xml:space="preserve">
+    <value>Elérte a DeepL használati korlátot. Jelenlegi használat: {0} / {1} karakter</value>
+  </data>
+  <data name="CheckUsageCommand" xml:space="preserve">
+    <value>Használat ellenőrzése</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Használat</value>
+  </data>
+  <data name="UnknownUsage" xml:space="preserve">
+    <value>Ismeretlen</value>
+  </data>
+</root>
