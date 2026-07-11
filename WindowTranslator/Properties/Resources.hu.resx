@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Source" xml:space="preserve">
+    <value>Forrás (felismert) nyelv</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Cél (megjelenített) nyelv</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>Fordítási modul kiválasztása</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>Gyorsítótár modul kiválasztása</value>
+  </data>
+  <data name="ViewMode" xml:space="preserve">
+    <value>Fordítási eredmény megjelenítési módja</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>Automatikus fordítási cél</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>Automatikus fordítás, amikor egy egyszer fordításra kiválasztott folyamat elindul</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>Általános beállítások</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>Egyéb</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>Beépülő modul beállításai</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Nyelvi beállítások</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>Átfedő réteg</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>Rögzítési ablak</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>Memóriabeli gyorsítótár</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>Helyi fájl gyorsítótár</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Beállítások</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>Csatolás</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>Leválasztás</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Kilépés</value>
+  </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>A WindowTranslator már fut.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Az alkalmazásról</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>Harmadik féltől származó licencek ellenőrzése</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>Frissítések elérhetők: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>A legújabb verziót használja.</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>Frissítési információk</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>Frissítés a legújabb verzióra</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>Részletek megtekintése</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Csak nyomva tartás közben</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>Nyomással BE/KI kapcsolás</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>Átfedő réteg megjelenítésének váltása</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>Átfedő réteg megjelenítésének rögzíthetővé tétele</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>Fordított folyamat</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>Felismerési modul</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>Billentyűparancsok</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>Átfedő réteg kapcsoló</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>Megjelent az új {0} verzió</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>Új verzió {0} telepítése</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>Frissítések keresése</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>Új verzió ellenőrzése</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Mégse</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>Automatikus indítás rendszerindításkor</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Általános beállítások</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>Megjelenítési mód</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>Elemenkénti beállítások</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Verzió</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>Build dátuma</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>fejlesztő</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>Nyilvános oldal</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>licenc</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>Nincs fordítás</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>Gyorsítótár beállítások</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>Hasonló szöveg küszöbértéke</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>Nincs gyorsítótár</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>Windows szabványos karakterfelismerés</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Alkalmazásnév</value>
+  </data>
+  <data name="SteamWishlist" xml:space="preserve">
+    <value>Játékok ajándékozása Steamen</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>Alkalmazásinformációk</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Kapcsolattartási cím</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>Technikai információk</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Bezárás</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Alkalmaz</value>
+  </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>Foglalt ikon megjelenítése</value>
+  </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Fordítás csak akkor, ha az átfedő réteg engedélyezve van</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>Átfedő fordítás megjelenítése csak az egérmutató pozíciójában lévő szövegnél</value>
+  </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>Átfedő réteg háttér átlátszatlansága</value>
+  </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>Hibainformációk küldése a jelentési rendszerbe. A következő információk kerülnek elküldésre:
+* Alkalmazásinformációk
+* PC specifikációk és környezeti információk
+* Fordítási célalkalmazás neve
+* Fordítási cél képe
+* Fordítási cél beállításai
+
+&gt; %{color:red}**Személyes adatok nem kerülnek elküldésre, de kérjük, győződjön meg arról, hogy a fordítási célképernyő nem tartalmaz személyes adatokat.**%</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>Információk küldése</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Elküldve</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Információk másolása</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Másolva</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Megerősítés</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Küldés</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Napló</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>Csatolás</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportálás</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Törlés</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Automatikus görgetés</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>Naplók exportálása</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>Exportálás sikertelen</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>Exportálás befejezve</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>A naplók exportálva ide: `{0}`.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>Szövegfájlok</value>
+  </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>OCR sikertelen</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>Fordítás sikertelen</value>
+  </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>Nem sikerült beágyazni az ablakba.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>Kérjük, válasszon más ablakot, mint a WindowTranslator</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>A kiválasztott "{0}" ablak folyamata nem határozható meg, és nem rögzíthető.
+A monitorok nem támogatottak.
+</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>Beállítások érvényesítési hiba</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>Mentés és bezárás</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>Alapértelmezett beállítások</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Automatikus indítás</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>A(z) {0} regisztrálva lett az automatikus indításhoz.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>A(z) {0} automatikus indítása le lett tiltva.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>Nyelvi beállítások</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>A forrás és a célnyelv azonos. Kérjük, adjon meg különböző nyelveket.</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>Az {0} OCR funkciója nem érhető el. Kérjük, telepítse a célnyelv funkcióját</value>
+  </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>A beállítások alkalmazása sikertelen.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>Ismeretlen hiba történt</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>Értékelési kérés</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>Köszönjük, hogy a WindowTranslatort használja. Értékelne bennünket a Microsoft Store-ban?</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Értékelés írása</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>Később</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>Többé ne mutassa</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Futtatás változtatás nélkül</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Beállítások érvényesítési hiba</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **A beállítások mentése nem fog működni.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **A változtatás nélküli futtatás esetleg nem működik megfelelően**
+***
+
+</value>
+  </data>
+</root>

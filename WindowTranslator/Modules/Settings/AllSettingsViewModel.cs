@@ -384,6 +384,7 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("cs-CZ"),
         CultureInfo.GetCultureInfo("ps-AF"),
         CultureInfo.GetCultureInfo("prs-AF"),
+        CultureInfo.GetCultureInfo("hu-HU"),
     ];
 
     [Browsable(false)]
