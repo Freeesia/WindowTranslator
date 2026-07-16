@@ -149,7 +149,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
             }
         }
 
-        protected override HandleRef BuildWindowCore(HandleRef hwndParent)
+        protected override unsafe HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             hwndHost = CreateWindowEx(0, "static", "",
                 WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
