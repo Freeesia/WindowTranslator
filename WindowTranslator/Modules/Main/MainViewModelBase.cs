@@ -12,6 +12,7 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Capture;
+using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -23,6 +24,7 @@ public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Timer timer;
     private readonly IOcrModule ocr;
+    private readonly IOcrTextTracker ocrTextTracker;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
     private readonly IColorModule color;
@@ -36,9 +38,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IProcessInfoStore processInfoStore;
     private readonly double fontScale;
     private readonly double overlayOpacity;
-    private readonly bool isOneShotModeEnabled;
     private TextRect[]? lastRequested;
-    private bool isFirstCapture = true;
 
     [ObservableProperty]
     private string title;
@@ -69,6 +69,7 @@ public abstract partial class MainViewModelBase : IDisposable
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
+        IOcrTextTracker ocrTextTracker,
         ITranslateModule translator,
         ICacheModule cache,
         IColorModule color,
@@ -81,18 +82,16 @@ public abstract partial class MainViewModelBase : IDisposable
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
         this.overlayOpacity = options.Value.OverlayOpacity;
-        this.isOneShotModeEnabled = options.Value.IsOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
+        this.ocrTextTracker = ocrTextTracker ?? throw new ArgumentNullException(nameof(ocrTextTracker));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
-        // Capture will be started/stopped based on OverlayVisible property changes
-        this.isFirstCapture = this.isOneShotModeEnabled; // Only set to true if feature is enabled
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
         this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
@@ -104,15 +103,9 @@ public abstract partial class MainViewModelBase : IDisposable
         if (value)
         {
             this.OcrTexts.Clear();
+            this.ocrTextTracker.Reset();
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
-
-            // Reset first capture flag for one-shot mode
-            if (this.isOneShotModeEnabled)
-            {
-                this.isFirstCapture = true;
-                this.logger.LogDebug("Overlay became visible - first capture flag reset (one shot mode enabled)");
-            }
         }
         else
         {
@@ -162,53 +155,40 @@ public abstract partial class MainViewModelBase : IDisposable
             return;
         }
 
-        IEnumerable<TextRect> texts = [];
-
-        if (!this.isOneShotModeEnabled || isFirstCapture)
+        IEnumerable<TextRect> texts;
+        using (this.Recognizing.EnterBusy())
         {
-            if (this.isOneShotModeEnabled)
+            try
             {
-                this.logger.LogDebug("OCRトリガー実行");
-                this.isFirstCapture = false;
+                texts = await this.ocr.RecognizeAsync(sbmp);
+                texts = this.ocrTextTracker.Update(texts, new(sbmp.PixelWidth, sbmp.PixelHeight));
             }
-
-            using (this.Recognizing.EnterBusy())
+            catch (ObjectDisposedException)
             {
-                try
-                {
-                    texts = await this.ocr.RecognizeAsync(sbmp);
-                }
-                catch (ObjectDisposedException)
-                {
-                    // すでに破棄されている場合は何もしない
-                    this.timer.DisposeAsync().Forget();
-                    this.capture.StopCapture();
-                    return;
-                }
-                catch (OperationCanceledException)
-                {
-                    // キャンセルされた場合は何もしない
-                    this.timer.DisposeAsync().Forget();
-                    this.capture.StopCapture();
-                    return;
-                }
-                catch (Exception e)
-                {
-                    this.timer.DisposeAsync().Forget();
-                    this.capture.StopCapture();
-                    var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
-                    await sbmp.TrySaveImage(path);
-                    await this.presentationService.OpenErrorDialogAsync(Resources.FaildOcr, e, this.name, path);
-                    StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-                    return;
-                }
+                // すでに破棄されている場合は何もしない
+                this.timer.DisposeAsync().Forget();
+                this.capture.StopCapture();
+                return;
             }
-            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
+            catch (OperationCanceledException)
+            {
+                // キャンセルされた場合は何もしない
+                this.timer.DisposeAsync().Forget();
+                this.capture.StopCapture();
+                return;
+            }
+            catch (Exception e)
+            {
+                this.timer.DisposeAsync().Forget();
+                this.capture.StopCapture();
+                var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
+                await sbmp.TrySaveImage(path);
+                await this.presentationService.OpenErrorDialogAsync(Resources.FaildOcr, e, this.name, path);
+                StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+                return;
+            }
         }
-        else
-        {
-            texts = this.OcrTexts.ToArray();
-        }
+        texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
 
         // フィルター&翻訳処理は必ず通す
         using (this.Filtering.EnterBusy())
@@ -342,12 +322,13 @@ public sealed class CaptureMainViewModel(
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
+    [Inject] IOcrTextTracker ocrTextTracker,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrTextTracker, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
@@ -359,11 +340,12 @@ public sealed class OverlayMainViewModel(
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
+    [Inject] IOcrTextTracker ocrTextTracker,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrTextTracker, translator, cache, color, filters, logger)
 {
 }
