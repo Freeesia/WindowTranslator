@@ -150,7 +150,7 @@ jobs:
         if: ${{ needs.docs.result == 'success' }}
         with:
           name: docs
-          path: publish
+          path: publish/docs
       - uses: actions/download-artifact@v8
         if: ${{ needs.license.result == 'success' }}
         with:
