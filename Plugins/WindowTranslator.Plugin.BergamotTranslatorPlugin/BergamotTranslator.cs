@@ -20,23 +20,19 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
 
     public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions)
     {
-        if (!SystemUtility.IsX64Machine())
-        {
-            throw new AppUserException(Resources.NotAvailableArch);
-        }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
         var path = Path.Combine(SystemUtility.ModelsPath, $"{src}{dst}", "config.yml");
         if (File.Exists(path))
         {
-            this.service = new BlockingService(path);
+            this.service = new(path);
             return;
         }
         var path1 = Path.Combine(SystemUtility.ModelsPath, $"{src}en", "config.yml");
         var path2 = Path.Combine(SystemUtility.ModelsPath, $"en{dst}", "config.yml");
         if (File.Exists(path1) && File.Exists(path2))
         {
-            this.service = new BlockingService(path1, path2);
+            this.service = new(path1, path2);
             return;
         }
         throw new AppUserException(Resources.ModelNotFound);
@@ -49,14 +45,7 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         => await Task.Run(() => Translate(srcTexts)).ConfigureAwait(false);
 
     private string[] Translate(TextInfo[] srcTexts)
-    {
-        var translated = new string[srcTexts.Length];
-        for (var i = 0; i < srcTexts.Length; i++)
-        {
-            translated[i] = this.service.Translate(srcTexts[i].SourceText);
-        }
-        return translated;
-    }
+        => this.service.Translate([.. srcTexts.Select(t => t.SourceText)]);
 }
 
 public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSettingsValidator
@@ -80,11 +69,6 @@ public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSetti
         if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(BergamotTranslator))
         {
             return ValidateResult.Valid;
-        }
-
-        if (!SystemUtility.IsX64Machine())
-        {
-            return ValidateResult.Invalid("Bergamot", Resources.NotAvailableArch);
         }
 
         var src = settings.Language.Source[..2];
