@@ -79,6 +79,84 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(2), $"Tracking took {stopwatch.Elapsed}.");
     }
 
+    [Fact]
+    public void MotionPredictionKeepsIdentityWhenTracksCrossBetweenSlowOcrFrames()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+
+        tracker.Update(
+        [
+            RectWithContext("Item", 0, "A"),
+            RectWithContext("Item", 300, "B"),
+        ], imageSize, TimeSpan.Zero);
+        tracker.Update(
+        [
+            RectWithContext("Item", 100, "A"),
+            RectWithContext("Item", 200, "B"),
+        ], imageSize, TimeSpan.FromMilliseconds(500));
+
+        IReadOnlyList<TextRect> crossed = tracker.Update(
+        [
+            RectWithContext("Item", 220, "A"),
+            RectWithContext("Item", 80, "B"),
+        ], imageSize, TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal(["A", "B"], crossed.Select(rect => rect.Context));
+    }
+
+    [Fact]
+    public void GlobalSelectionPrefersExactSplitOverPartialOneToOneMatch()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update([new("New Game", 0, 0, 200, 30, 24, false)], imageSize, TimeSpan.Zero);
+
+        TextRect result = Assert.Single(tracker.Update(
+        [
+            new("New", 0, 0, 65, 30, 24, false),
+            new("Game", 70, 0, 130, 30, 24, false),
+        ], imageSize, TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal("New Game", result.SourceText);
+    }
+
+    [Fact]
+    public void DormantChildrenReturnWhenAConfirmedMergeSplitsAgain()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("New", 50, 400, 70, 32, 25, false);
+        TextRect second = new("Game", 125, 400, 90, 32, 25, false);
+        TextRect merged = new("New Game", 50, 400, 165, 32, 25, false);
+
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+        tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Single(tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(1000)));
+        Assert.Single(tracker.Update([first, second], imageSize, TimeSpan.FromMilliseconds(1500)));
+
+        IReadOnlyList<TextRect> restored = tracker.Update(
+            [first, second], imageSize, TimeSpan.FromMilliseconds(2000));
+        Assert.Equal(["New", "Game"], restored.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void SimilarButDifferentOcrErrorsDoNotShareAStringVote()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+
+        tracker.Update([new("Start Game", 100, 100, 200, 40, 32, false)], imageSize, TimeSpan.Zero);
+        tracker.Update([new("Start Garne", 100, 100, 200, 40, 32, false)], imageSize, TimeSpan.FromMilliseconds(500));
+        TextRect afterDifferentErrors = Assert.Single(tracker.Update(
+            [new("Start Ganne", 100, 100, 200, 40, 32, false)], imageSize, TimeSpan.FromMilliseconds(1000)));
+        Assert.Equal("Start Game", afterDifferentErrors.SourceText);
+
+        TextRect afterRepeatedError = Assert.Single(tracker.Update(
+            [new("Start Ganne", 100, 100, 200, 40, 32, false)], imageSize, TimeSpan.FromMilliseconds(1500)));
+        Assert.Equal("Start Ganne", afterRepeatedError.SourceText);
+    }
+
     private static IReadOnlyList<IReadOnlyList<TextRect>> RunLegacyBuffer()
     {
         List<IReadOnlyList<TextRect>> actual = [];
@@ -106,6 +184,9 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         }
         return actual;
     }
+
+    private static TextRect RectWithContext(string text, double x, string context)
+        => new TextRect(text, x, 100, 40, 30, 24, false) { Context = context };
 }
 
 internal sealed class LegacyOcrBufferModel

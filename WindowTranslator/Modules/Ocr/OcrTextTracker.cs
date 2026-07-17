@@ -1,4 +1,7 @@
+using System.Diagnostics;
 using System.Drawing;
+using System.Numerics;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Quickenshtein;
 
@@ -10,24 +13,37 @@ namespace WindowTranslator.Modules.Ocr;
 public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTracker
 {
     private const int MaxMissedFrames = 3;
-    private const int TextConfirmationFrames = 2;
     private const int StructureConfirmationFrames = 2;
     private const int MaxStructureMembers = 3;
     private const int MaxStructureCandidates = 6;
+    private const int MaxOneToOneCandidatesPerResource = 3;
+    private const int MaxExactAssignmentResources = 18;
     private const double MinimumAssignmentScore = 0.58;
+    private const double StructureAssignmentBonus = 0.05;
+    private const double TextVoteDecay = 0.75;
+    private const double TextVoteThreshold = 1.5;
+    private const int TextVoteHistorySize = 5;
+    private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
 
     private readonly ILogger<OcrTextTracker> logger = logger;
     private readonly object syncRoot = new();
     private readonly List<TextTrack> tracks = [];
     private Dictionary<string, int> mergeCandidates = [];
+    private Dictionary<long, int> dormantRestoreCandidates = [];
     private long nextTrackId;
 
     public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize)
+        => this.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency));
+
+    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
     {
         ArgumentNullException.ThrowIfNull(observations);
         lock (this.syncRoot)
         {
-            return this.UpdateCore(observations, imageSize);
+            return this.UpdateCore(observations, imageSize, timestamp);
         }
     }
 
@@ -37,61 +53,63 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             this.tracks.Clear();
             this.mergeCandidates.Clear();
+            this.dormantRestoreCandidates.Clear();
             this.nextTrackId = 0;
         }
     }
 
-    private TextRect[] UpdateCore(IEnumerable<TextRect> observations, Size imageSize)
+    private TextRect[] UpdateCore(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
     {
         TextRect[] current = observations.Where(IsValid).ToArray();
         if (this.tracks.Count == 0)
         {
             foreach (TextRect observation in current)
             {
-                this.CreateTrack(observation);
+                this.CreateTrack(observation, timestamp);
             }
             return this.GetOutput();
         }
 
         HashSet<TextTrack> matchedTracks = [];
         HashSet<int> matchedObservations = [];
+        this.RestoreDormantChildren(current, imageSize, timestamp, matchedTracks, matchedObservations);
 
-        foreach ((TextTrack track, int observationIndex) in AssignOneToOne(this.tracks, current, imageSize))
-        {
-            track.Observe(current[observationIndex]);
-            matchedTracks.Add(track);
-            matchedObservations.Add(observationIndex);
-        }
-
-        this.MatchSplits(current, matchedTracks, matchedObservations);
-        HashSet<TextTrack> removedTracks = this.MatchMerges(current, matchedTracks, matchedObservations);
+        TextTrack[] activeTracks = this.tracks
+            .Where(track => !track.IsDormant && !matchedTracks.Contains(track))
+            .ToArray();
+        List<MatchCandidate> candidates = BuildCandidates(
+            activeTracks,
+            current,
+            imageSize,
+            timestamp,
+            matchedObservations);
+        IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, activeTracks, current.Length);
+        this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
         {
             if (!matchedObservations.Contains(i))
             {
-                TextTrack track = this.CreateTrack(current[i]);
+                TextTrack track = this.CreateTrack(current[i], timestamp);
                 matchedTracks.Add(track);
             }
         }
 
-        foreach (TextTrack track in this.tracks)
+        foreach (TextTrack track in this.tracks.Where(track => !track.IsDormant).ToArray())
         {
-            if (!matchedTracks.Contains(track) && !removedTracks.Contains(track))
+            if (!matchedTracks.Contains(track))
             {
                 track.MarkMissed();
             }
         }
 
-        foreach (TextTrack track in removedTracks)
-        {
-            this.tracks.Remove(track);
-        }
-
-        foreach (TextTrack track in this.tracks.Where(track => track.MissedFrames > MaxMissedFrames).ToArray())
+        foreach (TextTrack track in this.tracks
+            .Where(track => (!track.IsDormant && track.MissedFrames > MaxMissedFrames)
+                || (track.IsDormant && timestamp - track.DormantSince > dormantRetention))
+            .ToArray())
         {
             this.logger.LogDebug("OCR track {TrackId} expired after {MissedFrames} missed frames", track.Id, track.MissedFrames);
-            this.tracks.Remove(track);
+            this.RemoveTrackTree(track);
         }
 
         return this.GetOutput();
@@ -100,131 +118,133 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private static bool IsValid(TextRect rect)
         => !string.IsNullOrWhiteSpace(rect.SourceText) && rect.Width > 0 && rect.Height > 0;
 
-    private static List<(TextTrack track, int observationIndex)> AssignOneToOne(
-        IReadOnlyList<TextTrack> tracks,
+    private static List<MatchCandidate> BuildCandidates(
+        TextTrack[] tracks,
         TextRect[] observations,
-        Size imageSize)
+        Size imageSize,
+        TimeSpan timestamp,
+        HashSet<int> excludedObservations)
     {
-        int count = Math.Max(tracks.Count, observations.Length);
-        if (count == 0)
-        {
-            return [];
-        }
+        List<MatchCandidate> result = BuildOneToOneCandidates(
+            tracks,
+            observations,
+            imageSize,
+            timestamp,
+            excludedObservations);
 
-        double[,] scores = new double[count, count];
-        double[,] costs = new double[count + 1, count + 1];
-        for (int trackIndex = 0; trackIndex < count; trackIndex++)
+        foreach (TextTrack track in tracks)
         {
-            for (int observationIndex = 0; observationIndex < count; observationIndex++)
+            int[] nearby = Enumerable.Range(0, observations.Length)
+                .Where(index => !excludedObservations.Contains(index))
+                .Where(index => IsNear(track.Stabilized, observations[index]))
+                .OrderBy(index => CenterDistance(track.Stabilized, observations[index]))
+                .Take(MaxStructureCandidates)
+                .ToArray();
+            int maxMembers = Math.Min(MaxStructureMembers, nearby.Length);
+            for (int memberCount = 2; memberCount <= maxMembers; memberCount++)
             {
-                double score = trackIndex < tracks.Count && observationIndex < observations.Length
-                    ? ScoreAssignment(tracks[trackIndex], observations[observationIndex], imageSize)
-                    : 0;
-                scores[trackIndex, observationIndex] = score;
-                costs[trackIndex + 1, observationIndex + 1] = 1 - score;
-            }
-        }
-
-        int[] assignment = SolveMinimumCostAssignment(costs, count);
-        List<(TextTrack track, int observationIndex)> result = [];
-        for (int trackIndex = 0; trackIndex < tracks.Count; trackIndex++)
-        {
-            int observationIndex = assignment[trackIndex];
-            if (observationIndex < observations.Length && scores[trackIndex, observationIndex] >= MinimumAssignmentScore)
-            {
-                result.Add((tracks[trackIndex], observationIndex));
-            }
-        }
-        return result;
-    }
-
-    private static int[] SolveMinimumCostAssignment(double[,] costs, int count)
-    {
-        double[] rowPotential = new double[count + 1];
-        double[] columnPotential = new double[count + 1];
-        int[] matching = new int[count + 1];
-        int[] path = new int[count + 1];
-
-        for (int row = 1; row <= count; row++)
-        {
-            matching[0] = row;
-            int column = 0;
-            double[] minimum = Enumerable.Repeat(double.PositiveInfinity, count + 1).ToArray();
-            bool[] used = new bool[count + 1];
-            do
-            {
-                used[column] = true;
-                int currentRow = matching[column];
-                double delta = double.PositiveInfinity;
-                int nextColumn = 0;
-                for (int candidateColumn = 1; candidateColumn <= count; candidateColumn++)
+                foreach (IReadOnlyList<int> members in Combinations(nearby, memberCount))
                 {
-                    if (used[candidateColumn])
+                    TextRect[] memberRects = members.Select(index => observations[index]).ToArray();
+                    if (!MembersAreAdjacent(memberRects))
                     {
                         continue;
                     }
-
-                    double reducedCost = costs[currentRow, candidateColumn]
-                        - rowPotential[currentRow]
-                        - columnPotential[candidateColumn];
-                    if (reducedCost < minimum[candidateColumn])
+                    TextRect combined = CombineObservations(memberRects, track.ConfirmedText);
+                    double score = ScoreStructure(combined, track.Stabilized, track.ConfirmedText);
+                    if (score >= 0)
                     {
-                        minimum[candidateColumn] = reducedCost;
-                        path[candidateColumn] = column;
-                    }
-                    if (minimum[candidateColumn] < delta)
-                    {
-                        delta = minimum[candidateColumn];
-                        nextColumn = candidateColumn;
+                        result.Add(new(MatchKind.Split, [track], members.ToArray(), combined, score));
                     }
                 }
-
-                for (int candidateColumn = 0; candidateColumn <= count; candidateColumn++)
-                {
-                    if (used[candidateColumn])
-                    {
-                        rowPotential[matching[candidateColumn]] += delta;
-                        columnPotential[candidateColumn] -= delta;
-                    }
-                    else
-                    {
-                        minimum[candidateColumn] -= delta;
-                    }
-                }
-                column = nextColumn;
             }
-            while (matching[column] != 0);
-
-            do
-            {
-                int previousColumn = path[column];
-                matching[column] = matching[previousColumn];
-                column = previousColumn;
-            }
-            while (column != 0);
         }
 
-        int[] result = new int[count];
-        for (int column = 1; column <= count; column++)
+        foreach (int observationIndex in Enumerable.Range(0, observations.Length)
+            .Where(index => !excludedObservations.Contains(index)))
         {
-            result[matching[column] - 1] = column - 1;
+            TextRect observation = observations[observationIndex];
+            TextTrack[] nearby = tracks
+                .Where(track => IsNear(observation, track.Stabilized))
+                .OrderBy(track => CenterDistance(observation, track.Stabilized))
+                .Take(MaxStructureCandidates)
+                .ToArray();
+            int maxMembers = Math.Min(MaxStructureMembers, nearby.Length);
+            for (int memberCount = 2; memberCount <= maxMembers; memberCount++)
+            {
+                foreach (IReadOnlyList<TextTrack> members in Combinations(nearby, memberCount))
+                {
+                    TextRect[] memberRects = members.Select(track => track.Stabilized).ToArray();
+                    if (!MembersAreAdjacent(memberRects))
+                    {
+                        continue;
+                    }
+                    TextRect combinedTracks = CombineTracks(members, observation.SourceText);
+                    double score = ScoreStructure(combinedTracks, observation, observation.SourceText);
+                    if (score >= 0)
+                    {
+                        result.Add(new(MatchKind.Merge, members.ToArray(), [observationIndex], observation, score));
+                    }
+                }
+            }
         }
         return result;
     }
 
-    private static double ScoreAssignment(TextTrack track, TextRect observation, Size imageSize)
+    private static List<MatchCandidate> BuildOneToOneCandidates(
+        IReadOnlyList<TextTrack> tracks,
+        TextRect[] observations,
+        Size imageSize,
+        TimeSpan timestamp,
+        HashSet<int> excludedObservations)
+    {
+        List<MatchCandidate> raw = [];
+        foreach (TextTrack track in tracks)
+        {
+            for (int observationIndex = 0; observationIndex < observations.Length; observationIndex++)
+            {
+                if (excludedObservations.Contains(observationIndex))
+                {
+                    continue;
+                }
+                double score = ScoreAssignment(track, observations[observationIndex], imageSize, timestamp);
+                if (score >= MinimumAssignmentScore)
+                {
+                    raw.Add(new(MatchKind.OneToOne, [track], [observationIndex], observations[observationIndex], score));
+                }
+            }
+        }
+
+        HashSet<MatchCandidate> retained = new(ReferenceEqualityComparer.Instance);
+        foreach (IGrouping<TextTrack, MatchCandidate> group in raw.GroupBy(candidate => candidate.Tracks[0]))
+        {
+            retained.UnionWith(group.OrderByDescending(candidate => candidate.Score).Take(MaxOneToOneCandidatesPerResource));
+        }
+        foreach (IGrouping<int, MatchCandidate> group in raw.GroupBy(candidate => candidate.ObservationIndices[0]))
+        {
+            retained.UnionWith(group.OrderByDescending(candidate => candidate.Score).Take(MaxOneToOneCandidatesPerResource));
+        }
+        return retained.ToList();
+    }
+
+    private static double ScoreAssignment(TextTrack track, TextRect observation, Size imageSize, TimeSpan timestamp)
     {
         TextRect previous = track.LatestObservation;
-        double centerDistance = CenterDistance(previous, observation);
+        TextRect predicted = track.Predict(timestamp);
+        double centerDistance = CenterDistance(predicted, observation);
         double imageDiagonal = Math.Sqrt((double)imageSize.Width * imageSize.Width + (double)imageSize.Height * imageSize.Height);
-        double distanceGate = Math.Max(imageDiagonal * 0.35, Math.Max(previous.Width, previous.Height) * 2);
-        double overlap = IntersectionOverUnion(previous, observation);
+        double maximumDimension = Math.Max(previous.Width, previous.Height);
+        double distanceGate = Math.Max(imageDiagonal * 0.08, maximumDimension * 4);
+        double overlap = IntersectionOverUnion(predicted, observation);
+        double text = TextSimilarity(track.ConfirmedText, observation.SourceText);
         if (overlap == 0 && centerDistance > distanceGate)
         {
             return -1;
         }
-
-        double text = TextSimilarity(track.ConfirmedText, observation.SourceText);
+        if (overlap == 0 && text < 0.9 && centerDistance > maximumDimension * 1.25)
+        {
+            return -1;
+        }
         if (text < 0.15 && overlap < 0.3)
         {
             return -1;
@@ -241,128 +261,268 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         return (text * 0.35) + (overlap * 0.25) + (center * 0.2) + (size * 0.1) + (aspect * 0.05) + (recency * 0.05);
     }
 
-    private void MatchSplits(
-        TextRect[] observations,
-        HashSet<TextTrack> matchedTracks,
-        HashSet<int> matchedObservations)
+    private static double ScoreStructure(TextRect combined, TextRect targetRect, string targetText)
     {
-        foreach (TextTrack track in this.tracks.Where(track => !matchedTracks.Contains(track)).ToArray())
-        {
-            int[] nearby = Enumerable.Range(0, observations.Length)
-                .Where(index => !matchedObservations.Contains(index))
-                .Where(index => IsNear(track.Stabilized, observations[index]))
-                .OrderBy(index => CenterDistance(track.Stabilized, observations[index]))
-                .Take(MaxStructureCandidates)
-                .ToArray();
-
-            StructureMatch<int>? best = FindBestStructureMatch(
-                nearby,
-                members => CombineObservations(members.Select(index => observations[index]), track.ConfirmedText),
-                track.Stabilized,
-                track.ConfirmedText);
-            if (best is null)
-            {
-                continue;
-            }
-
-            track.Observe(best.Combined);
-            matchedTracks.Add(track);
-            foreach (int index in best.Members)
-            {
-                matchedObservations.Add(index);
-            }
-            this.logger.LogDebug("OCR track {TrackId} retained across a {PartCount}-part split", track.Id, best.Members.Count);
-        }
+        double geometry = IntersectionOverUnion(combined, targetRect);
+        double text = TextSimilarity(combined.SourceText, targetText);
+        return geometry >= 0.45 && text >= 0.65
+            ? (geometry * 0.55) + (text * 0.45) + StructureAssignmentBonus
+            : -1;
     }
 
-    private HashSet<TextTrack> MatchMerges(
-        TextRect[] observations,
+    private static List<MatchCandidate> SelectGlobally(
+        IReadOnlyList<MatchCandidate> candidates,
+        IReadOnlyList<TextTrack> tracks,
+        int observationCount)
+    {
+        if (candidates.Count == 0)
+        {
+            return [];
+        }
+
+        Dictionary<TextTrack, int> trackIndexes = tracks
+            .Select((track, index) => (track, index))
+            .ToDictionary(item => item.track, item => item.index);
+        DisjointSet resources = new(tracks.Count + observationCount);
+        foreach (MatchCandidate candidate in candidates)
+        {
+            int[] ids = GetResourceIds(candidate, trackIndexes, tracks.Count).ToArray();
+            for (int i = 1; i < ids.Length; i++)
+            {
+                resources.Union(ids[0], ids[i]);
+            }
+        }
+
+        List<MatchCandidate> result = [];
+        foreach (IGrouping<int, MatchCandidate> component in candidates.GroupBy(candidate =>
+            resources.Find(GetResourceIds(candidate, trackIndexes, tracks.Count).First())))
+        {
+            int[] componentResources = component
+                .SelectMany(candidate => GetResourceIds(candidate, trackIndexes, tracks.Count))
+                .Distinct()
+                .ToArray();
+            result.AddRange(componentResources.Length <= MaxExactAssignmentResources
+                ? SelectExact(component.ToArray(), componentResources, trackIndexes, tracks.Count)
+                : SelectLargeComponent(component.ToArray()));
+        }
+        return result;
+    }
+
+    private static IReadOnlyList<MatchCandidate> SelectExact(
+        MatchCandidate[] candidates,
+        int[] resources,
+        IReadOnlyDictionary<TextTrack, int> trackIndexes,
+        int observationOffset)
+    {
+        Dictionary<int, int> bits = resources.Select((resource, bit) => (resource, bit))
+            .ToDictionary(item => item.resource, item => item.bit);
+        (MatchCandidate candidate, ulong mask)[] entries = candidates
+            .Select(candidate =>
+            {
+                ulong mask = 0;
+                foreach (int resource in GetResourceIds(candidate, trackIndexes, observationOffset))
+                {
+                    mask |= 1UL << bits[resource];
+                }
+                return (candidate, mask);
+            })
+            .ToArray();
+        Dictionary<ulong, CandidateSolution> memo = [];
+
+        CandidateSolution Solve(ulong available)
+        {
+            if (available == 0)
+            {
+                return CandidateSolution.Empty;
+            }
+            if (memo.TryGetValue(available, out CandidateSolution? cached))
+            {
+                return cached;
+            }
+
+            int bit = BitOperations.TrailingZeroCount(available);
+            ulong bitMask = 1UL << bit;
+            CandidateSolution best = Solve(available & ~bitMask);
+            foreach ((MatchCandidate candidate, ulong mask) in entries)
+            {
+                if ((mask & bitMask) == 0 || (mask & available) != mask)
+                {
+                    continue;
+                }
+                CandidateSolution remainder = Solve(available & ~mask);
+                CandidateSolution proposed = remainder.Prepend(candidate);
+                if (proposed.IsBetterThan(best))
+                {
+                    best = proposed;
+                }
+            }
+            memo[available] = best;
+            return best;
+        }
+
+        ulong all = (1UL << resources.Length) - 1;
+        return Solve(all).Candidates;
+    }
+
+    private static List<MatchCandidate> SelectLargeComponent(MatchCandidate[] candidates)
+    {
+        List<MatchCandidate> selected = [];
+        foreach (MatchCandidate candidate in candidates.OrderByDescending(candidate => candidate.Score))
+        {
+            MatchCandidate[] conflicts = selected.Where(existing => Conflicts(existing, candidate)).ToArray();
+            if (conflicts.Length == 0)
+            {
+                selected.Add(candidate);
+            }
+            else if (candidate.Score > conflicts.Sum(conflict => conflict.Score) + 0.01)
+            {
+                foreach (MatchCandidate conflict in conflicts)
+                {
+                    selected.Remove(conflict);
+                }
+                selected.Add(candidate);
+            }
+        }
+        return selected;
+    }
+
+    private static bool Conflicts(MatchCandidate first, MatchCandidate second)
+        => first.Tracks.Intersect(second.Tracks).Any()
+            || first.ObservationIndices.Intersect(second.ObservationIndices).Any();
+
+    private static IEnumerable<int> GetResourceIds(
+        MatchCandidate candidate,
+        IReadOnlyDictionary<TextTrack, int> trackIndexes,
+        int observationOffset)
+        => candidate.Tracks.Select(track => trackIndexes[track])
+            .Concat(candidate.ObservationIndices.Select(index => observationOffset + index));
+
+    private void ApplyMatches(
+        IReadOnlyList<MatchCandidate> selected,
+        TimeSpan timestamp,
         HashSet<TextTrack> matchedTracks,
         HashSet<int> matchedObservations)
     {
         Dictionary<string, int> currentMergeCandidates = [];
-        HashSet<TextTrack> removedTracks = [];
-
-        foreach (int observationIndex in Enumerable.Range(0, observations.Length).Where(index => !matchedObservations.Contains(index)))
+        foreach (MatchCandidate candidate in selected)
         {
-            TextRect observation = observations[observationIndex];
-            TextTrack[] nearby = this.tracks
-                .Where(track => !matchedTracks.Contains(track) && !removedTracks.Contains(track))
-                .Where(track => IsNear(observation, track.Stabilized))
-                .OrderBy(track => CenterDistance(observation, track.Stabilized))
-                .Take(MaxStructureCandidates)
-                .ToArray();
-
-            StructureMatch<TextTrack>? best = FindBestStructureMatch(
-                nearby,
-                members => CombineTracks(members, observation.SourceText),
-                observation,
-                observation.SourceText);
-            if (best is null)
+            foreach (int observationIndex in candidate.ObservationIndices)
             {
+                matchedObservations.Add(observationIndex);
+            }
+
+            if (candidate.Kind is MatchKind.OneToOne or MatchKind.Split)
+            {
+                TextTrack track = candidate.Tracks[0];
+                track.Observe(candidate.Combined, timestamp);
+                matchedTracks.Add(track);
+                if (candidate.Kind == MatchKind.Split)
+                {
+                    this.logger.LogDebug("OCR track {TrackId} retained across a {PartCount}-part split", track.Id, candidate.ObservationIndices.Count);
+                }
                 continue;
             }
 
-            string key = string.Join(',', best.Members.Select(track => track.Id).Order());
+            string key = string.Join(',', candidate.Tracks.Select(track => track.Id).Order());
             int count = this.mergeCandidates.GetValueOrDefault(key) + 1;
             currentMergeCandidates[key] = count;
-            matchedObservations.Add(observationIndex);
-
+            foreach (TextTrack track in candidate.Tracks)
+            {
+                matchedTracks.Add(track);
+            }
             if (count >= StructureConfirmationFrames)
             {
-                TextTrack representative = best.Members.OrderBy(track => track.Id).First();
-                representative.ConfirmStructure(observation);
-                matchedTracks.Add(representative);
-                foreach (TextTrack track in best.Members.Where(track => track != representative))
+                TextTrack parent = this.CreateTrack(candidate.Combined, timestamp);
+                matchedTracks.Add(parent);
+                foreach (TextTrack child in candidate.Tracks)
                 {
-                    removedTracks.Add(track);
-                    matchedTracks.Add(track);
+                    child.MarkDormant(parent.Id, timestamp);
                 }
-                this.logger.LogDebug("OCR tracks {TrackIds} converged into track {TrackId}", key, representative.Id);
+                this.logger.LogDebug("OCR tracks {TrackIds} converged into track {TrackId}", key, parent.Id);
             }
             else
             {
-                foreach (TextTrack track in best.Members)
+                foreach (TextTrack track in candidate.Tracks)
                 {
-                    track.MarkObservedWithoutChangingStructure();
-                    matchedTracks.Add(track);
+                    track.MarkObservedWithoutChangingStructure(timestamp);
                 }
                 this.logger.LogDebug("OCR tracks {TrackIds} retained during a temporary merge", key);
             }
         }
-
         this.mergeCandidates = currentMergeCandidates;
-        return removedTracks;
     }
 
-    private static StructureMatch<T>? FindBestStructureMatch<T>(
-        IReadOnlyList<T> candidates,
-        Func<IReadOnlyList<T>, TextRect> combine,
-        TextRect targetRect,
-        string targetText)
+    private void RestoreDormantChildren(
+        TextRect[] observations,
+        Size imageSize,
+        TimeSpan timestamp,
+        HashSet<TextTrack> matchedTracks,
+        HashSet<int> matchedObservations)
     {
-        StructureMatch<T>? best = null;
-        int maxMembers = Math.Min(MaxStructureMembers, candidates.Count);
-        for (int memberCount = 2; memberCount <= maxMembers; memberCount++)
+        Dictionary<long, int> currentRestoreCandidates = [];
+        foreach (TextTrack parent in this.tracks.Where(track => !track.IsDormant).ToArray())
         {
-            foreach (IReadOnlyList<T> members in Combinations(candidates, memberCount))
+            TextTrack[] children = this.tracks
+                .Where(track => track.IsDormant && track.DormantParentId == parent.Id)
+                .OrderBy(track => track.Id)
+                .ToArray();
+            if (children.Length < 2)
             {
-                TextRect combined = combine(members);
-                if (!MembersAreAdjacent(members.Select(member => combine([member])).ToArray()))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                double geometry = IntersectionOverUnion(combined, targetRect);
-                double text = TextSimilarity(combined.SourceText, targetText);
-                double score = (geometry * 0.55) + (text * 0.45);
-                if (geometry >= 0.45 && text >= 0.65 && (best is null || score > best.Score))
+            List<MatchCandidate> candidates = BuildOneToOneCandidates(
+                children,
+                observations,
+                imageSize,
+                timestamp,
+                matchedObservations);
+            IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, children, observations.Length);
+            if (selected.Count != children.Length
+                || selected.SelectMany(candidate => candidate.Tracks).Distinct().Count() != children.Length)
+            {
+                continue;
+            }
+
+            int count = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id) + 1;
+            currentRestoreCandidates[parent.Id] = count;
+            int[] selectedObservations = selected.SelectMany(candidate => candidate.ObservationIndices).Distinct().ToArray();
+            foreach (int index in selectedObservations)
+            {
+                matchedObservations.Add(index);
+            }
+
+            if (count >= StructureConfirmationFrames)
+            {
+                foreach (MatchCandidate candidate in selected)
                 {
-                    best = new(members, combined, score);
+                    TextTrack child = candidate.Tracks[0];
+                    child.Reactivate(timestamp);
+                    child.Observe(candidate.Combined, timestamp);
+                    matchedTracks.Add(child);
                 }
+                this.tracks.Remove(parent);
+                this.logger.LogDebug("OCR track {TrackId} restored {ChildCount} dormant child tracks", parent.Id, children.Length);
+            }
+            else
+            {
+                TextRect combined = CombineObservations(
+                    selectedObservations.Select(index => observations[index]),
+                    parent.ConfirmedText);
+                parent.Observe(combined, timestamp);
+                matchedTracks.Add(parent);
             }
         }
-        return best;
+        this.dormantRestoreCandidates = currentRestoreCandidates;
+    }
+
+    private void RemoveTrackTree(TextTrack track)
+    {
+        foreach (TextTrack child in this.tracks.Where(candidate => candidate.DormantParentId == track.Id).ToArray())
+        {
+            this.RemoveTrackTree(child);
+        }
+        this.tracks.Remove(track);
     }
 
     private static IEnumerable<IReadOnlyList<T>> Combinations<T>(IReadOnlyList<T> source, int count)
@@ -486,6 +646,29 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         return 1 - ((double)Levenshtein.GetDistance(first, second, CalculationOptions.Default) / maximumLength);
     }
 
+    private static string NormalizeText(string text)
+    {
+        StringBuilder result = new(text.Length);
+        bool previousWasWhitespace = false;
+        foreach (char character in text.Normalize(NormalizationForm.FormKC))
+        {
+            if (char.IsWhiteSpace(character))
+            {
+                if (!previousWasWhitespace && result.Length > 0)
+                {
+                    result.Append(' ');
+                }
+                previousWasWhitespace = true;
+            }
+            else
+            {
+                result.Append(character);
+                previousWasWhitespace = false;
+            }
+        }
+        return result.ToString().TrimEnd();
+    }
+
     private static double IntersectionOverUnion(TextRect first, TextRect second)
     {
         double left = Math.Max(first.X, second.X);
@@ -514,25 +697,104 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         return maximum <= double.Epsilon ? 1 : Math.Min(Math.Abs(first), Math.Abs(second)) / maximum;
     }
 
-    private TextTrack CreateTrack(TextRect observation)
+    private TextTrack CreateTrack(TextRect observation, TimeSpan timestamp)
     {
-        TextTrack track = new(++this.nextTrackId, observation);
+        TextTrack track = new(++this.nextTrackId, observation, timestamp);
         this.tracks.Add(track);
         this.logger.LogDebug("OCR track {TrackId} created for {SourceText}", track.Id, observation.SourceText);
         return track;
     }
 
     private TextRect[] GetOutput()
-        => this.tracks.OrderBy(track => track.Id).Select(track => track.Stabilized).ToArray();
+        => this.tracks
+            .Where(track => !track.IsDormant)
+            .OrderBy(track => track.Id)
+            .Select(track => track.Stabilized)
+            .ToArray();
 
-    private sealed record StructureMatch<T>(IReadOnlyList<T> Members, TextRect Combined, double Score);
+    private enum MatchKind
+    {
+        OneToOne,
+        Split,
+        Merge,
+    }
 
-    private sealed class TextTrack(long id, TextRect observation)
+    private sealed record MatchCandidate(
+        MatchKind Kind,
+        IReadOnlyList<TextTrack> Tracks,
+        IReadOnlyList<int> ObservationIndices,
+        TextRect Combined,
+        double Score)
+    {
+        public int ResourceCount => this.Tracks.Count + this.ObservationIndices.Count;
+    }
+
+    private sealed record CandidateSolution(double Score, int ResourceCount, IReadOnlyList<MatchCandidate> Candidates)
+    {
+        public static CandidateSolution Empty { get; } = new(0, 0, []);
+
+        public CandidateSolution Prepend(MatchCandidate candidate)
+            => new(
+                this.Score + candidate.Score,
+                this.ResourceCount + candidate.ResourceCount,
+                [candidate, .. this.Candidates]);
+
+        public bool IsBetterThan(CandidateSolution other)
+            => this.Score > other.Score + 0.000001
+                || (Math.Abs(this.Score - other.Score) <= 0.000001 && this.ResourceCount > other.ResourceCount);
+    }
+
+    private sealed class DisjointSet
+    {
+        private readonly int[] parent;
+        private readonly byte[] rank;
+
+        public DisjointSet(int count)
+        {
+            this.parent = Enumerable.Range(0, count).ToArray();
+            this.rank = new byte[count];
+        }
+
+        public int Find(int item)
+        {
+            if (this.parent[item] != item)
+            {
+                this.parent[item] = this.Find(this.parent[item]);
+            }
+            return this.parent[item];
+        }
+
+        public void Union(int first, int second)
+        {
+            int firstRoot = this.Find(first);
+            int secondRoot = this.Find(second);
+            if (firstRoot == secondRoot)
+            {
+                return;
+            }
+            if (this.rank[firstRoot] < this.rank[secondRoot])
+            {
+                this.parent[firstRoot] = secondRoot;
+            }
+            else
+            {
+                this.parent[secondRoot] = firstRoot;
+                if (this.rank[firstRoot] == this.rank[secondRoot])
+                {
+                    this.rank[firstRoot]++;
+                }
+            }
+        }
+    }
+
+    private sealed class TextTrack(long id, TextRect observation, TimeSpan timestamp)
     {
         private TextRect? geometryCandidate;
         private int geometryCandidateCount;
-        private string? textCandidate;
-        private int textCandidateCount;
+        private readonly List<TextVote> textVotes = [];
+        private double velocityX;
+        private double velocityY;
+        private int motionSamples;
 
         public long Id { get; } = id;
 
@@ -544,10 +806,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         public int MissedFrames { get; private set; }
 
-        public void Observe(TextRect current)
+        public TimeSpan LastObservationTime { get; private set; } = timestamp;
+
+        public bool IsDormant { get; private set; }
+
+        public long? DormantParentId { get; private set; }
+
+        public TimeSpan DormantSince { get; private set; }
+
+        public void Observe(TextRect current, TimeSpan timestamp)
         {
             this.MissedFrames = 0;
+            this.UpdateMotion(current, timestamp);
             this.LatestObservation = current;
+            this.LastObservationTime = timestamp;
             this.UpdateText(current.SourceText);
             this.UpdateGeometry(current);
             this.Stabilized = current with
@@ -563,21 +835,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             };
         }
 
-        public void ConfirmStructure(TextRect current)
+        public void MarkObservedWithoutChangingStructure(TimeSpan timestamp)
         {
             this.MissedFrames = 0;
-            this.LatestObservation = current;
-            this.ConfirmedText = current.SourceText;
-            this.Stabilized = current;
-            this.textCandidate = null;
-            this.textCandidateCount = 0;
-            this.geometryCandidate = null;
-            this.geometryCandidateCount = 0;
-        }
-
-        public void MarkObservedWithoutChangingStructure()
-        {
-            this.MissedFrames = 0;
+            this.LastObservationTime = timestamp;
         }
 
         public void MarkMissed()
@@ -585,32 +846,110 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             this.MissedFrames++;
         }
 
+        public TextRect Predict(TimeSpan timestamp)
+        {
+            double seconds = (timestamp - this.LastObservationTime).TotalSeconds;
+            if (this.motionSamples == 0 || seconds <= 0 || seconds > 2)
+            {
+                return this.LatestObservation;
+            }
+
+            double maximumDisplacement = Math.Max(this.LatestObservation.Width, this.LatestObservation.Height) * 3;
+            double x = Math.Clamp(this.velocityX * seconds, -maximumDisplacement, maximumDisplacement);
+            double y = Math.Clamp(this.velocityY * seconds, -maximumDisplacement, maximumDisplacement);
+            return this.LatestObservation with
+            {
+                X = this.LatestObservation.X + x,
+                Y = this.LatestObservation.Y + y,
+            };
+        }
+
+        public void MarkDormant(long parentId, TimeSpan timestamp)
+        {
+            this.IsDormant = true;
+            this.DormantParentId = parentId;
+            this.DormantSince = timestamp;
+            this.MissedFrames = 0;
+            this.ResetMotion(timestamp);
+        }
+
+        public void Reactivate(TimeSpan timestamp)
+        {
+            this.IsDormant = false;
+            this.DormantParentId = null;
+            this.MissedFrames = 0;
+            this.ResetMotion(timestamp);
+        }
+
         private void UpdateText(string current)
         {
-            if (current == this.ConfirmedText)
+            string normalizedCurrent = NormalizeText(current);
+            if (normalizedCurrent == NormalizeText(this.ConfirmedText))
             {
-                this.textCandidate = null;
-                this.textCandidateCount = 0;
+                this.textVotes.Clear();
                 return;
             }
 
-            if (this.textCandidate is not null && TextSimilarity(this.textCandidate, current) >= 0.9)
+            this.textVotes.Add(new(normalizedCurrent, current));
+            if (this.textVotes.Count > TextVoteHistorySize)
             {
-                this.textCandidate = current;
-                this.textCandidateCount++;
-            }
-            else
-            {
-                this.textCandidate = current;
-                this.textCandidateCount = 1;
+                this.textVotes.RemoveAt(0);
             }
 
-            if (this.textCandidateCount >= TextConfirmationFrames)
+            (string normalized, int count, double weight)? winner = this.textVotes
+                .Select((vote, index) => (vote, age: this.textVotes.Count - index - 1))
+                .GroupBy(item => item.vote.Normalized)
+                .Select(group => (
+                    normalized: group.Key,
+                    count: group.Count(),
+                    weight: group.Sum(item => Math.Pow(TextVoteDecay, item.age))))
+                .OrderByDescending(candidate => candidate.weight)
+                .ThenByDescending(candidate => candidate.count)
+                .Cast<(string normalized, int count, double weight)?>()
+                .FirstOrDefault();
+            if (winner is { count: >= 2, weight: >= TextVoteThreshold })
             {
-                this.ConfirmedText = current;
-                this.textCandidate = null;
-                this.textCandidateCount = 0;
+                this.ConfirmedText = this.textVotes.Last(vote => vote.Normalized == winner.Value.normalized).Original;
+                this.textVotes.Clear();
             }
+        }
+
+        private void UpdateMotion(TextRect current, TimeSpan timestamp)
+        {
+            double seconds = (timestamp - this.LastObservationTime).TotalSeconds;
+            if (seconds < 0.05 || seconds > 2)
+            {
+                if (seconds > 2 || seconds < 0)
+                {
+                    this.ResetMotion(timestamp);
+                }
+                return;
+            }
+
+            double movementX = CenterX(current) - CenterX(this.LatestObservation);
+            double movementY = CenterY(current) - CenterY(this.LatestObservation);
+            double jitterTolerance = Math.Max(1, Math.Min(this.LatestObservation.Width, this.LatestObservation.Height) * 0.05);
+            if (Math.Abs(movementX) <= jitterTolerance && Math.Abs(movementY) <= jitterTolerance)
+            {
+                this.velocityX *= 0.5;
+                this.velocityY *= 0.5;
+                return;
+            }
+
+            double instantX = movementX / seconds;
+            double instantY = movementY / seconds;
+            double newWeight = this.motionSamples == 0 ? 1 : 0.8;
+            this.velocityX = (this.velocityX * (1 - newWeight)) + (instantX * newWeight);
+            this.velocityY = (this.velocityY * (1 - newWeight)) + (instantY * newWeight);
+            this.motionSamples++;
+        }
+
+        private void ResetMotion(TimeSpan timestamp)
+        {
+            this.velocityX = 0;
+            this.velocityY = 0;
+            this.motionSamples = 0;
+            this.LastObservationTime = timestamp;
         }
 
         private void UpdateGeometry(TextRect current)
@@ -681,5 +1020,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             this.geometryCandidate = null;
             this.geometryCandidateCount = 0;
         }
+
+        private sealed record TextVote(string Normalized, string Original);
     }
 }
