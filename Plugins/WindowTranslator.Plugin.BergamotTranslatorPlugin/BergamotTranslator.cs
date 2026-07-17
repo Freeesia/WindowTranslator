@@ -20,10 +20,6 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
 
     public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions)
     {
-        if (!SystemUtility.IsX64Machine())
-        {
-            throw new AppUserException(Resources.NotAvailableArch);
-        }
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
         var path = Path.Combine(SystemUtility.ModelsPath, $"{src}{dst}", "config.yml");
@@ -80,11 +76,6 @@ public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSetti
         if (settings.SelectedPlugins[nameof(ITranslateModule)] != nameof(BergamotTranslator))
         {
             return ValidateResult.Valid;
-        }
-
-        if (!SystemUtility.IsX64Machine())
-        {
-            return ValidateResult.Invalid("Bergamot", Resources.NotAvailableArch);
         }
 
         var src = settings.Language.Source[..2];
