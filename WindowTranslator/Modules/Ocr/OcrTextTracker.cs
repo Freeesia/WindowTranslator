@@ -23,6 +23,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double TextVoteDecay = 0.75;
     private const double TextVoteThreshold = 1.5;
     private const int TextVoteHistorySize = 5;
+    private const double MinimumStructureSizeRatio = 0.65;
+    private const double MaximumStructureAngleDifference = 8;
     private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
 
     private readonly ILogger<OcrTextTracker> logger = logger;
@@ -72,10 +74,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         HashSet<TextTrack> matchedTracks = [];
         HashSet<int> matchedObservations = [];
-        this.RestoreDormantChildren(current, imageSize, timestamp, matchedTracks, matchedObservations);
-
         TextTrack[] activeTracks = this.tracks
-            .Where(track => !track.IsDormant && !matchedTracks.Contains(track))
+            .Where(track => !track.IsDormant)
             .ToArray();
         List<MatchCandidate> candidates = BuildCandidates(
             activeTracks,
@@ -83,7 +83,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             imageSize,
             timestamp,
             matchedObservations);
-        IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, activeTracks, current.Length);
+        candidates.AddRange(this.BuildRestorationCandidates(activeTracks, current, imageSize, timestamp));
+        IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, this.tracks, current.Length);
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
@@ -105,7 +106,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         foreach (TextTrack track in this.tracks
             .Where(track => (!track.IsDormant && track.MissedFrames > MaxMissedFrames)
-                || (track.IsDormant && timestamp - track.DormantSince > dormantRetention))
+                || (track.IsDormant
+                    && !matchedTracks.Contains(track)
+                    && timestamp - track.DormantSince > dormantRetention))
             .ToArray())
         {
             this.logger.LogDebug("OCR track {TrackId} expired after {MissedFrames} missed frames", track.Id, track.MissedFrames);
@@ -146,7 +149,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 foreach (IReadOnlyList<int> members in Combinations(nearby, memberCount))
                 {
                     TextRect[] memberRects = members.Select(index => observations[index]).ToArray();
-                    if (!MembersAreAdjacent(memberRects))
+                    if (!MembersAreAdjacent(memberRects) || !MembersHaveCompatibleStyle(memberRects))
                     {
                         continue;
                     }
@@ -175,7 +178,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 foreach (IReadOnlyList<TextTrack> members in Combinations(nearby, memberCount))
                 {
                     TextRect[] memberRects = members.Select(track => track.Stabilized).ToArray();
-                    if (!MembersAreAdjacent(memberRects))
+                    if (!MembersAreAdjacent(memberRects) || !MembersHaveCompatibleStyle(memberRects))
                     {
                         continue;
                     }
@@ -397,6 +400,86 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         => candidate.Tracks.Select(track => trackIndexes[track])
             .Concat(candidate.ObservationIndices.Select(index => observationOffset + index));
 
+    private List<MatchCandidate> BuildRestorationCandidates(
+        IReadOnlyList<TextTrack> activeTracks,
+        TextRect[] observations,
+        Size imageSize,
+        TimeSpan timestamp)
+    {
+        List<MatchCandidate> result = [];
+        foreach (TextTrack parent in activeTracks)
+        {
+            TextTrack[] children = this.tracks
+                .Where(track => track.IsDormant && track.DormantParentId == parent.Id)
+                .OrderBy(track => track.Id)
+                .ToArray();
+            if (children.Length < 2)
+            {
+                continue;
+            }
+
+            List<MatchCandidate> childCandidates = BuildOneToOneCandidates(
+                children,
+                observations,
+                imageSize,
+                timestamp,
+                []);
+            Dictionary<TextTrack, MatchCandidate[]> candidatesByChild = children.ToDictionary(
+                child => child,
+                child => childCandidates
+                    .Where(candidate => candidate.Tracks[0] == child)
+                    .OrderByDescending(candidate => candidate.Score)
+                    .Take(MaxOneToOneCandidatesPerResource)
+                    .ToArray());
+            if (candidatesByChild.Values.Any(candidates => candidates.Length == 0))
+            {
+                continue;
+            }
+
+            AddAssignments(0, [], [], 0);
+
+            void AddAssignments(
+                int childIndex,
+                List<RestorationAssignment> assignments,
+                HashSet<int> usedObservations,
+                double score)
+            {
+                if (childIndex == children.Length)
+                {
+                    int[] observationIndices = assignments.Select(assignment => assignment.ObservationIndex).ToArray();
+                    TextRect combined = CombineObservations(
+                        observationIndices.Select(index => observations[index]),
+                        parent.ConfirmedText);
+                    result.Add(new(
+                        MatchKind.Restore,
+                        [parent, .. children],
+                        observationIndices,
+                        combined,
+                        (score / children.Length) + StructureAssignmentBonus)
+                    {
+                        RestorationAssignments = assignments.ToArray(),
+                    });
+                    return;
+                }
+
+                TextTrack child = children[childIndex];
+                foreach (MatchCandidate candidate in candidatesByChild[child])
+                {
+                    int observationIndex = candidate.ObservationIndices[0];
+                    if (!usedObservations.Add(observationIndex))
+                    {
+                        continue;
+                    }
+                    assignments.Add(new(child, observationIndex, candidate.Combined));
+                    AddAssignments(childIndex + 1, assignments, usedObservations, score + candidate.Score);
+                    assignments.RemoveAt(assignments.Count - 1);
+                    usedObservations.Remove(observationIndex);
+                }
+            }
+        }
+        return result;
+    }
+
     private void ApplyMatches(
         IReadOnlyList<MatchCandidate> selected,
         TimeSpan timestamp,
@@ -404,11 +487,37 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         HashSet<int> matchedObservations)
     {
         Dictionary<string, int> currentMergeCandidates = [];
+        Dictionary<long, int> currentRestoreCandidates = [];
         foreach (MatchCandidate candidate in selected)
         {
             foreach (int observationIndex in candidate.ObservationIndices)
             {
                 matchedObservations.Add(observationIndex);
+            }
+
+            if (candidate.Kind == MatchKind.Restore)
+            {
+                TextTrack parent = candidate.Tracks[0];
+                TextTrack[] children = candidate.Tracks.Skip(1).ToArray();
+                int restoreCount = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id) + 1;
+                currentRestoreCandidates[parent.Id] = restoreCount;
+                matchedTracks.Add(parent);
+                matchedTracks.UnionWith(children);
+                if (restoreCount >= StructureConfirmationFrames)
+                {
+                    foreach (RestorationAssignment assignment in candidate.RestorationAssignments)
+                    {
+                        assignment.Track.Reactivate(timestamp);
+                        assignment.Track.Observe(assignment.Observation, timestamp);
+                    }
+                    this.tracks.Remove(parent);
+                    this.logger.LogDebug("OCR track {TrackId} restored {ChildCount} dormant child tracks", parent.Id, children.Length);
+                }
+                else
+                {
+                    parent.Observe(candidate.Combined, timestamp);
+                }
+                continue;
             }
 
             if (candidate.Kind is MatchKind.OneToOne or MatchKind.Split)
@@ -450,69 +559,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
         }
         this.mergeCandidates = currentMergeCandidates;
-    }
-
-    private void RestoreDormantChildren(
-        TextRect[] observations,
-        Size imageSize,
-        TimeSpan timestamp,
-        HashSet<TextTrack> matchedTracks,
-        HashSet<int> matchedObservations)
-    {
-        Dictionary<long, int> currentRestoreCandidates = [];
-        foreach (TextTrack parent in this.tracks.Where(track => !track.IsDormant).ToArray())
-        {
-            TextTrack[] children = this.tracks
-                .Where(track => track.IsDormant && track.DormantParentId == parent.Id)
-                .OrderBy(track => track.Id)
-                .ToArray();
-            if (children.Length < 2)
-            {
-                continue;
-            }
-
-            List<MatchCandidate> candidates = BuildOneToOneCandidates(
-                children,
-                observations,
-                imageSize,
-                timestamp,
-                matchedObservations);
-            IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, children, observations.Length);
-            if (selected.Count != children.Length
-                || selected.SelectMany(candidate => candidate.Tracks).Distinct().Count() != children.Length)
-            {
-                continue;
-            }
-
-            int count = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id) + 1;
-            currentRestoreCandidates[parent.Id] = count;
-            int[] selectedObservations = selected.SelectMany(candidate => candidate.ObservationIndices).Distinct().ToArray();
-            foreach (int index in selectedObservations)
-            {
-                matchedObservations.Add(index);
-            }
-
-            if (count >= StructureConfirmationFrames)
-            {
-                foreach (MatchCandidate candidate in selected)
-                {
-                    TextTrack child = candidate.Tracks[0];
-                    child.Reactivate(timestamp);
-                    child.Observe(candidate.Combined, timestamp);
-                    matchedTracks.Add(child);
-                }
-                this.tracks.Remove(parent);
-                this.logger.LogDebug("OCR track {TrackId} restored {ChildCount} dormant child tracks", parent.Id, children.Length);
-            }
-            else
-            {
-                TextRect combined = CombineObservations(
-                    selectedObservations.Select(index => observations[index]),
-                    parent.ConfirmedText);
-                parent.Observe(combined, timestamp);
-                matchedTracks.Add(parent);
-            }
-        }
         this.dormantRestoreCandidates = currentRestoreCandidates;
     }
 
@@ -609,6 +655,29 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
         }
         return connected.Count == members.Length;
+    }
+
+    private static bool MembersHaveCompatibleStyle(TextRect[] members)
+    {
+        for (int first = 0; first < members.Length; first++)
+        {
+            for (int second = first + 1; second < members.Length; second++)
+            {
+                if (RatioSimilarity(members[first].Height, members[second].Height) < MinimumStructureSizeRatio
+                    || RatioSimilarity(members[first].FontSize, members[second].FontSize) < MinimumStructureSizeRatio
+                    || AngleDifference(members[first].Angle, members[second].Angle) > MaximumStructureAngleDifference)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static double AngleDifference(double first, double second)
+    {
+        double difference = Math.Abs(first - second) % 360;
+        return Math.Min(difference, 360 - difference);
     }
 
     private static bool AreAdjacent(TextRect first, TextRect second)
@@ -717,7 +786,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         OneToOne,
         Split,
         Merge,
+        Restore,
     }
+
+    private sealed record RestorationAssignment(TextTrack Track, int ObservationIndex, TextRect Observation);
 
     private sealed record MatchCandidate(
         MatchKind Kind,
@@ -727,6 +799,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         double Score)
     {
         public int ResourceCount => this.Tracks.Count + this.ObservationIndices.Count;
+
+        public IReadOnlyList<RestorationAssignment> RestorationAssignments { get; init; } = [];
     }
 
     private sealed record CandidateSolution(double Score, int ResourceCount, IReadOnlyList<MatchCandidate> Candidates)

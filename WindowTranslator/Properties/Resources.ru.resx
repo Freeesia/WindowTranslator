@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Отображать значок обработки</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Переводить только при включении оверлея</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Отображать перевод оверлея только для текста в позиции указателя мыши</value>
   </data>

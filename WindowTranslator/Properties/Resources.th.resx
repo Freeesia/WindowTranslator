@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>แสดงไอคอนกำลังประมวลผล</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>แปลเฉพาะเมื่อเปิดใช้งานโอเวอร์เลย์เท่านั้น</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>แสดงการแปลโอเวอร์เลย์เฉพาะข้อความที่ตำแหน่งเมาส์เท่านั้น</value>
   </data>

@@ -193,9 +193,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Zobrazit ikonu zaneprázdnění</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Překládat pouze při zapnutém překryvu</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Zobrazovat překlad v překryvu pouze pro text v pozici ukazatele myši</value>
   </data>

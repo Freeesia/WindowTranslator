@@ -104,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Evitar mesclagem de listas</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Tamanho do buffer</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Configuração básica de OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Outros</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Função do buffer</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Correção de erros de reconhecimento</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Supressão de vibração</value>
   </data>
 </root>

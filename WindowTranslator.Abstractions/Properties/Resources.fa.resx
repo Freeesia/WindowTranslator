@@ -104,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>جلوگیری از ادغام لیست</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>اندازه بافر</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>تنظیمات پایه OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>متفرقه</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>قابلیت بافر</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>تصحیح خطای تشخیص</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>جلوگیری از لرزش</value>
   </data>
 </root>

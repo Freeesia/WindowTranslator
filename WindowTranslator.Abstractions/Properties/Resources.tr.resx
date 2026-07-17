@@ -104,23 +104,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Birleştirmeden Kaçınılacak Karakterler</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Tampon Boyutu</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Temel OCR Parametreleri</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Diğer</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Tampon İşlevi</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Tanıma Hatası Düzeltmesi</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Titreşim Bastırma</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Dil Ayarları</value>

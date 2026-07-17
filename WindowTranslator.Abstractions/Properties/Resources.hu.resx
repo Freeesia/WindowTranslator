@@ -49,23 +49,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Listák összevonásának elkerülése</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Puffer mérete</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Alapvető OCR beállítások</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Egyéb</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Puffer funkció</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Felismerési hibák javítása</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Rezgéselnyomás</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Nyelvi beállítások</value>

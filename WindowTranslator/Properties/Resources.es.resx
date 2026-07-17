@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Mostrar icono de ocupado</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Traducir solo cuando la superposición está habilitada</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Mostrar traducción solo para texto bajo el puntero</value>
   </data>

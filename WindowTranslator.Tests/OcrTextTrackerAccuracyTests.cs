@@ -157,6 +157,89 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Equal("Start Ganne", afterRepeatedError.SourceText);
     }
 
+    [Theory]
+    [InlineData(60, 24, 0, 60, 24, 0)]
+    [InlineData(30, 48, 0, 30, 36, 0)]
+    [InlineData(30, 24, 20, 30, 24, 10)]
+    public void SplitAndMergeCandidatesRequireCompatibleMemberStyles(
+        double secondHeight,
+        double secondFontSize,
+        double secondAngle,
+        double combinedHeight,
+        double combinedFontSize,
+        double combinedAngle)
+    {
+        Size imageSize = new(1000, 600);
+        TextRect first = new("New", 0, 100, 95, 30, 24, false) { Angle = 0 };
+        TextRect second = new("Game", 100, 100, 100, secondHeight, secondFontSize, false) { Angle = secondAngle };
+        TextRect combined = new("New Game", 0, 100, 200, combinedHeight, combinedFontSize, false) { Angle = combinedAngle };
+
+        OcrTextTracker splitTracker = new(NullLogger<OcrTextTracker>.Instance);
+        splitTracker.Update([combined], imageSize, TimeSpan.Zero);
+        Assert.True(
+            splitTracker.Update([first, second], imageSize, TimeSpan.FromMilliseconds(500)).Count > 1,
+            "Incompatible OCR fragments must not be collapsed into one logical track.");
+
+        OcrTextTracker mergeTracker = new(NullLogger<OcrTextTracker>.Instance);
+        mergeTracker.Update([first, second], imageSize, TimeSpan.Zero);
+        mergeTracker.Update([combined], imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.True(
+            mergeTracker.Update([combined], imageSize, TimeSpan.FromMilliseconds(1000)).Count > 1,
+            "Incompatible tracks must not converge into one logical track.");
+    }
+
+    [Fact]
+    public void DormantChildrenDoNotConsumeAnActiveTracksObservation()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect childNew = RectWithContext("New", 0, "ChildNew");
+        TextRect childGame = RectWithContext("Game", 50, "ChildGame");
+        TextRect merged = new("New Game", 0, 100, 100, 30, 24, false) { Context = "Merged" };
+
+        tracker.Update(
+            [childNew, childGame, RectWithContext("New", 100, "Active")],
+            imageSize,
+            TimeSpan.Zero);
+        tracker.Update(
+            [merged, RectWithContext("New", 100, "Active")],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+        tracker.Update(
+            [merged, RectWithContext("New", 100, "Active")],
+            imageSize,
+            TimeSpan.FromMilliseconds(1000));
+
+        TextRect[] observations =
+        [
+            RectWithContext("New", 100, "Active"),
+            childGame,
+        ];
+        tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(1500));
+        IReadOnlyList<TextRect> result = tracker.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromMilliseconds(2000));
+
+        Assert.Single(result, rect => rect.Context == "Active");
+    }
+
+    [Fact]
+    public void RemovedFeatureResourcesAreNotGenerated()
+    {
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Static
+            | System.Reflection.BindingFlags.Public
+            | System.Reflection.BindingFlags.NonPublic;
+        Type appResources = typeof(OcrTextTracker).Assembly.GetType("WindowTranslator.Properties.Resources", throwOnError: true)!;
+        Type abstractionResources = typeof(TextRect).Assembly.GetType("WindowTranslator.Properties.Resources", throwOnError: true)!;
+
+        Assert.Null(appResources.GetProperty("IsOneShotMode", flags));
+        Assert.Null(abstractionResources.GetProperty("Buffer", flags));
+        Assert.Null(abstractionResources.GetProperty("BufferSize", flags));
+        Assert.Null(abstractionResources.GetProperty("IsSuppressVibe", flags));
+        Assert.Null(abstractionResources.GetProperty("IsEnableRecover", flags));
+    }
+
     private static IReadOnlyList<IReadOnlyList<TextRect>> RunLegacyBuffer()
     {
         List<IReadOnlyList<TextRect>> actual = [];
