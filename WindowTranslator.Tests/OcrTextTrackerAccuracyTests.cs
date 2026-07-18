@@ -80,6 +80,62 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void SpatiallyDistantLongTextsAreRejectedWithoutDominatingTheFrame()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(3840, 2160);
+        string initialPrefix = new('A', 2000);
+        string distantPrefix = new('B', 2000);
+        TextRect[] initial = Enumerable.Range(0, 64)
+            .Select(index => new TextRect(
+                $"{initialPrefix}-{index}",
+                index % 8 * 20,
+                index / 8 * 20,
+                120,
+                30,
+                24,
+                false))
+            .ToArray();
+        TextRect[] distant = Enumerable.Range(0, 64)
+            .Select(index => new TextRect(
+                $"{distantPrefix}-{index}",
+                3000 + (index % 8 * 20),
+                1500 + (index / 8 * 20),
+                120,
+                30,
+                24,
+                false))
+            .ToArray();
+        tracker.Update(initial, imageSize);
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        tracker.Update(distant, imageSize);
+        stopwatch.Stop();
+
+        output.WriteLine($"64x64 spatially distant long-text candidates: {stopwatch.ElapsedMilliseconds} ms");
+        Assert.True(stopwatch.Elapsed < TimeSpan.FromMilliseconds(500), $"Spatial rejection took {stopwatch.Elapsed}.");
+    }
+
+    [Fact]
+    public void LargeCandidateComponentImprovesBeyondTheFirstGreedyStructureMatch()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] tracks = Enumerable.Range(0, 10)
+            .Select(index => new TextRect("A", index * 12, 100, 20, 30, 24, false))
+            .ToArray();
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        TextRect merged = new("A A", 0, 100, 32, 30, 24, false);
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [.. tracks, merged],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(11, result.Count);
+    }
+
+    [Fact]
     public void MotionPredictionKeepsIdentityWhenTracksCrossBetweenSlowOcrFrames()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);

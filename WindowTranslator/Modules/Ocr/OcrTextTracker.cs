@@ -18,6 +18,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const int MaxStructureCandidates = 6;
     private const int MaxOneToOneCandidatesPerResource = 3;
     private const int MaxExactAssignmentResources = 18;
+    private const int MaxLargeComponentImprovementPasses = 2;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
     private const double TextVoteDecay = 0.75;
@@ -81,8 +82,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             activeTracks,
             current,
             imageSize,
-            timestamp,
-            matchedObservations);
+            timestamp);
         candidates.AddRange(this.BuildRestorationCandidates(activeTracks, current, imageSize, timestamp));
         IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, this.tracks, current.Length);
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
@@ -125,20 +125,17 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         TextTrack[] tracks,
         TextRect[] observations,
         Size imageSize,
-        TimeSpan timestamp,
-        HashSet<int> excludedObservations)
+        TimeSpan timestamp)
     {
         List<MatchCandidate> result = BuildOneToOneCandidates(
             tracks,
             observations,
             imageSize,
-            timestamp,
-            excludedObservations);
+            timestamp);
 
         foreach (TextTrack track in tracks)
         {
             int[] nearby = Enumerable.Range(0, observations.Length)
-                .Where(index => !excludedObservations.Contains(index))
                 .Where(index => IsNear(track.Stabilized, observations[index]))
                 .OrderBy(index => CenterDistance(track.Stabilized, observations[index]))
                 .Take(MaxStructureCandidates)
@@ -163,8 +160,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
         }
 
-        foreach (int observationIndex in Enumerable.Range(0, observations.Length)
-            .Where(index => !excludedObservations.Contains(index)))
+        foreach (int observationIndex in Enumerable.Range(0, observations.Length))
         {
             TextRect observation = observations[observationIndex];
             TextTrack[] nearby = tracks
@@ -198,18 +194,13 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         IReadOnlyList<TextTrack> tracks,
         TextRect[] observations,
         Size imageSize,
-        TimeSpan timestamp,
-        HashSet<int> excludedObservations)
+        TimeSpan timestamp)
     {
         List<MatchCandidate> raw = [];
         foreach (TextTrack track in tracks)
         {
             for (int observationIndex = 0; observationIndex < observations.Length; observationIndex++)
             {
-                if (excludedObservations.Contains(observationIndex))
-                {
-                    continue;
-                }
                 double score = ScoreAssignment(track, observations[observationIndex], imageSize, timestamp);
                 if (score >= MinimumAssignmentScore)
                 {
@@ -239,11 +230,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         double maximumDimension = Math.Max(previous.Width, previous.Height);
         double distanceGate = Math.Max(imageDiagonal * 0.08, maximumDimension * 4);
         double overlap = IntersectionOverUnion(predicted, observation);
-        double text = TextSimilarity(track.ConfirmedText, observation.SourceText);
         if (overlap == 0 && centerDistance > distanceGate)
         {
             return -1;
         }
+
+        double text = TextSimilarity(track.ConfirmedText, observation.SourceText);
         if (overlap == 0 && text < 0.9 && centerDistance > maximumDimension * 1.25)
         {
             return -1;
@@ -369,20 +361,53 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private static List<MatchCandidate> SelectLargeComponent(MatchCandidate[] candidates)
     {
-        List<MatchCandidate> selected = [];
-        foreach (MatchCandidate candidate in candidates.OrderByDescending(candidate => candidate.Score))
+        MatchCandidate[] ordered = candidates
+            .OrderByDescending(candidate => candidate.Score)
+            .ThenByDescending(candidate => candidate.ResourceCount)
+            .ToArray();
+        List<MatchCandidate> selected = SelectGreedily(ordered);
+        for (int pass = 0; pass < MaxLargeComponentImprovementPasses; pass++)
         {
-            MatchCandidate[] conflicts = selected.Where(existing => Conflicts(existing, candidate)).ToArray();
-            if (conflicts.Length == 0)
+            bool improved = false;
+            foreach (MatchCandidate incumbent in selected.OrderBy(candidate => candidate.Score).ToArray())
             {
-                selected.Add(candidate);
-            }
-            else if (candidate.Score > conflicts.Sum(conflict => conflict.Score) + 0.01)
-            {
-                foreach (MatchCandidate conflict in conflicts)
+                HashSet<MatchCandidate> fixedSelection = new(
+                    selected.Where(candidate => !ReferenceEquals(candidate, incumbent)),
+                    ReferenceEqualityComparer.Instance);
+                MatchCandidate[] replacementPool = ordered
+                    .Where(candidate => !ReferenceEquals(candidate, incumbent))
+                    .Where(candidate => !fixedSelection.Contains(candidate))
+                    .Where(candidate => Conflicts(candidate, incumbent))
+                    .Where(candidate => fixedSelection.All(existing => !Conflicts(existing, candidate)))
+                    .ToArray();
+                List<MatchCandidate> replacements = SelectGreedily(replacementPool);
+                double replacementScore = replacements.Sum(candidate => candidate.Score);
+                int replacementResources = replacements.Sum(candidate => candidate.ResourceCount);
+                if (replacementScore > incumbent.Score + 0.000001
+                    || (Math.Abs(replacementScore - incumbent.Score) <= 0.000001
+                        && replacementResources > incumbent.ResourceCount))
                 {
-                    selected.Remove(conflict);
+                    selected.Remove(incumbent);
+                    selected.AddRange(replacements);
+                    improved = true;
+                    break;
                 }
+            }
+            if (!improved)
+            {
+                break;
+            }
+        }
+        return selected;
+    }
+
+    private static List<MatchCandidate> SelectGreedily(IEnumerable<MatchCandidate> candidates)
+    {
+        List<MatchCandidate> selected = [];
+        foreach (MatchCandidate candidate in candidates)
+        {
+            if (selected.All(existing => !Conflicts(existing, candidate)))
+            {
                 selected.Add(candidate);
             }
         }
@@ -422,8 +447,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 children,
                 observations,
                 imageSize,
-                timestamp,
-                []);
+                timestamp);
             Dictionary<TextTrack, MatchCandidate[]> candidatesByChild = children.ToDictionary(
                 child => child,
                 child => childCandidates
