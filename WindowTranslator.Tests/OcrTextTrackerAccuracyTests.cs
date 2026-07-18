@@ -117,6 +117,64 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void CandidatePruningPreservesACompleteDenseOneToOneAssignment()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] tracks = Enumerable.Range(0, 9)
+            .Select(index => new TextRect(
+                "A",
+                index < 3 ? 160 + index : 100 + index - 3,
+                100,
+                100,
+                30,
+                24,
+                false))
+            .ToArray();
+        TextRect[] observations = Enumerable.Range(0, 9)
+            .Select(index => new TextRect(
+                "A",
+                index < 3 ? 100 + index : 160 + index - 3,
+                100,
+                100,
+                30,
+                24,
+                false))
+            .ToArray();
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(9, result.Count);
+    }
+
+    [Fact]
+    public void DenseRejectedLongStructureCandidatesDoNotDominateAFrame()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        string previousText = new('B', 1000);
+        string currentText = new('A', 1000);
+        TextRect[] tracks = Enumerable.Range(0, 6)
+            .Select(index => new TextRect(previousText, 100 + index, 100, 100, 30, 24, false))
+            .ToArray();
+        TextRect[] observations = Enumerable.Range(0, 6)
+            .Select(index => new TextRect(currentText, 100 + index, 100, 100, 30, 24, false))
+            .ToArray();
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(500));
+        stopwatch.Stop();
+
+        output.WriteLine($"Dense rejected long structure candidates: {stopwatch.ElapsedMilliseconds} ms");
+        Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(1), $"Dense long-text rejection took {stopwatch.Elapsed}.");
+    }
+
+    [Fact]
     public void LargeCandidateComponentImprovesBeyondTheFirstGreedyStructureMatch()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -216,6 +274,28 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
 
         IReadOnlyList<TextRect> restored = tracker.Update(
             [movedFirst, movedSecond], imageSize, TimeSpan.FromMilliseconds(2500));
+        Assert.Equal(["New", "Game"], restored.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void DormantChildrenReturnWhenMovementAndSplitOccurTogether()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("New", 0, 100, 40, 30, 24, false);
+        TextRect second = new("Game", 50, 100, 50, 30, 24, false);
+        TextRect merged = new("New Game", 0, 100, 100, 30, 24, false);
+        TextRect movedFirst = first with { X = 200 };
+        TextRect movedSecond = second with { X = 250 };
+
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+        tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Single(tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Single(tracker.Update(
+            [movedFirst, movedSecond], imageSize, TimeSpan.FromMilliseconds(1500)));
+        IReadOnlyList<TextRect> restored = tracker.Update(
+            [movedFirst, movedSecond], imageSize, TimeSpan.FromMilliseconds(2000));
         Assert.Equal(["New", "Game"], restored.Select(rect => rect.SourceText));
     }
 
