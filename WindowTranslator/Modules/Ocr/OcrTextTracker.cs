@@ -25,7 +25,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double TextVoteThreshold = 1.5;
     private const int TextVoteHistorySize = 5;
     private const double MinimumStructureSizeRatio = 0.65;
+    private const double MinimumStructureOverlap = 0.45;
+    private const double MinimumStructureTextSimilarity = 0.65;
+    private const double MinimumMovingStructureTextSimilarity = 0.9;
     private const double MaximumStructureAngleDifference = 8;
+    private const double StrongOneToOneScore = 0.9;
     private const double AngleVectorEpsilon = 0.000000000001;
     private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
 
@@ -133,11 +137,27 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             observations,
             imageSize,
             timestamp);
+        HashSet<TextTrack> tracksWithOneToOneCandidates = result
+            .Select(candidate => candidate.Tracks[0])
+            .ToHashSet();
+        HashSet<int> observationsWithOneToOneCandidates = result
+            .Select(candidate => candidate.ObservationIndices[0])
+            .ToHashSet();
+        HashSet<TextTrack> tracksWithStrongOneToOneCandidates = result
+            .Where(candidate => candidate.Score >= StrongOneToOneScore)
+            .Select(candidate => candidate.Tracks[0])
+            .ToHashSet();
+        HashSet<int> observationsWithStrongOneToOneCandidates = result
+            .Where(candidate => candidate.Score >= StrongOneToOneScore)
+            .Select(candidate => candidate.ObservationIndices[0])
+            .ToHashSet();
 
-        foreach (TextTrack track in tracks)
+        foreach (TextTrack track in tracks.Where(track => !tracksWithStrongOneToOneCandidates.Contains(track)))
         {
             int[] nearby = Enumerable.Range(0, observations.Length)
-                .Where(index => IsNear(track.Stabilized, observations[index]))
+                .Where(index => tracksWithOneToOneCandidates.Contains(track)
+                    ? IsNear(track.Stabilized, observations[index])
+                    : IsPotentialStructureMember(track.Stabilized, observations[index], imageSize))
                 .OrderBy(index => CenterDistance(track.Stabilized, observations[index]))
                 .Take(MaxStructureCandidates)
                 .ToArray();
@@ -151,9 +171,13 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                     {
                         continue;
                     }
-                    TextRect combined = CombineObservations(memberRects, track.ConfirmedText);
-                    double score = ScoreStructure(combined, track.Stabilized, track.ConfirmedText);
-                    if (score >= 0)
+                    if (TryCombineStructure(
+                        memberRects,
+                        track.Stabilized,
+                        track.ConfirmedText,
+                        imageSize,
+                        out TextRect combined,
+                        out double score))
                     {
                         result.Add(new(MatchKind.Split, [track], members.ToArray(), combined, score));
                     }
@@ -163,9 +187,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         foreach (int observationIndex in Enumerable.Range(0, observations.Length))
         {
+            if (observationsWithStrongOneToOneCandidates.Contains(observationIndex))
+            {
+                continue;
+            }
             TextRect observation = observations[observationIndex];
             TextTrack[] nearby = tracks
-                .Where(track => IsNear(observation, track.Stabilized))
+                .Where(track => observationsWithOneToOneCandidates.Contains(observationIndex)
+                    ? IsNear(observation, track.Stabilized)
+                    : IsPotentialStructureMember(observation, track.Stabilized, imageSize))
                 .OrderBy(track => CenterDistance(observation, track.Stabilized))
                 .Take(MaxStructureCandidates)
                 .ToArray();
@@ -179,9 +209,13 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                     {
                         continue;
                     }
-                    TextRect combinedTracks = CombineTracks(members, observation.SourceText);
-                    double score = ScoreStructure(combinedTracks, observation, observation.SourceText);
-                    if (score >= 0)
+                    if (TryCombineStructure(
+                        memberRects,
+                        observation,
+                        observation.SourceText,
+                        imageSize,
+                        out _,
+                        out double score))
                     {
                         result.Add(new(MatchKind.Merge, members.ToArray(), [observationIndex], observation, score));
                     }
@@ -196,7 +230,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         TextRect[] observations,
         Size imageSize,
         TimeSpan timestamp,
-        Func<TextTrack, TextRect>? geometryOverride = null)
+        Func<TextTrack, TextRect>? geometryOverride = null,
+        Func<TextTrack, double>? distanceGateDimensionOverride = null)
     {
         List<MatchCandidate> raw = [];
         foreach (TextTrack track in tracks)
@@ -209,7 +244,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                     observations[observationIndex],
                     imageSize,
                     timestamp,
-                    geometry);
+                    geometry,
+                    distanceGateDimensionOverride?.Invoke(track));
                 if (score >= MinimumAssignmentScore)
                 {
                     raw.Add(new(MatchKind.OneToOne, [track], [observationIndex], observations[observationIndex], score));
@@ -226,7 +262,53 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             retained.UnionWith(group.OrderByDescending(candidate => candidate.Score).Take(MaxOneToOneCandidatesPerResource));
         }
+        RetainMaximumCardinalityMatching(tracks, raw, retained);
         return retained.ToList();
+    }
+
+    private static void RetainMaximumCardinalityMatching(
+        IReadOnlyList<TextTrack> tracks,
+        IReadOnlyList<MatchCandidate> candidates,
+        HashSet<MatchCandidate> retained)
+    {
+        Dictionary<TextTrack, MatchCandidate[]> candidatesByTrack = candidates
+            .GroupBy(candidate => candidate.Tracks[0])
+            .ToDictionary(
+                group => group.Key,
+                group => group
+                    .OrderByDescending(candidate => candidate.Score)
+                    .ThenBy(candidate => candidate.ObservationIndices[0])
+                    .ToArray());
+        Dictionary<int, MatchCandidate> matchedByObservation = [];
+        foreach (TextTrack track in tracks
+            .Select((track, index) => (track, index))
+            .Where(item => candidatesByTrack.ContainsKey(item.track))
+            .OrderBy(item => candidatesByTrack[item.track].Length)
+            .ThenBy(item => item.index)
+            .Select(item => item.track))
+        {
+            TryMatch(track, []);
+        }
+        retained.UnionWith(matchedByObservation.Values);
+
+        bool TryMatch(TextTrack track, HashSet<int> visitedObservations)
+        {
+            foreach (MatchCandidate candidate in candidatesByTrack[track])
+            {
+                int observationIndex = candidate.ObservationIndices[0];
+                if (!visitedObservations.Add(observationIndex))
+                {
+                    continue;
+                }
+                if (!matchedByObservation.TryGetValue(observationIndex, out MatchCandidate? incumbent)
+                    || TryMatch(incumbent.Tracks[0], visitedObservations))
+                {
+                    matchedByObservation[observationIndex] = candidate;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private static double ScoreAssignment(
@@ -234,14 +316,14 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         TextRect observation,
         Size imageSize,
         TimeSpan timestamp,
-        TextRect? geometryOverride = null)
+        TextRect? geometryOverride = null,
+        double? distanceGateDimensionOverride = null)
     {
         TextRect previous = geometryOverride ?? track.LatestObservation;
         TextRect predicted = geometryOverride ?? track.Predict(timestamp);
         double centerDistance = CenterDistance(predicted, observation);
-        double imageDiagonal = Math.Sqrt((double)imageSize.Width * imageSize.Width + (double)imageSize.Height * imageSize.Height);
         double maximumDimension = Math.Max(previous.Width, previous.Height);
-        double distanceGate = Math.Max(imageDiagonal * 0.08, maximumDimension * 4);
+        double distanceGate = TrackingDistanceGate(previous, imageSize, distanceGateDimensionOverride);
         double overlap = IntersectionOverUnion(predicted, observation);
         if (overlap == 0 && centerDistance > distanceGate)
         {
@@ -269,13 +351,106 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         return (text * 0.35) + (overlap * 0.25) + (center * 0.2) + (size * 0.1) + (aspect * 0.05) + (recency * 0.05);
     }
 
-    private static double ScoreStructure(TextRect combined, TextRect targetRect, string targetText)
+    private static bool TryCombineStructure(
+        TextRect[] source,
+        TextRect targetRect,
+        string targetText,
+        Size imageSize,
+        out TextRect combined,
+        out double score)
     {
-        double geometry = IntersectionOverUnion(combined, targetRect);
-        double text = TextSimilarity(combined.SourceText, targetText);
-        return geometry >= 0.45 && text >= 0.65
-            ? (geometry * 0.55) + (text * 0.45) + StructureAssignmentBonus
-            : -1;
+        TextRect[] members = OrderForReading(source).ToArray();
+        TextRect geometry = Union(members, string.Empty);
+        double overlap = IntersectionOverUnion(geometry, targetRect);
+        double center = 0;
+        double size = 0;
+        double aspect = 0;
+        double minimumTextSimilarity = MinimumStructureTextSimilarity;
+        if (overlap < MinimumStructureOverlap)
+        {
+            double distanceGate = TrackingDistanceGate(targetRect, imageSize);
+            double centerDistance = CenterDistance(geometry, targetRect);
+            size = (RatioSimilarity(geometry.Width, targetRect.Width)
+                + RatioSimilarity(geometry.Height, targetRect.Height)) / 2;
+            aspect = RatioSimilarity(
+                geometry.Width / geometry.Height,
+                targetRect.Width / targetRect.Height);
+            if (centerDistance > distanceGate
+                || size < MinimumStructureSizeRatio
+                || aspect < MinimumStructureSizeRatio)
+            {
+                combined = default!;
+                score = -1;
+                return false;
+            }
+            center = Math.Max(0, 1 - (centerDistance / distanceGate));
+            minimumTextSimilarity = MinimumMovingStructureTextSimilarity;
+        }
+
+        if (!TrySelectCombinedText(
+            members,
+            targetText,
+            minimumTextSimilarity,
+            out string text,
+            out double textSimilarity))
+        {
+            combined = default!;
+            score = -1;
+            return false;
+        }
+
+        combined = geometry with { SourceText = text };
+        score = overlap >= MinimumStructureOverlap
+            ? (overlap * 0.55) + (textSimilarity * 0.45) + StructureAssignmentBonus
+            : (textSimilarity * 0.45)
+                + (center * 0.25)
+                + (size * 0.2)
+                + (aspect * 0.1)
+                + StructureAssignmentBonus;
+        return true;
+    }
+
+    private static bool TrySelectCombinedText(
+        TextRect[] members,
+        string targetText,
+        double minimumSimilarity,
+        out string text,
+        out double similarity)
+    {
+        int withoutSpacesLength = members.Sum(member => member.SourceText.Length);
+        int withSpacesLength = withoutSpacesLength + members.Length - 1;
+        string? withSpaces = null;
+        string? withoutSpaces = null;
+        double withSpacesSimilarity = -1;
+        double withoutSpacesSimilarity = -1;
+        if (CanReachTextSimilarity(withSpacesLength, targetText.Length, minimumSimilarity))
+        {
+            withSpaces = string.Join(' ', members.Select(member => member.SourceText));
+            withSpacesSimilarity = TextSimilarity(withSpaces, targetText);
+        }
+        if (CanReachTextSimilarity(withoutSpacesLength, targetText.Length, minimumSimilarity))
+        {
+            withoutSpaces = string.Concat(members.Select(member => member.SourceText));
+            withoutSpacesSimilarity = TextSimilarity(withoutSpaces, targetText);
+        }
+        if (withSpacesSimilarity < minimumSimilarity && withoutSpacesSimilarity < minimumSimilarity)
+        {
+            text = string.Empty;
+            similarity = -1;
+            return false;
+        }
+
+        bool useSpaces = withSpacesSimilarity >= withoutSpacesSimilarity;
+        text = useSpaces ? withSpaces! : withoutSpaces!;
+        similarity = useSpaces ? withSpacesSimilarity : withoutSpacesSimilarity;
+        return true;
+    }
+
+    private static bool CanReachTextSimilarity(int firstLength, int secondLength, double minimumSimilarity)
+    {
+        int maximumLength = Math.Max(firstLength, secondLength);
+        return maximumLength == 0
+            || (double)Math.Min(firstLength, secondLength) / maximumLength >= minimumSimilarity;
     }
 
     private static List<MatchCandidate> SelectGlobally(
@@ -461,7 +636,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 observations,
                 imageSize,
                 timestamp,
-                child => child.RestoreGeometry(parent.LatestObservation));
+                child => child.RestoreGeometry(parent.LatestObservation),
+                _ => Math.Max(parent.LatestObservation.Width, parent.LatestObservation.Height));
             Dictionary<TextTrack, MatchCandidate[]> candidatesByChild = children.ToDictionary(
                 child => child,
                 child => childCandidates
@@ -485,15 +661,25 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 if (childIndex == children.Length)
                 {
                     int[] observationIndices = assignments.Select(assignment => assignment.ObservationIndex).ToArray();
-                    TextRect combined = CombineObservations(
-                        observationIndices.Select(index => observations[index]),
-                        parent.ConfirmedText);
+                    TextRect[] assignedObservations = observationIndices
+                        .Select(index => observations[index])
+                        .ToArray();
+                    if (!TryCombineStructure(
+                        assignedObservations,
+                        parent.Stabilized,
+                        parent.ConfirmedText,
+                        imageSize,
+                        out TextRect combined,
+                        out double structureScore))
+                    {
+                        return;
+                    }
                     result.Add(new(
                         MatchKind.Restore,
                         [parent, .. children],
                         observationIndices,
                         combined,
-                        (score / children.Length) + StructureAssignmentBonus)
+                        Math.Max((score / children.Length) + StructureAssignmentBonus, structureScore))
                     {
                         RestorationAssignments = assignments.ToArray(),
                     });
@@ -631,20 +817,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
         }
     }
-
-    private static TextRect CombineObservations(IEnumerable<TextRect> source, string targetText)
-    {
-        TextRect[] members = OrderForReading(source).ToArray();
-        string withSpaces = string.Join(' ', members.Select(member => member.SourceText));
-        string withoutSpaces = string.Concat(members.Select(member => member.SourceText));
-        string text = TextSimilarity(withSpaces, targetText) >= TextSimilarity(withoutSpaces, targetText)
-            ? withSpaces
-            : withoutSpaces;
-        return Union(members, text);
-    }
-
-    private static TextRect CombineTracks(IEnumerable<TextTrack> source, string targetText)
-        => CombineObservations(source.Select(track => track.Stabilized), targetText);
 
     private static IEnumerable<TextRect> OrderForReading(IEnumerable<TextRect> source)
     {
@@ -873,6 +1045,23 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         }
         double gate = Math.Max(Math.Max(first.Width, first.Height), Math.Max(second.Width, second.Height));
         return CenterDistance(first, second) <= gate * 1.5;
+    }
+
+    private static bool IsPotentialStructureMember(TextRect target, TextRect member, Size imageSize)
+        => IsNear(target, member)
+            || CenterDistance(target, member) <= TrackingDistanceGate(target, imageSize);
+
+    private static double TrackingDistanceGate(
+        TextRect geometry,
+        Size imageSize,
+        double? maximumDimensionOverride = null)
+    {
+        double imageDiagonal = Math.Sqrt(
+            ((double)imageSize.Width * imageSize.Width)
+            + ((double)imageSize.Height * imageSize.Height));
+        double maximumDimension = maximumDimensionOverride
+            ?? Math.Max(geometry.Width, geometry.Height);
+        return Math.Max(imageDiagonal * 0.08, maximumDimension * 4);
     }
 
     private static double TextSimilarity(string first, string second)
