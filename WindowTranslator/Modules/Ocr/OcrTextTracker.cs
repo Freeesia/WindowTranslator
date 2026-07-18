@@ -26,6 +26,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const int TextVoteHistorySize = 5;
     private const double MinimumStructureSizeRatio = 0.65;
     private const double MaximumStructureAngleDifference = 8;
+    private const double AngleVectorEpsilon = 0.000000000001;
     private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
 
     private readonly ILogger<OcrTextTracker> logger = logger;
@@ -635,11 +636,21 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private static IEnumerable<TextRect> OrderForReading(IEnumerable<TextRect> source)
     {
         TextRect[] members = source.ToArray();
-        double verticalSpan = members.Max(rect => CenterY(rect)) - members.Min(rect => CenterY(rect));
+        double angle = AverageAngle(members);
+        (double cosine, double sine) = ReadingAxis(angle);
+        var projected = members
+            .Select(rect =>
+            {
+                (double along, double perpendicular) = ProjectCenter(rect, cosine, sine);
+                return (rect, along, perpendicular);
+            })
+            .ToArray();
+        double perpendicularSpan = projected.Max(item => item.perpendicular)
+            - projected.Min(item => item.perpendicular);
         double averageHeight = members.Average(rect => rect.Height);
-        return verticalSpan <= averageHeight * 0.75
-            ? members.OrderBy(rect => rect.X)
-            : members.OrderBy(rect => rect.Y).ThenBy(rect => rect.X);
+        return perpendicularSpan <= averageHeight * 0.75
+            ? projected.OrderBy(item => item.along).Select(item => item.rect)
+            : projected.OrderBy(item => item.perpendicular).ThenBy(item => item.along).Select(item => item.rect);
     }
 
     private static TextRect Union(TextRect[] members, string text)
@@ -648,6 +659,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         double top = members.Min(rect => rect.Y);
         double right = members.Max(rect => rect.X + rect.Width);
         double bottom = members.Max(rect => rect.Y + rect.Height);
+        double angle = AverageAngle(members);
+        (double cosine, double sine) = ReadingAxis(angle);
+        double[] perpendicularPositions = members
+            .Select(rect => ProjectCenter(rect, cosine, sine).perpendicular)
+            .ToArray();
+        double perpendicularSpan = perpendicularPositions.Max() - perpendicularPositions.Min();
         TextRect first = members[0];
         return first with
         {
@@ -657,9 +674,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             Width = right - left,
             Height = bottom - top,
             FontSize = members.Average(rect => rect.FontSize),
-            MultiLine = members.Max(rect => CenterY(rect)) - members.Min(rect => CenterY(rect)) > members.Average(rect => rect.Height) * 0.75
+            MultiLine = perpendicularSpan > members.Average(rect => rect.Height) * 0.75
                 || members.Any(rect => rect.MultiLine),
-            Angle = members.Average(rect => rect.Angle),
+            Angle = angle,
         };
     }
 
@@ -706,13 +723,67 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private static bool AreAdjacent(TextRect first, TextRect second)
     {
-        double horizontalGap = Math.Max(0, Math.Max(first.X, second.X) - Math.Min(first.X + first.Width, second.X + second.Width));
-        double verticalGap = Math.Max(0, Math.Max(first.Y, second.Y) - Math.Min(first.Y + first.Height, second.Y + second.Height));
-        bool sameLine = Math.Abs(CenterY(first) - CenterY(second)) <= Math.Max(first.Height, second.Height) * 0.75
-            && horizontalGap <= Math.Max(first.Height, second.Height) * 2;
-        bool sameColumn = Math.Abs(CenterX(first) - CenterX(second)) <= Math.Max(first.Width, second.Width) * 0.75
-            && verticalGap <= Math.Max(first.Width, second.Width);
-        return sameLine || sameColumn;
+        double angle = AverageAngle(first.Angle, second.Angle);
+        (double cosine, double sine) = ReadingAxis(angle);
+        double deltaX = CenterX(second) - CenterX(first);
+        double deltaY = CenterY(second) - CenterY(first);
+        double alongDistance = Math.Abs((deltaX * cosine) + (deltaY * sine));
+        double perpendicularDistance = Math.Abs((-deltaX * sine) + (deltaY * cosine));
+        double alongGap = Math.Max(0, alongDistance - ((first.Width + second.Width) / 2));
+        double perpendicularGap = Math.Max(0, perpendicularDistance - ((first.Height + second.Height) / 2));
+        bool sameLine = perpendicularDistance <= Math.Max(first.Height, second.Height) * 0.75
+            && alongGap <= Math.Max(first.Height, second.Height) * 2;
+        bool neighboringLine = alongDistance <= Math.Max(first.Width, second.Width) * 0.75
+            && perpendicularGap <= Math.Max(first.Width, second.Width);
+        return sameLine || neighboringLine;
+    }
+
+    private static double AverageAngle(TextRect[] members)
+    {
+        double sine = 0;
+        double cosine = 0;
+        foreach (TextRect member in members)
+        {
+            double radians = member.Angle * Math.PI / 180;
+            sine += Math.Sin(radians);
+            cosine += Math.Cos(radians);
+        }
+        return ResolveAverageAngle(sine, cosine, members[0].Angle);
+    }
+
+    private static double AverageAngle(double first, double second)
+    {
+        double firstRadians = first * Math.PI / 180;
+        double secondRadians = second * Math.PI / 180;
+        return ResolveAverageAngle(
+            Math.Sin(firstRadians) + Math.Sin(secondRadians),
+            Math.Cos(firstRadians) + Math.Cos(secondRadians),
+            first);
+    }
+
+    private static double ResolveAverageAngle(double sine, double cosine, double fallback)
+    {
+        if (Math.Abs(sine) <= AngleVectorEpsilon && Math.Abs(cosine) <= AngleVectorEpsilon)
+        {
+            return fallback;
+        }
+        double angle = Math.Atan2(sine, cosine) * 180 / Math.PI;
+        return Math.Abs(angle) <= AngleVectorEpsilon ? 0 : angle;
+    }
+
+    private static (double cosine, double sine) ReadingAxis(double angle)
+    {
+        double radians = angle * Math.PI / 180;
+        return (Math.Cos(radians), Math.Sin(radians));
+    }
+
+    private static (double along, double perpendicular) ProjectCenter(TextRect rect, double cosine, double sine)
+    {
+        double centerX = CenterX(rect);
+        double centerY = CenterY(rect);
+        return (
+            (centerX * cosine) + (centerY * sine),
+            (-centerX * sine) + (centerY * cosine));
     }
 
     private static bool IsNear(TextRect first, TextRect second)
@@ -1092,7 +1163,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 && Math.Abs(stable.Width - current.Width) <= Math.Max(3, stable.Width * 0.12)
                 && Math.Abs(stable.Height - current.Height) <= Math.Max(3, stable.Height * 0.12)
                 && Math.Abs(stable.FontSize - current.FontSize) <= Math.Max(1, stable.FontSize * 0.12)
-                && Math.Abs(stable.Angle - current.Angle) <= 2
+                && AngleDifference(stable.Angle, current.Angle) <= 2
                 && stable.MultiLine == current.MultiLine;
         }
 
@@ -1100,7 +1171,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             => CenterDistance(candidate, current) <= Math.Max(3, Math.Max(candidate.Width, candidate.Height) * 0.15)
                 && RatioSimilarity(candidate.Width, current.Width) >= 0.85
                 && RatioSimilarity(candidate.Height, current.Height) >= 0.85
-                && Math.Abs(candidate.Angle - current.Angle) <= 3
+                && AngleDifference(candidate.Angle, current.Angle) <= 3
                 && candidate.MultiLine == current.MultiLine;
 
         private void ApplyGeometry(TextRect current)

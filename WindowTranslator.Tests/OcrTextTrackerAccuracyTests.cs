@@ -245,6 +245,89 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void SplitUsesCircularMeanForAnglesAcrossTheWrapBoundary()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect combined = new("AB", 0, 100, 200, 30, 24, false) { Angle = 0 };
+        TextRect first = new("A", 0, 100, 95, 30, 24, false) { Angle = 359 };
+        TextRect second = new("B", 100, 100, 100, 30, 24, false) { Angle = 1 };
+        tracker.Update([combined], imageSize, TimeSpan.Zero);
+
+        tracker.Update([first, second], imageSize, TimeSpan.FromMilliseconds(500));
+        TextRect result = Assert.Single(tracker.Update(
+            [first, second], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.InRange(Math.Abs(result.Angle), 0, 0.001);
+    }
+
+    [Fact]
+    public void SmallAngleJitterAcrossTheWrapBoundaryIsSuppressed()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("A", 0, 100, 100, 30, 24, false) { Angle = 359 };
+        TextRect jittered = initial with { Angle = 1 };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        tracker.Update([jittered], imageSize, TimeSpan.FromMilliseconds(500));
+        TextRect result = Assert.Single(tracker.Update(
+            [jittered], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(359, result.Angle);
+    }
+
+    [Fact]
+    public void SplitOrdersFragmentsAlongTheRotatedReadingDirection()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect combined = new("AB", 0, 100, 200, 30, 24, false) { Angle = 180 };
+        TextRect first = new("A", 105, 100, 95, 30, 24, false) { Angle = 180 };
+        TextRect second = new("B", 0, 100, 100, 30, 24, false) { Angle = 180 };
+        tracker.Update([combined], imageSize, TimeSpan.Zero);
+
+        TextRect result = Assert.Single(tracker.Update(
+            [first, second], imageSize, TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal("AB", result.SourceText);
+    }
+
+    [Fact]
+    public void PersistentMergeOrdersTracksAlongTheRotatedReadingDirection()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("A", 105, 100, 95, 30, 24, false) { Angle = 180 };
+        TextRect second = new("B", 0, 100, 100, 30, 24, false) { Angle = 180 };
+        TextRect combined = new("AB", 0, 100, 200, 30, 24, false) { Angle = 180 };
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+
+        Assert.Equal(2, tracker.Update(
+            [combined], imageSize, TimeSpan.FromMilliseconds(500)).Count);
+        TextRect result = Assert.Single(tracker.Update(
+            [combined], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal("AB", result.SourceText);
+    }
+
+    [Fact]
+    public void SplitTreatsObliqueFragmentsOnTheSameReadingAxisAsAdjacent()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect combined = new("AB", 0, 0, 260, 140, 24, false) { Angle = 45 };
+        TextRect first = new("A", 0, 0, 140, 20, 24, false) { Angle = 45 };
+        TextRect second = new("B", 120, 120, 140, 20, 24, false) { Angle = 45 };
+        tracker.Update([combined], imageSize, TimeSpan.Zero);
+
+        TextRect result = Assert.Single(tracker.Update(
+            [first, second], imageSize, TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal("AB", result.SourceText);
+    }
+
+    [Fact]
     public void DormantChildrenDoNotConsumeAnActiveTracksObservation()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
