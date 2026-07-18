@@ -197,6 +197,29 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void DormantChildrenReturnAfterTheMergedParentMoves()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("New", 0, 100, 40, 30, 24, false);
+        TextRect second = new("Game", 50, 100, 50, 30, 24, false);
+        TextRect merged = new("New Game", 0, 100, 100, 30, 24, false);
+        TextRect movedMerged = merged with { X = 200 };
+        TextRect movedFirst = first with { X = 200 };
+        TextRect movedSecond = second with { X = 250 };
+
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+        tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Single(tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(1000)));
+        Assert.Single(tracker.Update([movedMerged], imageSize, TimeSpan.FromMilliseconds(1500)));
+        Assert.Single(tracker.Update([movedFirst, movedSecond], imageSize, TimeSpan.FromMilliseconds(2000)));
+
+        IReadOnlyList<TextRect> restored = tracker.Update(
+            [movedFirst, movedSecond], imageSize, TimeSpan.FromMilliseconds(2500));
+        Assert.Equal(["New", "Game"], restored.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
     public void SimilarButDifferentOcrErrorsDoNotShareAStringVote()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -282,7 +305,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
-        TextRect combined = new("AB", 0, 100, 200, 30, 24, false) { Angle = 180 };
+        TextRect combined = new("AB", 105, 100, 205, 30, 24, false) { Angle = 180 };
         TextRect first = new("A", 105, 100, 95, 30, 24, false) { Angle = 180 };
         TextRect second = new("B", 0, 100, 100, 30, 24, false) { Angle = 180 };
         tracker.Update([combined], imageSize, TimeSpan.Zero);
@@ -300,7 +323,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Size imageSize = new(1000, 600);
         TextRect first = new("A", 105, 100, 95, 30, 24, false) { Angle = 180 };
         TextRect second = new("B", 0, 100, 100, 30, 24, false) { Angle = 180 };
-        TextRect combined = new("AB", 0, 100, 200, 30, 24, false) { Angle = 180 };
+        TextRect combined = new("AB", 105, 100, 205, 30, 24, false) { Angle = 180 };
         tracker.Update([first, second], imageSize, TimeSpan.Zero);
 
         Assert.Equal(2, tracker.Update(
@@ -316,13 +339,33 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
-        TextRect combined = new("AB", 0, 0, 260, 140, 24, false) { Angle = 45 };
-        TextRect first = new("A", 0, 0, 140, 20, 24, false) { Angle = 45 };
-        TextRect second = new("B", 120, 120, 140, 20, 24, false) { Angle = 45 };
+        double offset = 105 / Math.Sqrt(2);
+        TextRect combined = new("AB", 0, 0, 205, 20, 18, false) { Angle = 45 };
+        TextRect first = new("A", 0, 0, 100, 20, 18, false) { Angle = 45 };
+        TextRect second = new("B", offset, offset, 100, 20, 18, false) { Angle = 45 };
         tracker.Update([combined], imageSize, TimeSpan.Zero);
 
         TextRect result = Assert.Single(tracker.Update(
             [first, second], imageSize, TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal("AB", result.SourceText);
+    }
+
+    [Fact]
+    public void PersistentMergeCombinesOrientedRectsAlongTheReadingAxis()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        double offset = 105 / Math.Sqrt(2);
+        TextRect first = new("A", 0, 0, 100, 20, 18, false) { Angle = 45 };
+        TextRect second = new("B", offset, offset, 100, 20, 18, false) { Angle = 45 };
+        TextRect combined = new("AB", 0, 0, 205, 20, 18, false) { Angle = 45 };
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+
+        Assert.Equal(2, tracker.Update(
+            [combined], imageSize, TimeSpan.FromMilliseconds(500)).Count);
+        TextRect result = Assert.Single(tracker.Update(
+            [combined], imageSize, TimeSpan.FromMilliseconds(1000)));
 
         Assert.Equal("AB", result.SourceText);
     }
