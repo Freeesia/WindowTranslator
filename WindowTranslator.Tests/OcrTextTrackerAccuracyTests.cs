@@ -187,6 +187,52 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void MaximumCardinalityAssignmentStillMaximizesTheTotalScore()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect left = new TextRect("A", 0, 100, 100, 30, 24, false) { Context = "Left" };
+        TextRect right = new TextRect("A", 30, 100, 100, 30, 24, false) { Context = "Right" };
+        tracker.Update([left, right], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            left with { X = 10, Context = "NearLeft" },
+            right with { X = 50, Context = "NearRight" },
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["NearLeft", "NearRight"], result.Select(rect => rect.Context));
+    }
+
+    [Fact]
+    public void MixedStructureSelectionAtTheExactBoundaryDoesNotDominateAFrame()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] tracks = Enumerable.Range(0, 9)
+            .Select(index => new TextRect("AA", 100 + index, 100, 100, 30, 24, false))
+            .ToArray();
+        TextRect[] observations = Enumerable.Range(0, 9)
+            .Select(index => new TextRect("A", 100 + index, 100, 100, 30, 24, false))
+            .ToArray();
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        IReadOnlyList<TextRect> result = tracker.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+        stopwatch.Stop();
+
+        output.WriteLine($"9x9 mixed structure candidates: {stopwatch.ElapsedMilliseconds} ms");
+        Assert.Equal(9, result.Count);
+        Assert.True(stopwatch.Elapsed < TimeSpan.FromMilliseconds(500),
+            $"Mixed structure selection took {stopwatch.Elapsed}.");
+    }
+
+    [Fact]
     public void DenseRejectedLongStructureCandidatesDoNotDominateAFrame()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -286,6 +332,26 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TimeSpan.FromMilliseconds(500)));
 
         Assert.Equal("ABCDEFG", result.SourceText);
+    }
+
+    [Fact]
+    public void StrongOneToOneMatchIsReservedBeforeMergeCandidates()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("A", 0, 100, 40, 30, 24, false);
+        TextRect second = new("B", 50, 100, 40, 30, 24, false);
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            first,
+            new("AB", 0, 100, 90, 30, 24, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["A", "B", "AB"], result.Select(rect => rect.SourceText));
     }
 
     [Fact]
