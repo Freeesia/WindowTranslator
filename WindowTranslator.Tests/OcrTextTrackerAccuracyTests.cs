@@ -731,6 +731,33 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void WholeRegionRemovesFragmentsCreatedWhileTheParentWasUnmatched()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect whole = new("ABCDEFGHIJ", 0, 100, 100, 20, 16, false);
+        tracker.Update([whole], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> split = tracker.Update(
+        [
+            new("BC", 10, 100, 20, 20, 8, false),
+            new("DE", 30, 100, 20, 20, 16, false),
+            new("FG", 50, 100, 20, 20, 32, false),
+            new("HI", 70, 100, 20, 20, 64, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+        Assert.True(split.Count > 1, "The adversarial split must leave its parent unmatched.");
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [whole],
+            imageSize,
+            TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal("ABCDEFGHIJ", Assert.Single(result).SourceText);
+    }
+
+    [Fact]
     public void FourPartSplitRemainsOneLogicalTrack()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
