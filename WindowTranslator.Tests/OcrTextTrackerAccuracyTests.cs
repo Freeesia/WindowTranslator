@@ -152,6 +152,41 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void CandidatePruningPreservesACompleteAssignmentAboveTheExactSelectionBoundary()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] tracks = Enumerable.Range(0, 10)
+            .Select(index => new TextRect(
+                "A",
+                index < 3 ? 160 + index : 100 + index - 3,
+                100,
+                100,
+                30,
+                24,
+                false))
+            .ToArray();
+        TextRect[] observations = Enumerable.Range(0, 10)
+            .Select(index => new TextRect(
+                "A",
+                index < 3 ? 100 + index : 160 + index - 3,
+                100,
+                100,
+                30,
+                24,
+                false))
+            .ToArray();
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(10, result.Count);
+    }
+
+    [Fact]
     public void DenseRejectedLongStructureCandidatesDoNotDominateAFrame()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -233,6 +268,24 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         ], imageSize, TimeSpan.FromMilliseconds(500)));
 
         Assert.Equal("New Game", result.SourceText);
+    }
+
+    [Fact]
+    public void DominantFragmentDoesNotSuppressAnExactSplitCandidate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update([new("ABCDEFG", 0, 100, 200, 30, 24, false)], imageSize, TimeSpan.Zero);
+
+        TextRect result = Assert.Single(tracker.Update(
+        [
+            new("ABCDEF", 0, 100, 180, 30, 24, false),
+            new("G", 185, 100, 15, 30, 24, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal("ABCDEFG", result.SourceText);
     }
 
     [Fact]
