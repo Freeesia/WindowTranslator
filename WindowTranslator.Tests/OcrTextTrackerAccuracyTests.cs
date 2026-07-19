@@ -27,6 +27,159 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void TrackingImprovesAccuracyAcrossSeededRandomizedTraces()
+    {
+        List<double> legacyAccuracies = [];
+        List<double> trackingAccuracies = [];
+        foreach (int seed in RandomizedOcrTrackingAccuracyScenarios.Seeds)
+        {
+            RandomizedScenario scenario = RandomizedOcrTrackingAccuracyScenarios.Create(seed);
+            LegacyOcrBufferModel legacy = new();
+            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+            List<IReadOnlyList<TextRect>> legacyFrames = [];
+            List<IReadOnlyList<TextRect>> trackedFrames = [];
+            for (int frame = 0; frame < scenario.Observations.Count; frame++)
+            {
+                IReadOnlyList<TextRect> observations = scenario.Observations[frame];
+                legacyFrames.Add(legacy.Update(observations, scenario.ImageSize));
+                trackedFrames.Add(tracker.Update(
+                    observations,
+                    scenario.ImageSize,
+                    TimeSpan.FromMilliseconds(frame * 350)));
+            }
+
+            double legacyAccuracy = RandomizedOcrTrackingAccuracyScenarios.Measure(
+                scenario.Expected,
+                legacyFrames);
+            double trackingAccuracy = RandomizedOcrTrackingAccuracyScenarios.Measure(
+                scenario.Expected,
+                trackedFrames);
+            legacyAccuracies.Add(legacyAccuracy);
+            trackingAccuracies.Add(trackingAccuracy);
+            output.WriteLine(
+                $"Seed {seed}: OcrBufferFilter {legacyAccuracy:P2}, OcrTextTracker {trackingAccuracy:P2}");
+            Assert.True(trackingAccuracy - legacyAccuracy >= 0.08,
+                $"Seed {seed} improved by only {(trackingAccuracy - legacyAccuracy):P2}.");
+        }
+
+        double averageLegacyAccuracy = legacyAccuracies.Average();
+        double averageTrackingAccuracy = trackingAccuracies.Average();
+        output.WriteLine(
+            $"Randomized average: OcrBufferFilter {averageLegacyAccuracy:P2}, "
+                + $"OcrTextTracker {averageTrackingAccuracy:P2}");
+
+        Assert.True(averageTrackingAccuracy > averageLegacyAccuracy,
+            $"Tracking accuracy {averageTrackingAccuracy:P2} did not improve on {averageLegacyAccuracy:P2}.");
+        Assert.True(averageTrackingAccuracy - averageLegacyAccuracy >= 0.10,
+            $"Randomized accuracy improved by only {(averageTrackingAccuracy - averageLegacyAccuracy):P2}.");
+        Assert.InRange(averageTrackingAccuracy, 0.70, 0.995);
+    }
+
+    [Fact]
+    public void TextAndWidthChangeDoesNotCreateOverlappingTracks()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("AAAA", 100, 100, 100, 20, 16, false);
+        TextRect changed = new("ZZZZZZZZ", 100, 100, 125, 20, 16, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal("AAAA", pending.SourceText);
+        Assert.Equal("ZZZZZZZZ", confirmed.SourceText);
+    }
+
+    [Fact]
+    public void FivePartSplitRemainsOneLogicalTrack()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update([new("ABCDE", 0, 100, 100, 20, 16, false)], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("A", 0, 100, 20, 20, 16, false),
+            new("B", 20, 100, 20, 20, 16, false),
+            new("C", 40, 100, 20, 20, 16, false),
+            new("D", 60, 100, 20, 20, 16, false),
+            new("E", 80, 100, 20, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal("ABCDE", Assert.Single(result).SourceText);
+    }
+
+    [Fact]
+    public void FiveTrackMergeConvergesWithoutDuplicate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] fragments = Enumerable.Range(0, 5)
+            .Select(index => new TextRect(
+                ((char)('A' + index)).ToString(),
+                index * 20,
+                100,
+                20,
+                20,
+                16,
+                false))
+            .ToArray();
+        TextRect merged = new("ABCDE", 0, 100, 100, 20, 16, false);
+        tracker.Update(fragments, imageSize, TimeSpan.Zero);
+
+        Assert.Equal(5, tracker.Update(
+            [merged], imageSize, TimeSpan.FromMilliseconds(500)).Count);
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [merged], imageSize, TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal("ABCDE", Assert.Single(result).SourceText);
+    }
+
+    [Fact]
+    public void PersistentMicroGeometryChangeEventuallyConverges()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false) { Angle = 359 };
+        TextRect changed = initial with { X = 101, Angle = 1 };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect result = initial;
+        for (int frame = 1; frame <= 6; frame++)
+        {
+            result = Assert.Single(tracker.Update(
+                [changed], imageSize, TimeSpan.FromMilliseconds(frame * 500)));
+        }
+
+        Assert.Equal(101, result.X);
+        Assert.Equal(1, result.Angle);
+    }
+
+    [Fact]
+    public void NonFiniteGeometryIsRejected()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect valid = new("Invalid", 10, 10, 100, 30, 24, false);
+        TextRect[] invalid =
+        [
+            valid with { X = double.NaN },
+            valid with { Y = double.PositiveInfinity },
+            valid with { Width = double.PositiveInfinity },
+            valid with { Height = double.PositiveInfinity },
+            valid with { FontSize = double.NaN },
+            valid with { Angle = double.NegativeInfinity },
+        ];
+
+        Assert.Empty(tracker.Update(invalid, imageSize, TimeSpan.Zero));
+    }
+
+    [Fact]
     public void MissingObservationsExpireAfterTheRetentionWindow()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
