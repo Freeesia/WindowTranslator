@@ -247,6 +247,41 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void IndependentOneToOneAssignmentsDoNotAllocateAsADenseMatrix()
+    {
+        MeasureAllocation(80);
+        MeasureAllocation(320);
+        long smallAllocation = MeasureAllocation(80);
+        long largeAllocation = MeasureAllocation(320);
+
+        output.WriteLine($"80 independent assignments: {smallAllocation:N0} bytes");
+        output.WriteLine($"320 independent assignments: {largeAllocation:N0} bytes");
+        Assert.True(largeAllocation < smallAllocation * 8,
+            $"Quadrupling independent assignments increased allocation from "
+                + $"{smallAllocation:N0} to {largeAllocation:N0} bytes.");
+
+        static long MeasureAllocation(int count)
+        {
+            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+            Size imageSize = new(1000, 600);
+            TextRect[] observations = Enumerable.Range(0, count)
+                .Select(index => new TextRect(
+                    new string((char)(0x1000 + index), 8),
+                    index * 200,
+                    100,
+                    30,
+                    20,
+                    16,
+                    false))
+                .ToArray();
+            tracker.Update(observations, imageSize, TimeSpan.Zero);
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(500));
+            return GC.GetAllocatedBytesForCurrentThread() - before;
+        }
+    }
+
+    [Fact]
     public void MixedStructureSelectionDoesNotDominateAFrame()
     {
         Size imageSize = new(1000, 600);
@@ -332,6 +367,83 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void StructureSelectionEscapesLargeAndCompactGreedyTraps()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+        [
+            new("A", -20, 100, 20, 20, 16, false),
+            new("BCDE", 0, 100, 100, 20, 16, false),
+            new("B", 0, 100, 25, 20, 16, false),
+            new("C", 25, 100, 25, 20, 16, false),
+            new("D", 50, 100, 25, 20, 16, false),
+            new("E", 75, 100, 25, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("ABCDE", -20, 100, 124, 20, 16, false),
+            new("BC", 0, 100, 50, 20, 16, false),
+            new("DE", 50, 100, 50, 20, 16, false),
+            new("ABD", -20, 100, 95, 20, 16, false),
+            new("CBCDEE", 0, 100, 100, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(
+            ["A", "BCDE", "B", "C", "D", "E", "ABD", "CBCDEE"],
+            result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void FourPartSplitRemainsOneLogicalTrack()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update([new("ABCD", 0, 100, 80, 20, 16, false)], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("A", 0, 100, 20, 20, 16, false),
+            new("B", 20, 100, 20, 20, 16, false),
+            new("C", 40, 100, 20, 20, 16, false),
+            new("D", 60, 100, 20, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal("ABCD", Assert.Single(result).SourceText);
+    }
+
+    [Fact]
+    public void FourTrackMergeConvergesWithoutDuplicate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] fragments =
+        [
+            new("A", 0, 100, 20, 20, 16, false),
+            new("B", 20, 100, 20, 20, 16, false),
+            new("C", 40, 100, 20, 20, 16, false),
+            new("D", 60, 100, 20, 20, 16, false),
+        ];
+        TextRect merged = new("ABCD", 0, 100, 80, 20, 16, false);
+        tracker.Update(fragments, imageSize, TimeSpan.Zero);
+
+        Assert.Equal(4, tracker.Update([merged], imageSize, TimeSpan.FromMilliseconds(500)).Count);
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [merged],
+            imageSize,
+            TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal("ABCD", Assert.Single(result).SourceText);
+    }
+
+    [Fact]
     public void EquivalentStructureCandidatesDoNotDependOnObservationOrder()
     {
         Size imageSize = new(1000, 600);
@@ -385,6 +497,28 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         ], imageSize, TimeSpan.FromMilliseconds(1000));
 
         Assert.Equal(["A", "B"], crossed.Select(rect => rect.Context));
+    }
+
+    [Fact]
+    public void PersistentSmallGeometryChangeEventuallyConverges()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect changed = initial with { X = 110, Width = 110 };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect first = Assert.Single(tracker.Update(
+            [changed],
+            imageSize,
+            TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed],
+            imageSize,
+            TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal((100, 100), (first.X, first.Width));
+        Assert.Equal((110, 110), (confirmed.X, confirmed.Width));
     }
 
     [Fact]
