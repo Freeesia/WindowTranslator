@@ -13,11 +13,6 @@ public interface IOcrTextTracker
     IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize);
 
     /// <summary>
-    /// 現在フレームのOCR観測と単調増加時刻でトラックを更新する。
-    /// </summary>
-    IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp);
-
-    /// <summary>
     /// 保持しているすべてのトラックを破棄する。
     /// </summary>
     void Reset();

@@ -86,9 +86,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             imageSize,
             timestamp);
         MatchCandidate[] strongMatches = SelectOneToOne(
-            activeTracks,
-            oneToOneCandidates.Where(IsStrongOneToOneCandidate).ToArray(),
-            current.Length);
+            oneToOneCandidates.Where(IsStrongOneToOneCandidate).ToArray());
         HashSet<TextTrack> reservedTracks = strongMatches
             .SelectMany(candidate => candidate.Tracks)
             .ToHashSet();
@@ -115,12 +113,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         reservedObservations.UnionWith(selected.SelectMany(candidate => candidate.ObservationIndices));
 
         selected.AddRange(SelectOneToOne(
-            activeTracks.Where(track => !reservedTracks.Contains(track)).ToArray(),
             oneToOneCandidates
                 .Where(candidate => !reservedTracks.Contains(candidate.Tracks[0]))
                 .Where(candidate => !reservedObservations.Contains(candidate.ObservationIndices[0]))
-                .ToArray(),
-            current.Length));
+                .ToArray()));
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
@@ -271,17 +267,23 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             && NormalizeText(candidate.Tracks[0].ConfirmedText)
                 == NormalizeText(candidate.Combined.SourceText);
 
-    private static MatchCandidate[] SelectOneToOne(
-        IReadOnlyList<TextTrack> tracks,
-        IReadOnlyList<MatchCandidate> candidates,
-        int observationCount)
+    private static MatchCandidate[] SelectOneToOne(IReadOnlyList<MatchCandidate> candidates)
     {
-        int count = Math.Max(tracks.Count, observationCount);
-        if (count == 0 || candidates.Count == 0)
+        if (candidates.Count == 0)
         {
             return [];
         }
 
+        TextTrack[] tracks = candidates
+            .Select(candidate => candidate.Tracks[0])
+            .Distinct()
+            .ToArray();
+        int[] observations = candidates
+            .Select(candidate => candidate.ObservationIndices[0])
+            .Distinct()
+            .Order()
+            .ToArray();
+        int count = Math.Max(tracks.Length, observations.Length);
         Dictionary<(TextTrack track, int observation), MatchCandidate> byPair = candidates
             .ToDictionary(candidate => (candidate.Tracks[0], candidate.ObservationIndices[0]));
         double cardinalityBonus = count + 1;
@@ -291,9 +293,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             for (int observationIndex = 0; observationIndex < count; observationIndex++)
             {
-                double weight = trackIndex < tracks.Count
-                    && observationIndex < observationCount
-                    && byPair.TryGetValue((tracks[trackIndex], observationIndex), out MatchCandidate? candidate)
+                double weight = trackIndex < tracks.Length
+                    && observationIndex < observations.Length
+                    && byPair.TryGetValue(
+                        (tracks[trackIndex], observations[observationIndex]),
+                        out MatchCandidate? candidate)
                         ? cardinalityBonus + candidate.Score
                         : 0;
                 costs[trackIndex + 1, observationIndex + 1] = maximumWeight - weight;
@@ -302,7 +306,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         int[] assignment = SolveMinimumCostAssignment(costs, count);
         return tracks
-            .Select((track, index) => byPair.GetValueOrDefault((track, assignment[index])))
+            .Select((track, index) => assignment[index] < observations.Length
+                ? byPair.GetValueOrDefault((track, observations[assignment[index]]))
+                : null)
             .OfType<MatchCandidate>()
             .ToArray();
     }
@@ -544,11 +550,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             .OrderByDescending(candidate => candidate.Score)
             .ThenBy(candidate => candidate.ResourceCount)
             .ToArray();
+        MatchCandidate[] compactOrdered = ordered
+            .OrderBy(candidate => candidate.ResourceCount)
+            .ThenByDescending(candidate => candidate.Score)
+            .ToArray();
         List<MatchCandidate> resourceSelection = SelectGreedily(ordered);
         List<MatchCandidate> scoreSelection = SelectGreedily(scoreOrdered);
         List<MatchCandidate> selected = IsBetterSelection(scoreSelection, resourceSelection)
             ? scoreSelection
             : resourceSelection;
+        List<MatchCandidate> compactSelection = SelectGreedily(compactOrdered);
+        if (IsBetterSelection(compactSelection, selected))
+        {
+            selected = compactSelection;
+        }
         HashSet<MatchCandidate> finalSelection = new(selected, ReferenceEqualityComparer.Instance);
         return ordered.Where(finalSelection.Contains).ToList();
     }
