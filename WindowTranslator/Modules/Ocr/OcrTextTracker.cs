@@ -13,7 +13,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 {
     private const int MaxMissedFrames = 3;
     private const int StructureConfirmationFrames = 2;
-    private const int MaxStructureMembers = 3;
+    private const int MaxStructureMembers = 4;
     private const int MaxStructureCandidates = 6;
     private const int MaxOneToOneCandidatesPerResource = 3;
     private const double MinimumAssignmentScore = 0.58;
@@ -272,6 +272,53 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         if (candidates.Count == 0)
         {
             return [];
+        }
+
+        Dictionary<TextTrack, MatchCandidate[]> candidatesByTrack = candidates
+            .GroupBy(candidate => candidate.Tracks[0])
+            .ToDictionary(group => group.Key, group => group.ToArray());
+        Dictionary<int, MatchCandidate[]> candidatesByObservation = candidates
+            .GroupBy(candidate => candidate.ObservationIndices[0])
+            .ToDictionary(group => group.Key, group => group.ToArray());
+        HashSet<MatchCandidate> visited = new(ReferenceEqualityComparer.Instance);
+        List<MatchCandidate> selected = [];
+        foreach (MatchCandidate first in candidates)
+        {
+            if (!visited.Add(first))
+            {
+                continue;
+            }
+
+            List<MatchCandidate> component = [];
+            Queue<MatchCandidate> pending = new([first]);
+            while (pending.TryDequeue(out MatchCandidate? candidate))
+            {
+                component.Add(candidate);
+                foreach (MatchCandidate neighbor in candidatesByTrack[candidate.Tracks[0]])
+                {
+                    if (visited.Add(neighbor))
+                    {
+                        pending.Enqueue(neighbor);
+                    }
+                }
+                foreach (MatchCandidate neighbor in candidatesByObservation[candidate.ObservationIndices[0]])
+                {
+                    if (visited.Add(neighbor))
+                    {
+                        pending.Enqueue(neighbor);
+                    }
+                }
+            }
+            selected.AddRange(SelectOneToOneComponent(component));
+        }
+        return selected.ToArray();
+    }
+
+    private static MatchCandidate[] SelectOneToOneComponent(IReadOnlyList<MatchCandidate> candidates)
+    {
+        if (candidates.Count == 1)
+        {
+            return [candidates[0]];
         }
 
         TextTrack[] tracks = candidates
@@ -559,14 +606,61 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         List<MatchCandidate> selected = IsBetterSelection(scoreSelection, resourceSelection)
             ? scoreSelection
             : resourceSelection;
-        List<MatchCandidate> compactSelection = SelectGreedily(compactOrdered);
-        if (IsBetterSelection(compactSelection, selected))
+        HashSet<MatchCandidate> challengeStarts = new(
+            FindChallengeStarts(ordered, selected),
+            ReferenceEqualityComparer.Instance);
+        challengeStarts.UnionWith(FindChallengeStarts(scoreOrdered, selected));
+        challengeStarts.UnionWith(FindChallengeStarts(compactOrdered, selected));
+        foreach (MatchCandidate first in challengeStarts)
         {
-            selected = compactSelection;
+            List<MatchCandidate> resourceAlternative = SelectGreedily(ordered, first);
+            if (IsBetterSelection(resourceAlternative, selected))
+            {
+                selected = resourceAlternative;
+            }
+            List<MatchCandidate> scoreAlternative = SelectGreedily(scoreOrdered, first);
+            if (IsBetterSelection(scoreAlternative, selected))
+            {
+                selected = scoreAlternative;
+            }
         }
         HashSet<MatchCandidate> finalSelection = new(selected, ReferenceEqualityComparer.Instance);
         return ordered.Where(finalSelection.Contains).ToList();
     }
+
+    private static MatchCandidate[] FindChallengeStarts(
+        IReadOnlyList<MatchCandidate> candidates,
+        IReadOnlyList<MatchCandidate> selected)
+    {
+        Dictionary<(int first, int? second), MatchCandidate> byConflict = [];
+        foreach (MatchCandidate candidate in candidates)
+        {
+            if (selected.Contains(candidate))
+            {
+                continue;
+            }
+            for (int first = 0; first < selected.Count; first++)
+            {
+                if (!CandidatesConflict(selected[first], candidate))
+                {
+                    continue;
+                }
+                byConflict.TryAdd((first, null), candidate);
+                for (int second = first + 1; second < selected.Count; second++)
+                {
+                    if (CandidatesConflict(selected[second], candidate))
+                    {
+                        byConflict.TryAdd((first, second), candidate);
+                    }
+                }
+            }
+        }
+        return [.. byConflict.Values];
+    }
+
+    private static bool CandidatesConflict(MatchCandidate first, MatchCandidate second)
+        => first.Tracks.Any(second.Tracks.Contains)
+            || first.ObservationIndices.Any(second.ObservationIndices.Contains);
 
     private static bool IsBetterSelection(
         IReadOnlyCollection<MatchCandidate> proposed,
@@ -579,11 +673,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 && proposed.Sum(candidate => candidate.Score) > current.Sum(candidate => candidate.Score) + 0.000001);
     }
 
-    private static List<MatchCandidate> SelectGreedily(IEnumerable<MatchCandidate> candidates)
+    private static List<MatchCandidate> SelectGreedily(
+        IEnumerable<MatchCandidate> candidates,
+        MatchCandidate? first = null)
     {
         List<MatchCandidate> selected = [];
         HashSet<TextTrack> usedTracks = [];
         HashSet<int> usedObservations = [];
+        if (first is not null)
+        {
+            selected.Add(first);
+            usedTracks.UnionWith(first.Tracks);
+            usedObservations.UnionWith(first.ObservationIndices);
+        }
         foreach (MatchCandidate candidate in candidates)
         {
             if (candidate.Tracks.Any(usedTracks.Contains)
@@ -1360,7 +1462,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         private void UpdateGeometry(TextRect current)
         {
-            if (IsGeometryNoise(this.Stabilized, current))
+            bool isNoise = IsGeometryNoise(this.Stabilized, current);
+            if (isNoise && GeometrySamplesMatch(this.Stabilized, current))
             {
                 this.geometryCandidate = null;
                 this.geometryCandidateCount = 0;
@@ -1374,7 +1477,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 return;
             }
 
-            if (this.geometryCandidate is not null && GeometryCandidateMatches(this.geometryCandidate, current))
+            if (this.geometryCandidate is not null
+                && (isNoise
+                    ? GeometrySamplesMatch(this.geometryCandidate, current)
+                    : GeometryCandidateMatches(this.geometryCandidate, current)))
             {
                 this.geometryCandidate = current;
                 this.geometryCandidateCount++;
@@ -1403,6 +1509,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 && AngleDifference(stable.Angle, current.Angle) <= 2
                 && stable.MultiLine == current.MultiLine;
         }
+
+        private static bool GeometrySamplesMatch(TextRect first, TextRect second)
+            => Math.Abs(first.X - second.X) <= 1
+                && Math.Abs(first.Y - second.Y) <= 1
+                && Math.Abs(first.Width - second.Width) <= 1
+                && Math.Abs(first.Height - second.Height) <= 1
+                && Math.Abs(first.FontSize - second.FontSize) <= 0.5
+                && AngleDifference(first.Angle, second.Angle) <= 2
+                && first.MultiLine == second.MultiLine;
 
         private static bool GeometryCandidateMatches(TextRect candidate, TextRect current)
             => CenterDistance(candidate, current) <= Math.Max(3, Math.Max(candidate.Width, candidate.Height) * 0.15)
