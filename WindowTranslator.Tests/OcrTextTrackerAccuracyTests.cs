@@ -207,9 +207,48 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void WeakAssignmentDoesNotScaleWithReservedObservations()
+    {
+        Size imageSize = new(1920, 1080);
+        TextRect[] observations = Enumerable.Range(0, 200)
+            .Select(index => new TextRect(
+                new string((char)(0x1000 + index), 8),
+                (index % 20) * 90,
+                (index / 20) * 90,
+                60,
+                30,
+                24,
+                false))
+            .ToArray();
+        TextRect[] oneWeakObservation = observations.ToArray();
+        oneWeakObservation[^1] = oneWeakObservation[^1] with
+        {
+            SourceText = oneWeakObservation[^1].SourceText + "X",
+        };
+
+        MeasureAllocation(observations);
+        MeasureAllocation(oneWeakObservation);
+        long strongAllocation = MeasureAllocation(observations);
+        long weakAllocation = MeasureAllocation(oneWeakObservation);
+        long weakAssignmentAllocation = weakAllocation - strongAllocation;
+
+        output.WriteLine($"Additional allocation for one weak assignment: {weakAssignmentAllocation:N0} bytes");
+        Assert.True(weakAssignmentAllocation < 256 * 1024,
+            $"One weak assignment allocated an additional {weakAssignmentAllocation:N0} bytes.");
+
+        long MeasureAllocation(TextRect[] current)
+        {
+            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+            tracker.Update(observations, imageSize, TimeSpan.Zero);
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            tracker.Update(current, imageSize, TimeSpan.FromMilliseconds(500));
+            return GC.GetAllocatedBytesForCurrentThread() - before;
+        }
+    }
+
+    [Fact]
     public void MixedStructureSelectionDoesNotDominateAFrame()
     {
-        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
         TextRect[] tracks = Enumerable.Range(0, 9)
             .Select(index => new TextRect("AA", 100 + index, 100, 100, 30, 24, false))
@@ -217,19 +256,24 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TextRect[] observations = Enumerable.Range(0, 9)
             .Select(index => new TextRect("A", 100 + index, 100, 100, 30, 24, false))
             .ToArray();
-        tracker.Update(tracks, imageSize, TimeSpan.Zero);
-
+        RunFrame();
         Stopwatch stopwatch = Stopwatch.StartNew();
-        IReadOnlyList<TextRect> result = tracker.Update(
-            observations,
-            imageSize,
-            TimeSpan.FromMilliseconds(500));
+        for (int iteration = 0; iteration < 10; iteration++)
+        {
+            Assert.Equal(9, RunFrame().Count);
+        }
         stopwatch.Stop();
 
-        output.WriteLine($"9x9 mixed structure candidates: {stopwatch.ElapsedMilliseconds} ms");
-        Assert.Equal(9, result.Count);
-        Assert.True(stopwatch.Elapsed < TimeSpan.FromMilliseconds(500),
-            $"Mixed structure selection took {stopwatch.Elapsed}.");
+        output.WriteLine($"10 frames of 9x9 mixed structure candidates: {stopwatch.ElapsedMilliseconds} ms");
+        Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(1),
+            $"10 mixed structure frames took {stopwatch.Elapsed}.");
+
+        IReadOnlyList<TextRect> RunFrame()
+        {
+            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+            tracker.Update(tracks, imageSize, TimeSpan.Zero);
+            return tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(500));
+        }
     }
 
     [Fact]
@@ -256,7 +300,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void StructureSelectionReplacesTwoGreedyMatchesWithThreeCompatibleMatches()
+    public void StructureSelectionPrefersGreaterCoverageOverHigherIndividualScores()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
@@ -275,9 +319,9 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         [
             new("ABC", 0, 100, 30, 20, 16, false),
             new("DEF", 30, 100, 30, 20, 16, false),
-            new("AD", 0, 100, 40, 20, 16, false),
-            new("BE", 10, 100, 40, 20, 16, false),
-            new("CF", 20, 100, 40, 20, 16, false),
+            new("AD", 0, 100, 44, 20, 16, false),
+            new("BE", 10, 100, 44, 20, 16, false),
+            new("CF", 20, 100, 44, 20, 16, false),
         ],
             imageSize,
             TimeSpan.FromMilliseconds(500));
@@ -649,7 +693,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void RemovedFeatureResourcesAreNotGenerated()
+    public void RemovedFeaturesAreNotExposed()
     {
         const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Static
             | System.Reflection.BindingFlags.Public
@@ -662,6 +706,9 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Null(abstractionResources.GetProperty("BufferSize", flags));
         Assert.Null(abstractionResources.GetProperty("IsSuppressVibe", flags));
         Assert.Null(abstractionResources.GetProperty("IsEnableRecover", flags));
+        Assert.DoesNotContain(
+            typeof(IOcrTextTracker).GetMethods(),
+            method => method.GetParameters().Any(parameter => parameter.ParameterType == typeof(TimeSpan)));
     }
 
     private static IReadOnlyList<IReadOnlyList<TextRect>> RunLegacyBuffer()
