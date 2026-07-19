@@ -149,7 +149,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
             }
         }
 
-        protected override HandleRef BuildWindowCore(HandleRef hwndParent)
+        protected override unsafe HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             hwndHost = CreateWindowEx(0, "static", "",
                 WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
@@ -158,7 +158,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 (HWND)hwndParent.Handle,
                 null!,
                 null!,
-                []);
+                null);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
             SetWindowPos(hwndHost, new(1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);
