@@ -125,7 +125,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             if (!matchedObservations.Contains(i))
             {
-                TextTrack track = this.CreateTrack(current[i], timestamp);
+                TextTrack? coveringTrack = activeTracks.FirstOrDefault(track =>
+                    IsCoveredTextFragment(current[i], track.Stabilized));
+                TextTrack track = this.CreateTrack(current[i], timestamp, coveringTrack?.Id);
                 matchedTracks.Add(track);
             }
         }
@@ -134,6 +136,18 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             if (!matchedTracks.Contains(track))
             {
+                TextTrack? coveringTrack = track.CoveringTrackId is long coveringTrackId
+                    ? matchedTracks.FirstOrDefault(candidate => candidate.Id == coveringTrackId && !candidate.IsDormant)
+                    : null;
+                if (coveringTrack is not null
+                    && IsCoveredTextFragment(track.Stabilized, coveringTrack.Stabilized))
+                {
+                    this.logger.LogDebug(
+                        "OCR track {TrackId} removed as a stale fragment of a matched track",
+                        track.Id);
+                    this.RemoveTrackTree(track);
+                    continue;
+                }
                 track.MarkMissed();
             }
         }
@@ -465,29 +479,59 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             return -1;
         }
-        if (text < 0.15 && overlap < 0.3)
+
+        double center = Math.Max(0, 1 - (centerDistance / distanceGate));
+        double width = RatioSimilarity(previous.Width, observation.Width);
+        double height = RatioSimilarity(previous.Height, observation.Height);
+        double size = (width + height) / 2;
+        double coverage = IntersectionOverSmallerArea(predicted, observation);
+        bool sameRegionContentChange = text < 0.65
+            && IsSameRegionContentChange(predicted, observation, coverage, height);
+        if (text < 0.15 && overlap < 0.3 && !sameRegionContentChange)
         {
             return -1;
         }
-
-        double center = Math.Max(0, 1 - (centerDistance / distanceGate));
-        double size = (RatioSimilarity(previous.Width, observation.Width) + RatioSimilarity(previous.Height, observation.Height)) / 2;
-        if (text < 0.65 && size < 0.8)
+        if (text < 0.65 && size < 0.8 && !sameRegionContentChange)
         {
             return -1;
         }
         double aspect = RatioSimilarity(previous.Width / previous.Height, observation.Width / observation.Height);
         double recency = Math.Max(0, 1 - ((double)track.MissedFrames / (MaxMissedFrames + 1)));
-        double contentChangeContinuity = text < 0.15 && overlap >= 0.7 && center >= 0.85
-            ? 0.05
-            : 0;
-        return (text * 0.35)
+        double score = (text * 0.35)
             + (overlap * 0.25)
             + (center * 0.2)
             + (size * 0.1)
             + (aspect * 0.05)
-            + (recency * 0.05)
-            + contentChangeContinuity;
+            + (recency * 0.05);
+        if (!sameRegionContentChange)
+        {
+            return score;
+        }
+
+        double angle = Math.Max(0, 1 - (AngleDifference(predicted.Angle, observation.Angle) / 10));
+        double replacementScore = (overlap * 0.15)
+            + (center * 0.2)
+            + (height * 0.2)
+            + (coverage * 0.25)
+            + (angle * 0.1)
+            + (recency * 0.05);
+        return Math.Max(score, replacementScore);
+    }
+
+    private static bool IsSameRegionContentChange(
+        TextRect previous,
+        TextRect observation,
+        double coverage,
+        double heightSimilarity)
+    {
+        double positionTolerance = Math.Max(3, Math.Min(previous.Height, observation.Height) * 0.2);
+        bool readingOriginAligned = Math.Abs(previous.X - observation.X) <= positionTolerance
+            && Math.Abs(previous.Y - observation.Y) <= positionTolerance;
+        bool centerAligned = CenterDistance(previous, observation) <= positionTolerance;
+        return coverage >= 0.8
+            && heightSimilarity >= MinimumStructureSizeRatio
+            && AngleDifference(previous.Angle, observation.Angle) <= MaximumStructureAngleDifference
+            && (readingOriginAligned || centerAligned);
     }
 
     private static bool TryCombineStructure(
@@ -594,7 +638,77 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private static List<MatchCandidate> SelectStructures(IReadOnlyList<MatchCandidate> candidates)
     {
-        MatchCandidate[] ordered = candidates
+        if (candidates.Count == 0)
+        {
+            return [];
+        }
+
+        Dictionary<TextTrack, List<MatchCandidate>> candidatesByTrack = [];
+        Dictionary<int, List<MatchCandidate>> candidatesByObservation = [];
+        foreach (MatchCandidate candidate in candidates)
+        {
+            foreach (TextTrack track in candidate.Tracks)
+            {
+                if (!candidatesByTrack.TryGetValue(track, out List<MatchCandidate>? trackCandidates))
+                {
+                    trackCandidates = [];
+                    candidatesByTrack[track] = trackCandidates;
+                }
+                trackCandidates.Add(candidate);
+            }
+            foreach (int observation in candidate.ObservationIndices)
+            {
+                if (!candidatesByObservation.TryGetValue(observation, out List<MatchCandidate>? observationCandidates))
+                {
+                    observationCandidates = [];
+                    candidatesByObservation[observation] = observationCandidates;
+                }
+                observationCandidates.Add(candidate);
+            }
+        }
+
+        HashSet<MatchCandidate> visited = new(ReferenceEqualityComparer.Instance);
+        List<MatchCandidate> selected = [];
+        foreach (MatchCandidate first in OrderStructureCandidates(candidates))
+        {
+            if (!visited.Add(first))
+            {
+                continue;
+            }
+
+            List<MatchCandidate> component = [];
+            Queue<MatchCandidate> pending = new([first]);
+            while (pending.TryDequeue(out MatchCandidate? candidate))
+            {
+                component.Add(candidate);
+                foreach (TextTrack track in candidate.Tracks)
+                {
+                    foreach (MatchCandidate neighbor in candidatesByTrack[track])
+                    {
+                        if (visited.Add(neighbor))
+                        {
+                            pending.Enqueue(neighbor);
+                        }
+                    }
+                }
+                foreach (int observation in candidate.ObservationIndices)
+                {
+                    foreach (MatchCandidate neighbor in candidatesByObservation[observation])
+                    {
+                        if (visited.Add(neighbor))
+                        {
+                            pending.Enqueue(neighbor);
+                        }
+                    }
+                }
+            }
+            selected.AddRange(SelectStructureComponent(component));
+        }
+        return OrderStructureCandidates(selected).ToList();
+    }
+
+    private static MatchCandidate[] OrderStructureCandidates(IEnumerable<MatchCandidate> candidates)
+        => candidates
             .Select(candidate => (
                 Candidate: candidate,
                 TrackKey: string.Join(',', candidate.Tracks.Select(track => track.Id).Order())))
@@ -610,6 +724,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             .ThenBy(item => item.TrackKey, StringComparer.Ordinal)
             .Select(item => item.Candidate)
             .ToArray();
+
+    private static List<MatchCandidate> SelectStructureComponent(IReadOnlyList<MatchCandidate> candidates)
+    {
+        MatchCandidate[] ordered = OrderStructureCandidates(candidates);
         Dictionary<TextTrack, int> trackResources = ordered
             .SelectMany(candidate => candidate.Tracks)
             .Distinct()
@@ -1193,6 +1311,24 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         return result.ToString().TrimEnd();
     }
 
+    private static string NormalizeCompactText(string text)
+        => string.Concat(NormalizeText(text).Where(character => !char.IsWhiteSpace(character)));
+
+    private static bool IsCoveredTextFragment(TextRect fragment, TextRect container)
+    {
+        if (AngleDifference(fragment.Angle, container.Angle) > MaximumStructureAngleDifference
+            || IntersectionOverSmallerArea(fragment, container) < 0.8)
+        {
+            return false;
+        }
+
+        string fragmentText = NormalizeCompactText(fragment.SourceText);
+        string containerText = NormalizeCompactText(container.SourceText);
+        return fragmentText.Length > 0
+            && fragmentText.Length < containerText.Length
+            && containerText.Contains(fragmentText, StringComparison.Ordinal);
+    }
+
     private static double IntersectionOverUnion(TextRect first, TextRect second)
     {
         if (Math.Abs(first.Angle) <= AngleVectorEpsilon
@@ -1217,6 +1353,21 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             + (secondBounds.Width * secondBounds.Height)
             - intersection;
         return union <= 0 ? 0 : intersection / union;
+    }
+
+    private static double IntersectionOverSmallerArea(TextRect first, TextRect second)
+    {
+        RectInfo firstBounds = first.GetRotatedBoundingBox();
+        RectInfo secondBounds = second.GetRotatedBoundingBox();
+        double left = Math.Max(firstBounds.X, secondBounds.X);
+        double top = Math.Max(firstBounds.Y, secondBounds.Y);
+        double right = Math.Min(firstBounds.X + firstBounds.Width, secondBounds.X + secondBounds.Width);
+        double bottom = Math.Min(firstBounds.Y + firstBounds.Height, secondBounds.Y + secondBounds.Height);
+        double intersection = Math.Max(0, right - left) * Math.Max(0, bottom - top);
+        double smallerArea = Math.Min(
+            firstBounds.Width * firstBounds.Height,
+            secondBounds.Width * secondBounds.Height);
+        return smallerArea <= 0 ? 0 : intersection / smallerArea;
     }
 
     private static double CenterDistance(TextRect first, TextRect second)
@@ -1253,9 +1404,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         return maximum <= double.Epsilon ? 1 : Math.Min(Math.Abs(first), Math.Abs(second)) / maximum;
     }
 
-    private TextTrack CreateTrack(TextRect observation, TimeSpan timestamp)
+    private TextTrack CreateTrack(TextRect observation, TimeSpan timestamp, long? coveringTrackId = null)
     {
-        TextTrack track = new(++this.nextTrackId, observation, timestamp);
+        TextTrack track = new(++this.nextTrackId, observation, timestamp, coveringTrackId);
         this.tracks.Add(track);
         this.logger.LogDebug("OCR track {TrackId} created for {SourceText}", track.Id, observation.SourceText);
         return track;
@@ -1298,7 +1449,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         public IReadOnlyList<RestorationAssignment> RestorationAssignments { get; init; } = [];
     }
 
-    private sealed class TextTrack(long id, TextRect observation, TimeSpan timestamp)
+    private sealed class TextTrack(
+        long id,
+        TextRect observation,
+        TimeSpan timestamp,
+        long? coveringTrackId)
     {
         private TextRect? geometryCandidate;
         private int geometryCandidateCount;
@@ -1323,6 +1478,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         public bool IsDormant { get; private set; }
 
         public long? DormantParentId { get; private set; }
+
+        public long? CoveringTrackId { get; } = coveringTrackId;
 
         public TimeSpan DormantSince { get; private set; }
 
@@ -1443,10 +1600,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 return;
             }
 
-            (double currentCenterX, double currentCenterY) = Center(current);
-            (double previousCenterX, double previousCenterY) = Center(this.LatestObservation);
-            double movementX = currentCenterX - previousCenterX;
-            double movementY = currentCenterY - previousCenterY;
+            double movementX = current.X - this.LatestObservation.X;
+            double movementY = current.Y - this.LatestObservation.Y;
             double jitterTolerance = Math.Max(1, Math.Min(this.LatestObservation.Width, this.LatestObservation.Height) * 0.05);
             if (Math.Abs(movementX) <= jitterTolerance && Math.Abs(movementY) <= jitterTolerance)
             {
