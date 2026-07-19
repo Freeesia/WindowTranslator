@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Drawing;
+using System.Numerics;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Quickenshtein;
@@ -13,8 +14,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 {
     private const int MaxMissedFrames = 3;
     private const int StructureConfirmationFrames = 2;
-    private const int MaxStructureMembers = 4;
+    private const int MicroGeometryConfirmationFrames = 4;
     private const int MaxStructureCandidates = 6;
+    private const int MaxStructureSelectionStates = 1024;
     private const int MaxOneToOneCandidatesPerResource = 3;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
@@ -151,7 +153,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     }
 
     private static bool IsValid(TextRect rect)
-        => !string.IsNullOrWhiteSpace(rect.SourceText) && rect.Width > 0 && rect.Height > 0;
+        => !string.IsNullOrWhiteSpace(rect.SourceText)
+            && double.IsFinite(rect.X)
+            && double.IsFinite(rect.Y)
+            && double.IsFinite(rect.Width)
+            && double.IsFinite(rect.Height)
+            && double.IsFinite(rect.FontSize)
+            && double.IsFinite(rect.Angle)
+            && rect.Width > 0
+            && rect.Height > 0;
 
     private static List<MatchCandidate> BuildStructureCandidates(
         TextTrack[] tracks,
@@ -168,8 +178,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 .OrderBy(index => CenterDistance(track.Stabilized, observations[index]))
                 .Take(MaxStructureCandidates)
                 .ToArray();
-            int maxMembers = Math.Min(MaxStructureMembers, nearby.Length);
-            for (int memberCount = 2; memberCount <= maxMembers; memberCount++)
+            for (int memberCount = 2; memberCount <= nearby.Length; memberCount++)
             {
                 foreach (IReadOnlyList<int> members in Combinations(nearby, memberCount))
                 {
@@ -201,8 +210,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 .OrderBy(track => CenterDistance(observation, track.Stabilized))
                 .Take(MaxStructureCandidates)
                 .ToArray();
-            int maxMembers = Math.Min(MaxStructureMembers, nearby.Length);
-            for (int memberCount = 2; memberCount <= maxMembers; memberCount++)
+            for (int memberCount = 2; memberCount <= nearby.Length; memberCount++)
             {
                 foreach (IReadOnlyList<TextTrack> members in Combinations(nearby, memberCount))
                 {
@@ -470,7 +478,16 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         }
         double aspect = RatioSimilarity(previous.Width / previous.Height, observation.Width / observation.Height);
         double recency = Math.Max(0, 1 - ((double)track.MissedFrames / (MaxMissedFrames + 1)));
-        return (text * 0.35) + (overlap * 0.25) + (center * 0.2) + (size * 0.1) + (aspect * 0.05) + (recency * 0.05);
+        double contentChangeContinuity = text < 0.15 && overlap >= 0.7 && center >= 0.85
+            ? 0.05
+            : 0;
+        return (text * 0.35)
+            + (overlap * 0.25)
+            + (center * 0.2)
+            + (size * 0.1)
+            + (aspect * 0.05)
+            + (recency * 0.05)
+            + contentChangeContinuity;
     }
 
     private static bool TryCombineStructure(
@@ -593,112 +610,98 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             .ThenBy(item => item.TrackKey, StringComparer.Ordinal)
             .Select(item => item.Candidate)
             .ToArray();
-        MatchCandidate[] scoreOrdered = ordered
-            .OrderByDescending(candidate => candidate.Score)
-            .ThenBy(candidate => candidate.ResourceCount)
-            .ToArray();
-        MatchCandidate[] compactOrdered = ordered
-            .OrderBy(candidate => candidate.ResourceCount)
-            .ThenByDescending(candidate => candidate.Score)
-            .ToArray();
-        List<MatchCandidate> resourceSelection = SelectGreedily(ordered);
-        List<MatchCandidate> scoreSelection = SelectGreedily(scoreOrdered);
-        List<MatchCandidate> selected = IsBetterSelection(scoreSelection, resourceSelection)
-            ? scoreSelection
-            : resourceSelection;
-        HashSet<MatchCandidate> challengeStarts = new(
-            FindChallengeStarts(ordered, selected),
-            ReferenceEqualityComparer.Instance);
-        challengeStarts.UnionWith(FindChallengeStarts(scoreOrdered, selected));
-        challengeStarts.UnionWith(FindChallengeStarts(compactOrdered, selected));
-        foreach (MatchCandidate first in challengeStarts)
+        Dictionary<TextTrack, int> trackResources = ordered
+            .SelectMany(candidate => candidate.Tracks)
+            .Distinct()
+            .OrderBy(track => track.Id)
+            .Select((track, index) => (track, index))
+            .ToDictionary(item => item.track, item => item.index);
+        Dictionary<int, int> observationResources = ordered
+            .SelectMany(candidate => candidate.ObservationIndices)
+            .Distinct()
+            .Order()
+            .Select((observation, index) => (observation, index: trackResources.Count + index))
+            .ToDictionary(item => item.observation, item => item.index);
+        Dictionary<MatchCandidate, BigInteger> resourceMasks = new(ReferenceEqualityComparer.Instance);
+        Dictionary<MatchCandidate, BigInteger> selectionOrderMasks = new(ReferenceEqualityComparer.Instance);
+        for (int candidateIndex = 0; candidateIndex < ordered.Length; candidateIndex++)
         {
-            List<MatchCandidate> resourceAlternative = SelectGreedily(ordered, first);
-            if (IsBetterSelection(resourceAlternative, selected))
+            MatchCandidate candidate = ordered[candidateIndex];
+            BigInteger mask = BigInteger.Zero;
+            foreach (TextTrack track in candidate.Tracks)
             {
-                selected = resourceAlternative;
+                mask |= BigInteger.One << trackResources[track];
             }
-            List<MatchCandidate> scoreAlternative = SelectGreedily(scoreOrdered, first);
-            if (IsBetterSelection(scoreAlternative, selected))
+            foreach (int observation in candidate.ObservationIndices)
             {
-                selected = scoreAlternative;
+                mask |= BigInteger.One << observationResources[observation];
             }
+            resourceMasks[candidate] = mask;
+            selectionOrderMasks[candidate] = BigInteger.One << (ordered.Length - candidateIndex - 1);
         }
-        HashSet<MatchCandidate> finalSelection = new(selected, ReferenceEqualityComparer.Instance);
-        return ordered.Where(finalSelection.Contains).ToList();
-    }
 
-    private static MatchCandidate[] FindChallengeStarts(
-        IReadOnlyList<MatchCandidate> candidates,
-        IReadOnlyList<MatchCandidate> selected)
-    {
-        Dictionary<(int first, int? second), MatchCandidate> byConflict = [];
-        foreach (MatchCandidate candidate in candidates)
+        Dictionary<BigInteger, StructureSelectionState> states = new()
         {
-            if (selected.Contains(candidate))
+            [BigInteger.Zero] = new(BigInteger.Zero, BigInteger.Zero, 0, 0, null, null),
+        };
+        foreach (MatchCandidate candidate in ordered)
+        {
+            BigInteger candidateMask = resourceMasks[candidate];
+            foreach (StructureSelectionState state in states.Values.ToArray())
             {
-                continue;
-            }
-            for (int first = 0; first < selected.Count; first++)
-            {
-                if (!CandidatesConflict(selected[first], candidate))
+                if ((state.UsedResources & candidateMask) != BigInteger.Zero)
                 {
                     continue;
                 }
-                byConflict.TryAdd((first, null), candidate);
-                for (int second = first + 1; second < selected.Count; second++)
+                BigInteger combinedMask = state.UsedResources | candidateMask;
+                StructureSelectionState proposed = new(
+                    combinedMask,
+                    state.SelectionOrder | selectionOrderMasks[candidate],
+                    state.ResourceCount + candidate.ResourceCount,
+                    state.Score + candidate.Score,
+                    state,
+                    candidate);
+                if (!states.TryGetValue(combinedMask, out StructureSelectionState? existing)
+                    || IsBetterStructureSelection(proposed, existing))
                 {
-                    if (CandidatesConflict(selected[second], candidate))
-                    {
-                        byConflict.TryAdd((first, second), candidate);
-                    }
+                    states[combinedMask] = proposed;
                 }
             }
-        }
-        return [.. byConflict.Values];
-    }
 
-    private static bool CandidatesConflict(MatchCandidate first, MatchCandidate second)
-        => first.Tracks.Any(second.Tracks.Contains)
-            || first.ObservationIndices.Any(second.ObservationIndices.Contains);
-
-    private static bool IsBetterSelection(
-        IReadOnlyCollection<MatchCandidate> proposed,
-        IReadOnlyCollection<MatchCandidate> current)
-    {
-        int proposedResources = proposed.Sum(candidate => candidate.ResourceCount);
-        int currentResources = current.Sum(candidate => candidate.ResourceCount);
-        return proposedResources > currentResources
-            || (proposedResources == currentResources
-                && proposed.Sum(candidate => candidate.Score) > current.Sum(candidate => candidate.Score) + 0.000001);
-    }
-
-    private static List<MatchCandidate> SelectGreedily(
-        IEnumerable<MatchCandidate> candidates,
-        MatchCandidate? first = null)
-    {
-        List<MatchCandidate> selected = [];
-        HashSet<TextTrack> usedTracks = [];
-        HashSet<int> usedObservations = [];
-        if (first is not null)
-        {
-            selected.Add(first);
-            usedTracks.UnionWith(first.Tracks);
-            usedObservations.UnionWith(first.ObservationIndices);
-        }
-        foreach (MatchCandidate candidate in candidates)
-        {
-            if (candidate.Tracks.Any(usedTracks.Contains)
-                || candidate.ObservationIndices.Any(usedObservations.Contains))
+            if (states.Count > MaxStructureSelectionStates * 2)
             {
-                continue;
+                states = states.Values
+                    .OrderByDescending(state => state.ResourceCount)
+                    .ThenByDescending(state => state.Score)
+                    .ThenByDescending(state => state.SelectionOrder)
+                    .ThenBy(state => state.UsedResources)
+                    .Take(MaxStructureSelectionStates)
+                    .ToDictionary(state => state.UsedResources);
             }
-            selected.Add(candidate);
-            usedTracks.UnionWith(candidate.Tracks);
-            usedObservations.UnionWith(candidate.ObservationIndices);
         }
-        return selected;
+
+        StructureSelectionState best = states.Values
+            .OrderByDescending(state => state.ResourceCount)
+            .ThenByDescending(state => state.Score)
+            .ThenByDescending(state => state.SelectionOrder)
+            .ThenBy(state => state.UsedResources)
+            .First();
+        HashSet<MatchCandidate> finalSelection = new(ReferenceEqualityComparer.Instance);
+        for (StructureSelectionState? state = best; state?.Candidate is not null; state = state.Previous)
+        {
+            finalSelection.Add(state.Candidate);
+        }
+        return ordered.Where(finalSelection.Contains).ToList();
     }
+
+    private static bool IsBetterStructureSelection(
+        StructureSelectionState proposed,
+        StructureSelectionState current)
+        => proposed.ResourceCount > current.ResourceCount
+            || (proposed.ResourceCount == current.ResourceCount
+                && (proposed.Score > current.Score + 0.000001
+                    || (Math.Abs(proposed.Score - current.Score) <= 0.000001
+                        && proposed.SelectionOrder > current.SelectionOrder)));
 
     private List<MatchCandidate> BuildRestorationCandidates(
         IReadOnlyList<TextTrack> activeTracks,
@@ -1275,6 +1278,14 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private sealed record RestorationAssignment(TextTrack Track, int ObservationIndex, TextRect Observation);
 
+    private sealed record StructureSelectionState(
+        BigInteger UsedResources,
+        BigInteger SelectionOrder,
+        int ResourceCount,
+        double Score,
+        StructureSelectionState? Previous,
+        MatchCandidate? Candidate);
+
     private sealed record MatchCandidate(
         MatchKind Kind,
         IReadOnlyList<TextTrack> Tracks,
@@ -1463,7 +1474,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         private void UpdateGeometry(TextRect current)
         {
             bool isNoise = IsGeometryNoise(this.Stabilized, current);
-            if (isNoise && GeometrySamplesMatch(this.Stabilized, current))
+            bool matchesStable = isNoise && GeometrySamplesMatch(this.Stabilized, current);
+            if (matchesStable && GeometryValuesEqual(this.Stabilized, current))
             {
                 this.geometryCandidate = null;
                 this.geometryCandidateCount = 0;
@@ -1491,7 +1503,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 this.geometryCandidateCount = 1;
             }
 
-            if (this.geometryCandidateCount >= StructureConfirmationFrames)
+            int confirmationFrames = matchesStable
+                ? MicroGeometryConfirmationFrames
+                : StructureConfirmationFrames;
+            if (this.geometryCandidateCount >= confirmationFrames)
             {
                 this.ApplyGeometry(current);
             }
@@ -1517,6 +1532,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 && Math.Abs(first.Height - second.Height) <= 1
                 && Math.Abs(first.FontSize - second.FontSize) <= 0.5
                 && AngleDifference(first.Angle, second.Angle) <= 2
+                && first.MultiLine == second.MultiLine;
+
+        private static bool GeometryValuesEqual(TextRect first, TextRect second)
+            => first.X == second.X
+                && first.Y == second.Y
+                && first.Width == second.Width
+                && first.Height == second.Height
+                && first.FontSize == second.FontSize
+                && first.Angle == second.Angle
                 && first.MultiLine == second.MultiLine;
 
         private static bool GeometryCandidateMatches(TextRect candidate, TextRect current)

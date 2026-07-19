@@ -93,33 +93,42 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Equal("ZZZZZZZZ", confirmed.SourceText);
     }
 
-    [Fact]
-    public void FivePartSplitRemainsOneLogicalTrack()
+    [Theory]
+    [InlineData(5)]
+    [InlineData(6)]
+    public void SplitUpToTheCandidateLimitRemainsOneLogicalTrack(int partCount)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
-        tracker.Update([new("ABCDE", 0, 100, 100, 20, 16, false)], imageSize, TimeSpan.Zero);
+        string text = new(Enumerable.Range(0, partCount)
+            .Select(index => (char)('A' + index))
+            .ToArray());
+        tracker.Update([new(text, 0, 100, partCount * 20, 20, 16, false)], imageSize, TimeSpan.Zero);
 
         IReadOnlyList<TextRect> result = tracker.Update(
-        [
-            new("A", 0, 100, 20, 20, 16, false),
-            new("B", 20, 100, 20, 20, 16, false),
-            new("C", 40, 100, 20, 20, 16, false),
-            new("D", 60, 100, 20, 20, 16, false),
-            new("E", 80, 100, 20, 20, 16, false),
-        ],
-        imageSize,
-        TimeSpan.FromMilliseconds(500));
+            Enumerable.Range(0, partCount)
+                .Select(index => new TextRect(
+                    ((char)('A' + index)).ToString(),
+                    index * 20,
+                    100,
+                    20,
+                    20,
+                    16,
+                    false)),
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
 
-        Assert.Equal("ABCDE", Assert.Single(result).SourceText);
+        Assert.Equal(text, Assert.Single(result).SourceText);
     }
 
-    [Fact]
-    public void FiveTrackMergeConvergesWithoutDuplicate()
+    [Theory]
+    [InlineData(5)]
+    [InlineData(6)]
+    public void MergeUpToTheCandidateLimitConvergesWithoutDuplicate(int trackCount)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
-        TextRect[] fragments = Enumerable.Range(0, 5)
+        TextRect[] fragments = Enumerable.Range(0, trackCount)
             .Select(index => new TextRect(
                 ((char)('A' + index)).ToString(),
                 index * 20,
@@ -129,15 +138,16 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
                 16,
                 false))
             .ToArray();
-        TextRect merged = new("ABCDE", 0, 100, 100, 20, 16, false);
+        string text = string.Concat(fragments.Select(fragment => fragment.SourceText));
+        TextRect merged = new(text, 0, 100, trackCount * 20, 20, 16, false);
         tracker.Update(fragments, imageSize, TimeSpan.Zero);
 
-        Assert.Equal(5, tracker.Update(
+        Assert.Equal(trackCount, tracker.Update(
             [merged], imageSize, TimeSpan.FromMilliseconds(500)).Count);
         IReadOnlyList<TextRect> result = tracker.Update(
             [merged], imageSize, TimeSpan.FromMilliseconds(1000));
 
-        Assert.Equal("ABCDE", Assert.Single(result).SourceText);
+        Assert.Equal(text, Assert.Single(result).SourceText);
     }
 
     [Fact]
@@ -578,6 +588,41 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
 
         Assert.Equal(
             ["A", "B", "C", "D", "ABC"],
+            result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void StructureSelectionCanReplaceCoupledBlockingCandidates()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        string longTail = new('A', 10);
+        tracker.Update(
+        [
+            new("XYZ", 0, 100, 30, 20, 16, false),
+            new("Q", 300, 100, 10, 20, 16, false),
+            new("B", 30, 100, 10, 20, 16, false),
+            new("C", 40, 100, 10, 20, 16, false),
+            new("D", 50, 100, 10, 20, 16, false),
+            new(longTail, 60, 100, 100, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("Novel", 500, 100, 50, 20, 16, false),
+            new("X", 0, 100, 10, 20, 16, false),
+            new("Y", 10, 100, 10, 20, 16, false),
+            new("XYZBC", 0, 100, 50, 20, 16, false),
+            new($"BCD{longTail}", 30, 100, 130, 20, 16, false),
+            new("Z", 20, 100, 10, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(
+            ["XYZ", "Q", "B", "C", "D", longTail, "Novel", "XYZBC"],
             result.Select(rect => rect.SourceText));
     }
 
