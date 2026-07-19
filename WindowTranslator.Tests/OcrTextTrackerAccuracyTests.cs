@@ -400,6 +400,35 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void StructureSelectionReplacesOneBlockingCandidateWithTwoMatches()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+        [
+            new("A", 0, 100, 10, 20, 16, false),
+            new("B", 10, 100, 10, 20, 16, false),
+            new("C", 20, 100, 10, 20, 16, false),
+            new("D", 30, 100, 10, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("AB", 0, 100, 24, 20, 16, false),
+            new("CD", 20, 100, 24, 20, 16, false),
+            new("ABC", 0, 100, 30, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(
+            ["A", "B", "C", "D", "ABC"],
+            result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
     public void FourPartSplitRemainsOneLogicalTrack()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
