@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Drawing;
-using System.Numerics;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Quickenshtein;
@@ -17,8 +16,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const int MaxStructureMembers = 3;
     private const int MaxStructureCandidates = 6;
     private const int MaxOneToOneCandidatesPerResource = 3;
-    private const int MaxExactAssignmentResources = 18;
-    private const int MaxLargeComponentImprovementPasses = 2;
+    private const int MaxSelectionImprovementPasses = 2;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
     private const double TextVoteDecay = 0.75;
@@ -83,13 +81,47 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         TextTrack[] activeTracks = this.tracks
             .Where(track => !track.IsDormant)
             .ToArray();
-        List<MatchCandidate> candidates = BuildCandidates(
+        List<MatchCandidate> oneToOneCandidates = BuildOneToOneCandidates(
             activeTracks,
             current,
             imageSize,
             timestamp);
-        candidates.AddRange(this.BuildRestorationCandidates(activeTracks, current, imageSize, timestamp));
-        IReadOnlyList<MatchCandidate> selected = SelectGlobally(candidates, this.tracks, current.Length);
+        MatchCandidate[] strongMatches = SelectOneToOne(
+            activeTracks,
+            oneToOneCandidates.Where(IsStrongOneToOneCandidate).ToArray(),
+            current.Length);
+        HashSet<TextTrack> reservedTracks = strongMatches
+            .SelectMany(candidate => candidate.Tracks)
+            .ToHashSet();
+        HashSet<int> reservedObservations = strongMatches
+            .SelectMany(candidate => candidate.ObservationIndices)
+            .ToHashSet();
+
+        TextTrack[] unresolvedTracks = activeTracks
+            .Where(track => !reservedTracks.Contains(track))
+            .ToArray();
+        List<MatchCandidate> structureCandidates = BuildStructureCandidates(
+            unresolvedTracks,
+            current,
+            imageSize,
+            reservedObservations);
+        structureCandidates.AddRange(this.BuildRestorationCandidates(
+            unresolvedTracks,
+            current,
+            imageSize,
+            timestamp,
+            reservedObservations));
+        List<MatchCandidate> selected = [.. strongMatches, .. SelectStructures(structureCandidates)];
+        reservedTracks.UnionWith(selected.SelectMany(candidate => candidate.Tracks));
+        reservedObservations.UnionWith(selected.SelectMany(candidate => candidate.ObservationIndices));
+
+        selected.AddRange(SelectOneToOne(
+            activeTracks.Where(track => !reservedTracks.Contains(track)).ToArray(),
+            oneToOneCandidates
+                .Where(candidate => !reservedTracks.Contains(candidate.Tracks[0]))
+                .Where(candidate => !reservedObservations.Contains(candidate.ObservationIndices[0]))
+                .ToArray(),
+            current.Length));
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
@@ -126,39 +158,18 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private static bool IsValid(TextRect rect)
         => !string.IsNullOrWhiteSpace(rect.SourceText) && rect.Width > 0 && rect.Height > 0;
 
-    private static List<MatchCandidate> BuildCandidates(
+    private static List<MatchCandidate> BuildStructureCandidates(
         TextTrack[] tracks,
         TextRect[] observations,
         Size imageSize,
-        TimeSpan timestamp)
+        HashSet<int> excludedObservations)
     {
-        List<MatchCandidate> result = BuildOneToOneCandidates(
-            tracks,
-            observations,
-            imageSize,
-            timestamp);
-        MatchCandidate[] strongOneToOneMatches = SelectMaximumCardinalityOneToOne(
-            tracks,
-            result.Where(IsStrongOneToOneCandidate).ToArray());
-        HashSet<TextTrack> tracksWithOneToOneCandidates = result
-            .Select(candidate => candidate.Tracks[0])
-            .ToHashSet();
-        HashSet<int> observationsWithOneToOneCandidates = result
-            .Select(candidate => candidate.ObservationIndices[0])
-            .ToHashSet();
-        HashSet<TextTrack> tracksWithStrongOneToOneCandidates = strongOneToOneMatches
-            .Select(candidate => candidate.Tracks[0])
-            .ToHashSet();
-        HashSet<int> observationsWithStrongOneToOneCandidates = strongOneToOneMatches
-            .Select(candidate => candidate.ObservationIndices[0])
-            .ToHashSet();
-
-        foreach (TextTrack track in tracks.Where(track => !tracksWithStrongOneToOneCandidates.Contains(track)))
+        List<MatchCandidate> result = [];
+        foreach (TextTrack track in tracks)
         {
             int[] nearby = Enumerable.Range(0, observations.Length)
-                .Where(index => tracksWithOneToOneCandidates.Contains(track)
-                    ? IsNear(track.Stabilized, observations[index])
-                    : IsPotentialStructureMember(track.Stabilized, observations[index], imageSize))
+                .Where(index => !excludedObservations.Contains(index))
+                .Where(index => IsPotentialStructureMember(track.Stabilized, observations[index], imageSize))
                 .OrderBy(index => CenterDistance(track.Stabilized, observations[index]))
                 .Take(MaxStructureCandidates)
                 .ToArray();
@@ -186,17 +197,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
         }
 
-        foreach (int observationIndex in Enumerable.Range(0, observations.Length))
+        foreach (int observationIndex in Enumerable.Range(0, observations.Length)
+            .Where(index => !excludedObservations.Contains(index)))
         {
-            if (observationsWithStrongOneToOneCandidates.Contains(observationIndex))
-            {
-                continue;
-            }
             TextRect observation = observations[observationIndex];
             TextTrack[] nearby = tracks
-                .Where(track => observationsWithOneToOneCandidates.Contains(observationIndex)
-                    ? IsNear(observation, track.Stabilized)
-                    : IsPotentialStructureMember(observation, track.Stabilized, imageSize))
+                .Where(track => IsPotentialStructureMember(observation, track.Stabilized, imageSize))
                 .OrderBy(track => CenterDistance(observation, track.Stabilized))
                 .Take(MaxStructureCandidates)
                 .ToArray();
@@ -232,14 +238,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         Size imageSize,
         TimeSpan timestamp,
         Func<TextTrack, TextRect>? geometryOverride = null,
-        Func<TextTrack, double>? distanceGateDimensionOverride = null)
+        Func<TextTrack, double>? distanceGateDimensionOverride = null,
+        HashSet<int>? excludedObservations = null)
     {
-        List<MatchCandidate> raw = [];
+        List<MatchCandidate> result = [];
         foreach (TextTrack track in tracks)
         {
             TextRect? geometry = geometryOverride?.Invoke(track);
             for (int observationIndex = 0; observationIndex < observations.Length; observationIndex++)
             {
+                if (excludedObservations?.Contains(observationIndex) == true)
+                {
+                    continue;
+                }
                 double score = ScoreAssignment(
                     track,
                     observations[observationIndex],
@@ -249,22 +260,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                     distanceGateDimensionOverride?.Invoke(track));
                 if (score >= MinimumAssignmentScore)
                 {
-                    raw.Add(new(MatchKind.OneToOne, [track], [observationIndex], observations[observationIndex], score));
+                    result.Add(new(MatchKind.OneToOne, [track], [observationIndex], observations[observationIndex], score));
                 }
             }
         }
-
-        HashSet<MatchCandidate> retained = new(ReferenceEqualityComparer.Instance);
-        foreach (IGrouping<TextTrack, MatchCandidate> group in raw.GroupBy(candidate => candidate.Tracks[0]))
-        {
-            retained.UnionWith(group.OrderByDescending(candidate => candidate.Score).Take(MaxOneToOneCandidatesPerResource));
-        }
-        foreach (IGrouping<int, MatchCandidate> group in raw.GroupBy(candidate => candidate.ObservationIndices[0]))
-        {
-            retained.UnionWith(group.OrderByDescending(candidate => candidate.Score).Take(MaxOneToOneCandidatesPerResource));
-        }
-        retained.UnionWith(SelectMaximumCardinalityOneToOne(tracks, raw));
-        return retained.ToList();
+        return result;
     }
 
     private static bool IsStrongOneToOneCandidate(MatchCandidate candidate)
@@ -272,48 +272,113 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             && NormalizeText(candidate.Tracks[0].ConfirmedText)
                 == NormalizeText(candidate.Combined.SourceText);
 
-    private static MatchCandidate[] SelectMaximumCardinalityOneToOne(
+    private static MatchCandidate[] SelectOneToOne(
         IReadOnlyList<TextTrack> tracks,
-        IReadOnlyList<MatchCandidate> candidates)
+        IReadOnlyList<MatchCandidate> candidates,
+        int observationCount)
     {
-        Dictionary<TextTrack, MatchCandidate[]> candidatesByTrack = candidates
-            .GroupBy(candidate => candidate.Tracks[0])
-            .ToDictionary(
-                group => group.Key,
-                group => group
-                    .OrderByDescending(candidate => candidate.Score)
-                    .ThenBy(candidate => candidate.ObservationIndices[0])
-                    .ToArray());
-        Dictionary<int, MatchCandidate> matchedByObservation = [];
-        foreach (TextTrack track in tracks
-            .Select((track, index) => (track, index))
-            .Where(item => candidatesByTrack.ContainsKey(item.track))
-            .OrderBy(item => candidatesByTrack[item.track].Length)
-            .ThenBy(item => item.index)
-            .Select(item => item.track))
+        int count = Math.Max(tracks.Count, observationCount);
+        if (count == 0 || candidates.Count == 0)
         {
-            TryMatch(track, []);
+            return [];
         }
-        return matchedByObservation.Values.ToArray();
 
-        bool TryMatch(TextTrack track, HashSet<int> visitedObservations)
+        Dictionary<(TextTrack track, int observation), MatchCandidate> byPair = candidates
+            .ToDictionary(candidate => (candidate.Tracks[0], candidate.ObservationIndices[0]));
+        double cardinalityBonus = count + 1;
+        double maximumWeight = cardinalityBonus + 1;
+        double[,] costs = new double[count + 1, count + 1];
+        for (int trackIndex = 0; trackIndex < count; trackIndex++)
         {
-            foreach (MatchCandidate candidate in candidatesByTrack[track])
+            for (int observationIndex = 0; observationIndex < count; observationIndex++)
             {
-                int observationIndex = candidate.ObservationIndices[0];
-                if (!visitedObservations.Add(observationIndex))
-                {
-                    continue;
-                }
-                if (!matchedByObservation.TryGetValue(observationIndex, out MatchCandidate? incumbent)
-                    || TryMatch(incumbent.Tracks[0], visitedObservations))
-                {
-                    matchedByObservation[observationIndex] = candidate;
-                    return true;
-                }
+                double weight = trackIndex < tracks.Count
+                    && observationIndex < observationCount
+                    && byPair.TryGetValue((tracks[trackIndex], observationIndex), out MatchCandidate? candidate)
+                        ? cardinalityBonus + candidate.Score
+                        : 0;
+                costs[trackIndex + 1, observationIndex + 1] = maximumWeight - weight;
             }
-            return false;
         }
+
+        int[] assignment = SolveMinimumCostAssignment(costs, count);
+        return tracks
+            .Select((track, index) => byPair.GetValueOrDefault((track, assignment[index])))
+            .OfType<MatchCandidate>()
+            .ToArray();
+    }
+
+    private static int[] SolveMinimumCostAssignment(double[,] costs, int count)
+    {
+        double[] rowPotential = new double[count + 1];
+        double[] columnPotential = new double[count + 1];
+        int[] matching = new int[count + 1];
+        int[] path = new int[count + 1];
+
+        for (int row = 1; row <= count; row++)
+        {
+            matching[0] = row;
+            int column = 0;
+            double[] minimum = Enumerable.Repeat(double.PositiveInfinity, count + 1).ToArray();
+            bool[] used = new bool[count + 1];
+            do
+            {
+                used[column] = true;
+                int currentRow = matching[column];
+                double delta = double.PositiveInfinity;
+                int nextColumn = 0;
+                for (int candidateColumn = 1; candidateColumn <= count; candidateColumn++)
+                {
+                    if (used[candidateColumn])
+                    {
+                        continue;
+                    }
+                    double reducedCost = costs[currentRow, candidateColumn]
+                        - rowPotential[currentRow]
+                        - columnPotential[candidateColumn];
+                    if (reducedCost < minimum[candidateColumn])
+                    {
+                        minimum[candidateColumn] = reducedCost;
+                        path[candidateColumn] = column;
+                    }
+                    if (minimum[candidateColumn] < delta)
+                    {
+                        delta = minimum[candidateColumn];
+                        nextColumn = candidateColumn;
+                    }
+                }
+
+                for (int candidateColumn = 0; candidateColumn <= count; candidateColumn++)
+                {
+                    if (used[candidateColumn])
+                    {
+                        rowPotential[matching[candidateColumn]] += delta;
+                        columnPotential[candidateColumn] -= delta;
+                    }
+                    else
+                    {
+                        minimum[candidateColumn] -= delta;
+                    }
+                }
+                column = nextColumn;
+            }
+            while (matching[column] != 0);
+
+            do
+            {
+                int previousColumn = path[column];
+                matching[column] = matching[previousColumn];
+                column = previousColumn;
+            }
+            while (column != 0);
+        }
+
+        int[] result = new int[count];
+        for (int column = 1; column <= count; column++)
+        {
+            result[matching[column] - 1] = column - 1;
+        }
+        return result;
     }
 
     private static double ScoreAssignment(
@@ -458,134 +523,35 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             || (double)Math.Min(firstLength, secondLength) / maximumLength >= minimumSimilarity;
     }
 
-    private static List<MatchCandidate> SelectGlobally(
-        IReadOnlyList<MatchCandidate> candidates,
-        IReadOnlyList<TextTrack> tracks,
-        int observationCount)
-    {
-        if (candidates.Count == 0)
-        {
-            return [];
-        }
-
-        Dictionary<TextTrack, int> trackIndexes = tracks
-            .Select((track, index) => (track, index))
-            .ToDictionary(item => item.track, item => item.index);
-        DisjointSet resources = new(tracks.Count + observationCount);
-        foreach (MatchCandidate candidate in candidates)
-        {
-            int[] ids = GetResourceIds(candidate, trackIndexes, tracks.Count).ToArray();
-            for (int i = 1; i < ids.Length; i++)
-            {
-                resources.Union(ids[0], ids[i]);
-            }
-        }
-
-        List<MatchCandidate> result = [];
-        foreach (IGrouping<int, MatchCandidate> component in candidates.GroupBy(candidate =>
-            resources.Find(GetResourceIds(candidate, trackIndexes, tracks.Count).First())))
-        {
-            MatchCandidate[] componentCandidates = component.ToArray();
-            if (componentCandidates.All(candidate => candidate.Kind == MatchKind.OneToOne))
-            {
-                result.AddRange(SelectMaximumCardinalityOneToOne(tracks, componentCandidates));
-                continue;
-            }
-
-            int[] componentResources = componentCandidates
-                .SelectMany(candidate => GetResourceIds(candidate, trackIndexes, tracks.Count))
-                .Distinct()
-                .ToArray();
-            result.AddRange(componentResources.Length <= MaxExactAssignmentResources
-                ? SelectExact(componentCandidates, componentResources, trackIndexes, tracks.Count)
-                : SelectLargeComponent(componentCandidates));
-        }
-        return result;
-    }
-
-    private static IReadOnlyList<MatchCandidate> SelectExact(
-        MatchCandidate[] candidates,
-        int[] resources,
-        IReadOnlyDictionary<TextTrack, int> trackIndexes,
-        int observationOffset)
-    {
-        Dictionary<int, int> bits = resources.Select((resource, bit) => (resource, bit))
-            .ToDictionary(item => item.resource, item => item.bit);
-        (MatchCandidate candidate, ulong mask)[] entries = candidates
-            .Select(candidate =>
-            {
-                ulong mask = 0;
-                foreach (int resource in GetResourceIds(candidate, trackIndexes, observationOffset))
-                {
-                    mask |= 1UL << bits[resource];
-                }
-                return (candidate, mask);
-            })
-            .ToArray();
-        Dictionary<ulong, CandidateSolution> memo = [];
-
-        CandidateSolution Solve(ulong available)
-        {
-            if (available == 0)
-            {
-                return CandidateSolution.Empty;
-            }
-            if (memo.TryGetValue(available, out CandidateSolution? cached))
-            {
-                return cached;
-            }
-
-            int bit = BitOperations.TrailingZeroCount(available);
-            ulong bitMask = 1UL << bit;
-            CandidateSolution best = Solve(available & ~bitMask);
-            foreach ((MatchCandidate candidate, ulong mask) in entries)
-            {
-                if ((mask & bitMask) == 0 || (mask & available) != mask)
-                {
-                    continue;
-                }
-                CandidateSolution remainder = Solve(available & ~mask);
-                CandidateSolution proposed = remainder.Prepend(candidate);
-                if (proposed.IsBetterThan(best))
-                {
-                    best = proposed;
-                }
-            }
-            memo[available] = best;
-            return best;
-        }
-
-        ulong all = (1UL << resources.Length) - 1;
-        return Solve(all).Candidates;
-    }
-
-    private static List<MatchCandidate> SelectLargeComponent(MatchCandidate[] candidates)
+    private static List<MatchCandidate> SelectStructures(IReadOnlyList<MatchCandidate> candidates)
     {
         MatchCandidate[] ordered = candidates
-            .OrderByDescending(candidate => candidate.Score)
-            .ThenByDescending(candidate => candidate.ResourceCount)
+            .OrderByDescending(candidate => candidate.ResourceCount)
+            .ThenByDescending(candidate => candidate.Score)
             .ToArray();
         List<MatchCandidate> selected = SelectGreedily(ordered);
-        for (int pass = 0; pass < MaxLargeComponentImprovementPasses; pass++)
+        for (int pass = 0; pass < MaxSelectionImprovementPasses; pass++)
         {
             bool improved = false;
-            foreach (MatchCandidate incumbent in selected.OrderBy(candidate => candidate.Score).ToArray())
+            foreach (MatchCandidate incumbent in selected
+                .OrderBy(candidate => candidate.ResourceCount)
+                .ThenBy(candidate => candidate.Score)
+                .ToArray())
             {
                 HashSet<MatchCandidate> fixedSelection = new(
                     selected.Where(candidate => !ReferenceEquals(candidate, incumbent)),
                     ReferenceEqualityComparer.Instance);
                 MatchCandidate[] replacementPool = ordered
                     .Where(candidate => !ReferenceEquals(candidate, incumbent))
-                    .Where(candidate => !fixedSelection.Contains(candidate))
                     .Where(candidate => Conflicts(candidate, incumbent))
                     .Where(candidate => fixedSelection.All(existing => !Conflicts(existing, candidate)))
                     .ToArray();
                 List<MatchCandidate> replacements = SelectGreedily(replacementPool);
                 double replacementScore = replacements.Sum(candidate => candidate.Score);
                 int replacementResources = replacements.Sum(candidate => candidate.ResourceCount);
-                if (replacementScore > incumbent.Score + 0.000001
-                    || (Math.Abs(replacementScore - incumbent.Score) <= 0.000001
-                        && replacementResources > incumbent.ResourceCount))
+                if (replacementResources > incumbent.ResourceCount
+                    || (replacementResources == incumbent.ResourceCount
+                        && replacementScore > incumbent.Score + 0.000001))
                 {
                     selected.Remove(incumbent);
                     selected.AddRange(replacements);
@@ -618,18 +584,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         => first.Tracks.Intersect(second.Tracks).Any()
             || first.ObservationIndices.Intersect(second.ObservationIndices).Any();
 
-    private static IEnumerable<int> GetResourceIds(
-        MatchCandidate candidate,
-        IReadOnlyDictionary<TextTrack, int> trackIndexes,
-        int observationOffset)
-        => candidate.Tracks.Select(track => trackIndexes[track])
-            .Concat(candidate.ObservationIndices.Select(index => observationOffset + index));
-
     private List<MatchCandidate> BuildRestorationCandidates(
         IReadOnlyList<TextTrack> activeTracks,
         TextRect[] observations,
         Size imageSize,
-        TimeSpan timestamp)
+        TimeSpan timestamp,
+        HashSet<int> excludedObservations)
     {
         List<MatchCandidate> result = [];
         foreach (TextTrack parent in activeTracks)
@@ -649,7 +609,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 imageSize,
                 timestamp,
                 child => child.RestoreGeometry(parent.LatestObservation),
-                _ => Math.Max(parent.LatestObservation.Width, parent.LatestObservation.Height));
+                _ => Math.Max(parent.LatestObservation.Width, parent.LatestObservation.Height),
+                excludedObservations);
             Dictionary<TextTrack, MatchCandidate[]> candidatesByChild = children.ToDictionary(
                 child => child,
                 child => childCandidates
@@ -1208,64 +1169,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         public int ResourceCount => this.Tracks.Count + this.ObservationIndices.Count;
 
         public IReadOnlyList<RestorationAssignment> RestorationAssignments { get; init; } = [];
-    }
-
-    private sealed record CandidateSolution(double Score, int ResourceCount, IReadOnlyList<MatchCandidate> Candidates)
-    {
-        public static CandidateSolution Empty { get; } = new(0, 0, []);
-
-        public CandidateSolution Prepend(MatchCandidate candidate)
-            => new(
-                this.Score + candidate.Score,
-                this.ResourceCount + candidate.ResourceCount,
-                [candidate, .. this.Candidates]);
-
-        public bool IsBetterThan(CandidateSolution other)
-            => this.Score > other.Score + 0.000001
-                || (Math.Abs(this.Score - other.Score) <= 0.000001 && this.ResourceCount > other.ResourceCount);
-    }
-
-    private sealed class DisjointSet
-    {
-        private readonly int[] parent;
-        private readonly byte[] rank;
-
-        public DisjointSet(int count)
-        {
-            this.parent = Enumerable.Range(0, count).ToArray();
-            this.rank = new byte[count];
-        }
-
-        public int Find(int item)
-        {
-            if (this.parent[item] != item)
-            {
-                this.parent[item] = this.Find(this.parent[item]);
-            }
-            return this.parent[item];
-        }
-
-        public void Union(int first, int second)
-        {
-            int firstRoot = this.Find(first);
-            int secondRoot = this.Find(second);
-            if (firstRoot == secondRoot)
-            {
-                return;
-            }
-            if (this.rank[firstRoot] < this.rank[secondRoot])
-            {
-                this.parent[firstRoot] = secondRoot;
-            }
-            else
-            {
-                this.parent[secondRoot] = firstRoot;
-                if (this.rank[firstRoot] == this.rank[secondRoot])
-                {
-                    this.rank[firstRoot]++;
-                }
-            }
-        }
     }
 
     private sealed class TextTrack(long id, TextRect observation, TimeSpan timestamp)
