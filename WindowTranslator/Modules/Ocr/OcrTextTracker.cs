@@ -137,18 +137,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             observations,
             imageSize,
             timestamp);
+        MatchCandidate[] strongOneToOneMatches = SelectMaximumCardinalityOneToOne(
+            tracks,
+            result.Where(IsStrongOneToOneCandidate).ToArray());
         HashSet<TextTrack> tracksWithOneToOneCandidates = result
             .Select(candidate => candidate.Tracks[0])
             .ToHashSet();
         HashSet<int> observationsWithOneToOneCandidates = result
             .Select(candidate => candidate.ObservationIndices[0])
             .ToHashSet();
-        HashSet<TextTrack> tracksWithStrongOneToOneCandidates = result
-            .Where(candidate => candidate.Score >= StrongOneToOneScore)
+        HashSet<TextTrack> tracksWithStrongOneToOneCandidates = strongOneToOneMatches
             .Select(candidate => candidate.Tracks[0])
             .ToHashSet();
-        HashSet<int> observationsWithStrongOneToOneCandidates = result
-            .Where(candidate => candidate.Score >= StrongOneToOneScore)
+        HashSet<int> observationsWithStrongOneToOneCandidates = strongOneToOneMatches
             .Select(candidate => candidate.ObservationIndices[0])
             .ToHashSet();
 
@@ -262,14 +263,18 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             retained.UnionWith(group.OrderByDescending(candidate => candidate.Score).Take(MaxOneToOneCandidatesPerResource));
         }
-        RetainMaximumCardinalityMatching(tracks, raw, retained);
+        retained.UnionWith(SelectMaximumCardinalityOneToOne(tracks, raw));
         return retained.ToList();
     }
 
-    private static void RetainMaximumCardinalityMatching(
+    private static bool IsStrongOneToOneCandidate(MatchCandidate candidate)
+        => candidate.Score >= StrongOneToOneScore
+            && NormalizeText(candidate.Tracks[0].ConfirmedText)
+                == NormalizeText(candidate.Combined.SourceText);
+
+    private static MatchCandidate[] SelectMaximumCardinalityOneToOne(
         IReadOnlyList<TextTrack> tracks,
-        IReadOnlyList<MatchCandidate> candidates,
-        HashSet<MatchCandidate> retained)
+        IReadOnlyList<MatchCandidate> candidates)
     {
         Dictionary<TextTrack, MatchCandidate[]> candidatesByTrack = candidates
             .GroupBy(candidate => candidate.Tracks[0])
@@ -289,7 +294,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             TryMatch(track, []);
         }
-        retained.UnionWith(matchedByObservation.Values);
+        return matchedByObservation.Values.ToArray();
 
         bool TryMatch(TextTrack track, HashSet<int> visitedObservations)
         {
@@ -480,13 +485,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         foreach (IGrouping<int, MatchCandidate> component in candidates.GroupBy(candidate =>
             resources.Find(GetResourceIds(candidate, trackIndexes, tracks.Count).First())))
         {
-            int[] componentResources = component
+            MatchCandidate[] componentCandidates = component.ToArray();
+            if (componentCandidates.All(candidate => candidate.Kind == MatchKind.OneToOne))
+            {
+                result.AddRange(SelectMaximumCardinalityOneToOne(tracks, componentCandidates));
+                continue;
+            }
+
+            int[] componentResources = componentCandidates
                 .SelectMany(candidate => GetResourceIds(candidate, trackIndexes, tracks.Count))
                 .Distinct()
                 .ToArray();
             result.AddRange(componentResources.Length <= MaxExactAssignmentResources
-                ? SelectExact(component.ToArray(), componentResources, trackIndexes, tracks.Count)
-                : SelectLargeComponent(component.ToArray()));
+                ? SelectExact(componentCandidates, componentResources, trackIndexes, tracks.Count)
+                : SelectLargeComponent(componentCandidates));
         }
         return result;
     }
