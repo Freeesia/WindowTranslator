@@ -117,7 +117,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void CandidatePruningPreservesACompleteDenseOneToOneAssignment()
+    public void DenseOneToOneAssignmentPreservesMaximumCardinality()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
@@ -152,7 +152,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void CandidatePruningPreservesACompleteAssignmentAboveTheExactSelectionBoundary()
+    public void DenseOneToOneAssignmentPreservesMaximumCardinalityWithTenTracks()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
@@ -207,7 +207,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void MixedStructureSelectionAtTheExactBoundaryDoesNotDominateAFrame()
+    public void MixedStructureSelectionDoesNotDominateAFrame()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
@@ -256,22 +256,65 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void LargeCandidateComponentImprovesBeyondTheFirstGreedyStructureMatch()
+    public void StructureSelectionReplacesTwoGreedyMatchesWithThreeCompatibleMatches()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
-        TextRect[] tracks = Enumerable.Range(0, 10)
-            .Select(index => new TextRect("A", index * 12, 100, 20, 30, 24, false))
-            .ToArray();
+        TextRect[] tracks =
+        [
+            new("A", 0, 100, 10, 20, 16, false),
+            new("B", 10, 100, 10, 20, 16, false),
+            new("C", 20, 100, 10, 20, 16, false),
+            new("D", 30, 100, 10, 20, 16, false),
+            new("E", 40, 100, 10, 20, 16, false),
+            new("F", 50, 100, 10, 20, 16, false),
+        ];
         tracker.Update(tracks, imageSize, TimeSpan.Zero);
 
-        TextRect merged = new("A A", 0, 100, 32, 30, 24, false);
         IReadOnlyList<TextRect> result = tracker.Update(
-            [.. tracks, merged],
+        [
+            new("ABC", 0, 100, 30, 20, 16, false),
+            new("DEF", 30, 100, 30, 20, 16, false),
+            new("AD", 0, 100, 40, 20, 16, false),
+            new("BE", 10, 100, 40, 20, 16, false),
+            new("CF", 20, 100, 40, 20, 16, false),
+        ],
             imageSize,
             TimeSpan.FromMilliseconds(500));
 
-        Assert.Equal(11, result.Count);
+        Assert.Equal(
+            ["A", "B", "C", "D", "E", "F", "ABC", "DEF"],
+            result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void EquivalentStructureCandidatesDoNotDependOnObservationOrder()
+    {
+        Size imageSize = new(1000, 600);
+        TextRect[] observations =
+        [
+            new TextRect("A", 40, 100, 18, 20, 16, false) { Context = "Left" },
+            new("B", 62, 100, 18, 20, 16, false),
+            new TextRect("A", 120, 100, 18, 20, 16, false) { Context = "Right" },
+            new("B", 142, 100, 18, 20, 16, false),
+        ];
+
+        string? forward = SelectContext(observations);
+        string? reversed = SelectContext(observations.Reverse().ToArray());
+
+        Assert.Equal("Left", forward);
+        Assert.Equal(forward, reversed);
+
+        string? SelectContext(TextRect[] current)
+        {
+            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+            tracker.Update([new("AB", 80, 100, 40, 20, 16, false)], imageSize, TimeSpan.Zero);
+            IReadOnlyList<TextRect> result = tracker.Update(
+                current,
+                imageSize,
+                TimeSpan.FromMilliseconds(500));
+            return Assert.Single(result, rect => rect.SourceText == "AB").Context;
+        }
     }
 
     [Fact]
