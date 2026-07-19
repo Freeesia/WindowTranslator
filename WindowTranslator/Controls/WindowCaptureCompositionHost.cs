@@ -95,14 +95,8 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
 
     private void OnCaptureModuleChanged(ICaptureModule? oldValue, ICaptureModule? newValue)
     {
-        if (oldValue is not null)
-        {
-            oldValue.Captured -= CaptureModule_CapturedAsync;
-        }
-        if (newValue is not null)
-        {
-            newValue.Captured += CaptureModule_CapturedAsync;
-        }
+        oldValue?.Captured -= CaptureModule_CapturedAsync;
+        newValue?.Captured += CaptureModule_CapturedAsync;
     }
 
     private Task CaptureModule_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -142,10 +136,7 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 {
                     InitComposition(hwndHost);
                 }
-                if (compositionTarget is not null)
-                {
-                    compositionTarget.Root = value;
-                }
+                compositionTarget?.Root = value;
             }
         }
 
@@ -156,8 +147,8 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 0, 0,
                 hostWidth, hostHeight,
                 (HWND)hwndParent.Handle,
-                null!,
-                null!,
+                null,
+                null,
                 null);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い

@@ -130,10 +130,7 @@ public class HwndHostPresenter : FrameworkElement, IDisposable
 
     protected override Size ArrangeOverride(Size arrangeSize)
     {
-        if (Child is not null)
-        {
-            Child.Arrange(new Rect(arrangeSize));
-        }
+        Child?.Arrange(new Rect(arrangeSize));
         return arrangeSize;
     }
 
