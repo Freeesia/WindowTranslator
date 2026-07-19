@@ -76,12 +76,52 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void RandomizedTraceDoesNotLeaveSplitFragmentsAfterTheWholeRegionReturns()
+    {
+        RandomizedScenario scenario = RandomizedOcrTrackingAccuracyScenarios.Create(20260719);
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        IReadOnlyList<TextRect> result = [];
+        for (int frame = 0; frame <= 95; frame++)
+        {
+            result = tracker.Update(
+                scenario.Observations[frame],
+                scenario.ImageSize,
+                TimeSpan.FromMilliseconds(frame * 350));
+        }
+
+        TextRect longMenu = Assert.Single(
+            result,
+            rect => rect.Context?.StartsWith("long-menu", StringComparison.Ordinal) == true);
+        Assert.Equal("Alpha Beta Gamma Delta Epsilon", longMenu.SourceText);
+    }
+
+    [Fact]
     public void TextAndWidthChangeDoesNotCreateOverlappingTracks()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
         TextRect initial = new("AAAA", 100, 100, 100, 20, 16, false);
         TextRect changed = new("ZZZZZZZZ", 100, 100, 125, 20, 16, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal("AAAA", pending.SourceText);
+        Assert.Equal("ZZZZZZZZ", confirmed.SourceText);
+    }
+
+    [Theory]
+    [InlineData(145)]
+    [InlineData(200)]
+    public void LargeTextAndWidthChangeDoesNotCreateOverlappingTracks(double changedWidth)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("AAAA", 100, 100, 100, 20, 16, false);
+        TextRect changed = new("ZZZZZZZZ", 100, 100, changedWidth, 20, 16, false);
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
         TextRect pending = Assert.Single(tracker.Update(
@@ -624,6 +664,70 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Equal(
             ["XYZ", "Q", "B", "C", "D", longTail, "Novel", "XYZBC"],
             result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void IndependentStructureConflictsDoNotConsumeEachOthersSelectionBudget()
+    {
+        const int groupCount = 8;
+        const int spacing = 4000;
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(groupCount * spacing, 600);
+        List<TextRect> tracks = [];
+        List<TextRect> observations = [];
+        for (int group = 0; group < groupCount; group++)
+        {
+            double x = group * spacing;
+            tracks.AddRange(
+            [
+                new("A", x, 100, 10, 20, 16, false),
+                new("B", x + 10, 100, 10, 20, 16, false),
+                new("C", x + 20, 100, 10, 20, 16, false),
+                new("D", x + 30, 100, 10, 20, 16, false),
+            ]);
+            observations.AddRange(
+            [
+                new("AB", x, 100, 24, 20, 16, false),
+                new("CD", x + 20, 100, 24, 20, 16, false),
+                new("ABC", x, 100, 30, 20, 16, false),
+            ]);
+        }
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(groupCount, result.Count(rect => rect.SourceText == "ABC"));
+        Assert.DoesNotContain(result, rect => rect.SourceText is "AB" or "CD");
+        Assert.Equal(groupCount * 5, result.Count);
+    }
+
+    [Fact]
+    public void StaleSplitFragmentDoesNotRemainAfterTheWholeTrackReturns()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect whole = new("ABCDEFGHIJ", 0, 100, 100, 20, 16, false);
+        tracker.Update([whole], imageSize, TimeSpan.Zero);
+        tracker.Update(
+        [
+            new("AB", 0, 100, 20, 20, 16, false),
+            new("CD", 20, 100, 20, 20, 16, false),
+            new("EF", 40, 100, 20, 20, 48, false),
+            new("GH", 60, 100, 20, 20, 16, false),
+            new("IJ", 80, 100, 20, 20, 16, false),
+        ],
+        imageSize,
+        TimeSpan.FromMilliseconds(500));
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [whole],
+            imageSize,
+            TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal("ABCDEFGHIJ", Assert.Single(result).SourceText);
     }
 
     [Fact]
