@@ -16,7 +16,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const int MaxStructureMembers = 3;
     private const int MaxStructureCandidates = 6;
     private const int MaxOneToOneCandidatesPerResource = 3;
-    private const int MaxSelectionImprovementPasses = 2;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
     private const double TextVoteDecay = 0.75;
@@ -526,63 +525,63 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private static List<MatchCandidate> SelectStructures(IReadOnlyList<MatchCandidate> candidates)
     {
         MatchCandidate[] ordered = candidates
-            .OrderByDescending(candidate => candidate.ResourceCount)
-            .ThenByDescending(candidate => candidate.Score)
+            .Select(candidate => (
+                Candidate: candidate,
+                TrackKey: string.Join(',', candidate.Tracks.Select(track => track.Id).Order())))
+            .OrderByDescending(item => item.Candidate.ResourceCount)
+            .ThenByDescending(item => item.Candidate.Score)
+            .ThenBy(item => item.Candidate.Kind)
+            .ThenBy(item => item.Candidate.Combined.Y)
+            .ThenBy(item => item.Candidate.Combined.X)
+            .ThenBy(item => item.Candidate.Combined.Height)
+            .ThenBy(item => item.Candidate.Combined.Width)
+            .ThenBy(item => item.Candidate.Combined.Angle)
+            .ThenBy(item => item.Candidate.Combined.SourceText, StringComparer.Ordinal)
+            .ThenBy(item => item.TrackKey, StringComparer.Ordinal)
+            .Select(item => item.Candidate)
             .ToArray();
-        List<MatchCandidate> selected = SelectGreedily(ordered);
-        for (int pass = 0; pass < MaxSelectionImprovementPasses; pass++)
-        {
-            bool improved = false;
-            foreach (MatchCandidate incumbent in selected
-                .OrderBy(candidate => candidate.ResourceCount)
-                .ThenBy(candidate => candidate.Score)
-                .ToArray())
-            {
-                HashSet<MatchCandidate> fixedSelection = new(
-                    selected.Where(candidate => !ReferenceEquals(candidate, incumbent)),
-                    ReferenceEqualityComparer.Instance);
-                MatchCandidate[] replacementPool = ordered
-                    .Where(candidate => !ReferenceEquals(candidate, incumbent))
-                    .Where(candidate => Conflicts(candidate, incumbent))
-                    .Where(candidate => fixedSelection.All(existing => !Conflicts(existing, candidate)))
-                    .ToArray();
-                List<MatchCandidate> replacements = SelectGreedily(replacementPool);
-                double replacementScore = replacements.Sum(candidate => candidate.Score);
-                int replacementResources = replacements.Sum(candidate => candidate.ResourceCount);
-                if (replacementResources > incumbent.ResourceCount
-                    || (replacementResources == incumbent.ResourceCount
-                        && replacementScore > incumbent.Score + 0.000001))
-                {
-                    selected.Remove(incumbent);
-                    selected.AddRange(replacements);
-                    improved = true;
-                    break;
-                }
-            }
-            if (!improved)
-            {
-                break;
-            }
-        }
-        return selected;
+        MatchCandidate[] scoreOrdered = ordered
+            .OrderByDescending(candidate => candidate.Score)
+            .ThenBy(candidate => candidate.ResourceCount)
+            .ToArray();
+        List<MatchCandidate> resourceSelection = SelectGreedily(ordered);
+        List<MatchCandidate> scoreSelection = SelectGreedily(scoreOrdered);
+        List<MatchCandidate> selected = IsBetterSelection(scoreSelection, resourceSelection)
+            ? scoreSelection
+            : resourceSelection;
+        HashSet<MatchCandidate> finalSelection = new(selected, ReferenceEqualityComparer.Instance);
+        return ordered.Where(finalSelection.Contains).ToList();
+    }
+
+    private static bool IsBetterSelection(
+        IReadOnlyCollection<MatchCandidate> proposed,
+        IReadOnlyCollection<MatchCandidate> current)
+    {
+        int proposedResources = proposed.Sum(candidate => candidate.ResourceCount);
+        int currentResources = current.Sum(candidate => candidate.ResourceCount);
+        return proposedResources > currentResources
+            || (proposedResources == currentResources
+                && proposed.Sum(candidate => candidate.Score) > current.Sum(candidate => candidate.Score) + 0.000001);
     }
 
     private static List<MatchCandidate> SelectGreedily(IEnumerable<MatchCandidate> candidates)
     {
         List<MatchCandidate> selected = [];
+        HashSet<TextTrack> usedTracks = [];
+        HashSet<int> usedObservations = [];
         foreach (MatchCandidate candidate in candidates)
         {
-            if (selected.All(existing => !Conflicts(existing, candidate)))
+            if (candidate.Tracks.Any(usedTracks.Contains)
+                || candidate.ObservationIndices.Any(usedObservations.Contains))
             {
-                selected.Add(candidate);
+                continue;
             }
+            selected.Add(candidate);
+            usedTracks.UnionWith(candidate.Tracks);
+            usedObservations.UnionWith(candidate.ObservationIndices);
         }
         return selected;
     }
-
-    private static bool Conflicts(MatchCandidate first, MatchCandidate second)
-        => first.Tracks.Intersect(second.Tracks).Any()
-            || first.ObservationIndices.Intersect(second.ObservationIndices).Any();
 
     private List<MatchCandidate> BuildRestorationCandidates(
         IReadOnlyList<TextTrack> activeTracks,
