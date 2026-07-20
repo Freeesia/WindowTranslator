@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -73,26 +74,16 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
     /// <summary>
     /// <paramref name="fe"/>にフォーカスがある間、<see cref="TargetSettingsViewModel.MousePointerHitTestPadding"/>の
-    /// 現在値に応じた大きさのプレビュー矩形をコントロールの脇にPopup表示する。
+    /// 現在値に応じた大きさのプレビュー矩形を、マウスカーソル位置に追従するAdornerとして表示する。
     /// NumberBoxやSliderなど、生成されたコントロールの種類を問わず動作する。
     /// </summary>
     private static void AttachMousePointerHitTestPaddingPreview(FrameworkElement fe)
     {
-        Popup? popup = null;
-        Border? previewBorder = null;
-        PropertyChangedEventHandler? handler = null;
-
-        void UpdateSize(TargetSettingsViewModel vm)
-        {
-            if (previewBorder is null)
-            {
-                return;
-            }
-            // 実際の当たり判定(TextOverlayVisibilityConverter.InflatePadding)と同じ計算を使い、表示と判定を一致させる
-            var r = TextOverlayVisibilityConverter.InflatePadding(new Rect(0, 0, 0, 0), vm.MousePointerHitTestPadding);
-            previewBorder.Width = r.Width;
-            previewBorder.Height = r.Height;
-        }
+        MousePointerHitTestPaddingAdorner? adorner = null;
+        AdornerLayer? layer = null;
+        Window? window = null;
+        PropertyChangedEventHandler? propertyChangedHandler = null;
+        MouseEventHandler? mouseMoveHandler = null;
 
         fe.GotFocus += (_, _) =>
         {
@@ -100,46 +91,91 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             {
                 return;
             }
-            previewBorder = new Border
+            layer = AdornerLayer.GetAdornerLayer(fe);
+            if (layer is null)
             {
-                Background = new SolidColorBrush(Color.FromArgb(0x33, 0x00, 0x7A, 0xCC)),
-                BorderBrush = Brushes.DodgerBlue,
-                BorderThickness = new Thickness(1.5),
-            };
-            popup = new Popup
+                return;
+            }
+            adorner = new MousePointerHitTestPaddingAdorner(fe);
+            layer.Add(adorner);
+            adorner.Update(Mouse.GetPosition(fe), vm.MousePointerHitTestPadding);
+
+            // スライダー操作中などマウスキャプチャが発生していても取得できるよう、Window単位でマウス移動を監視する
+            window = Window.GetWindow(fe);
+            mouseMoveHandler = (_, args) => adorner?.Update(args.GetPosition(fe), vm.MousePointerHitTestPadding);
+            if (window is not null)
             {
-                PlacementTarget = fe,
-                Placement = PlacementMode.Right,
-                HorizontalOffset = 8,
-                AllowsTransparency = true,
-                IsHitTestVisible = false,
-                Child = previewBorder,
-            };
-            UpdateSize(vm);
-            popup.SetCurrentValue(Popup.IsOpenProperty, true);
-            handler = (_, args) =>
+                window.PreviewMouseMove += mouseMoveHandler;
+            }
+
+            propertyChangedHandler = (_, args) =>
             {
                 if (args.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
                 {
-                    UpdateSize(vm);
+                    adorner?.Update(Mouse.GetPosition(fe), vm.MousePointerHitTestPadding);
                 }
             };
-            vm.PropertyChanged += handler;
+            vm.PropertyChanged += propertyChangedHandler;
         };
         fe.LostFocus += (_, _) =>
         {
-            if (fe.DataContext is TargetSettingsViewModel vm && handler is not null)
+            if (fe.DataContext is TargetSettingsViewModel vm && propertyChangedHandler is not null)
             {
-                vm.PropertyChanged -= handler;
-                handler = null;
+                vm.PropertyChanged -= propertyChangedHandler;
+                propertyChangedHandler = null;
             }
-            if (popup is not null)
+            if (window is not null && mouseMoveHandler is not null)
             {
-                popup.SetCurrentValue(Popup.IsOpenProperty, false);
-                popup = null;
+                window.PreviewMouseMove -= mouseMoveHandler;
+                mouseMoveHandler = null;
             }
-            previewBorder = null;
+            if (layer is not null && adorner is not null)
+            {
+                layer.Remove(adorner);
+            }
+            adorner = null;
+            layer = null;
+            window = null;
         };
+    }
+
+    /// <summary>
+    /// マウスカーソル位置を中心に、当たり判定の余白と同じ計算(<see cref="TextOverlayVisibilityConverter.InflatePadding"/>)で
+    /// 拡張した矩形を描画するAdorner。表示される範囲と実際の判定範囲を一致させる。
+    /// </summary>
+    private sealed class MousePointerHitTestPaddingAdorner : Adorner
+    {
+        private static readonly Brush FillBrush;
+        private static readonly Pen BorderPen;
+
+        static MousePointerHitTestPaddingAdorner()
+        {
+            FillBrush = new SolidColorBrush(Color.FromArgb(0x33, 0x00, 0x7A, 0xCC));
+            FillBrush.Freeze();
+            BorderPen = new Pen(Brushes.DodgerBlue, 1.5);
+            BorderPen.Freeze();
+        }
+
+        private Point mousePosition;
+        private double padding;
+
+        public MousePointerHitTestPaddingAdorner(UIElement adornedElement) : base(adornedElement)
+        {
+            IsHitTestVisible = false;
+        }
+
+        public void Update(Point position, double padding)
+        {
+            this.mousePosition = position;
+            this.padding = padding;
+            InvalidateVisual();
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            var rect = TextOverlayVisibilityConverter.InflatePadding(new Rect(mousePosition, mousePosition), padding);
+            drawingContext.DrawRectangle(FillBrush, BorderPen, rect);
+        }
     }
 
     private static Grid WrapWithHelpButton(FrameworkElement control, string pageName)
