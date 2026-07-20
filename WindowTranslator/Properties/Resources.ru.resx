@@ -447,4 +447,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Магазин плагинов</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Установить</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Установлен</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Вы уверены, что хотите удалить {0}? Он будет полностью удалён при следующем запуске.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Установлен: {0} → Последний: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Установлен: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Установленная версия</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Последняя версия</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Не удалось получить список плагинов из NuGet. Проверьте подключение к сети.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Установка завершена</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Ошибка установки</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Перезапустите WindowTranslator для применения изменений плагина.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Страница проекта</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Информация о лицензии</value>
+  </data>
 </root>

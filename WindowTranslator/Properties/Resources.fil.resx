@@ -456,4 +456,55 @@ Ang monitor ay hindi suportado.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin Store</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>I-install</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Naka-install</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>I-update</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>I-uninstall</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Sigurado ka bang gusto mong i-uninstall ang {0}? Ito ay ganap na matatanggal sa susunod na pagsisimula.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Available ang update</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Naka-install: {0} → Pinakabago: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Naka-install: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Naka-install na bersyon</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Pinakabagong bersyon</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Nabigo sa pagkuha ng listahan ng plugin mula sa NuGet. Pakisuri ang iyong koneksyon sa network.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Natapos ang pag-install</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Nabigo ang pag-install</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Mangyaring i-restart ang WindowTranslator upang mailapat ang mga pagbabago sa plugin.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Pahina ng proyekto</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Impormasyon ng lisensya</value>
+  </data>
 </root>

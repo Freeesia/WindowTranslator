@@ -447,4 +447,55 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>فروشگاه افزونه</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>نصب</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>نصب شده</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>به‌روزرسانی</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>آیا مطمئن هستید که می‌خواهید {0} را حذف کنید؟ در راه‌اندازی بعدی به طور کامل حذف خواهد شد.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>به‌روزرسانی موجود است</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>نصب شده: {0} → جدیدترین: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>نصب شده: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>نسخه نصب شده</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>جدیدترین نسخه</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>دریافت لیست افزونه از NuGet ناموفق بود. لطفاً اتصال شبکه خود را بررسی کنید.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>نصب کامل شد</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>نصب ناموفق بود</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>لطفاً WindowTranslator را مجدداً راه‌اندازی کنید تا تغییرات افزونه اعمال شود.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>صفحه پروژه</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>اطلاعات مجوز</value>
+  </data>
 </root>

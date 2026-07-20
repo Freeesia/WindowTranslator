@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- .NET 10 以降をターゲットにしてください -->
+    <TargetFramework>net10.0</TargetFramework>
+    <!-- プラグインとして動的ロードされるため必須です -->
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <!-- NuGet パッケージ情報 -->
+    <PackageId>WindowTranslator.Plugin.Sample</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>YourName</Authors>
+    <Description>WindowTranslator サンプルプラグイン</Description>
+    <PackageTags>windowtranslator-plugin</PackageTags>
+    <PackageProjectUrl>https://github.com/yourname/windowtranslator-plugin-sample</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WindowTranslator.Abstractions を NuGet 参照してください -->
+    <!-- <PackageReference Include="WindowTranslator.Abstractions" Version="x.y.z" ExcludeAssets="runtime" /> -->
+
+    <!-- ローカル開発時はプロジェクト参照も可 -->
+    <ProjectReference Include="..\..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+
+    <!-- ホスト側で提供されるパッケージは ExcludeAssets="runtime" を設定して重複を避けてください -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+</Project>

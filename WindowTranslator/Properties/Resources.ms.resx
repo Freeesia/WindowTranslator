@@ -455,4 +455,55 @@ Monitor tidak disokong.</value>
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Kedai Plugin</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Pasang</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Dipasang</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Kemaskini</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Nyahpasang</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Adakah anda pasti mahu menyahpasang {0}? Ia akan dibuang sepenuhnya semasa permulaan seterusnya.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Kemaskini tersedia</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Dipasang: {0} → Terkini: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Dipasang: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Versi yang dipasang</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Versi terkini</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Gagal mendapatkan senarai plugin dari NuGet. Sila semak sambungan rangkaian anda.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Pemasangan selesai</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Pemasangan gagal</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Sila mulakan semula WindowTranslator untuk menerapkan perubahan plugin.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Halaman projek</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Maklumat lesen</value>
+  </data>
 </root>

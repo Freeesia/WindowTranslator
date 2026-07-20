@@ -456,4 +456,55 @@ Monitör desteklenmiyor.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Eklenti Mağazası</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Yükle</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Yüklü</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>{0} öğesini kaldırmak istediğinizden emin misiniz? Sonraki başlatmada tamamen silinecek.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Güncelleme mevcut</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Yüklü: {0} → En son: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Yüklü: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Yüklü sürüm</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>En son sürüm</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>NuGet'ten eklenti listesi alınamadı. Lütfen ağ bağlantınızı kontrol edin.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Kurulum tamamlandı</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Kurulum başarısız</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Eklenti değişikliklerini uygulamak için lütfen WindowTranslator'ı yeniden başlatın.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Proje sayfası</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Lisans bilgileri</value>
+  </data>
 </root>

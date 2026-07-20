@@ -19,6 +19,7 @@ using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
@@ -103,6 +104,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool IsVisibleReviewButton => this.reviewRequestService.CanOpenReview;
 
+    public PluginStoreViewModel PluginStore { get; }
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
@@ -116,6 +119,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
         [Inject] ILogger<AllSettingsViewModel> logger,
+        [Inject] PluginStoreViewModel pluginStoreViewModel,
         string target,
         bool? applyMode = null)
     {
@@ -158,6 +162,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.logger = logger;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
+        this.PluginStore = pluginStoreViewModel;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();

@@ -6,6 +6,7 @@
     xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginStore="clr-namespace:WindowTranslator.Modules.PluginStore"
     xmlns:properties="clr-namespace:WindowTranslator.Properties"
     xmlns:pt="http://propertytools.org/wpf"
     xmlns:root="clr-namespace:WindowTranslator"
@@ -398,6 +399,9 @@
                             </pt:PropertyGrid.Resources>
                         </pt:PropertyGrid>
                     </DockPanel>
+                </TabItem>
+                <TabItem Header="{x:Static properties:Resources.PluginStore}">
+                    <pluginStore:PluginStoreView DataContext="{Binding PluginStore}" />
                 </TabItem>
             </TabControl>
         </DockPanel>

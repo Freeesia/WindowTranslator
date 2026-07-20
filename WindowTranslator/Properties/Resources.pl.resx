@@ -456,4 +456,55 @@ Monitory nie są obsługiwane.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Sklep wtyczek</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Zainstaluj</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Zainstalowano</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualizuj</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Odinstaluj</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Czy na pewno chcesz odinstalować {0}? Zostanie całkowicie usunięty przy następnym uruchomieniu.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Dostępna aktualizacja</value>
+  </data>
+  <data name="UpdateAvailableVersion" xml:space="preserve">
+    <value>Zainstalowano: {0} → Najnowszy: {1}</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>Zainstalowano: {0}</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Zainstalowana wersja</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Najnowsza wersja</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Nie udało się pobrać listy wtyczek z NuGet. Sprawdź połączenie sieciowe.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalacja zakończona</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Instalacja nie powiodła się</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Uruchom ponownie WindowTranslator, aby zastosować zmiany wtyczki.</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Strona projektu</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informacje o licencji</value>
+  </data>
 </root>
