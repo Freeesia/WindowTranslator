@@ -52,6 +52,9 @@ public abstract partial class MainViewModelBase : IDisposable
     [ObservableProperty]
     private bool overlayVisible = true;
 
+    [ObservableProperty]
+    private double? previewMousePointerHitTestPadding;
+
     public bool DisplayBusy { get; }
 
     public BusyScope Recognizing { get; } = new();
@@ -100,6 +103,13 @@ public abstract partial class MainViewModelBase : IDisposable
         this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
+        StrongReferenceMessenger.Default.Register<MainViewModelBase, MousePointerHitTestPaddingPreviewMessage>(this, static (r, m) =>
+        {
+            if (m.TargetName == r.name)
+            {
+                r.PreviewMousePointerHitTestPadding = m.Padding;
+            }
+        });
     }
 
     partial void OnOverlayVisibleChanged(bool value)
@@ -326,6 +336,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 captureDisposable.Dispose();
             }
             this.timer?.Dispose();
+            StrongReferenceMessenger.Default.Unregister<MousePointerHitTestPaddingPreviewMessage>(this);
         }
         disposedValue = true;
     }

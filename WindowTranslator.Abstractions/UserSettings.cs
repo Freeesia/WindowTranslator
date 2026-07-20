@@ -88,7 +88,7 @@ public class TargetSettings
     public bool IsOneShotMode { get; set; }
 
     /// <summary>
-    /// マウスポインター判定の余白（ピクセル、キャプチャ画像の解像度基準）
+    /// マウスポインター判定の余白（WPF上のピクセル値）
     /// </summary>
     public double MousePointerHitTestPadding { get; set; }
 

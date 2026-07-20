@@ -1,5 +1,6 @@
 ﻿using PropertyTools.DataAnnotations;
 using PropertyTools.Wpf;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
@@ -10,8 +11,10 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using CommunityToolkit.Mvvm.Messaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Controls;
+using WindowTranslator.Modules.Main;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
 using TextBlock = System.Windows.Controls.TextBlock;
@@ -44,6 +47,12 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
         fe ??= base.CreateControl(property, options);
 
+        // マウスポインター判定の余白は、コントロールにフォーカスがある間だけオーバーレイにプレビュー表示する
+        if (property.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
+        {
+            AttachMousePointerHitTestPaddingPreview(fe);
+        }
+
         if (property.Descriptor.Attributes.Matches(enableAttribute))
         {
             fe.IsEnabled = true;
@@ -62,6 +71,47 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
         return fe;
     }
+
+    /// <summary>
+    /// <paramref name="fe"/>にフォーカスがある間、<see cref="TargetSettingsViewModel.MousePointerHitTestPadding"/>の
+    /// 現在値をプレビューメッセージとして送信し続け、フォーカスが外れたらプレビューを解除する。
+    /// </summary>
+    private static void AttachMousePointerHitTestPaddingPreview(FrameworkElement fe)
+    {
+        PropertyChangedEventHandler? handler = null;
+        fe.GotFocus += (_, _) =>
+        {
+            if (fe.DataContext is not TargetSettingsViewModel vm)
+            {
+                return;
+            }
+            handler = (_, args) =>
+            {
+                if (args.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
+                {
+                    SendMousePointerHitTestPaddingPreview(vm);
+                }
+            };
+            vm.PropertyChanged += handler;
+            SendMousePointerHitTestPaddingPreview(vm);
+        };
+        fe.LostFocus += (_, _) =>
+        {
+            if (fe.DataContext is not TargetSettingsViewModel vm)
+            {
+                return;
+            }
+            if (handler is not null)
+            {
+                vm.PropertyChanged -= handler;
+                handler = null;
+            }
+            StrongReferenceMessenger.Default.Send(new MousePointerHitTestPaddingPreviewMessage(vm.Name, null));
+        };
+    }
+
+    private static void SendMousePointerHitTestPaddingPreview(TargetSettingsViewModel vm)
+        => StrongReferenceMessenger.Default.Send(new MousePointerHitTestPaddingPreviewMessage(vm.Name, vm.MousePointerHitTestPadding));
 
     private static Grid WrapWithHelpButton(FrameworkElement control, string pageName)
     {

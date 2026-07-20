@@ -316,7 +316,7 @@
     <value>Trefferbereichspuffer des Mauszeigers</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>Zusätzliche Pixel um den Trefferbereich des Mauszeigers (bezogen auf die Auflösung des erfassten Bildes)</value>
+    <value>Zusätzliche Pixel um den Trefferbereich des Mauszeigers</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay-Hintergrund-Deckkraft</value>

@@ -33,6 +33,7 @@
             IsSwapVisibility="{Binding IsSwapVisibility, ElementName=host, Mode=OneWay}"
             MousePointerHitTestPadding="{Binding MousePointerHitTestPadding, Mode=OneWay}"
             MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
+            PreviewMousePointerHitTestPadding="{Binding PreviewMousePointerHitTestPadding, Mode=OneWay}"
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"
             Scale="{Binding Scale, ElementName=host, Mode=OneWay}"

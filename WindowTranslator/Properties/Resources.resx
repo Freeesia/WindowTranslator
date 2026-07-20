@@ -316,7 +316,7 @@
     <value>マウスポインター判定の余白</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>マウスポインター周辺の判定領域に追加するピクセル数（キャプチャ画像の解像度基準）</value>
+    <value>マウスポインター周辺の判定領域に追加するピクセル数</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>オーバーレイ背景の不透明度</value>

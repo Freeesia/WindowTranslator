@@ -316,7 +316,7 @@
     <value>滑鼠指標命中測試邊距</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>加入至滑鼠指標命中測試區域的像素數（以擷取影像解析度為基準）</value>
+    <value>加入至滑鼠指標命中測試區域的像素數</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>覆蓋層背景不透明度</value>
