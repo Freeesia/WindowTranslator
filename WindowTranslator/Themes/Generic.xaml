@@ -15,7 +15,6 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type control:OverlayTextsControl}">
-                    <Grid>
                     <ItemsControl
                         Width="{TemplateBinding RectWidth}"
                         Height="{TemplateBinding RectHeight}"
@@ -132,35 +131,6 @@
                             <ScaleTransform ScaleX="{Binding Scale, RelativeSource={RelativeSource Mode=TemplatedParent}}" ScaleY="{Binding Scale, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                         </ItemsControl.LayoutTransform>
                     </ItemsControl>
-                    <!--  設定画面でマウスポインター判定の余白を編集中に、その範囲をマウス位置にプレビュー表示する  -->
-                    <Border
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Background="#33007ACC"
-                        BorderBrush="DodgerBlue"
-                        BorderThickness="1.5"
-                        IsHitTestVisible="False"
-                        Visibility="{Binding PreviewMousePointerHitTestPadding, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={x:Static data:NullableToVisibilityConverter.Default}}">
-                        <Border.Width>
-                            <Binding
-                                Converter="{x:Static data:PreviewHitTestSizeConverter.Default}"
-                                Path="PreviewMousePointerHitTestPadding"
-                                RelativeSource="{RelativeSource Mode=TemplatedParent}" />
-                        </Border.Width>
-                        <Border.Height>
-                            <Binding
-                                Converter="{x:Static data:PreviewHitTestSizeConverter.Default}"
-                                Path="PreviewMousePointerHitTestPadding"
-                                RelativeSource="{RelativeSource Mode=TemplatedParent}" />
-                        </Border.Height>
-                        <Border.Margin>
-                            <MultiBinding Converter="{x:Static data:PreviewHitTestMarginConverter.Default}">
-                                <Binding Path="MousePos" RelativeSource="{RelativeSource Mode=TemplatedParent}" />
-                                <Binding Path="PreviewMousePointerHitTestPadding" RelativeSource="{RelativeSource Mode=TemplatedParent}" />
-                            </MultiBinding>
-                        </Border.Margin>
-                    </Border>
-                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

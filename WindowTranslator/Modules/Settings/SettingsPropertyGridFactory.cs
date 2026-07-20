@@ -11,10 +11,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
-using CommunityToolkit.Mvvm.Messaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Controls;
-using WindowTranslator.Modules.Main;
+using WindowTranslator.Data;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
 using TextBlock = System.Windows.Controls.TextBlock;
@@ -47,7 +46,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
         fe ??= base.CreateControl(property, options);
 
-        // マウスポインター判定の余白は、コントロールにフォーカスがある間だけオーバーレイにプレビュー表示する
+        // マウスポインター判定の余白は、コントロールにフォーカスがある間だけ設定画面内にプレビュー表示する
         if (property.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
         {
             AttachMousePointerHitTestPaddingPreview(fe);
@@ -74,44 +73,74 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
     /// <summary>
     /// <paramref name="fe"/>にフォーカスがある間、<see cref="TargetSettingsViewModel.MousePointerHitTestPadding"/>の
-    /// 現在値をプレビューメッセージとして送信し続け、フォーカスが外れたらプレビューを解除する。
+    /// 現在値に応じた大きさのプレビュー矩形をコントロールの脇にPopup表示する。
+    /// NumberBoxやSliderなど、生成されたコントロールの種類を問わず動作する。
     /// </summary>
     private static void AttachMousePointerHitTestPaddingPreview(FrameworkElement fe)
     {
+        Popup? popup = null;
+        Border? previewBorder = null;
         PropertyChangedEventHandler? handler = null;
+
+        void UpdateSize(TargetSettingsViewModel vm)
+        {
+            if (previewBorder is null)
+            {
+                return;
+            }
+            // 実際の当たり判定(TextOverlayVisibilityConverter.InflatePadding)と同じ計算を使い、表示と判定を一致させる
+            var r = TextOverlayVisibilityConverter.InflatePadding(new Rect(0, 0, 0, 0), vm.MousePointerHitTestPadding);
+            previewBorder.Width = r.Width;
+            previewBorder.Height = r.Height;
+        }
+
         fe.GotFocus += (_, _) =>
         {
             if (fe.DataContext is not TargetSettingsViewModel vm)
             {
                 return;
             }
+            previewBorder = new Border
+            {
+                Background = new SolidColorBrush(Color.FromArgb(0x33, 0x00, 0x7A, 0xCC)),
+                BorderBrush = Brushes.DodgerBlue,
+                BorderThickness = new Thickness(1.5),
+            };
+            popup = new Popup
+            {
+                PlacementTarget = fe,
+                Placement = PlacementMode.Right,
+                HorizontalOffset = 8,
+                AllowsTransparency = true,
+                IsHitTestVisible = false,
+                Child = previewBorder,
+            };
+            UpdateSize(vm);
+            popup.SetCurrentValue(Popup.IsOpenProperty, true);
             handler = (_, args) =>
             {
                 if (args.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
                 {
-                    SendMousePointerHitTestPaddingPreview(vm);
+                    UpdateSize(vm);
                 }
             };
             vm.PropertyChanged += handler;
-            SendMousePointerHitTestPaddingPreview(vm);
         };
         fe.LostFocus += (_, _) =>
         {
-            if (fe.DataContext is not TargetSettingsViewModel vm)
-            {
-                return;
-            }
-            if (handler is not null)
+            if (fe.DataContext is TargetSettingsViewModel vm && handler is not null)
             {
                 vm.PropertyChanged -= handler;
                 handler = null;
             }
-            StrongReferenceMessenger.Default.Send(new MousePointerHitTestPaddingPreviewMessage(vm.Name, null));
+            if (popup is not null)
+            {
+                popup.SetCurrentValue(Popup.IsOpenProperty, false);
+                popup = null;
+            }
+            previewBorder = null;
         };
     }
-
-    private static void SendMousePointerHitTestPaddingPreview(TargetSettingsViewModel vm)
-        => StrongReferenceMessenger.Default.Send(new MousePointerHitTestPaddingPreviewMessage(vm.Name, vm.MousePointerHitTestPadding));
 
     private static Grid WrapWithHelpButton(FrameworkElement control, string pageName)
     {

@@ -74,17 +74,5 @@ public class OverlayTextsControl : Control
     public static readonly DependencyProperty MousePointerHitTestPaddingProperty =
         DependencyProperty.Register(nameof(MousePointerHitTestPadding), typeof(double), typeof(OverlayTextsControl), new PropertyMetadata(0.0));
 
-    /// <summary>
-    /// 設定画面での編集中にプレビュー表示する当たり判定の余白（WPF上のピクセル値）。
-    /// フォーカスが外れている間はnull。
-    /// </summary>
-    public double? PreviewMousePointerHitTestPadding
-    {
-        get => (double?)GetValue(PreviewMousePointerHitTestPaddingProperty);
-        set => SetValue(PreviewMousePointerHitTestPaddingProperty, value);
-    }
 
-    /// <summary>Identifies the <see cref="PreviewMousePointerHitTestPadding"/> dependency property.</summary>
-    public static readonly DependencyProperty PreviewMousePointerHitTestPaddingProperty =
-        DependencyProperty.Register(nameof(PreviewMousePointerHitTestPadding), typeof(double?), typeof(OverlayTextsControl), new PropertyMetadata(null));
 }
