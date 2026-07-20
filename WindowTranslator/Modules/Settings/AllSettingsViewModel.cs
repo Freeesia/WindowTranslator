@@ -469,7 +469,7 @@ public partial class TargetSettingsViewModel(
 
     [property: Category("SettingsViewModel|Misc")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
-    [property: Spinnable(Minimum = 0, Maximum = 100)]
+    [property: Slidable(0, 100, 1, 10, true, 1)]
     [property: SortIndex(10)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;

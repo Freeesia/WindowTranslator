@@ -74,7 +74,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
     /// <summary>
     /// <paramref name="fe"/>にフォーカスがある間、<see cref="TargetSettingsViewModel.MousePointerHitTestPadding"/>の
-    /// 現在値に応じた大きさのプレビュー矩形を、マウスカーソル位置に追従するAdornerとして表示する。
+    /// 現在値を半径とするプレビュー円を、マウスカーソル位置に追従するAdornerとして表示する。
     /// NumberBoxやSliderなど、生成されたコントロールの種類を問わず動作する。
     /// </summary>
     private static void AttachMousePointerHitTestPaddingPreview(FrameworkElement fe)
@@ -140,8 +140,9 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
     }
 
     /// <summary>
-    /// マウスカーソル位置を中心に、当たり判定の余白と同じ計算(<see cref="TextOverlayVisibilityConverter.InflatePadding"/>)で
-    /// 拡張した矩形を描画するAdorner。表示される範囲と実際の判定範囲を一致させる。
+    /// マウスカーソル位置を中心に、当たり判定の余白と同じ半径(<see cref="TextOverlayVisibilityConverter.HitTest"/>参照)の
+    /// 円を描画するAdorner。テキスト矩形が存在しない状態での判定範囲は、矩形からの最短距離がpadding以内かどうかの
+    /// 判定と数学的に等価な「マウス位置中心・半径paddingの円」になるため、表示される範囲と実際の判定範囲を一致させる。
     /// </summary>
     private sealed class MousePointerHitTestPaddingAdorner : Adorner
     {
@@ -173,8 +174,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            var rect = TextOverlayVisibilityConverter.InflatePadding(new Rect(mousePosition, mousePosition), padding);
-            drawingContext.DrawRectangle(FillBrush, BorderPen, rect);
+            drawingContext.DrawEllipse(FillBrush, BorderPen, mousePosition, padding, padding);
         }
     }
 
