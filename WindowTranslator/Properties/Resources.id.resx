@@ -316,7 +316,7 @@
     <value>Padding uji hit pointer mouse</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>Jumlah piksel tambahan di sekitar area uji hit pointer mouse</value>
+    <value>Jumlah piksel tambahan di sekitar area uji hit pointer mouse (berdasarkan resolusi gambar tangkapan)</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Opasitas latar belakang hamparan</value>

@@ -316,7 +316,7 @@
     <value>Vùng đệm kiểm tra trỏ chuột</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>Số pixel bổ sung quanh vùng kiểm tra của con trỏ chuột</value>
+    <value>Số pixel bổ sung quanh vùng kiểm tra của con trỏ chuột (dựa trên độ phân giải ảnh chụp)</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Độ mờ nền lớp phủ</value>

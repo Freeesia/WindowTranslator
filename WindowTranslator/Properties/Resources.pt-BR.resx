@@ -316,7 +316,7 @@
     <value>Margem do teste de acerto do ponteiro do mouse</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>Pixels adicionais adicionados ao redor da área de teste de acerto do ponteiro do mouse</value>
+    <value>Pixels adicionais adicionados ao redor da área de teste de acerto do ponteiro do mouse (com base na resolução da imagem capturada)</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Opacidade do fundo da sobreposição</value>

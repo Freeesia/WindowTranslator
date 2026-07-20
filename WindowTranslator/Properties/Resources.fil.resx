@@ -316,7 +316,7 @@
     <value>Padding ng hit test ng mouse pointer</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>Karagdagang mga pixel sa paligid ng hit test area ng mouse pointer</value>
+    <value>Karagdagang mga pixel sa paligid ng hit test area ng mouse pointer (batay sa resolution ng nakuhang larawan)</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Opasidad ng background ng overlay</value>

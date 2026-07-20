@@ -316,7 +316,7 @@
     <value>Padding ujian sentuh penunjuk tetikus</value>
   </data>
   <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
-    <value>Bilangan piksel tambahan di sekeliling kawasan ujian sentuh penunjuk tetikus</value>
+    <value>Bilangan piksel tambahan di sekeliling kawasan ujian sentuh penunjuk tetikus (berdasarkan resolusi imej yang ditangkap)</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Kelegapan latar belakang hamparan</value>
