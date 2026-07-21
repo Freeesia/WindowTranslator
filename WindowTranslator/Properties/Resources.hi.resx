@@ -312,6 +312,12 @@
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>केवल माउस पॉइंटर स्थिति पर टेक्स्ट के लिए ओवरले अनुवाद प्रदर्शित करें</value>
   </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>マウスポインター判定の余白</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>マウスポインター周辺の判定領域に追加するピクセル数</value>
+  </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>ओवरले पृष्ठभूमि अस्पष्टता</value>
   </data>
