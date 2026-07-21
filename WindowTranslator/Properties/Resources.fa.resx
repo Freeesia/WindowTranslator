@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Source" xml:space="preserve">
+    <value>زبان مبدأ (تشخیص)</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>زبان مقصد (نمایش)</value>
+  </data>
+  <data name="TranslateModule" xml:space="preserve">
+    <value>ماژول ترجمه</value>
+  </data>
+  <data name="CacheModule" xml:space="preserve">
+    <value>ماژول کش</value>
+  </data>
+  <data name="ViewMode" xml:space="preserve">
+    <value>حالت نمایش نتایج</value>
+  </data>
+  <data name="AutoTargets" xml:space="preserve">
+    <value>اهداف ترجمه خودکار</value>
+  </data>
+  <data name="IsEnableAutoTarget" xml:space="preserve">
+    <value>ترجمه خودکار هنگام راه‌اندازی فرآیند انتخاب‌شده</value>
+  </data>
+  <data name="SettingsViewModel" xml:space="preserve">
+    <value>تنظیمات کلی</value>
+  </data>
+  <data name="Misc" xml:space="preserve">
+    <value>متفرقه</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>تنظیمات افزونه</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>تنظیمات زبان</value>
+  </data>
+  <data name="Overlay" xml:space="preserve">
+    <value>پوشش</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>پنجره ضبط</value>
+  </data>
+  <data name="InMemoryCache" xml:space="preserve">
+    <value>کش در حافظه</value>
+  </data>
+  <data name="LocalCache" xml:space="preserve">
+    <value>کش فایل محلی</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>تنظیمات</value>
+  </data>
+  <data name="Attach" xml:space="preserve">
+    <value>اتصال</value>
+  </data>
+  <data name="Detach" xml:space="preserve">
+    <value>قطع اتصال</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+  <data name="MutexError" xml:space="preserve">
+    <value>WindowTranslator در حال اجرا است.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>درباره</value>
+  </data>
+  <data name="OpenThirdPartyLicensesCommand" xml:space="preserve">
+    <value>بررسی مجوزهای شخص ثالث</value>
+  </data>
+  <data name="HasUpdate" xml:space="preserve">
+    <value>به‌روزرسانی موجود است: {0}</value>
+  </data>
+  <data name="IsLatest" xml:space="preserve">
+    <value>شما از آخرین نسخه استفاده می‌کنید.</value>
+  </data>
+  <data name="UpdateInfo" xml:space="preserve">
+    <value>اطلاعات به‌روزرسانی</value>
+  </data>
+  <data name="UpdateCommand" xml:space="preserve">
+    <value>به‌روزرسانی به آخرین نسخه</value>
+  </data>
+  <data name="OpenChangelogCommand" xml:space="preserve">
+    <value>مشاهده جزئیات</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>فقط هنگام نگه‌داشتن</value>
+  </data>
+  <data name="Toggle" xml:space="preserve">
+    <value>فشار برای روشن/خاموش</value>
+  </data>
+  <data name="OverlaySwitch" xml:space="preserve">
+    <value>تغییر وضعیت پوشش</value>
+  </data>
+  <data name="IsEnableCaptureOverlay" xml:space="preserve">
+    <value>امکان ضبط پوشش</value>
+  </data>
+  <data name="TargetProcesses" xml:space="preserve">
+    <value>فرآیندهای هدف ترجمه</value>
+  </data>
+  <data name="OcrModule" xml:space="preserve">
+    <value>ماژول تشخیص</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>میانبرها</value>
+  </data>
+  <data name="OverlayShortcut" xml:space="preserve">
+    <value>تغییر پوشش</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>نسخه جدید {0} در دسترس است</value>
+  </data>
+  <data name="InstallNewVersion" xml:space="preserve">
+    <value>نصب نسخه جدید {0}</value>
+  </data>
+  <data name="CheckUpdateNotes" xml:space="preserve">
+    <value>بررسی به‌روزرسانی‌ها</value>
+  </data>
+  <data name="CheckNewVersion" xml:space="preserve">
+    <value>بررسی نسخه جدید</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>لغو</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>تأیید</value>
+  </data>
+  <data name="AutoStartWithPC" xml:space="preserve">
+    <value>راه‌اندازی خودکار هنگام شروع سیستم</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>تنظیمات عمومی</value>
+  </data>
+  <data name="DisplayMethod" xml:space="preserve">
+    <value>روش نمایش</value>
+  </data>
+  <data name="TargetSpecificSettings" xml:space="preserve">
+    <value>تنظیمات برای هر هدف</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>نسخه</value>
+  </data>
+  <data name="BuildDate" xml:space="preserve">
+    <value>تاریخ ساخت</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>توسعه‌دهنده</value>
+  </data>
+  <data name="PublishPage" xml:space="preserve">
+    <value>صفحه عمومی</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>مجوز</value>
+  </data>
+  <data name="NoTranslateModule" xml:space="preserve">
+    <value>بدون ترجمه</value>
+  </data>
+  <data name="CacheParam" xml:space="preserve">
+    <value>تنظیمات کش</value>
+  </data>
+  <data name="FuzzyMatchThreshold" xml:space="preserve">
+    <value>آستانه متن مشابه</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>بدون کش</value>
+  </data>
+  <data name="WindowsMediaOcr" xml:space="preserve">
+    <value>تشخیص کاراکتر استاندارد ویندوز</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>نام برنامه</value>
+  </data>
+  <data name="SteamWishlist" xml:space="preserve">
+    <value>هدیه بازی در Steam</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>اطلاعات برنامه</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>تماس</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>اطلاعات فنی</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>بستن</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>اعمال</value>
+  </data>
+  <data name="DisplayBusy" xml:space="preserve">
+    <value>نمایش آیکون در حال پردازش</value>
+  </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>ترجمه فقط هنگام فعال‌سازی پوشش</value>
+  </data>
+  <data name="IsOverlayPointSwap" xml:space="preserve">
+    <value>نمایش ترجمه فقط برای متن زیر مکان‌نما</value>
+  </data>
+  <data name="OverlayOpacity" xml:space="preserve">
+    <value>شفافیت پس‌زمینه پوشش</value>
+  </data>
+  <data name="SendReportToolTip" xml:space="preserve">
+    <value>ارسال اطلاعات خطا به سیستم گزارش‌دهی.</value>
+  </data>
+  <data name="SendRerpot" xml:space="preserve">
+    <value>ارسال اطلاعات</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>ارسال شد</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>کپی اطلاعات</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>کپی شد</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>تأیید</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>ارسال</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>گزارش</value>
+  </data>
+  <data name="Attaching" xml:space="preserve">
+    <value>در حال اتصال</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>صادر کردن</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>پاک کردن</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>پیمایش خودکار</value>
+  </data>
+  <data name="ExportLogs" xml:space="preserve">
+    <value>صادر کردن گزارش‌ها</value>
+  </data>
+  <data name="ExportLogsFailed" xml:space="preserve">
+    <value>صادر کردن ناموفق بود</value>
+  </data>
+  <data name="ExportLogsSuccess" xml:space="preserve">
+    <value>صادر کردن کامل شد</value>
+  </data>
+  <data name="ExportLogsSuccessDetail" xml:space="preserve">
+    <value>گزارش‌ها در `{0}` صادر شدند.</value>
+  </data>
+  <data name="ExportLogsFilterText" xml:space="preserve">
+    <value>فایل‌های متنی</value>
+  </data>
+  <data name="FaildOcr" xml:space="preserve">
+    <value>تشخیص OCR ناموفق بود</value>
+  </data>
+  <data name="FaildTranslate" xml:space="preserve">
+    <value>ترجمه ناموفق بود</value>
+  </data>
+  <data name="FaildOverlay" xml:space="preserve">
+    <value>جاسازی در پنجره ناموفق بود.</value>
+  </data>
+  <data name="SelectOtherWindow" xml:space="preserve">
+    <value>لطفاً پنجره‌ای غیر از WindowTranslator انتخاب کنید</value>
+  </data>
+  <data name="UnknownWindow" xml:space="preserve">
+    <value>پنجره انتخاب‌شده «{0}» قابل شناسایی نیست.</value>
+  </data>
+  <data name="SettingsInvalid" xml:space="preserve">
+    <value>خطای اعتبارسنجی تنظیمات</value>
+  </data>
+  <data name="SaveAndClose" xml:space="preserve">
+    <value>ذخیره و بستن</value>
+  </data>
+  <data name="DefaultSetting" xml:space="preserve">
+    <value>تنظیمات پیش‌فرض</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>راه‌اندازی خودکار</value>
+  </data>
+  <data name="RegisterAutoStart" xml:space="preserve">
+    <value>{0} برای راه‌اندازی خودکار ثبت شد.</value>
+  </data>
+  <data name="UnregisterAutoStart" xml:space="preserve">
+    <value>راه‌اندازی خودکار {0} غیرفعال شد.</value>
+  </data>
+  <data name="TranslateLanguage" xml:space="preserve">
+    <value>تنظیمات زبان</value>
+  </data>
+  <data name="SameSourceTargetLanguage" xml:space="preserve">
+    <value>زبان مبدأ و مقصد یکسان هستند.</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>قابلیت OCR برای {0} در دسترس نیست.</value>
+  </data>
+  <data name="FaildApplySettings" xml:space="preserve">
+    <value>اعمال تنظیمات ناموفق بود.</value>
+  </data>
+  <data name="UnhundledErrorMessage" xml:space="preserve">
+    <value>خطای ناشناخته رخ داده است</value>
+  </data>
+  <data name="ReviewRequest" xml:space="preserve">
+    <value>درخواست نظرسنجی</value>
+  </data>
+  <data name="ReviewRequestMessage" xml:space="preserve">
+    <value>ممنون از استفاده از WindowTranslator. آیا می‌توانید نظر بگذارید؟</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>نوشتن نظر</value>
+  </data>
+  <data name="ReviewLater" xml:space="preserve">
+    <value>بعداً</value>
+  </data>
+  <data name="ReviewNeverShowAgain" xml:space="preserve">
+    <value>دیگر نشان نده</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **ذخیره این تنظیمات کار نخواهد کرد.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: خطای اعتبارسنجی تنظیمات</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>اجرا به همین شکل</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **اجرا به همین شکل ممکن است کار نکند**
+***
+
+</value>
+  </data>
+</root>

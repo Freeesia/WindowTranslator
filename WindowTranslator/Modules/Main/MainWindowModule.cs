@@ -80,7 +80,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             return;
         }
 
-        var scope = provider.CreateScope();
+        var scope = provider.CreateAsyncScope();
         try
         {
             var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<CommonSettings>>();
@@ -97,14 +97,14 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             var info = new WindowInfo(name, targetWindowHandle, window);
             window.Closed += (_, _) =>
             {
-                scope.Dispose();
+                scope.DisposeAsync().AsTask().Forget();
                 this.OpenedWindows.Remove(info);
             };
             this.OpenedWindows.Add(info);
         }
         catch (Exception)
         {
-            scope.Dispose();
+            await scope.DisposeAsync();
             throw;
         }
     }

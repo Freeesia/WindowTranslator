@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Ölçek</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Parlaklık</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Birleştirme Eşiği</value>
   </data>

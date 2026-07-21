@@ -133,7 +133,7 @@
     <value>Nabigo ang pagset ng OCR model lazy loading. Error code: {0}</value>
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>Nabigo ang paglikha ng OCR pipeline. Error code: {0} Pakisubukang i-update ang Snipping Tool o Microsoft Photos app.</value>
+    <value>Nabigo ang paglikha ng OCR pipeline. Error code: {0} Pakisubukang i-update ang Snipping Tool app.</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Nabigo ang paglikha ng mga opsyon ng OCR process. Error code: {0}</value>

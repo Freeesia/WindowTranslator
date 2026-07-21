@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Panlingo.LanguageIdentification.FastText;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Panlingo.LanguageIdentification.FastText;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
@@ -37,6 +37,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
     private readonly double fontSizeThrethold;
     private readonly bool isAvoidMergeList;
     private readonly double scale = 1.0; // スケールのデフォルト値
+    private readonly int brightness; // 明るさ（-127 - 128）
+    private readonly int contrast; // コントラスト（-99 - 100）
 
     static OneOcr()
     {
@@ -77,6 +79,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.fontSizeThrethold = ocrParam.Value.FontSizeThrethold;
         this.isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
         this.scale = ocrParam.Value.Scale;
+        this.brightness = ocrParam.Value.Brightness;
+        this.contrast = ocrParam.Value.Contrast;
 
         // OCR初期化オプションの作成
         var res = CreateOcrInitOptions(out this.context);
@@ -126,8 +130,23 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
+
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
+        {
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
+        }
+
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 

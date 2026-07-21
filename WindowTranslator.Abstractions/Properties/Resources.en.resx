@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Enlargement rate</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Brightness</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Contrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Merge Threshold</value>
   </data>

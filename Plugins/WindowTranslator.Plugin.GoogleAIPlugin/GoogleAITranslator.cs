@@ -84,7 +84,7 @@ public class GoogleAITranslator : ITranslateModule
     {
         if (this.client is null)
         {
-            throw new InvalidOperationException(Resources.GeminiNotInitialized);
+            throw new AppUserException(Resources.GeminiNotInitialized);
         }
         var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
         var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
@@ -134,7 +134,7 @@ public class GoogleAITranslator : ITranslateModule
             }
             catch (ApiException e) when (e.ErrorCode == 400)
             {
-                throw new ApiException(e.ErrorCode, Resources.InvalidApiKey, e.ErrorStatus);
+                throw new AppUserException(Resources.InvalidApiKey, e);
             }
             // サービスが一時的に過負荷になっているか、ダウンしている可能性があります。
             catch (ApiException e) when (e.ErrorCode == 503)

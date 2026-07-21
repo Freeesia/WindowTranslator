@@ -302,6 +302,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.Clear();
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
+
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -380,6 +381,11 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("th-TH"),
         CultureInfo.GetCultureInfo("fil-PH"),
         CultureInfo.GetCultureInfo("pl-PL"),
+        CultureInfo.GetCultureInfo("fa-IR"),
+        CultureInfo.GetCultureInfo("cs-CZ"),
+        CultureInfo.GetCultureInfo("ps-AF"),
+        CultureInfo.GetCultureInfo("prs-AF"),
+        CultureInfo.GetCultureInfo("hu-HU"),
     ];
 
     [Browsable(false)]
@@ -483,6 +489,7 @@ public partial class TargetSettingsViewModel(
         {
             configureMethod.Invoke(configure, [name, p]);
         }
+
         return p;
     }).ToArray();
 }

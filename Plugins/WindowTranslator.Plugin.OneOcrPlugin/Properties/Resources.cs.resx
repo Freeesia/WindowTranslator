@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="OneOcr" xml:space="preserve">
+    <value>Nové rozpoznávání textu ve Windows (Beta)</value>
+  </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Závislé moduly nebyly nalezeny. V tomto prostředí nejsou dostupné.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Nepodařilo se zkopírovat knihovnu DLL OneOcr. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Nepodařilo se vytvořit možnosti inicializace OCR. Kód chyby: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Nepodařilo se nastavit líné načítání modelu OCR. Kód chyby: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Nepodařilo se vytvořit pipeline OCR. Kód chyby: {0}
+Zkuste prosím aktualizovat aplikaci „Nástroj Výstřižky“.</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Nepodařilo se vytvořit možnosti zpracování OCR. Kód chyby: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Nepodařilo se nastavit maximální počet rozpoznávaných řádků OCR. Kód chyby: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Nepodařilo se spustit pipeline OCR. Kód chyby: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Nepodařilo se získat počet řádků OCR. Kód chyby: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Nepodařilo se získat řádek OCR. Číslo řádku: {0}, kód chyby: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Nepodařilo se získat textový obsah řádku OCR. Číslo řádku: {0}, kód chyby: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Nepodařilo se získat ohraničující rámeček řádku OCR. Číslo řádku: {0}, kód chyby: {1}</value>
+  </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Závislé moduly nebyly nalezeny. V tomto prostředí nejsou dostupné. {0}</value>
+  </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Aktualizovat Nástroj Výstřižky</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>Pro použití OneOcr je nutné aktualizovat aplikaci „Nástroj Výstřižky“.
+
+Otevřete prosím Microsoft Store a proveďte aktualizaci.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Otevřít Store</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>Neaktualizovat</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Kontrola aktualizací...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>Kontrolují se aktualizace aplikace „Nástroj Výstřižky“...
+
+Dokončete prosím aktualizaci v Microsoft Store.
+Po dokončení aktualizace bude proces automaticky pokračovat.
+
+> #### Pokud se aktualizace nedokončí
+> Proveďte aktualizaci ručně v části „Stažení a aktualizace“ v Microsoft Store a zkuste to znovu.
+> [Otevřít Stažení a aktualizace](ms-windows-store://downloadsandupdates)</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Přerušit</value>
+  </data>
+</root>

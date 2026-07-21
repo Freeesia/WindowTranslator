@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>Tạo pipeline OCR thất bại. Mã lỗi: {0}
-Hãy thử cập nhật ứng dụng "Snipping Tool" hoặc "Microsoft Photos".</value>
+Hãy thử cập nhật ứng dụng "Snipping Tool".</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Tạo tùy chọn xử lý OCR thất bại. Mã lỗi: {0}</value>

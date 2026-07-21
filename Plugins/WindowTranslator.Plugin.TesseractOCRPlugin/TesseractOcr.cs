@@ -40,11 +40,28 @@ public sealed class TesseractOcr(
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
+    private readonly int brightness = ocrParam.Value.Brightness;
+    private readonly int contrast = ocrParam.Value.Contrast;
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
     {
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
+        this.cts.Token.ThrowIfCancellationRequested();
+
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
+        {
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
+        }
         this.cts.Token.ThrowIfCancellationRequested();
 
         var sw = Stopwatch.StartNew();

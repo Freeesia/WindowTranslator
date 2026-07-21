@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
+using System.Text.Json;
 using BergamotTranslatorSharp;
+using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Octokit;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.BergamotTranslatorPlugin.Properties;
@@ -59,11 +59,19 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
     }
 }
 
-public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> logger) : ITargetSettingsValidator
+public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSettingsValidator
 {
-    private const string RepoOwner = "mozilla";
-    private const string RepoName = "firefox-translations-models";
-    private readonly IGitHubClient client = client;
+    // mozilla/firefox-translations-models はアーカイブされ、モデルはGCSバケットに移行された。
+    // モデル一覧はランタイムに db/models.json から取得し、モデルの更新に追従する。
+    private const string BucketName = "moz-fx-translations-data--303e-prod-translations-data";
+    private const string ModelsJsonObject = "db/models.json";
+
+    private static volatile GcsModelsRoot? _cachedModels;
+    private static readonly SemaphoreSlim Semaphore = new(1, 1);
+    private static readonly StorageClient StorageClient = StorageClient.CreateUnauthenticated();
+    private static readonly string[] ArchitecturePriority = ["base", "base-memory", "tiny"];
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     private readonly ILogger<BergamotValidator> logger = logger;
 
     public async ValueTask<ValidateResult> Validate(TargetSettings settings)
@@ -114,9 +122,36 @@ public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> 
         }
     }
 
+    private async ValueTask<GcsModelsRoot> GetModelsIndexAsync()
+    {
+        if (_cachedModels is not null)
+            return _cachedModels;
+
+        await Semaphore.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if (_cachedModels is not null)
+                return _cachedModels;
+
+            this.logger.LogInformation("Downloading models index from GCS...");
+            using var stream = new MemoryStream();
+            await StorageClient.DownloadObjectAsync(BucketName, ModelsJsonObject, stream).ConfigureAwait(false);
+            stream.Position = 0;
+            _cachedModels = await JsonSerializer.DeserializeAsync<GcsModelsRoot>(stream, JsonOptions).ConfigureAwait(false)
+                ?? throw new InvalidOperationException("models.jsonの解析に失敗しました");
+            this.logger.LogInformation("Downloaded models index");
+            return _cachedModels;
+        }
+        finally
+        {
+            Semaphore.Release();
+        }
+    }
+
     private async ValueTask<bool> DownloadIfNotExists(string src, string dst)
     {
         var langPair = $"{src}{dst}";
+        var hyphenated = $"{src}-{dst}";
         var modelDir = Path.Combine(SystemUtility.ModelsPath, langPair);
         var configPath = Path.Combine(modelDir, "config.yml");
 
@@ -124,53 +159,62 @@ public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> 
         if (File.Exists(configPath))
             return true;
 
-        Directory.CreateDirectory(modelDir);
+        var modelsIndex = await GetModelsIndexAsync().ConfigureAwait(false);
+        if (!modelsIndex.Models.TryGetValue(hyphenated, out var modelList))
+            return false;
 
+        // base → base-memory → tiny の順でフォールバック、Releaseモデルを優先
+        GcsModel? model = null;
+        foreach (var arch in ArchitecturePriority)
+        {
+            model = modelList.FirstOrDefault(m => m.Architecture == arch && m.ReleaseStatus == "Release")
+                ?? modelList.FirstOrDefault(m => m.Architecture == arch);
+            if (model is not null)
+                break;
+        }
+
+        if (model is null)
+            return false;
+
+        Directory.CreateDirectory(modelDir);
         var tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Directory.CreateDirectory(tmpDir);
 
-        // base → base-memory → tiny の順でフォールバック
-        var modelPaths = new[] { "models/base", "models/base-memory", "models/tiny" };
-
-        foreach (var modelPath in modelPaths)
-        {
-            if (await TryDownloadModelFromPath(modelPath, langPair, tmpDir, modelDir, configPath))
-                return true;
-        }
-
-        // すべてのパスで見つからなかった場合
-        return false;
+        var files = await DownloadAndExtractFiles(model, tmpDir, modelDir).ConfigureAwait(false);
+        await CreateConfigFile(files, configPath).ConfigureAwait(false);
+        return true;
     }
 
-    private async ValueTask<bool> TryDownloadModelFromPath(string modelPath, string langPair, string tmpDir, string modelDir, string configPath)
-    {
-        try
-        {
-            var contents = await this.client.Repository.Content.GetAllContents(RepoOwner, RepoName, $"{modelPath}/{langPair}").ConfigureAwait(false);
-            var files = await DownloadAndExtractFiles(contents, tmpDir, modelDir);
-            await CreateConfigFile(files, configPath);
-            return true;
-        }
-        catch (NotFoundException)
-        {
-            return false;
-        }
-    }
-
-    private async ValueTask<List<string>> DownloadAndExtractFiles(IReadOnlyList<RepositoryContent> contents, string tmpDir, string modelDir)
+    private async ValueTask<List<string>> DownloadAndExtractFiles(GcsModel model, string tmpDir, string modelDir)
     {
         var files = new List<string>();
 
-        foreach (var content in contents)
+        async Task<string> DownloadAndExtract(string gcsObjectPath)
         {
-            var tmpPath = Path.Combine(tmpDir, content.Name);
-            this.logger.LogInformation("Downloading {FileName}...", content.Name);
-            await this.client.DownloadFileAsync(RepoOwner, RepoName, content, tmpPath).ConfigureAwait(false);
-            this.logger.LogInformation("Downloaded {FileName}", content.Name);
-
-            var fileName = await ExtractFileIfNeeded(tmpPath, modelDir);
-            files.Add(fileName);
+            var fileName = Path.GetFileName(gcsObjectPath);
+            var tmpPath = Path.Combine(tmpDir, fileName);
+            this.logger.LogInformation("Downloading {FileName}...", fileName);
+            using (var fs = File.Create(tmpPath))
+            {
+                await StorageClient.DownloadObjectAsync(BucketName, gcsObjectPath, fs).ConfigureAwait(false);
+            }
+            this.logger.LogInformation("Downloaded {FileName}", fileName);
+            return await ExtractFileIfNeeded(tmpPath, modelDir).ConfigureAwait(false);
         }
+
+        files.Add(await DownloadAndExtract(model.Files.Model.Path).ConfigureAwait(false));
+
+        if (model.Files.LexicalShortlist?.Path is string lexPath)
+            files.Add(await DownloadAndExtract(lexPath).ConfigureAwait(false));
+
+        if (model.Files.Vocab?.Path is string vocabPath)
+            files.Add(await DownloadAndExtract(vocabPath).ConfigureAwait(false));
+
+        if (model.Files.SrcVocab?.Path is string srcVocabPath)
+            files.Add(await DownloadAndExtract(srcVocabPath).ConfigureAwait(false));
+
+        if (model.Files.TrgVocab?.Path is string trgVocabPath)
+            files.Add(await DownloadAndExtract(trgVocabPath).ConfigureAwait(false));
 
         return files;
     }
@@ -255,36 +299,31 @@ public class BergamotValidator(IGitHubClient client, ILogger<BergamotValidator> 
         """;
 }
 
-file static class Extensions
-{
-    public static async ValueTask DownloadFileAsync(this IGitHubClient client, string owner, string repo, RepositoryContent content, string path)
-    {
-        var res = await client.Connection.GetRawStream(new(content.DownloadUrl), ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
-        res.HttpResponse.IsSuccessStatusCode();
-        if (res.HttpResponse.Body is string lfs && lfs.StartsWith("version https://git-lfs.github.com/spec/v1", StringComparison.Ordinal))
-        {
-            var url = $"https://media.githubusercontent.com/media/{owner}/{repo}/refs/heads/main/{content.Path}";
-            await client.DownloadFileAsync(new(url), path).ConfigureAwait(false);
-        }
-        else if (res.HttpResponse.Body is string d)
-        {
-            await using var fs = File.Create(path);
-            await using var st = new StreamWriter(fs);
-            await st.WriteAsync(d).ConfigureAwait(false);
-        }
-        else if (res.HttpResponse.Body is Stream stream)
-        {
-            await using var fs = File.Create(path);
-            await stream.CopyToAsync(fs).ConfigureAwait(false);
-        }
-    }
+/// <summary>GCS の db/models.json のルート構造</summary>
+internal record GcsModelsRoot(
+    string BaseUrl,
+    Dictionary<string, List<GcsModel>> Models
+);
 
-    public static async ValueTask DownloadFileAsync(this IGitHubClient client, Uri url, string path)
-    {
-        var res = await client.Connection.GetRawStream(url, ReadOnlyDictionary<string, string>.Empty).ConfigureAwait(false);
-        res.HttpResponse.IsSuccessStatusCode();
-        using var st = res.Body;
-        await using var fs = File.Create(path);
-        await st.CopyToAsync(fs).ConfigureAwait(false);
-    }
-}
+/// <summary>特定の言語ペア・アーキテクチャのモデルエントリ</summary>
+internal record GcsModel(
+    string Architecture,
+    string ReleaseStatus,
+    string SourceLanguage,
+    string TargetLanguage,
+    GcsModelFiles Files
+);
+
+/// <summary>モデルに含まれるファイル群</summary>
+internal record GcsModelFiles(
+    GcsModelFile Model,
+    GcsModelFile? LexicalShortlist,
+    GcsModelFile? Vocab,
+    GcsModelFile? SrcVocab,
+    GcsModelFile? TrgVocab
+);
+
+/// <summary>GCSオブジェクトパスを持つファイル参照</summary>
+internal record GcsModelFile(
+    string Path
+);

@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>OCRパイプラインの作成に失敗しました。エラーコード: {0}
-「切り取り領域とスケッチ(SnippingTool)」もしくは「Microsoft フォト」アプリの更新をお試しください。</value>
+「切り取り領域とスケッチ(SnippingTool)」アプリの更新をお試しください。</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>OCRプロセスオプションの作成に失敗しました。エラーコード: {0}</value>

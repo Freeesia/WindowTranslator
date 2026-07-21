@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Facteur d'échelle</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Luminosité</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Contraste</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Seuil de fusion</value>
   </data>

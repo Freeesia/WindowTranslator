@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>OCR 管道创建失败。错误代码：{0}
-请尝试更新"截图工具"或"Microsoft 照片"应用。</value>
+请尝试更新"截图工具"应用。</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>OCR 处理选项创建失败。错误代码：{0}</value>

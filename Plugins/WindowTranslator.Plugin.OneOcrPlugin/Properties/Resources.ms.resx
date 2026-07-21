@@ -76,7 +76,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>Gagal mencipta saluran OCR. Kod ralat: {0}
-Sila cuba mengemas kini aplikasi "Snipping Tool" atau "Microsoft Photos".</value>
+Sila cuba mengemas kini aplikasi "Snipping Tool".</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Gagal mencipta pilihan proses OCR. Kod ralat: {0}</value>

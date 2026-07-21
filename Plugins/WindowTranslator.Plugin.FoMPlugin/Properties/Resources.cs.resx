@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ExcludeUnspecifiedText" xml:space="preserve">
+    <value>Vyloučit nerozpoznaný text</value>
+  </data>
+  <data name="FarmName" xml:space="preserve">
+    <value>Název farmy</value>
+  </data>
+  <data name="FoMOptions" xml:space="preserve">
+    <value>Pouze pro Fields of Mistria</value>
+  </data>
+  <data name="IsEnabledCorrect" xml:space="preserve">
+    <value>Použít opravy se zdroji obsaženými ve hře.</value>
+  </data>
+  <data name="PlayerName" xml:space="preserve">
+    <value>Jméno hráče</value>
+  </data>
+  <data name="UseJpn" xml:space="preserve">
+    <value>Použít japonské zdroje obsažené ve hře</value>
+  </data>
+</root>

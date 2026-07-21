@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="CorrectMode_Image" xml:space="preserve">
+    <value>Javítás képfelismeréssel</value>
+  </data>
+  <data name="CorrectMode_None" xml:space="preserve">
+    <value>Javítás nélkül</value>
+  </data>
+  <data name="CorrectMode_Text" xml:space="preserve">
+    <value>Csak szöveges javítás</value>
+  </data>
+  <data name="CorrectMode" xml:space="preserve">
+    <value>Felismerési javítás</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Használandó modell</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API kulcs</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Helyi LLM kapcsolat</value>
+  </data>
+  <data name="CorrectSample" xml:space="preserve">
+    <value>Javítási minta</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Fordítás során használandó kontextuális információk</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Szószedet elérési útja</value>
+  </data>
+  <data name="Endpoint_Desc" xml:space="preserve">
+    <value>OpenAI használatakor üres</value>
+  </data>
+  <data name="LLMOptions" xml:space="preserve">
+    <value>ChatGPT API beállítások</value>
+  </data>
+  <data name="LLMTranslator" xml:space="preserve">
+    <value>ChatGPT API fordítás</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>Fordítás előtt megvárja a javítás befejezését</value>
+  </data>
+  <data name="NeedSettings" xml:space="preserve">
+    <value>A „ChatGPT API fordítás" van kiválasztva fordítási modulként, vagy a felismerési javítás engedélyezve van.</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>A „ChatGPT API fordítás" van kiválasztva fordítási modulként, vagy a felismerési javítás engedélyezve van.</value>
+  </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>A ChatGPT funkciók használatához API kulcs szükséges. Kérjük, állítsa be az API kulcsot a beállítások párbeszédpanelből.</value>
+  </data>
+</root>

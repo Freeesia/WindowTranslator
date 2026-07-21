@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>扩大率</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>亮度</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>对比度</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>合并阈值</value>
   </data>

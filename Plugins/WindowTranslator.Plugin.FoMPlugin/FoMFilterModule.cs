@@ -25,9 +25,9 @@ public partial class FoMFilterModule : IFilterModule
     private readonly bool isEnabled;
     private readonly bool useJpn;
     private readonly bool exclude;
-    private readonly FrozenDictionary<string, LocInto> builtin;
-    private readonly FrozenDictionary<string, string> scenes;
-    private readonly FrozenDictionary<string, string> context;
+    private readonly FrozenDictionary<string, LocInto> builtin = FrozenDictionary<string, LocInto>.Empty;
+    private readonly FrozenDictionary<string, string> scenes = FrozenDictionary<string, string>.Empty;
+    private readonly FrozenDictionary<string, string> context = FrozenDictionary<string, string>.Empty;
     private readonly ConcurrentDictionary<string, CacheInfo> cache = [];
     private readonly Channel<IReadOnlyList<string>> queue;
     private readonly ILogger<FoMFilterModule> logger;
@@ -281,72 +281,80 @@ public partial class FoMFilterModule : IFilterModule
         }, Dropped);
         this.logger = logger;
         _ = GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
-        if (options.Value.IsEnabledCorrect && GetProcessPath(processId) is { } exePath && Path.GetFileName(exePath) == "FieldsOfMistria.exe")
+        if (!options.Value.IsEnabledCorrect || !(GetProcessPath(processId) is { } exePath) || Path.GetFileName(exePath) != "FieldsOfMistria.exe")
         {
-            this.isEnabled = true;
-            this.useJpn = options.Value.UseJpn;
-            var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
-            using var fs = File.OpenRead(path);
-            var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions) ?? new([], []);
-            if (loc.Eng is null)
-            {
-                loc = loc with { Eng = [] };
-            }
-            if (loc.Jpn is null)
-            {
-                loc = loc with { Jpn = names };
-            }
-            var player = options.Value.PlayerName;
-            var farm = options.Value.FarmName;
-            this.exclude = options.Value.ExcludeUnspecifiedText;
-            this.builtin = loc!.Eng
-                .Select(p => (
-                    en: p.Value.ReplaceToPlain(player, farm),
-                    ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) ? s.CorrenctJpn().ReplaceToPlain(player, farm) : string.Empty)))
-                // OCRで段落ごとに分割されている場合があるので、それを考慮する
-                .SelectMany(p => SplitParagraph(p.en, p.ja))
-                // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
-                .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.ja))
-                // 置換系は対象外
-                .Where(p => !p.en.Contains('['))
-                .DistinctBy(p => p.en)
-                .ToFrozenDictionary(p => p.en, p => p.ja);
+            return;
+        }
 
-            // 会話文全体を抜き出しておく
-            static double ParseOrder(string n) => n switch
-            {
-                "init" => -2,
-                "init$_sequence_entry_1$" => -1,
-                _ => int.TryParse(n, out var i) ? i : 99,
-            };
-            this.scenes = loc.Eng
-                .Select(p => (key: p.Key.Split('/'), p.Value))
-                .Where(p => p.key[0] is "Conversations" or "Cutscenes" or "letters")
-                .GroupBy(
-                    p => p.key switch
-                        {
-                            ["Conversations", .., "prompts", _] => string.Join('/', p.key[..^3]),
-                            ["Conversations", .., not "prompts", _] => string.Join('/', p.key[..^1]),
-                            ["Cutscenes", .., "prompts", _] => string.Join('/', p.key[..^3]),
-                            ["Cutscenes", .., not "prompts", _] => string.Join('/', p.key[..^1]),
-                            ["letters", ..] => string.Join('/', p.key[..^1]),
-                            _ => throw new InvalidOperationException(),
-                        },
-                    (group, items) => (group, value: items
-                        .OrderBy(p => p.key switch
-                        {
-                            ["Conversations", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
-                            ["Conversations", .., not "prompts", var n] => ParseOrder(n),
-                            ["Cutscenes", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
-                            ["Cutscenes", .., not "prompts", var n] => ParseOrder(n),
-                            ["letters", _, var key] => key is "local" ? 1.0 : 0.0,
-                            _ => throw new InvalidOperationException(),
-                        })
-                        .Join(group)))
-                .Where(p => p.value.Lines() > 1)
-                .ToFrozenDictionary(
-                    p => p.group,
-                    p => $"""
+
+        this.isEnabled = true;
+        this.useJpn = options.Value.UseJpn;
+        var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
+        if (!File.Exists(path))
+        {
+            return;
+        }
+        using var fs = File.OpenRead(path);
+        var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions) ?? new([], []);
+        if (loc.Eng is null)
+        {
+            loc = loc with { Eng = [] };
+        }
+        if (loc.Jpn is null)
+        {
+            loc = loc with { Jpn = names };
+        }
+        var player = options.Value.PlayerName;
+        var farm = options.Value.FarmName;
+        this.exclude = options.Value.ExcludeUnspecifiedText;
+        this.builtin = loc!.Eng
+            .Select(p => (
+                en: p.Value.ReplaceToPlain(player, farm),
+                ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) ? s.CorrenctJpn().ReplaceToPlain(player, farm) : string.Empty)))
+            // OCRで段落ごとに分割されている場合があるので、それを考慮する
+            .SelectMany(p => SplitParagraph(p.en, p.ja))
+            // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
+            .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.ja))
+            // 置換系は対象外
+            .Where(p => !p.en.Contains('['))
+            .DistinctBy(p => p.en)
+            .ToFrozenDictionary(p => p.en, p => p.ja);
+
+        // 会話文全体を抜き出しておく
+        static double ParseOrder(string n) => n switch
+        {
+            "init" => -2,
+            "init$_sequence_entry_1$" => -1,
+            _ => int.TryParse(n, out var i) ? i : 99,
+        };
+        this.scenes = loc.Eng
+            .Select(p => (key: p.Key.Split('/'), p.Value))
+            .Where(p => p.key[0] is "Conversations" or "Cutscenes" or "letters")
+            .GroupBy(
+                p => p.key switch
+                    {
+                        ["Conversations", .., "prompts", _] => string.Join('/', p.key[..^3]),
+                        ["Conversations", .., not "prompts", _] => string.Join('/', p.key[..^1]),
+                        ["Cutscenes", .., "prompts", _] => string.Join('/', p.key[..^3]),
+                        ["Cutscenes", .., not "prompts", _] => string.Join('/', p.key[..^1]),
+                        ["letters", ..] => string.Join('/', p.key[..^1]),
+                        _ => throw new InvalidOperationException(),
+                    },
+                (group, items) => (group, value: items
+                    .OrderBy(p => p.key switch
+                    {
+                        ["Conversations", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
+                        ["Conversations", .., not "prompts", var n] => ParseOrder(n),
+                        ["Cutscenes", .., var n, "prompts", var m] => ParseOrder(n) + ((double.Parse(m) + 1) * 0.1),
+                        ["Cutscenes", .., not "prompts", var n] => ParseOrder(n),
+                        ["letters", _, var key] => key is "local" ? 1.0 : 0.0,
+                        _ => throw new InvalidOperationException(),
+                    })
+                    .Join(group)))
+            .Where(p => p.value.Lines() > 1)
+            .ToFrozenDictionary(
+                p => p.group,
+                p => $"""
 
                     
                     以下は翻訳対象の文章が含まれるシーン全体の会話です。
@@ -356,51 +364,44 @@ public partial class FoMFilterModule : IFilterModule
                     </シーン全体>
                     """);
 
-            var sample = loc.Jpn
-                    .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
-                    .Select(p => (p.Key,
-                        Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
-                        En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
-                    .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
-                    .ToDictionary(
-                        g => g.Key,
-                    g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}日本語: {p.Ja}")));
+        var sample = loc.Jpn
+                .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
+                .Select(p => (p.Key,
+                    Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
+                    En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
+                .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
+                .ToDictionary(
+                    g => g.Key,
+                g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}日本語: {p.Ja}")));
 
-            this.context = charContext
-                .ToFrozenDictionary(
-                    p => p.Key,
-                    p => sample.TryGetValue(p.Key, out var s) ?
-                        $"""
-                        {p.Value}
+        this.context = charContext
+            .ToFrozenDictionary(
+                p => p.Key,
+                p => sample.TryGetValue(p.Key, out var s) ?
+                    $"""
+                    {p.Value}
 
-                        以下のテキストはこのキャラクターのセリフの翻訳例です。
-                        {s}
-                        """ : p.Value);
+                    以下のテキストはこのキャラクターのセリフの翻訳例です。
+                    {s}
+                    """ : p.Value);
 
-            // キャラ名やアイテム名を用語集として登録
-            translateModule.RegisterGlossaryAsync(
-                this.builtin.Where(p => Glossary1Regex().IsMatch(p.Value.Key) || Glossary2Regex().IsMatch(p.Value.Key))
-                    .Select(p => (p.Key, p.Value.Text))
-                    .Append((player, player))
-                    .Append((farm, farm))
-                    .Where(p => !string.IsNullOrEmpty(p.Item2))
-                    .DistinctBy(p => p.Item1)
-                    .ToDictionary(p => p.Item1, p => p.Item2));
-            translateModule.RegisterContext("""
-                牧場物語のようなノスタルジックな農場シミュレーションRPGです。
-                魔法が存在する中世ヨーロッパ風の世界観です。
+        // キャラ名やアイテム名を用語集として登録
+        translateModule.RegisterGlossaryAsync(
+            this.builtin.Where(p => Glossary1Regex().IsMatch(p.Value.Key) || Glossary2Regex().IsMatch(p.Value.Key))
+                .Select(p => (p.Key, p.Value.Text))
+                .Append((player, player))
+                .Append((farm, farm))
+                .Where(p => !string.IsNullOrEmpty(p.Item2))
+                .DistinctBy(p => p.Item1)
+                .ToDictionary(p => p.Item1, p => p.Item2));
+        translateModule.RegisterContext("""
+            牧場物語のようなノスタルジックな農場シミュレーションRPGです。
+            魔法が存在する中世ヨーロッパ風の世界観です。
 
-                地震により混乱が生じ人口が減ってしまったミストリアという村に、プレイヤーは新しく移り住むことになります。
-                プレイヤーは農場を経営し、村の人々と交流を深めながら、ミストリアの復興を目指します。
-                """);
-            Task.Run(Correct);
-        }
-        else
-        {
-            this.builtin = FrozenDictionary<string, LocInto>.Empty;
-            this.scenes = FrozenDictionary<string, string>.Empty;
-            this.context = FrozenDictionary<string, string>.Empty;
-        }
+            地震により混乱が生じ人口が減ってしまったミストリアという村に、プレイヤーは新しく移り住むことになります。
+            プレイヤーは農場を経営し、村の人々と交流を深めながら、ミストリアの復興を目指します。
+            """);
+        Task.Run(Correct);
     }
 
     private static IEnumerable<(string en, LocInto ja)> SplitParagraph(string en, LocInto ja)

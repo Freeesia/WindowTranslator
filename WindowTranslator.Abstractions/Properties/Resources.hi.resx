@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>आवर्धन दर</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>चमक</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>कंट्रास्ट</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>मर्ज थ्रेशोल्ड</value>
   </data>

@@ -133,7 +133,7 @@
     <value>OCR model tembel yüklemesi ayarlanamadı. Hata kodu: {0}</value>
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>OCR pipeline oluşturulamadı. Hata kodu: {0} Lütfen Snipping Tool veya Microsoft Photos uygulamasını güncellemeyi deneyin.</value>
+    <value>OCR pipeline oluşturulamadı. Hata kodu: {0} Lütfen Snipping Tool uygulamasını güncellemeyi deneyin.</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>OCR işlem seçenekleri oluşturulamadı. Hata kodu: {0}</value>

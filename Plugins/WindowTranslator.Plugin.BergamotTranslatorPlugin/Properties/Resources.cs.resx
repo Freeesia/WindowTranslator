@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ModelNotFound" xml:space="preserve">
+    <value>Nelze přeložit, protože model Bergamot neexistuje.</value>
+  </data>
+  <data name="NotAvailableArch" xml:space="preserve">
+    <value>Bergamot není na tomto počítači k dispozici</value>
+  </data>
+  <data name="NotFoundToModel" xml:space="preserve">
+    <value>Data modelu, která umožňují překlad do jazyka {0}, nebyla nalezena. Překlad do tohoto jazyka není dostupný.</value>
+  </data>
+  <data name="NotFoundFromModel" xml:space="preserve">
+    <value>Data modelu, která umožňují překlad z jazyka {0}, nebyla nalezena. Překlad z tohoto jazyka není dostupný.</value>
+  </data>
+  <data name="DownloadFaild" xml:space="preserve">
+    <value>Nepodařilo se stáhnout soubor modelu.
+{0}</value>
+  </data>
+  <data name="NotFoundCompatModel" xml:space="preserve">
+    <value>Nebyla nalezena data modelu umožňující překlad z {0} do {1}. Překlad pro tuto jazykovou dvojici není dostupný.</value>
+  </data>
+</root>
