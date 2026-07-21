@@ -1,6 +1,6 @@
 ﻿using PropertyTools.DataAnnotations;
 using PropertyTools.Wpf;
-using System.Collections;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
@@ -8,11 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Controls;
+using WindowTranslator.Data;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
 using TextBlock = System.Windows.Controls.TextBlock;
@@ -58,6 +60,12 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
         fe ??= base.CreateControl(property, options);
 
+        // マウスポインター判定の余白は、コントロールにフォーカスがある間だけ設定画面内にプレビュー表示する
+        if (property.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
+        {
+            AttachMousePointerHitTestPaddingPreview(fe);
+        }
+
         if (property.Descriptor.Attributes.Matches(enableAttribute))
         {
             fe.IsEnabled = true;
@@ -75,6 +83,112 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         }
 
         return fe;
+    }
+
+    /// <summary>
+    /// <paramref name="fe"/>にフォーカスがある間、<see cref="TargetSettingsViewModel.MousePointerHitTestPadding"/>の
+    /// 現在値を半径とするプレビュー円を、マウスカーソル位置に追従するAdornerとして表示する。
+    /// NumberBoxやSliderなど、生成されたコントロールの種類を問わず動作する。
+    /// </summary>
+    private static void AttachMousePointerHitTestPaddingPreview(FrameworkElement fe)
+    {
+        MousePointerHitTestPaddingAdorner? adorner = null;
+        AdornerLayer? layer = null;
+        Window? window = null;
+        PropertyChangedEventHandler? propertyChangedHandler = null;
+        MouseEventHandler? mouseMoveHandler = null;
+
+        fe.GotFocus += (_, _) =>
+        {
+            if (fe.DataContext is not TargetSettingsViewModel vm)
+            {
+                return;
+            }
+            layer = AdornerLayer.GetAdornerLayer(fe);
+            if (layer is null)
+            {
+                return;
+            }
+            adorner = new MousePointerHitTestPaddingAdorner(fe);
+            layer.Add(adorner);
+            adorner.Update(Mouse.GetPosition(fe), vm.MousePointerHitTestPadding);
+
+            // スライダー操作中などマウスキャプチャが発生していても取得できるよう、Window単位でマウス移動を監視する
+            window = Window.GetWindow(fe);
+            mouseMoveHandler = (_, args) => adorner?.Update(args.GetPosition(fe), vm.MousePointerHitTestPadding);
+            if (window is not null)
+            {
+                window.PreviewMouseMove += mouseMoveHandler;
+            }
+
+            propertyChangedHandler = (_, args) =>
+            {
+                if (args.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
+                {
+                    adorner?.Update(Mouse.GetPosition(fe), vm.MousePointerHitTestPadding);
+                }
+            };
+            vm.PropertyChanged += propertyChangedHandler;
+        };
+        fe.LostFocus += (_, _) =>
+        {
+            if (fe.DataContext is TargetSettingsViewModel vm && propertyChangedHandler is not null)
+            {
+                vm.PropertyChanged -= propertyChangedHandler;
+                propertyChangedHandler = null;
+            }
+            if (window is not null && mouseMoveHandler is not null)
+            {
+                window.PreviewMouseMove -= mouseMoveHandler;
+                mouseMoveHandler = null;
+            }
+            if (layer is not null && adorner is not null)
+            {
+                layer.Remove(adorner);
+            }
+            adorner = null;
+            layer = null;
+            window = null;
+        };
+    }
+
+    /// <summary>
+    /// マウスカーソル位置を中心に、当たり判定の余白と同じ半径(<see cref="TextOverlayVisibilityConverter.HitTest"/>参照)の
+    /// 円を描画するAdorner。テキスト矩形が存在しない状態での判定範囲は、矩形からの最短距離がpadding以内かどうかの
+    /// 判定と数学的に等価な「マウス位置中心・半径paddingの円」になるため、表示される範囲と実際の判定範囲を一致させる。
+    /// </summary>
+    private sealed class MousePointerHitTestPaddingAdorner : Adorner
+    {
+        private static readonly Brush FillBrush;
+        private static readonly Pen BorderPen;
+
+        static MousePointerHitTestPaddingAdorner()
+        {
+            FillBrush = new SolidColorBrush(Color.FromArgb(0x33, 0x00, 0x7A, 0xCC));
+            FillBrush.Freeze();
+            BorderPen = new Pen(Brushes.DodgerBlue, 1.5);
+            BorderPen.Freeze();
+        }
+
+        private Point mousePosition;
+        private double padding;
+
+        public MousePointerHitTestPaddingAdorner(UIElement adornedElement) : base(adornedElement)
+        {
+            IsHitTestVisible = false;
+        }
+
+        public void Update(Point position, double padding)
+        {
+            this.mousePosition = position;
+            this.padding = padding;
+            InvalidateVisual();
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            drawingContext.DrawEllipse(FillBrush, BorderPen, mousePosition, padding, padding);
+        }
     }
 
     private static Grid WrapWithHelpButton(FrameworkElement control, string pageName)
