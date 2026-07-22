@@ -133,6 +133,49 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Equal("ZZZZZZZZ", confirmed.SourceText);
     }
 
+    [Fact]
+    public void ContinuouslyChangingTextEventuallyAdvancesToTheLatestObservation()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect observation = new("Score 0", 100, 100, 100, 20, 16, false);
+        tracker.Update([observation], imageSize, TimeSpan.Zero);
+
+        TextRect result = observation;
+        for (int frame = 1; frame <= 5; frame++)
+        {
+            result = Assert.Single(tracker.Update(
+                [observation with { SourceText = $"Score {frame}" }],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+        }
+
+        Assert.Equal("Score 5", result.SourceText);
+    }
+
+    [Fact]
+    public void DistinctTransientTextErrorsDoNotReplaceConfirmedTextBeforeTheHistoryLimit()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Stable", 100, 100, 100, 20, 16, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        string[] transientErrors = ["Stab1e", "StabIe", "Stab|e", "Stab!e"];
+        for (int frame = 0; frame < transientErrors.Length; frame++)
+        {
+            TextRect result = Assert.Single(tracker.Update(
+                [stable with { SourceText = transientErrors[frame] }],
+                imageSize,
+                TimeSpan.FromMilliseconds((frame + 1) * 500)));
+            Assert.Equal("Stable", result.SourceText);
+        }
+
+        TextRect recovered = Assert.Single(tracker.Update(
+            [stable], imageSize, TimeSpan.FromMilliseconds(2500)));
+        Assert.Equal("Stable", recovered.SourceText);
+    }
+
     [Theory]
     [InlineData(5)]
     [InlineData(6)]
@@ -549,6 +592,63 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
             tracker.Update(tracks, imageSize, TimeSpan.Zero);
             return tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(500));
         }
+    }
+
+    [Fact]
+    public void DenseStructureSelectionUsesBoundedAllocation()
+    {
+        MeasureAllocation();
+        MeasureAllocation();
+        long allocation = MeasureAllocation();
+
+        output.WriteLine($"18x18 mixed structure candidates: {allocation:N0} bytes");
+        Assert.True(allocation < 12 * 1024 * 1024,
+            $"Dense structure selection allocated {allocation:N0} bytes.");
+
+        static long MeasureAllocation()
+        {
+            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+            Size imageSize = new(1000, 600);
+            TextRect[] tracks = Enumerable.Range(0, 18)
+                .Select(index => new TextRect("AA", 100 + index, 100, 100, 30, 24, false))
+                .ToArray();
+            TextRect[] observations = Enumerable.Range(0, 18)
+                .Select(index => new TextRect("A", 100 + index, 100, 100, 30, 24, false))
+                .ToArray();
+            tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            IReadOnlyList<TextRect> result = tracker.Update(
+                observations,
+                imageSize,
+                TimeSpan.FromMilliseconds(500));
+            long allocation = GC.GetAllocatedBytesForCurrentThread() - before;
+
+            Assert.Equal(18, result.Count);
+            return allocation;
+        }
+    }
+
+    [Fact]
+    public void DenseStructureSelectionSupportsMoreThanSixtyFourResources()
+    {
+        const int count = 33;
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] tracks = Enumerable.Range(0, count)
+            .Select(index => new TextRect("AA", 100 + index, 100, 100, 30, 24, false))
+            .ToArray();
+        TextRect[] observations = Enumerable.Range(0, count)
+            .Select(index => new TextRect("A", 100 + index, 100, 100, 30, 24, false))
+            .ToArray();
+        tracker.Update(tracks, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            observations,
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(count, result.Count);
     }
 
     [Fact]

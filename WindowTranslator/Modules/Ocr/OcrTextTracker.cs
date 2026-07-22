@@ -798,46 +798,50 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             .Order()
             .Select((observation, index) => (observation, index: trackResources.Count + index))
             .ToDictionary(item => item.observation, item => item.index);
-        Dictionary<MatchCandidate, BigInteger> resourceMasks = new(ReferenceEqualityComparer.Instance);
-        Dictionary<MatchCandidate, BigInteger> selectionOrderMasks = new(ReferenceEqualityComparer.Instance);
+        StructureResourceMask[] resourceMasks = new StructureResourceMask[ordered.Count];
+        BigInteger[] selectionOrderMasks = new BigInteger[ordered.Count];
         for (int candidateIndex = 0; candidateIndex < ordered.Count; candidateIndex++)
         {
             MatchCandidate candidate = ordered[candidateIndex];
-            BigInteger mask = BigInteger.Zero;
+            StructureResourceMask mask = default;
             foreach (TextTrack track in candidate.Tracks)
             {
-                mask |= BigInteger.One << trackResources[track];
+                mask = mask.WithBit(trackResources[track]);
             }
             foreach (int observation in candidate.ObservationIndices)
             {
-                mask |= BigInteger.One << observationResources[observation];
+                mask = mask.WithBit(observationResources[observation]);
             }
-            resourceMasks[candidate] = mask;
-            selectionOrderMasks[candidate] = BigInteger.One << (ordered.Count - candidateIndex - 1);
+            resourceMasks[candidateIndex] = mask;
+            selectionOrderMasks[candidateIndex] = BigInteger.One << (ordered.Count - candidateIndex - 1);
         }
 
-        Dictionary<BigInteger, StructureSelectionState> states = new()
+        Dictionary<StructureResourceMask, StructureSelectionState> states = new(MaxStructureSelectionStates * 2 + 1)
         {
-            [BigInteger.Zero] = new(BigInteger.Zero, BigInteger.Zero, 0, 0, null, null),
+            [default] = new(BigInteger.Zero, 0, 0),
         };
-        foreach (MatchCandidate candidate in ordered)
+        List<KeyValuePair<StructureResourceMask, StructureSelectionState>> stateBuffer = new(MaxStructureSelectionStates * 2 + 1);
+        for (int candidateIndex = 0; candidateIndex < ordered.Count; candidateIndex++)
         {
-            BigInteger candidateMask = resourceMasks[candidate];
-            foreach (StructureSelectionState state in states.Values.ToArray())
+            MatchCandidate candidate = ordered[candidateIndex];
+            StructureResourceMask candidateMask = resourceMasks[candidateIndex];
+            stateBuffer.Clear();
+            foreach (KeyValuePair<StructureResourceMask, StructureSelectionState> state in states)
             {
-                if ((state.UsedResources & candidateMask) != BigInteger.Zero)
+                stateBuffer.Add(state);
+            }
+            foreach (KeyValuePair<StructureResourceMask, StructureSelectionState> state in stateBuffer)
+            {
+                if (state.Key.Overlaps(candidateMask))
                 {
                     continue;
                 }
-                BigInteger combinedMask = state.UsedResources | candidateMask;
+                StructureResourceMask combinedMask = state.Key.Union(candidateMask);
                 StructureSelectionState proposed = new(
-                    combinedMask,
-                    state.SelectionOrder | selectionOrderMasks[candidate],
-                    state.ResourceCount + candidate.ResourceCount,
-                    state.Score + candidate.Score,
-                    state,
-                    candidate);
-                if (!states.TryGetValue(combinedMask, out StructureSelectionState? existing)
+                    state.Value.SelectionOrder | selectionOrderMasks[candidateIndex],
+                    state.Value.ResourceCount + candidate.ResourceCount,
+                    state.Value.Score + candidate.Score);
+                if (!states.TryGetValue(combinedMask, out StructureSelectionState existing)
                     || IsBetterStructureSelection(proposed, existing))
                 {
                     states[combinedMask] = proposed;
@@ -846,28 +850,55 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
             if (states.Count > MaxStructureSelectionStates * 2)
             {
-                states = states.Values
-                    .OrderByDescending(state => state.ResourceCount)
-                    .ThenByDescending(state => state.Score)
-                    .ThenByDescending(state => state.SelectionOrder)
-                    .ThenBy(state => state.UsedResources)
-                    .Take(MaxStructureSelectionStates)
-                    .ToDictionary(state => state.UsedResources);
+                stateBuffer.Clear();
+                foreach (KeyValuePair<StructureResourceMask, StructureSelectionState> state in states)
+                {
+                    stateBuffer.Add(state);
+                }
+                stateBuffer.Sort(CompareStructureSelectionStates);
+                states.Clear();
+                for (int index = 0; index < MaxStructureSelectionStates; index++)
+                {
+                    KeyValuePair<StructureResourceMask, StructureSelectionState> state = stateBuffer[index];
+                    states.Add(state.Key, state.Value);
+                }
             }
         }
 
-        StructureSelectionState best = states.Values
-            .OrderByDescending(state => state.ResourceCount)
-            .ThenByDescending(state => state.Score)
-            .ThenByDescending(state => state.SelectionOrder)
-            .ThenBy(state => state.UsedResources)
-            .First();
-        HashSet<MatchCandidate> finalSelection = new(ReferenceEqualityComparer.Instance);
-        for (StructureSelectionState? state = best; state?.Candidate is not null; state = state.Previous)
+        stateBuffer.Clear();
+        foreach (KeyValuePair<StructureResourceMask, StructureSelectionState> state in states)
         {
-            finalSelection.Add(state.Candidate);
+            stateBuffer.Add(state);
         }
-        return ordered.Where(finalSelection.Contains).ToList();
+        stateBuffer.Sort(CompareStructureSelectionStates);
+        StructureSelectionState best = stateBuffer[0].Value;
+        List<MatchCandidate> result = [];
+        for (int candidateIndex = 0; candidateIndex < ordered.Count; candidateIndex++)
+        {
+            if ((best.SelectionOrder & selectionOrderMasks[candidateIndex]) != BigInteger.Zero)
+            {
+                result.Add(ordered[candidateIndex]);
+            }
+        }
+        return result;
+    }
+
+    private static int CompareStructureSelectionStates(
+        KeyValuePair<StructureResourceMask, StructureSelectionState> first,
+        KeyValuePair<StructureResourceMask, StructureSelectionState> second)
+    {
+        int comparison = second.Value.ResourceCount.CompareTo(first.Value.ResourceCount);
+        if (comparison != 0)
+        {
+            return comparison;
+        }
+        comparison = second.Value.Score.CompareTo(first.Value.Score);
+        if (comparison != 0)
+        {
+            return comparison;
+        }
+        comparison = second.Value.SelectionOrder.CompareTo(first.Value.SelectionOrder);
+        return comparison != 0 ? comparison : first.Key.CompareTo(second.Key);
     }
 
     private static bool IsBetterStructureSelection(
@@ -1493,13 +1524,82 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private sealed record RestorationAssignment(TextTrack Track, int ObservationIndex, TextRect Observation);
 
-    private sealed record StructureSelectionState(
-        BigInteger UsedResources,
+    private readonly struct StructureResourceMask :
+        IEquatable<StructureResourceMask>,
+        IComparable<StructureResourceMask>
+    {
+        private readonly ulong compact;
+        private readonly BigInteger expanded;
+
+        private StructureResourceMask(ulong compact)
+        {
+            this.compact = compact;
+            this.expanded = default;
+        }
+
+        private StructureResourceMask(BigInteger expanded)
+        {
+            this.compact = 0;
+            this.expanded = expanded;
+        }
+
+        private bool IsExpanded => !this.expanded.IsZero;
+
+        public StructureResourceMask WithBit(int bit)
+        {
+            if (bit < 64)
+            {
+                ulong value = 1UL << bit;
+                return this.IsExpanded
+                    ? new(this.expanded | value)
+                    : new(this.compact | value);
+            }
+            return new(this.ToBigInteger() | (BigInteger.One << bit));
+        }
+
+        public bool Overlaps(StructureResourceMask other)
+            => !this.IsExpanded && !other.IsExpanded
+                ? (this.compact & other.compact) != 0
+                : (this.ToBigInteger() & other.ToBigInteger()) != BigInteger.Zero;
+
+        public StructureResourceMask Union(StructureResourceMask other)
+            => !this.IsExpanded && !other.IsExpanded
+                ? new(this.compact | other.compact)
+                : new(this.ToBigInteger() | other.ToBigInteger());
+
+        public int CompareTo(StructureResourceMask other)
+        {
+            if (!this.IsExpanded && !other.IsExpanded)
+            {
+                return this.compact.CompareTo(other.compact);
+            }
+            if (this.IsExpanded != other.IsExpanded)
+            {
+                return this.IsExpanded ? 1 : -1;
+            }
+            return this.expanded.CompareTo(other.expanded);
+        }
+
+        public bool Equals(StructureResourceMask other)
+            => this.IsExpanded == other.IsExpanded
+                && (this.IsExpanded
+                    ? this.expanded.Equals(other.expanded)
+                    : this.compact == other.compact);
+
+        public override bool Equals(object? obj)
+            => obj is StructureResourceMask other && this.Equals(other);
+
+        public override int GetHashCode()
+            => this.IsExpanded ? this.expanded.GetHashCode() : this.compact.GetHashCode();
+
+        private BigInteger ToBigInteger()
+            => this.IsExpanded ? this.expanded : this.compact;
+    }
+
+    private readonly record struct StructureSelectionState(
         BigInteger SelectionOrder,
         int ResourceCount,
-        double Score,
-        StructureSelectionState? Previous,
-        MatchCandidate? Candidate);
+        double Score);
 
     private sealed record MatchCandidate(
         MatchKind Kind,
@@ -1652,6 +1752,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             {
                 this.ConfirmedText = this.textVotes.Last(vote => vote.Normalized == winner.Value.normalized).Original;
                 this.normalizedConfirmedText = winner.Value.normalized;
+                this.textVotes.Clear();
+                return;
+            }
+
+            if (this.textVotes.Count == TextVoteHistorySize)
+            {
+                TextVote latest = this.textVotes[^1];
+                this.ConfirmedText = latest.Original;
+                this.normalizedConfirmedText = latest.Normalized;
                 this.textVotes.Clear();
             }
         }
