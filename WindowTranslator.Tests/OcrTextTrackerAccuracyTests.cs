@@ -320,6 +320,43 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void NearbyLengthIncompatibleLongTextsAreRejectedBeforeEditDistanceDominates()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(3840, 2160);
+        string longPrefix = new('A', 20000);
+        TextRect[] initial = Enumerable.Range(0, 64)
+            .Select(index => new TextRect(
+                $"{longPrefix}-{index}",
+                index % 8 * 5,
+                index / 8 * 5,
+                120,
+                30,
+                24,
+                false))
+            .ToArray();
+        TextRect[] nearby = Enumerable.Range(0, 64)
+            .Select(index => new TextRect(
+                $"B-{index}",
+                200 + (index % 8 * 5),
+                index / 8 * 5,
+                120,
+                30,
+                24,
+                false))
+            .ToArray();
+        tracker.Update(initial, imageSize);
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        IReadOnlyList<TextRect> result = tracker.Update(nearby, imageSize);
+        stopwatch.Stop();
+
+        output.WriteLine($"64x64 nearby length-incompatible candidates: {stopwatch.ElapsedMilliseconds} ms");
+        Assert.Equal(128, result.Count);
+        Assert.True(stopwatch.Elapsed < TimeSpan.FromMilliseconds(500), $"Length rejection took {stopwatch.Elapsed}.");
+    }
+
+    [Fact]
     public void DenseOneToOneAssignmentPreservesMaximumCardinality()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -931,6 +968,24 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TimeSpan.FromMilliseconds(500));
 
         Assert.Equal(["A", "B", "AB"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void CompatibilityEquivalentTextRemainsOneTrackWhileMoving()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+            [new("ＡＢＣＤ", 0, 100, 100, 30, 24, false)],
+            imageSize,
+            TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [new("ABCD", 60, 100, 100, 30, 24, false)],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal("ＡＢＣＤ", Assert.Single(result).SourceText);
     }
 
     [Fact]
