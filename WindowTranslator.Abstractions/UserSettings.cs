@@ -83,6 +83,11 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
+    /// マウスポインター判定の余白（WPF上のピクセル値）
+    /// </summary>
+    public double MousePointerHitTestPadding { get; set; }
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);

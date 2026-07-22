@@ -38,6 +38,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IProcessInfoStore processInfoStore;
     private readonly double fontScale;
     private readonly double overlayOpacity;
+    private readonly double mousePointerHitTestPadding;
     private TextRect[]? lastRequested;
 
     [ObservableProperty]
@@ -62,6 +63,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
     public string Font { get; }
+    public double MousePointerHitTestPadding => this.mousePointerHitTestPadding;
 
     public MainViewModelBase(
         IPresentationService presentationService,
@@ -82,6 +84,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.Font = options.Value.Font;
         this.fontScale = options.Value.FontScale;
         this.overlayOpacity = options.Value.OverlayOpacity;
+        this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;

@@ -263,6 +263,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
                 OverlayOpacity = t.OverlayOpacity,
+                MousePointerHitTestPadding = t.MousePointerHitTestPadding,
             }),
         };
 
@@ -465,6 +466,13 @@ public partial class TargetSettingsViewModel(
     [property: SortIndex(8)]
     [ObservableProperty]
     private bool displayBusy = settings.DisplayBusy;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
+    [property: Slidable(0, 100, 1, 10, true, 1)]
+    [property: SortIndex(9)]
+    [ObservableProperty]
+    private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

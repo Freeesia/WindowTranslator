@@ -121,6 +121,7 @@
                                             <Binding Path="MousePos" RelativeSource="{RelativeSource AncestorType=control:OverlayTextsControl}" />
                                             <Binding Path="Scale" RelativeSource="{RelativeSource AncestorType=control:OverlayTextsControl}" />
                                             <Binding Path="IsSwapVisibility" RelativeSource="{RelativeSource AncestorType=control:OverlayTextsControl}" />
+                                            <Binding Path="MousePointerHitTestPadding" RelativeSource="{RelativeSource AncestorType=control:OverlayTextsControl}" />
                                         </MultiBinding>
                                     </Setter.Value>
                                 </Setter>

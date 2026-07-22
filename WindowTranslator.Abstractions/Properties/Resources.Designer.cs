@@ -68,6 +68,11 @@ internal class Resources
     public static string BasicOcrParam => ResourceManager.GetString("BasicOcrParam", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "明るさ" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Brightness => ResourceManager.GetString("Brightness", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "キャッシュモジュール" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string CacheModule => ResourceManager.GetString("CacheModule", resourceCulture) ?? string.Empty;
@@ -76,6 +81,11 @@ internal class Resources
     /// "キャプチャーウィンドウ" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Capture => ResourceManager.GetString("Capture", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "コントラスト" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Contrast => ResourceManager.GetString("Contrast", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "文字サイズずれ閾値" に類似しているローカライズされた文字列を検索します。
