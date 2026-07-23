@@ -400,6 +400,13 @@ file static class Utility
         // 矩形の回転補正
         var (x, y, width, height) = RotateRect(word.BoundingRect, angle, centerX, centerY);
 
+        // CJK文字（日本語・中国語・韓国語等）はem枠をすでに満たしているため位置・高さ補正不要
+        // ラテン文字が一切含まれない場合もCJK等のフルハイト文字として扱う
+        if (ContainsCjk(word.Text) || (!isxHeight && !hasAcent && !hasHarfAcent && !hasDecent))
+        {
+            return new(word.Text, x, y, width, height);
+        }
+
         // 文字種類による位置補正
         y -= (hasAcent, hasHarfAcent) switch
         {
@@ -455,6 +462,24 @@ file static class Utility
         ReadOnlySpan<char> te = text;
         ReadOnlySpan<char> ta = target;
         return te.ContainsAny(ta);
+    }
+
+    /// <summary>
+    /// CJK文字（日本語・中国語・韓国語等）が含まれているかを判定する
+    /// </summary>
+    private static bool ContainsCjk(string text)
+    {
+        foreach (var c in text)
+        {
+            // 平仮名・片仮名・CJK統合漢字・ハングル音節・CJK互換漢字
+            if ((c >= '\u3040' && c <= '\u9FFF') ||
+                (c >= '\uAC00' && c <= '\uD7AF') ||
+                (c >= '\uF900' && c <= '\uFAFF'))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static bool IsAllSameChar(string text)
