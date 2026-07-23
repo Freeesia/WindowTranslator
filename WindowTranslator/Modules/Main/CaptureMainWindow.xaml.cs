@@ -33,6 +33,12 @@ public partial class CaptureMainWindow
 
     private void CheckTargetWindow()
     {
+        // ディスプレイの場合はウィンドウチェックをスキップ
+        if (this.processInfo.IsMonitor)
+        {
+            return;
+        }
+        
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
         if (!GetWindowInfo((HWND)this.processInfo.MainWindowHandle, ref windowInfo))
         {

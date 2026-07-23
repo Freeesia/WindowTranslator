@@ -14,4 +14,9 @@ public interface IProcessInfoStore
     /// 対象のプロセスの名前
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// 対象がモニター（ディスプレイ）かどうか
+    /// </summary>
+    bool IsMonitor { get; }
 }

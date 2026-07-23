@@ -392,9 +392,7 @@
     <value>Bitte wählen Sie ein anderes Fenster als WindowTranslator aus</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Das ausgewählte Fenster "{0}" kann den Prozess nicht bestimmen und kann nicht erfasst werden.
-Monitore werden nicht unterstützt.
-</value>
+    <value>Das ausgewählte Fenster "{0}" kann den Prozess nicht bestimmen und kann nicht erfasst werden.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Einstellungsvalidierungsfehler</value>
