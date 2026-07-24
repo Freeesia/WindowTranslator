@@ -193,9 +193,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Foglalt ikon megjelenítése</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Fordítás csak akkor, ha az átfedő réteg engedélyezve van</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Átfedő fordítás megjelenítése csak az egérmutató pozíciójában lévő szövegnél</value>
   </data>

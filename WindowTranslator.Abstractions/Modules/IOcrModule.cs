@@ -94,22 +94,4 @@ public class BasicOcrParam : IPluginParam
     [Category("MergeThrethold")]
     public bool IsAvoidMergeList { get; set; } = false;
 
-    /// <summary>
-    /// バッファサイズ
-    /// </summary>
-    [Category("Buffer")]
-    [Spinnable]
-    public int BufferSize { get; set; } = 3;
-
-    /// <summary>
-    /// フォントサイズの振動を抑制する
-    /// </summary>
-    [Category("Buffer")]
-    public bool IsSuppressVibe { get; set; } = true;
-
-    /// <summary>
-    /// 復元を有効にするかどうか
-    /// </summary>
-    [Category("Buffer")]
-    public bool IsEnableRecover { get; set; } = true;
 }

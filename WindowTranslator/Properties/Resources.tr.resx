@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>İşlem simgesini göster</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Yalnızca kaplama etkinleştirildiğinde çevir</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Kaplama çevirisini yalnızca fare işaretçisi konumundaki metin için göster</value>
   </data>

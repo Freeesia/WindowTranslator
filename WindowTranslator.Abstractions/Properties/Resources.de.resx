@@ -162,22 +162,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Vermeiden Sie das Zusammenführen von Listen</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Puffergröße</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Grundlegende OCR-Einstellungen</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Sonstiges</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Pufferfunktion</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Erkennungsfehlerkorrektur</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Vibrationsunterdrückung</value>
   </data>
 </root>

@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Wyświetlaj ikonę zajętości</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Tłumacz tylko gdy nakładka jest włączona</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
   </data>

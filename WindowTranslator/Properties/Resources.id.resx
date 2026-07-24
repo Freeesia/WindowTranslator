@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Tampilkan ikon sibuk</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Terjemahkan hanya saat hamparan diaktifkan</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Tampilkan terjemahan hamparan hanya untuk teks di posisi pointer mouse</value>
   </data>

@@ -313,11 +313,6 @@ internal class Resources
     public static string IsLatest => ResourceManager.GetString("IsLatest", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "オーバレイを有効にしたタイミングのみ翻訳する" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string IsOneShotMode => ResourceManager.GetString("IsOneShotMode", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "マウスポインター位置のテキストのみオーバレイ翻訳を表示する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsOverlayPointSwap => ResourceManager.GetString("IsOverlayPointSwap", resourceCulture) ?? string.Empty;

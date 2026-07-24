@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>عرض أيقونة مشغول</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>الترجمة فقط عند تفعيل الطبقة العلوية</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>عرض الترجمة فقط للنص تحت المؤشر</value>
   </data>

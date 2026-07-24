@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Ipakita ang processing icon</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Magsalin lamang kapag pinagana ang overlay</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Ipakita ang overlay translation para sa teksto sa posisyon ng mouse pointer lamang</value>
   </data>

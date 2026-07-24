@@ -104,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>تجنب دمج القائمة</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>حجم المخزن المؤقت</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>إعدادات OCR الأساسية</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>أخرى</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>وظيفة المخزن المؤقت</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>تصحيح أخطاء التعرف</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>قمع الاهتزازات</value>
   </data>
 </root>

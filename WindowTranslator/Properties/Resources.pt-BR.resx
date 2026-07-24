@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Mostrar ícone de ocupado</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Traduzir apenas quando a sobreposição estiver ativada</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Exibir tradução da sobreposição apenas para texto na posição do ponteiro do mouse</value>
   </data>

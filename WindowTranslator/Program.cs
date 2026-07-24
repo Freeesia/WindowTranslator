@@ -26,6 +26,7 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Modules.Validate;
@@ -134,6 +135,7 @@ builder.Configuration
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
 builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
 builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
+builder.Services.AddScoped<IOcrTextTracker, OcrTextTracker>();
 builder.Services.AddHostedService<WindowMonitor>();
 if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
 {

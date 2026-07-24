@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>व्यस्त आइकन दिखाएं</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>केवल तब अनुवाद करें जब ओवरले सक्षम हो</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>केवल माउस पॉइंटर स्थिति पर टेक्स्ट के लिए ओवरले अनुवाद प्रदर्शित करें</value>
   </data>
