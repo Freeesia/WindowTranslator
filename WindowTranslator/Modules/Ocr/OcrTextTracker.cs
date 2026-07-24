@@ -569,10 +569,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         bool readingOriginAligned = Math.Abs(previous.X - observation.X) <= positionTolerance
             && Math.Abs(previous.Y - observation.Y) <= positionTolerance;
         bool centerAligned = CenterDistance(previous, observation) <= positionTolerance;
+        bool compatibleMultilineLayoutChange = previous.MultiLine != observation.MultiLine
+            && readingOriginAligned
+            && RatioSimilarity(previous.Width, observation.Width) >= 0.9
+            && RatioSimilarity(previous.FontSize, observation.FontSize) >= 0.8;
         return coverage >= 0.8
-            && heightSimilarity >= MinimumStructureSizeRatio
             && AngleDifference(previous.Angle, observation.Angle) <= MaximumStructureAngleDifference
-            && (readingOriginAligned || centerAligned);
+            && ((heightSimilarity >= MinimumStructureSizeRatio
+                    && (readingOriginAligned || centerAligned))
+                || compatibleMultilineLayoutChange);
     }
 
     private static bool TryCombineStructure(

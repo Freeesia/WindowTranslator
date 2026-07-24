@@ -134,6 +134,116 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void TextXAndWidthChangeStaysSingleAndConverges()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Menu", 300, 100, 100, 30, 24, false);
+        TextRect changed = new("Settings Menu", 250, 100, 200, 30, 24, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(("Menu", 300, 100), (pending.SourceText, pending.X, pending.Width));
+        Assert.Equal(
+            ("Settings Menu", 250, 200),
+            (confirmed.SourceText, confirmed.X, confirmed.Width));
+    }
+
+    [Theory]
+    [InlineData(60)]
+    [InlineData(90)]
+    public void TextHeightAndMultiLineChangeStaysSingleAndConverges(double changedHeight)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Menu", 100, 100, 240, 30, 24, false);
+        TextRect changed = new(
+            "Open Settings And Configure",
+            100,
+            100,
+            240,
+            changedHeight,
+            24,
+            true);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(("Menu", 30, false), (pending.SourceText, pending.Height, pending.MultiLine));
+        Assert.Equal(
+            ("Open Settings And Configure", changedHeight, true),
+            (confirmed.SourceText, confirmed.Height, confirmed.MultiLine));
+
+        Assert.Single(tracker.Update(
+            [initial], imageSize, TimeSpan.FromMilliseconds(1500)));
+        TextRect restored = Assert.Single(tracker.Update(
+            [initial], imageSize, TimeSpan.FromMilliseconds(2000)));
+        Assert.Equal(
+            ("Menu", 30, false),
+            (restored.SourceText, restored.Height, restored.MultiLine));
+    }
+
+    [Theory]
+    [InlineData(100, 240, 60, 48, true)]
+    [InlineData(100, 240, 60, 24, false)]
+    [InlineData(130, 240, 90, 24, true)]
+    [InlineData(100, 180, 90, 24, true)]
+    public void UnrelatedLayoutChangeDoesNotUseMultilineContinuity(
+        double changedX,
+        double changedWidth,
+        double changedHeight,
+        double changedFontSize,
+        bool changedMultiLine)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Menu", 100, 100, 240, 30, 24, false);
+        TextRect unrelated = new(
+            "Unrelated Panel",
+            changedX,
+            100,
+            changedWidth,
+            changedHeight,
+            changedFontSize,
+            changedMultiLine);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [unrelated], imageSize, TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Menu", "Unrelated Panel"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void TemporaryTextChangeAndMergeKeepsTheStableFragments()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] fragments =
+        [
+            new("Open", 100, 100, 90, 30, 24, false),
+            new("Menu", 200, 100, 140, 30, 24, false),
+        ];
+        TextRect changedMerged = new("Settings Panel", 100, 100, 240, 30, 24, false);
+        tracker.Update(fragments, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> pending = tracker.Update(
+            [changedMerged], imageSize, TimeSpan.FromMilliseconds(500));
+        IReadOnlyList<TextRect> recovered = tracker.Update(
+            fragments, imageSize, TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal(["Open", "Menu"], pending.Select(rect => rect.SourceText));
+        Assert.Equal(["Open", "Menu"], recovered.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
     public void ContinuouslyChangingTextEventuallyAdvancesToTheLatestObservation()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
