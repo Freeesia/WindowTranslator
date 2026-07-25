@@ -33,24 +33,18 @@ using WindowTranslator.Modules.Validate;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
-using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 
-#if DEBUG
+#if NO_MUTEX
 var createdNew = true;
 #else
 using var mutex = new Mutex(true, @"Global\WindowTranslator", out var createdNew);
 #endif
 if (!createdNew)
 {
-    new MessageDialog()
-    {
-        Caption = "WindowTranslator",
-        Icon = MessageBoxImage.Error,
-        Text = Resources.MutexError,
-    }.Show();
+    _ = SingleInstanceWindowActivator.TryActivateExistingInstance();
     return;
 }
 var d = SplashWindow.ShowSplash();
