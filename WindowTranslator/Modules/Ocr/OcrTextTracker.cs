@@ -28,6 +28,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double MinimumStructureTextSimilarity = 0.65;
     private const double MinimumMovingStructureTextSimilarity = 0.9;
     private const double MaximumStructureAngleDifference = 8;
+    private const double MinimumSameRegionCoverage = 0.65;
+    private const double MinimumSameRegionFontSizeRatio = 0.65;
     private const double StrongOneToOneScore = 0.9;
     private const double AngleVectorEpsilon = 0.000000000001;
     private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
@@ -127,6 +129,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             oneToOneCandidates
                 .Where(candidate => !reservedTracks.Contains(candidate.Tracks[0]))
                 .Where(candidate => !reservedObservations.Contains(candidate.ObservationIndices[0]))
+                .Where(candidate => !CoversReservedTextFragment(candidate.Combined, reservedTracks))
                 .ToArray()));
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
@@ -307,6 +310,17 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         => candidate.Score >= StrongOneToOneScore
             && candidate.Tracks[0].NormalizedConfirmedText
                 == normalizedObservations[candidate.ObservationIndices[0]];
+
+    private static bool CoversReservedTextFragment(
+        TextRect observation,
+        IReadOnlySet<TextTrack> reservedTracks)
+        => reservedTracks.Any(track =>
+        {
+            TextRect previous = track.LatestObservation;
+            return IsCoveredTextFragment(previous, observation)
+                && RatioSimilarity(previous.FontSize, observation.FontSize)
+                    >= MinimumSameRegionFontSizeRatio;
+        });
 
     private static MatchCandidate[] SelectOneToOne(IReadOnlyList<MatchCandidate> candidates)
     {
@@ -506,9 +520,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         double center = Math.Max(0, 1 - (centerDistance / distanceGate));
         double width = RatioSimilarity(previous.Width, observation.Width);
         double height = RatioSimilarity(previous.Height, observation.Height);
+        double fontSize = RatioSimilarity(previous.FontSize, observation.FontSize);
         double size = (width + height) / 2;
         double coverage = IntersectionOverSmallerArea(predicted, observation);
-        bool sameRegionGeometry = HasSameRegionGeometry(predicted, observation, coverage, height);
+        double sameRegionCoverage = Math.Max(
+            coverage,
+            IntersectionOverSmallerArea(previous, observation));
+        bool sameRegionOverlap = HasSameRegionOverlap(previous, observation, sameRegionCoverage);
+        bool compatibleFontSize = fontSize >= MinimumSameRegionFontSizeRatio;
+        bool sameRegionGeometry = sameRegionOverlap && compatibleFontSize;
         if (!CanReachTextSimilarity(trackText.Length, observationText.Length, 0.15)
             && overlap < 0.3
             && !sameRegionGeometry)
@@ -524,6 +544,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         double text = NormalizedTextSimilarity(trackText, observationText);
         if (overlap == 0 && text < 0.9 && centerDistance > maximumDimension * 1.25)
+        {
+            return -1;
+        }
+        if (text < 0.65 && sameRegionOverlap && !compatibleFontSize)
         {
             return -1;
         }
@@ -550,35 +574,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         }
 
         double angle = Math.Max(0, 1 - (AngleDifference(predicted.Angle, observation.Angle) / 10));
-        double replacementScore = (overlap * 0.15)
+        double replacementScore = (sameRegionCoverage * 0.45)
             + (center * 0.2)
-            + (height * 0.2)
-            + (coverage * 0.25)
+            + (fontSize * 0.15)
             + (angle * 0.1)
-            + (recency * 0.05);
+            + (recency * 0.1);
         return Math.Max(score, replacementScore);
     }
 
-    private static bool HasSameRegionGeometry(
+    private static bool HasSameRegionOverlap(
         TextRect previous,
         TextRect observation,
-        double coverage,
-        double heightSimilarity)
-    {
-        double positionTolerance = Math.Max(3, Math.Min(previous.Height, observation.Height) * 0.2);
-        bool readingOriginAligned = Math.Abs(previous.X - observation.X) <= positionTolerance
-            && Math.Abs(previous.Y - observation.Y) <= positionTolerance;
-        bool centerAligned = CenterDistance(previous, observation) <= positionTolerance;
-        bool compatibleMultilineLayoutChange = previous.MultiLine != observation.MultiLine
-            && readingOriginAligned
-            && RatioSimilarity(previous.Width, observation.Width) >= 0.9
-            && RatioSimilarity(previous.FontSize, observation.FontSize) >= 0.8;
-        return coverage >= 0.8
-            && AngleDifference(previous.Angle, observation.Angle) <= MaximumStructureAngleDifference
-            && ((heightSimilarity >= MinimumStructureSizeRatio
-                    && (readingOriginAligned || centerAligned))
-                || compatibleMultilineLayoutChange);
-    }
+        double coverage)
+        => coverage >= MinimumSameRegionCoverage
+            && AngleDifference(previous.Angle, observation.Angle) <= MaximumStructureAngleDifference;
 
     private static bool TryCombineStructure(
         TextRect[] source,

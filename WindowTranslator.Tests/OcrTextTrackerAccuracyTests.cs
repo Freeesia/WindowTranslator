@@ -154,21 +154,30 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Theory]
-    [InlineData(60)]
-    [InlineData(90)]
-    public void TextHeightAndMultiLineChangeStaysSingleAndConverges(double changedHeight)
+    [InlineData(100, 100, 240, 60, true)]
+    [InlineData(100, 100, 240, 90, true)]
+    [InlineData(130, 100, 240, 90, true)]
+    [InlineData(100, 100, 180, 90, true)]
+    [InlineData(100, 100, 240, 90, false)]
+    [InlineData(100, 110, 240, 30, false)]
+    public void TextAndLayoutChangeWithMajorityOverlapStaysSingleAndConverges(
+        double changedX,
+        double changedY,
+        double changedWidth,
+        double changedHeight,
+        bool changedMultiLine)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
         TextRect initial = new("Menu", 100, 100, 240, 30, 24, false);
         TextRect changed = new(
             "Open Settings And Configure",
-            100,
-            100,
-            240,
+            changedX,
+            changedY,
+            changedWidth,
             changedHeight,
             24,
-            true);
+            changedMultiLine);
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
         TextRect pending = Assert.Single(tracker.Update(
@@ -178,8 +187,8 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
 
         Assert.Equal(("Menu", 30, false), (pending.SourceText, pending.Height, pending.MultiLine));
         Assert.Equal(
-            ("Open Settings And Configure", changedHeight, true),
-            (confirmed.SourceText, confirmed.Height, confirmed.MultiLine));
+            ("Open Settings And Configure", changedX, changedY, changedWidth, changedHeight, changedMultiLine),
+            (confirmed.SourceText, confirmed.X, confirmed.Y, confirmed.Width, confirmed.Height, confirmed.MultiLine));
 
         Assert.Single(tracker.Update(
             [initial], imageSize, TimeSpan.FromMilliseconds(1500)));
@@ -191,34 +200,35 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Theory]
-    [InlineData(100, 240, 60, 48, true)]
-    [InlineData(100, 240, 60, 24, false)]
-    [InlineData(130, 240, 90, 24, true)]
-    [InlineData(100, 180, 90, 24, true)]
-    public void UnrelatedLayoutChangeDoesNotUseMultilineContinuity(
-        double changedX,
-        double changedWidth,
-        double changedHeight,
-        double changedFontSize,
-        bool changedMultiLine)
+    [InlineData(112)]
+    [InlineData(124)]
+    public void MinorityOverlapDoesNotReplaceNeighboringRegion(double neighboringY)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
         TextRect initial = new("Menu", 100, 100, 240, 30, 24, false);
-        TextRect unrelated = new(
-            "Unrelated Panel",
-            changedX,
-            100,
-            changedWidth,
-            changedHeight,
-            changedFontSize,
-            changedMultiLine);
+        TextRect neighboring = new("Unrelated Panel", 100, neighboringY, 240, 30, 24, false);
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
         IReadOnlyList<TextRect> result = tracker.Update(
-            [unrelated], imageSize, TimeSpan.FromMilliseconds(500));
+            [neighboring], imageSize, TimeSpan.FromMilliseconds(500));
 
         Assert.Equal(["Menu", "Unrelated Panel"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void LargeFontSizeDifferenceKeepsOverlappingRegionsSeparate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Logo", 100, 100, 240, 60, 48, false);
+        TextRect overlay = new("Caption", 100, 100, 240, 60, 24, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [overlay], imageSize, TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Logo", "Caption"], result.Select(rect => rect.SourceText));
     }
 
     [Fact]
