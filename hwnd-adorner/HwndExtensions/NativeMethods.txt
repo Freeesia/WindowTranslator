@@ -1,5 +1,4 @@
 ﻿SetWindowPos
-SetWindowLong
 GetWindow
 
 WINDOW_EX_STYLE

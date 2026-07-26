@@ -35,19 +35,19 @@ public class ProcessWindowPresenter : HwndHostPresenter
     private class ProcessWindowHost(IProcessInfoStore process) : HwndHost
     {
         private readonly IProcessInfoStore process = process;
-        private nint beforeStyle;
+        private int beforeStyle;
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            var childStyle = (nint)(WINDOW_STYLE.WS_CHILD |
+            var childStyle = WINDOW_STYLE.WS_CHILD |
                             // Child window should be have a thin-line border
                             WINDOW_STYLE.WS_BORDER |
                             // the parent cannot draw over the child's area. this is needed to avoid refresh issues
                             WINDOW_STYLE.WS_CLIPCHILDREN |
                             WINDOW_STYLE.WS_VISIBLE |
-                            WINDOW_STYLE.WS_MAXIMIZE);
+                            WINDOW_STYLE.WS_MAXIMIZE;
             this.beforeStyle = GetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
-            _ = SetWindowLongPtr((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, childStyle);
+            _ = SetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, unchecked((int)childStyle));
             SetParent((HWND)this.process.MainWindowHandle, (HWND)hwndParent.Handle);
             return new HandleRef(this, this.process.MainWindowHandle);
         }
@@ -55,7 +55,7 @@ public class ProcessWindowPresenter : HwndHostPresenter
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
             SetParent((HWND)this.process.MainWindowHandle, HWND.Null);
-            _ = SetWindowLongPtr((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, this.beforeStyle);
+            _ = SetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, this.beforeStyle);
             DestroyWindow((HWND)hwnd.Handle);
         }
     }

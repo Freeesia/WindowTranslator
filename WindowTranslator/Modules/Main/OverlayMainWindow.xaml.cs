@@ -105,7 +105,7 @@ public partial class OverlayMainWindow : Window
         {
             extendedStyle |= WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
         }
-        var r = SetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, extendedStyle);
+        var r = SetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, unchecked((int)extendedStyle));
         if (r == 0)
         {
             this.logger.LogError($"SetWindowLong failed. {Marshal.GetLastWin32Error()}");

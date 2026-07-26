@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using WindowTranslator.Extensions;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator;
@@ -26,7 +27,7 @@ internal static class SingleInstanceWindowActivator
         int startupProcessId = 0;
         EnumWindows((hWnd, _) =>
         {
-            if (GetWindowThreadProcessId(hWnd, out int processId) == 0 || !processIds.Contains(processId))
+            if (!hWnd.TryGetProcessId(out int processId) || !processIds.Contains(processId))
             {
                 return true;
             }

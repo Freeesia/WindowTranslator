@@ -270,7 +270,7 @@ public partial class FoMFilterModule : IFilterModule
 
     public double Priority => -1;
 
-    public FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptionsSnapshot<FoMOptions> options, ILogger<FoMFilterModule> logger)
+    public unsafe FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptionsSnapshot<FoMOptions> options, ILogger<FoMFilterModule> logger)
     {
         this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
         {
@@ -280,7 +280,9 @@ public partial class FoMFilterModule : IFilterModule
             SingleWriter = true,
         }, Dropped);
         this.logger = logger;
-        _ = GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
+        uint nativeProcessId = 0;
+        _ = GetWindowThreadProcessId(new(processInfo.MainWindowHandle), &nativeProcessId);
+        var processId = unchecked((int)nativeProcessId);
         if (!options.Value.IsEnabledCorrect || !(GetProcessPath(processId) is { } exePath) || Path.GetFileName(exePath) != "FieldsOfMistria.exe")
         {
             return;

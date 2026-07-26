@@ -42,7 +42,6 @@ internal class HwndAdornerGroup : HwndSourceConnector
 
         if (m_ownerSource is not null)
         {
-            SetOwnership(adorner);
             ActivateInGroupLimits(adorner);
             adorner.InvalidateAppearance();
 
@@ -62,7 +61,6 @@ internal class HwndAdornerGroup : HwndSourceConnector
 
         if (Owned)
         {
-            RemoveOwnership(adorner);
             adorner.InvalidateAppearance();
         }
 
@@ -83,7 +81,6 @@ internal class HwndAdornerGroup : HwndSourceConnector
 
         if (HasAdorners)
         {
-            SetOwnership();
             SetZOrder();
             SetPosition();
             InvalidateAppearance();
@@ -102,16 +99,7 @@ internal class HwndAdornerGroup : HwndSourceConnector
         m_ownerSource.RemoveHook(OwnerHook);
         m_ownerSource = null;
 
-        RemoveOwnership();
         InvalidateAppearance();
-    }
-
-    private void SetOwnership()
-    {
-        foreach (var adorner in m_adornersInGroup)
-        {
-            SetOwnership(adorner);
-        }
     }
 
     private void InvalidateAppearance()
@@ -121,20 +109,6 @@ internal class HwndAdornerGroup : HwndSourceConnector
             adorner.InvalidateAppearance();
         }
     }
-
-    private void SetOwnership(HwndAdorner adorner)
-        => SetWindowLongPtr(adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, m_ownerSource?.Handle ?? throw new InvalidOperationException());
-
-    private void RemoveOwnership()
-    {
-        foreach (var adorner in m_adornersInGroup)
-        {
-            RemoveOwnership(adorner);
-        }
-    }
-
-    private static void RemoveOwnership(HwndAdorner adorner)
-        => SetWindowLongPtr(adorner.Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, 0);
 
     private void SetPosition()
     {

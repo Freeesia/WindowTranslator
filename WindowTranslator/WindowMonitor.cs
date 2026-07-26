@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
 using System.Diagnostics;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
@@ -32,13 +33,13 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore 
         var windows = new HashSet<IntPtr>();
         EnumWindows((hWnd, lParam) =>
         {
-            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
+            if (hWnd.ShouldIgnore() || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
             {
                 return true;
             }
 
-            var windowTitle = GetWindowText(hWnd);
-            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            var windowTitle = hWnd.GetText();
+            if (!hWnd.TryGetProcessId(out var processId))
             {
                 return true;
             }
