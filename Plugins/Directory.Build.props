@@ -11,7 +11,7 @@
     <PackageTags Condition="'$(PackageTags)' == ''">windowtranslator-plugin</PackageTags>
     <PackageProjectUrl Condition="'$(PackageProjectUrl)' == ''">https://github.com/Freeesia/WindowTranslator</PackageProjectUrl>
     <Authors Condition="'$(Authors)' == ''">Freeesia</Authors>
-    <!-- ExcludeFromAppBundle=true のプラグインはビルド後にアプリのpluginsフォルダにコピーされません -->
+    <!-- ExcludeFromAppBundle=true のプラグインはGitHub Actionsでのみアプリのpluginsフォルダへのコピーを省略します -->
     <ExcludeFromAppBundle Condition="'$(ExcludeFromAppBundle)' == ''">false</ExcludeFromAppBundle>
   </PropertyGroup>
 

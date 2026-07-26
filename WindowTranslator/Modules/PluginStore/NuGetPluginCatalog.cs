@@ -59,7 +59,13 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         Directory.CreateDirectory(destination);
         foreach (var file in Directory.GetFiles(source))
         {
-            File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), overwrite: true);
+            var destinationFile = Path.Combine(destination, Path.GetFileName(file));
+            if (File.Exists(destinationFile))
+            {
+                continue;
+            }
+
+            File.Copy(file, destinationFile);
         }
         foreach (var subDir in Directory.GetDirectories(source))
         {

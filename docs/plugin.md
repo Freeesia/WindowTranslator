@@ -61,26 +61,11 @@ cd WindowTranslator.Plugin.YourPlugin
 | `IColorModule` | 色変換 |
 | `ICacheModule` | 翻訳結果キャッシュ |
 
-```csharp
-using System.ComponentModel;
-using WindowTranslator.Modules;
-
-[DisplayName("MyPlugin 翻訳")]
-public class MyTranslateModule : ITranslateModule
-{
-    public async IAsyncEnumerable<string> TranslateAsync(
-        IAsyncEnumerable<string> texts,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        await foreach (var text in texts.WithCancellation(cancellationToken))
-        {
-            yield return await MyTranslateApiAsync(text, cancellationToken);
-        }
-    }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-}
-```
+実際の実装例は
+[DeepLTranslator.cs](../Plugins/WindowTranslator.Plugin.DeepLTranslatePlugin/DeepLTranslator.cs)
+と
+[WindowTranslator.Plugin.DeepLTranslatePlugin.csproj](../Plugins/WindowTranslator.Plugin.DeepLTranslatePlugin/WindowTranslator.Plugin.DeepLTranslatePlugin.csproj)
+を参照してください。
 
 ### 4. パッケージをビルドして NuGet に公開
 
