@@ -187,7 +187,6 @@ public sealed class HwndAdorner : IDisposable
     {
         if (m_hwndSource != null) return;
 
-        var ownerSource = PresentationSource.FromVisual(m_elementAttachedTo) as HwndSource;
         int classStyle = 0;
         int style = 0;
         int styleEx = (int)WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
@@ -201,8 +200,7 @@ public sealed class HwndAdorner : IDisposable
             PositionX = (int)(m_parentBoundingBox.X + m_boundingBox.X),
             PositionY = (int)(m_parentBoundingBox.Y + m_boundingBox.Y),
             Width = (int)m_boundingBox.Width,
-            Height = (int)m_boundingBox.Height,
-            ParentWindow = ownerSource?.Handle ?? IntPtr.Zero,
+            Height = (int)m_boundingBox.Height
         };
 
         m_hwndSource = new HwndSource(parameters);

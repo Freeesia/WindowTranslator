@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Windows.Win32.Foundation;
+using WindowTranslator.Extensions;
 using WindowTranslator.Stores;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
@@ -47,7 +48,7 @@ public class ProcessWindowPresenter : HwndHostPresenter
                             WINDOW_STYLE.WS_VISIBLE |
                             WINDOW_STYLE.WS_MAXIMIZE;
             this.beforeStyle = GetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
-            _ = SetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, unchecked((int)childStyle));
+            _ = ((HWND)this.process.MainWindowHandle).SetStyle(childStyle);
             SetParent((HWND)this.process.MainWindowHandle, (HWND)hwndParent.Handle);
             return new HandleRef(this, this.process.MainWindowHandle);
         }

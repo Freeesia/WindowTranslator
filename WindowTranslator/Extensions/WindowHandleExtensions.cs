@@ -1,5 +1,6 @@
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Extensions;
@@ -14,13 +15,14 @@ internal static class WindowHandleExtensions
         return length == 0 ? string.Empty : new(buffer[..length]);
     }
 
-    public static unsafe bool TryGetProcessId(this HWND window, out int processId)
-    {
-        uint id = 0;
-        var threadId = GetWindowThreadProcessId(window, &id);
-        processId = unchecked((int)id);
-        return threadId != 0;
-    }
+    public static bool TryGetProcessId(this HWND window, out int processId)
+        => WindowUtility.TryGetProcessId(window, out processId);
+
+    public static int SetStyle(this HWND window, WINDOW_STYLE style)
+        => SetWindowLong(window, WINDOW_LONG_PTR_INDEX.GWL_STYLE, unchecked((int)style));
+
+    public static int SetExtendedStyle(this HWND window, WINDOW_EX_STYLE style)
+        => SetWindowLong(window, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, unchecked((int)style));
 
     public static bool ShouldIgnore(this HWND window)
     {

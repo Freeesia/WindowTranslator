@@ -32,7 +32,6 @@ CreateWindowEx
 FindWindowEx
 GetWindowText
 GetWindowTextLength
-GetWindowThreadProcessId
 GetClassName
 DwmGetWindowAttribute
 
