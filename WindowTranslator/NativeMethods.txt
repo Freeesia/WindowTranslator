@@ -41,5 +41,15 @@ DwmGetWindowAttribute
 EnumWindows
 IsWindowVisible
 
+// SingleInstanceWindowActivator
+GetProp
+RegisterWindowMessage
+AllowSetForegroundWindow
+PostMessage
+
+// StartupDialog
+SetProp
+RemoveProp
+
 // WindowsGraphicsCapture
 IsZoomed
