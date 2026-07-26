@@ -10,6 +10,8 @@
     <ApplicationIcon>$(MSBuildThisFileDirectory)..\docs\images\wt.ico</ApplicationIcon>
     <AnalysisMode>Recommended</AnalysisMode>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -18,7 +20,8 @@
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <PublishDocumentationFile>false</PublishDocumentationFile>
     <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>$(DefineConstants);NO_MUTEX</DefineConstants>

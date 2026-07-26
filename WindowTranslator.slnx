@@ -1,0 +1,72 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="ARM64" />
+  </Configurations>
+  <Folder Name="/!Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".github/copilot-instructions.md" />
+    <File Path=".mcp.json" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Resources.Designer.tt" />
+  </Folder>
+  <Folder Name="/ColorThief/">
+    <Project Path="ColorThief/ColorThief.Bench/ColorThief.Bench.csproj" />
+    <Project Path="ColorThief/ColorThief.Test/ColorThief.Test.csproj" />
+    <Project Path="ColorThief/ColorThief/ColorThief.csproj" />
+  </Folder>
+  <Folder Name="/hwnd-adorner/">
+    <Project Path="hwnd-adorner/Demo/Demo.csproj">
+      <Platform Project="*" />
+    </Project>
+    <Project Path="hwnd-adorner/HwndExtensions/HwndExtensions.csproj">
+      <Platform Project="*" />
+    </Project>
+  </Folder>
+  <Folder Name="/Plugins/">
+    <File Path="Plugins/copy_plugins.bat" />
+    <File Path="Plugins/Directory.Build.props" />
+    <File Path="Plugins/Directory.Build.targets" />
+    <Project Path="Plugins/WindowTranslator.Plugin.BergamotTranslatorPlugin/WindowTranslator.Plugin.BergamotTranslatorPlugin.csproj">
+      <Platform Project="*" />
+    </Project>
+    <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin.Tests/WindowTranslator.Plugin.ColorThiefPlugin.Tests.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin/WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.DeepLTranslatePlugin/WindowTranslator.Plugin.DeepLTranslatePlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.DummyPlugin/WindowTranslator.Plugin.DummyPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.FoMPlugin/WindowTranslator.Plugin.FoMPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.GitHubCopilotPlugin/WindowTranslator.Plugin.GitHubCopilotPlugin.csproj">
+      <Platform Project="*" />
+    </Project>
+    <Project Path="Plugins/WindowTranslator.Plugin.GoogleAIPlugin/WindowTranslator.Plugin.GoogleAIPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.GoogleAppsSctiptPlugin/WindowTranslator.Plugin.GoogleAppsSctiptPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.LLMPlugin/WindowTranslator.Plugin.LLMPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.OneOcrPlugin/WindowTranslator.Plugin.OneOcrPlugin.csproj">
+      <Platform Project="*" />
+    </Project>
+    <Project Path="Plugins/WindowTranslator.Plugin.PLaMoPlugin/WindowTranslator.Plugin.PLaMoPlugin.csproj">
+      <Platform Project="*" />
+    </Project>
+    <Project Path="Plugins/WindowTranslator.Plugin.TesseractOCRPlugin/WindowTranslator.Plugin.TesseractOCRPlugin.csproj">
+      <Platform Project="*" />
+    </Project>
+  </Folder>
+  <Project Path="Composition.WindowsRuntimeHelpers/Composition.WindowsRuntimeHelpers.csproj" />
+  <Project Path="Sandbox/Sandbox.csproj">
+    <Platform Project="*" />
+  </Project>
+  <Project Path="WindowTranslator.Abstractions/WindowTranslator.Abstractions.csproj" />
+  <Project Path="WindowTranslator.Tests/WindowTranslator.Tests.csproj">
+    <Platform Project="*" />
+  </Project>
+  <Project Path="WindowTranslator.Wix/WindowTranslator.Wix.csproj" />
+  <Project Path="WindowTranslator/WindowTranslator.csproj">
+    <Platform Project="*" />
+  </Project>
+  <Properties Name="ExtensibilityGlobals" Scope="PostLoad">
+    <Property Name="RESX_AutoCreateNewLanguageFiles" Value="True" />
+    <Property Name="RESX_ConfirmAddLanguageFile" Value="True" />
+  </Properties>
+</Solution>

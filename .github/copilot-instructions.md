@@ -63,10 +63,10 @@ ICaptureModule → IOcrModule → IFilterModule（前処理）→ ITranslateModu
 
 ```powershell
 # ビルド（デバッグ）
-dotnet build WindowTranslator.sln
+dotnet build WindowTranslator.slnx -p:Platform=x64
 
 # メインアプリ発行
-dotnet publish WindowTranslator -c Release -o publish
+dotnet publish WindowTranslator -c Release -o publish -p:Platform=x64
 
 # プラグイン発行（例）
 dotnet publish Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin -c Release -o publish\plugins\DeepL

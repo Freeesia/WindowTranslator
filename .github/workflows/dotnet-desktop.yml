@@ -129,7 +129,7 @@ jobs:
         with:
           cuda: '12.9.0'
       - run: |
-          dotnet publish WindowTranslator -c Release -o publish --sc ${{ matrix.self }} `
+          dotnet publish WindowTranslator -c Release -o publish --sc ${{ matrix.self }} -p:Platform=x64 `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
@@ -139,7 +139,7 @@ jobs:
       - run: |
           $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" -and $_.Name -notmatch "Tests?" }
           for ($i = 0; $i -lt $folders.Count; $i++) {
-            dotnet publish $folders[$i].FullName -c Release -o "publish\plugins\$($folders[$i].Name)" `
+            dotnet publish $folders[$i].FullName -c Release -o "publish\plugins\$($folders[$i].Name)" -p:Platform=x64 `
               -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
               -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
               -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
