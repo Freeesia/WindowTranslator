@@ -162,23 +162,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Unikanie scalania list</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Rozmiar bufora</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Podstawowe ustawienia OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Inne</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Funkcja bufora</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Korekta błędów rozpoznawania</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Tłumienie drgań</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Ustawienia języka</value>

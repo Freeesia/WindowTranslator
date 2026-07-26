@@ -162,23 +162,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Vyhnout se slučování seznamů</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Velikost vyrovnávací paměti</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Základní nastavení OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Ostatní</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Funkce vyrovnávací paměti</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Oprava chyb rozpoznávání</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Potlačení chvění</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Nastavení jazyka</value>

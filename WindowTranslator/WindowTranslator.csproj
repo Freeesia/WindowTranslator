@@ -20,6 +20,9 @@
     <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);NO_MUTEX</DefineConstants>
+  </PropertyGroup>
   <!-- Configure Sentry -->
   <PropertyGroup Condition="'$(SENTRY_AUTH_TOKEN)' != ''">
     <SentryOrg>studiofreesia</SentryOrg>

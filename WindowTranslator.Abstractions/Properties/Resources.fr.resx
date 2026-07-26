@@ -104,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Éviter la fusion de liste</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Taille du tampon</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Paramètres OCR de base</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Autres</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Fonction de tampon</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Correction des erreurs de reconnaissance</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Suppression des vibrations</value>
   </data>
 </root>

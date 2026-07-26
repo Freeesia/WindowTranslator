@@ -267,8 +267,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
-                IsOneShotMode = t.IsOneShotMode,
                 OverlayOpacity = t.OverlayOpacity,
+                MousePointerHitTestPadding = t.MousePointerHitTestPadding,
             }),
         };
 
@@ -306,6 +306,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.autoTargetStore.AutoTargets.Clear();
         this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
         this.autoTargetStore.Save();
+
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -388,6 +389,7 @@ public partial class TargetSettingsViewModel(
         CultureInfo.GetCultureInfo("cs-CZ"),
         CultureInfo.GetCultureInfo("ps-AF"),
         CultureInfo.GetCultureInfo("prs-AF"),
+        CultureInfo.GetCultureInfo("hu-HU"),
     ];
 
     [Browsable(false)]
@@ -471,9 +473,11 @@ public partial class TargetSettingsViewModel(
     private bool displayBusy = settings.DisplayBusy;
 
     [property: Category("SettingsViewModel|Misc")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
+    [property: Slidable(0, 100, 1, 10, true, 1)]
     [property: SortIndex(9)]
     [ObservableProperty]
-    private bool isOneShotMode = settings.IsOneShotMode;
+    private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {
@@ -484,6 +488,7 @@ public partial class TargetSettingsViewModel(
         {
             configureMethod.Invoke(configure, [name, p]);
         }
+
         return p;
     }).ToArray();
 }

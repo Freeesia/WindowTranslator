@@ -104,23 +104,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Mga Karakter na Iwasan sa Pagsama</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Laki ng Buffer</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Mga Basic na Parameter ng OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Iba pa</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Pag-andar ng Buffer</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Pagwawasto ng Mali sa Pagkilala</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Pagsupil ng Panginginig</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Mga Setting ng Wika</value>

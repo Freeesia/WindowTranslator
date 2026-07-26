@@ -104,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Hindari penggabungan daftar</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Ukuran buffer</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Pengaturan OCR dasar</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Lainnya</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Fungsi buffer</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Koreksi kesalahan pengenalan</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Penekanan getaran</value>
   </data>
 </root>

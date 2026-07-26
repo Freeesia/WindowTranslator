@@ -306,9 +306,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>نمایش آیکون در حال پردازش</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>ترجمه فقط هنگام فعال‌سازی پوشش</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>نمایش ترجمه فقط برای متن زیر مکان‌نما</value>
   </data>

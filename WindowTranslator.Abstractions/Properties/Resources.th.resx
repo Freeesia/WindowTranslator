@@ -104,23 +104,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>อักขระที่ต้องหลีกเลี่ยงการรวม</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>ขนาดบัฟเฟอร์</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>พารามิเตอร์ OCR พื้นฐาน</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>อื่นๆ</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>ฟังก์ชันบัฟเฟอร์</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>การแก้ไขข้อผิดพลาดในการรู้จำ</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>การระงับการสั่นสะเทือน</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>การตั้งค่าภาษา</value>

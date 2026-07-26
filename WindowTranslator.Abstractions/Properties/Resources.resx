@@ -162,23 +162,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>リストのマージを避ける</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>バッファサイズ</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>基本的なOCRの設定</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>その他</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>バッファ機能</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>認識ミスの補正</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振動の抑制</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>言語設定</value>

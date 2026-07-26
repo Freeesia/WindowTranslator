@@ -3,7 +3,8 @@ using System.Text;
 using System.Text.Json;
 using CsvHelper;
 using CsvHelper.Configuration;
-using GitHub.Copilot.SDK;
+using GitHub.Copilot;
+using GitHub.Copilot.Rpc;
 using Microsoft.Extensions.Options;
 using ValueTaskSupplement;
 using WindowTranslator.Modules;
@@ -58,7 +59,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         </出力テキストのJsonフォーマット>
         """;
 
-        this.client = new CopilotClient(new() { CliPath = Utility.GetBundledCliPath() });
+        this.client = new CopilotClient(new() { Connection = RuntimeConnection.ForStdio(Utility.GetBundledCliPath()) });
 
         this.session = new(this.CreateSessionAsync);
 
@@ -88,7 +89,9 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
                 Mode = SystemMessageMode.Replace,
                 Content = system,
             },
-            OnPermissionRequest = static (_, _) => Task.FromResult(new PermissionRequestResult() { Kind = PermissionRequestResultKind.NoResult }),
+#pragma warning disable GHCP001 // 種類は、評価の目的でのみ提供されています。将来の更新で変更または削除されることがあります。続行するには、この診断を非表示にします。
+            OnPermissionRequest = static (_, _) => Task.FromResult(PermissionDecision.UserNotAvailable()),
+#pragma warning restore GHCP001 // 種類は、評価の目的でのみ提供されています。将来の更新で変更または削除されることがあります。続行するには、この診断を非表示にします。
             ReasoningEffort = "low",
         }).ConfigureAwait(false);
         this.sessionStarted = true;
@@ -169,7 +172,7 @@ file static class CopilotClientExtensions
         var tcs = new TaskCompletionSource<AssistantMessageEvent?>(TaskCreationOptions.RunContinuationsAsynchronously);
         AssistantMessageEvent? lastAssistantMessage = null;
 
-        using var subscription = session.On(evt =>
+        using var subscription = session.On<SessionEvent>(evt =>
         {
             switch (evt)
             {
@@ -196,7 +199,7 @@ file static class CopilotClientExtensions
             }
         });
 
-        await session.SendAsync(new() { Prompt = prompt });
+        await session.SendAsync(new MessageOptions { Prompt = prompt });
 
         using var cts = new CancellationTokenSource();
         cts.CancelAfter(effectiveTimeout);

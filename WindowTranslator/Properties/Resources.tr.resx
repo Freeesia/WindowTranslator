@@ -306,11 +306,14 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>İşlem simgesini göster</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Yalnızca kaplama etkinleştirildiğinde çevir</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Kaplama çevirisini yalnızca fare işaretçisi konumundaki metin için göster</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Fare işaretçisi isabet testi dolgusu</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Fare işaretçisi isabet testi alanına eklenen piksel sayısı</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Kaplama arka plan opaklığı</value>

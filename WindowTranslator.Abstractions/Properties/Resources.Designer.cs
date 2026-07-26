@@ -68,14 +68,9 @@ internal class Resources
     public static string BasicOcrParam => ResourceManager.GetString("BasicOcrParam", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "バッファ機能" に類似しているローカライズされた文字列を検索します。
+    /// "明るさ" に類似しているローカライズされた文字列を検索します。
     /// </summary>
-    public static string Buffer => ResourceManager.GetString("Buffer", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "バッファサイズ" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string BufferSize => ResourceManager.GetString("BufferSize", resourceCulture) ?? string.Empty;
+    public static string Brightness => ResourceManager.GetString("Brightness", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "キャッシュモジュール" に類似しているローカライズされた文字列を検索します。
@@ -86,6 +81,11 @@ internal class Resources
     /// "キャプチャーウィンドウ" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Capture => ResourceManager.GetString("Capture", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "コントラスト" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Contrast => ResourceManager.GetString("Contrast", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "文字サイズずれ閾値" に類似しているローカライズされた文字列を検索します。
@@ -101,16 +101,6 @@ internal class Resources
     /// "リストのマージを避ける" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsAvoidMergeList => ResourceManager.GetString("IsAvoidMergeList", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "認識ミスの補正" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string IsEnableRecover => ResourceManager.GetString("IsEnableRecover", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "振動の抑制" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string IsSuppressVibe => ResourceManager.GetString("IsSuppressVibe", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "行間閾値" に類似しているローカライズされた文字列を検索します。

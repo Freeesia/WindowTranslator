@@ -306,11 +306,14 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Wyświetlaj ikonę zajętości</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Tłumacz tylko gdy nakładka jest włączona</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Wyświetlaj tłumaczenie nakładki tylko dla tekstu pod pozycją wskaźnika myszy</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Margines testu trafienia wskaźnika myszy</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Dodatkowe piksele wokół obszaru testu trafienia wskaźnika myszy</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Krycie tła nakładki</value>

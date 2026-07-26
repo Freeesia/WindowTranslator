@@ -1,4 +1,5 @@
 using System.IO;
+using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 
 namespace WindowTranslator.Modules.PluginStore;
@@ -7,16 +8,25 @@ namespace WindowTranslator.Modules.PluginStore;
 /// NuGet経由でインストールされたプラグインを一時フォルダからロードするカタログです。
 /// ファイルロックを回避するため、読み込み前にプラグインフォルダを一時フォルダにコピーします。
 /// </summary>
-public class NuGetPluginCatalog(string sourceDir, FolderPluginCatalogOptions options)
-    : FolderPluginCatalog(
-        Path.Combine(Path.GetTempPath(), "WindowTranslator", "plugins"),
-        options)
+public sealed class NuGetPluginCatalog : IPluginCatalog
 {
     private static readonly string TempDir =
         Path.Combine(Path.GetTempPath(), "WindowTranslator", "plugins");
 
+    private readonly string sourceDir;
+    private readonly FolderPluginCatalog innerCatalog;
+
+    public NuGetPluginCatalog(string sourceDir, FolderPluginCatalogOptions options)
+    {
+        this.sourceDir = sourceDir;
+        this.innerCatalog = new FolderPluginCatalog(TempDir, options);
+    }
+
     /// <inheritdoc/>
-    public override async Task Initialize()
+    public bool IsInitialized => this.innerCatalog.IsInitialized;
+
+    /// <inheritdoc/>
+    public async Task Initialize()
     {
         // ロック解除のために一時フォルダを削除してからコピー
         if (Directory.Exists(TempDir))
@@ -25,18 +35,24 @@ public class NuGetPluginCatalog(string sourceDir, FolderPluginCatalogOptions opt
         }
         Directory.CreateDirectory(TempDir);
 
-        if (Directory.Exists(sourceDir))
+        if (Directory.Exists(this.sourceDir))
         {
             // プラグインのサブフォルダのみコピー（nuget-manifest.json等のファイルはスキップ）
-            foreach (var subDir in Directory.GetDirectories(sourceDir))
+            foreach (var subDir in Directory.GetDirectories(this.sourceDir))
             {
                 var destSubDir = Path.Combine(TempDir, Path.GetFileName(subDir));
                 CopyDirectory(subDir, destSubDir);
             }
         }
 
-        await base.Initialize().ConfigureAwait(false);
+        await this.innerCatalog.Initialize().ConfigureAwait(false);
     }
+
+    /// <inheritdoc/>
+    public List<Plugin> GetPlugins() => this.innerCatalog.GetPlugins();
+
+    /// <inheritdoc/>
+    public Plugin Get(string name, Version version) => this.innerCatalog.Get(name, version);
 
     private static void CopyDirectory(string source, string destination)
     {

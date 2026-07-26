@@ -50,7 +50,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: baileyjm02/markdown-to-pdf@v1
         with:
           input_path: docs
@@ -68,14 +68,14 @@ jobs:
   license:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
         with:
           path: licenses
           key: ${{ runner.os }}-licenses-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-licenses-
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
       - run: |
@@ -108,23 +108,23 @@ jobs:
     outputs:
       version: ${{ steps.gitversion.outputs.assemblySemFileVer }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-nuget-
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
-      - uses: gittools/actions/gitversion/setup@v4.5.0
+      - uses: gittools/actions/gitversion/setup@v4.7.0
         with:
           versionSpec: "6.x"
       - id: gitversion
-        uses: gittools/actions/gitversion/execute@v4.5.0
+        uses: gittools/actions/gitversion/execute@v4.7.0
       - uses: Jimver/cuda-toolkit@v0.2.30
         with:
           cuda: '12.9.0'
@@ -150,7 +150,7 @@ jobs:
         if: ${{ needs.docs.result == 'success' }}
         with:
           name: docs
-          path: publish
+          path: publish/docs
       - uses: actions/download-artifact@v8
         if: ${{ needs.license.result == 'success' }}
         with:
@@ -173,14 +173,14 @@ jobs:
     needs: build
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-nuget-
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
       - uses: actions/download-artifact@v8

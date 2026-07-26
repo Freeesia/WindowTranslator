@@ -104,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>सूची को मर्ज करने से बचें</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>बफर साइज़</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>बुनियादी OCR सेटअप</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>अन्य</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>बफर फ़ंक्शन</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>पहचान त्रुटि सुधार</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>कंपन दमन</value>
   </data>
 </root>

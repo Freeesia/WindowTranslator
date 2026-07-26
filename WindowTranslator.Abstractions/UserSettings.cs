@@ -83,9 +83,9 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
-    /// ワンショットモードを有効にするか（ユーザー操作の初回のみ処理）
+    /// マウスポインター判定の余白（WPF上のピクセル値）
     /// </summary>
-    public bool IsOneShotMode { get; set; }
+    public double MousePointerHitTestPadding { get; set; }
 
     /// <summary>
     /// プラグインの選択

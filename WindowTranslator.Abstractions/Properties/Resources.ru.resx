@@ -104,23 +104,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Символы, которых следует избегать при объединении</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Размер буфера</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Основные параметры OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Прочее</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Функция буфера</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Исправление ошибок распознавания</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Подавление вибрации</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Настройки языка</value>

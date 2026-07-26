@@ -39,10 +39,7 @@ public class NotifyIcon2 : NotifyIcon, ICommandSource
 
     private void NotifyIcon2_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        if (this.Menu != null)
-        {
-            this.Menu.DataContext = this.DataContext;
-        }
+        this.Menu?.DataContext = this.DataContext;
     }
 
     protected override void OnMenuChanged(ContextMenu contextMenu)

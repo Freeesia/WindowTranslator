@@ -26,6 +26,7 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
@@ -33,24 +34,18 @@ using WindowTranslator.Modules.Validate;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
-using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 
-#if DEBUG
+#if NO_MUTEX
 var createdNew = true;
 #else
 using var mutex = new Mutex(true, @"Global\WindowTranslator", out var createdNew);
 #endif
 if (!createdNew)
 {
-    new MessageDialog()
-    {
-        Caption = "WindowTranslator",
-        Icon = MessageBoxImage.Error,
-        Text = Resources.MutexError,
-    }.Show();
+    _ = SingleInstanceWindowActivator.TryActivateExistingInstance();
     return;
 }
 var d = SplashWindow.ShowSplash();
@@ -141,6 +136,8 @@ builder.Configuration
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
 builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
+builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
+builder.Services.AddScoped<IOcrTextTracker, OcrTextTracker>();
 builder.Services.AddHostedService<WindowMonitor>();
 if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
 {
