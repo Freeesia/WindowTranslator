@@ -7,10 +7,6 @@
     <NeutralLanguage>ja-JP</NeutralLanguage>
     <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Platforms>$(Platform)</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'ARM64'">
-    <RuntimeIdentifier>win-$([System.String]::Copy('$(Platform)').ToLowerInvariant())</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>Freesia</Authors>
