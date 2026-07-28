@@ -47,7 +47,8 @@
       <Platform Project="*" />
     </Project>
     <Project Path="Plugins/WindowTranslator.Plugin.PLaMoPlugin/WindowTranslator.Plugin.PLaMoPlugin.csproj">
-      <Platform Project="*" />
+      <Platform Project="x64" />
+      <Build Solution="*|ARM64" Project="false" />
     </Project>
     <Project Path="Plugins/WindowTranslator.Plugin.TesseractOCRPlugin/WindowTranslator.Plugin.TesseractOCRPlugin.csproj">
       <Platform Project="*" />
