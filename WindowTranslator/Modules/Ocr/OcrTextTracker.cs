@@ -29,6 +29,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double MinimumMovingStructureTextSimilarity = 0.9;
     private const double MaximumStructureAngleDifference = 8;
     private const double MinimumSameRegionCoverage = 0.65;
+    private const double MinimumCompositeStructureOverlap = 0.9;
     private const double MinimumSameRegionFontSizeRatio = 0.65;
     private const double StrongOneToOneScore = 0.9;
     private const double AngleVectorEpsilon = 0.000000000001;
@@ -199,6 +200,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         List<MatchCandidate> result = [];
         foreach (TextTrack track in tracks)
         {
+            List<(MatchCandidate Candidate, bool TextChanged)> trackCandidates = [];
             int[] nearby = Enumerable.Range(0, observations.Length)
                 .Where(index => !excludedObservations.Contains(index))
                 .Where(index => IsPotentialStructureMember(track.Stabilized, observations[index], imageSize))
@@ -222,18 +224,26 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                         track.NormalizedConfirmedText,
                         imageSize,
                         out TextRect combined,
-                        out double score))
+                        out double score,
+                        out bool textChanged))
                     {
-                        result.Add(new(MatchKind.Split, [track], members.ToArray(), combined, score));
+                        trackCandidates.Add((
+                            new(MatchKind.Split, [track], members.ToArray(), combined, score),
+                            textChanged));
                     }
                 }
             }
+            bool hasTextContinuity = trackCandidates.Any(candidate => !candidate.TextChanged);
+            result.AddRange(trackCandidates
+                .Where(candidate => !hasTextContinuity || !candidate.TextChanged)
+                .Select(candidate => candidate.Candidate));
         }
 
         foreach (int observationIndex in Enumerable.Range(0, observations.Length)
             .Where(index => !excludedObservations.Contains(index)))
         {
             TextRect observation = observations[observationIndex];
+            List<(MatchCandidate Candidate, bool TextChanged)> observationCandidates = [];
             TextTrack[] nearby = tracks
                 .Where(track => IsPotentialStructureMember(observation, track.Stabilized, imageSize))
                 .OrderBy(track => CenterDistance(observation, track.Stabilized))
@@ -256,12 +266,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                         normalizedObservations[observationIndex],
                         imageSize,
                         out _,
-                        out double score))
+                        out double score,
+                        out bool textChanged))
                     {
-                        result.Add(new(MatchKind.Merge, members.ToArray(), [observationIndex], observation, score));
+                        observationCandidates.Add((
+                            new(MatchKind.Merge, members.ToArray(), [observationIndex], observation, score),
+                            textChanged));
                     }
                 }
             }
+            bool hasTextContinuity = observationCandidates.Any(candidate => !candidate.TextChanged);
+            result.AddRange(observationCandidates
+                .Where(candidate => !hasTextContinuity || !candidate.TextChanged)
+                .Select(candidate => candidate.Candidate));
         }
         return result;
     }
@@ -597,8 +614,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         string normalizedTargetText,
         Size imageSize,
         out TextRect combined,
-        out double score)
+        out double score,
+        out bool textChangedWithStructure)
     {
+        textChangedWithStructure = false;
         (TextRect Rect, string Normalized)[] orderedMembers = OrderForReading(
             source.Select((rect, index) => (Rect: rect, Normalized: normalizedSource[index])),
             member => member.Rect)
@@ -631,21 +650,48 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             minimumTextSimilarity = MinimumMovingStructureTextSimilarity;
         }
 
-        if (!TrySelectCombinedText(
+        textChangedWithStructure = !TrySelectCombinedText(
             members,
             orderedMembers.Select(member => member.Normalized).ToArray(),
             targetText,
             normalizedTargetText,
             minimumTextSimilarity,
             out string text,
-            out double textSimilarity))
+            out double textSimilarity);
+        double sameRegionCoverage = IntersectionOverSmallerArea(geometry, targetRect);
+        double fontSizeSimilarity = RatioSimilarity(geometry.FontSize, targetRect.FontSize);
+        if (textChangedWithStructure)
         {
-            combined = default!;
-            score = -1;
-            return false;
+            bool sameLayerReplacement = HasSameRegionOverlap(
+                geometry,
+                targetRect,
+                sameRegionCoverage)
+                && overlap >= MinimumCompositeStructureOverlap
+                && fontSizeSimilarity >= MinimumSameRegionFontSizeRatio
+                && MembersRepresentDistinctRegions(members);
+            if (!sameLayerReplacement)
+            {
+                combined = default!;
+                score = -1;
+                textChangedWithStructure = false;
+                return false;
+            }
+            text = CombineChangedMemberText(members);
         }
 
         combined = geometry with { SourceText = text };
+        if (textChangedWithStructure)
+        {
+            double angle = Math.Max(
+                0,
+                1 - (AngleDifference(geometry.Angle, targetRect.Angle) / 10));
+            score = (sameRegionCoverage * 0.5)
+                + (fontSizeSimilarity * 0.2)
+                + (angle * 0.15)
+                + (overlap * 0.1)
+                + StructureAssignmentBonus;
+            return true;
+        }
         score = overlap >= MinimumStructureOverlap
             ? (overlap * 0.55) + (textSimilarity * 0.45) + StructureAssignmentBonus
             : (textSimilarity * 0.45)
@@ -693,6 +739,49 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         similarity = useSpaces ? withSpacesSimilarity : withoutSpacesSimilarity;
         return true;
     }
+
+    private static string CombineChangedMemberText(TextRect[] members)
+    {
+        StringBuilder text = new(members.Sum(member => member.SourceText.Length + 1));
+        for (int index = 0; index < members.Length; index++)
+        {
+            string memberText = members[index].SourceText;
+            if (index > 0
+                && text.Length > 0
+                && memberText.Length > 0
+                && !char.IsWhiteSpace(text[^1])
+                && !char.IsWhiteSpace(memberText[0])
+                && !IsNonSpacingScriptCharacter(text[^1])
+                && !IsNonSpacingScriptCharacter(memberText[0]))
+            {
+                text.Append(' ');
+            }
+            text.Append(memberText);
+        }
+        return text.ToString();
+    }
+
+    private static bool MembersRepresentDistinctRegions(TextRect[] members)
+    {
+        for (int first = 0; first < members.Length; first++)
+        {
+            for (int second = first + 1; second < members.Length; second++)
+            {
+                if (IntersectionOverSmallerArea(members[first], members[second])
+                    >= MinimumSameRegionCoverage)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static bool IsNonSpacingScriptCharacter(char character)
+        => character is >= '\u2E80' and <= '\u9FFF'
+            or >= '\uAC00' and <= '\uD7AF'
+            or >= '\uF900' and <= '\uFAFF'
+            or >= '\uFF66' and <= '\uFF9F';
 
     private static bool CanReachTextSimilarity(int firstLength, int secondLength, double minimumSimilarity)
     {
@@ -987,7 +1076,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                         parent.NormalizedConfirmedText,
                         imageSize,
                         out TextRect combined,
-                        out double structureScore))
+                        out double structureScore,
+                        out _))
                     {
                         return;
                     }
