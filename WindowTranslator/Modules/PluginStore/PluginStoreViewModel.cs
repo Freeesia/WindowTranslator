@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using NuGet.Versioning;
 using WindowTranslator.Properties;
 using Wpf.Ui;
 using Wpf.Ui.Extensions;
@@ -191,14 +192,13 @@ public partial class PluginStoreViewModel : ObservableObject
 
     private static bool IsNewerVersion(string latestVersion, string installedVersion)
     {
-        try
+        if (NuGetVersion.TryParse(latestVersion, out var latest)
+            && NuGetVersion.TryParse(installedVersion, out var installed))
         {
-            return Version.Parse(latestVersion) > Version.Parse(installedVersion);
+            return latest > installed;
         }
-        catch
-        {
-            return string.Compare(latestVersion, installedVersion, StringComparison.OrdinalIgnoreCase) > 0;
-        }
+
+        return string.Compare(latestVersion, installedVersion, StringComparison.OrdinalIgnoreCase) > 0;
     }
 }
 

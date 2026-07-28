@@ -30,7 +30,7 @@ cd WindowTranslator.Plugin.YourPlugin
     <Authors>YourName</Authors>
     <Description>説明文</Description>
     <!-- この タグ が必須です（アプリ内一覧への表示条件） -->
-    <PackageTags>windowtranslator-plugin</PackageTags>
+    <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -112,9 +112,21 @@ public class MyTranslateModule : ITranslateModule { ... }
 
 - Windows: `%USERPROFILE%\.wt\plugins\{PackageId}\`
 
+## アプリからインストールする
+
+1. WindowTranslator の設定を開きます。
+2. 「プラグインストア」タブを選択します。
+3. 利用するプラグインの「インストール」を選択します。
+4. インストール完了後に WindowTranslator を再起動します。
+
+NuGetパッケージで宣言されたランタイム依存関係も再帰的に取得されます。
+同じ依存パッケージに両立しないバージョン条件がある場合は、既存の
+プラグイン配置を変更せずにインストールを中止します。
+
 ## 注意事項
 
 - プラグインは .NET 10 以上をターゲットにしてください
 - `<EnableDynamicLoading>true</EnableDynamicLoading>` を必ず設定してください
 - ホスト側で既に提供されているパッケージは `ExcludeAssets="runtime"` を設定し、DLL を重複させないようにしてください
-- プラグインに必要な独自の依存 DLL はすべて `lib/net10.0/` フォルダに含めてください
+- 通常のランタイム依存は `PackageReference` として宣言してください
+- パッケージ固有の追加ファイルは、実行時に必要な相対ディレクトリを保って `lib/net10.0/` に含めてください

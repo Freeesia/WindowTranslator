@@ -1,9 +1,9 @@
 using System.IO;
-using System.IO.Compression;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using NuGet.Versioning;
 
 namespace WindowTranslator.Modules.PluginStore;
 
@@ -50,9 +50,6 @@ public sealed class NuGetPluginService : IDisposable
             ["TesseractOcr"] = "WindowTranslator.Plugin.TesseractOCRPlugin",
         };
 
-    private static readonly string UserPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
-    private static readonly string ManifestPath = Path.Combine(UserPluginsDir, "nuget-manifest.json");
-
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -63,15 +60,32 @@ public sealed class NuGetPluginService : IDisposable
 
     private readonly HttpClient httpClient;
     private readonly ILogger<NuGetPluginService> logger;
+    private readonly string userPluginsDir;
+    private readonly string manifestPath;
+    private readonly bool ownsHttpClient;
+    private readonly SemaphoreSlim operationLock = new(1, 1);
     private string? searchUrl;
 
     public NuGetPluginService(ILogger<NuGetPluginService> logger)
+        : this(
+            logger,
+            new HttpClient { Timeout = TimeSpan.FromSeconds(30) },
+            Path.Combine(PathUtility.UserDir, "plugins"),
+            ownsHttpClient: true)
     {
-        this.httpClient = new HttpClient
-        {
-            Timeout = TimeSpan.FromSeconds(30),
-        };
+    }
+
+    internal NuGetPluginService(
+        ILogger<NuGetPluginService> logger,
+        HttpClient httpClient,
+        string userPluginsDir,
+        bool ownsHttpClient = false)
+    {
         this.logger = logger;
+        this.httpClient = httpClient;
+        this.userPluginsDir = Path.GetFullPath(userPluginsDir);
+        this.manifestPath = Path.Combine(this.userPluginsDir, "nuget-manifest.json");
+        this.ownsHttpClient = ownsHttpClient;
     }
 
     /// <summary>
@@ -80,13 +94,22 @@ public sealed class NuGetPluginService : IDisposable
     public async Task InstallLatestPackageAsync(string packageId, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
         var versionsUrl = $"{NuGetFlatContainerBase}/{packageId.ToLowerInvariant()}/index.json";
-        var response = await this.httpClient.GetAsync(versionsUrl, cancellationToken).ConfigureAwait(false);
+        using var response = await this.httpClient.GetAsync(versionsUrl, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        await using var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var versions = await JsonSerializer.DeserializeAsync<NuGetVersionListResponse>(content, JsonOptions, cancellationToken).ConfigureAwait(false);
-        var latestVersion = versions?.Versions?.LastOrDefault()
+        var parsedVersions = versions?.Versions?
+            .Select(NuGetVersion.Parse)
+            .OrderByDescending(v => v)
+            .ToArray() ?? [];
+        var latestVersion = parsedVersions.FirstOrDefault(v => !v.IsPrerelease)
+            ?? parsedVersions.FirstOrDefault()
             ?? throw new InvalidOperationException($"パッケージ {packageId} のバージョン一覧を取得できませんでした。");
-        await InstallPackageAsync(packageId, latestVersion, progress, cancellationToken).ConfigureAwait(false);
+        await InstallPackageAsync(
+            packageId,
+            latestVersion.ToNormalizedString(),
+            progress,
+            cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -151,11 +174,35 @@ public sealed class NuGetPluginService : IDisposable
                 {
                     await InstallLatestPackageAsync(packageId, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw;
+                }
+                catch (HttpRequestException ex)
+                {
+                    this.logger.LogWarning(
+                        ex,
+                        "NuGetへ接続できないため、プラグインの自動インストールを中断します: {PackageId}",
+                        packageId);
+                    break;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    this.logger.LogWarning(
+                        ex,
+                        "NuGet接続がタイムアウトしたため、プラグインの自動インストールを中断します: {PackageId}",
+                        packageId);
+                    break;
+                }
                 catch (Exception ex)
                 {
                     this.logger.LogWarning(ex, "プラグイン {PackageId} の自動インストールに失敗しました。", packageId);
                 }
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -176,10 +223,10 @@ public sealed class NuGetPluginService : IDisposable
         var url = $"{this.searchUrl}?q=tags:{PluginTag}&take=100&semVerLevel=2.0.0&prerelease=false";
         this.logger.LogDebug("NuGet検索URL: {Url}", url);
 
-        var response = await this.httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+        using var response = await this.httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
 
-        var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        await using var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var result = await JsonSerializer.DeserializeAsync<NuGetSearchResponse>(content, JsonOptions, cancellationToken).ConfigureAwait(false)
             ?? throw new InvalidOperationException("NuGet検索結果のデシリアライズに失敗しました。");
 
@@ -201,60 +248,100 @@ public sealed class NuGetPluginService : IDisposable
     /// </summary>
     public async Task InstallPackageAsync(string packageId, string version, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
-        var packageIdLower = packageId.ToLowerInvariant();
-        var versionLower = version.ToLowerInvariant();
-        var nupkgUrl = $"{NuGetFlatContainerBase}/{packageIdLower}/{versionLower}/{packageIdLower}.{versionLower}.nupkg";
-
-        this.logger.LogInformation("パッケージをダウンロード中: {PackageId} {Version}", packageId, version);
-
-        // 一時ディレクトリにダウンロード
-        var tempDir = Path.Combine(Path.GetTempPath(), "WindowTranslatorPlugins", packageId);
-        Directory.CreateDirectory(tempDir);
-        var tempNupkgPath = Path.Combine(tempDir, $"{packageIdLower}.{versionLower}.nupkg");
-
+        var operationId = Guid.NewGuid().ToString("N");
+        var targetDir = GetPackageDirectory(packageId);
+        var stagingDir = Path.Combine(this.userPluginsDir, $".{packageId}.installing-{operationId}");
+        var backupDir = $"{targetDir}.backup-{operationId}";
+        var pendingDeleteMarker = GetPendingDeleteMarker(packageId);
+        var markerWasPresent = false;
+        string? markerContent = null;
+        var targetMoved = false;
+        var stagingMoved = false;
+        await this.operationLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            await DownloadFileAsync(nupkgUrl, tempNupkgPath, progress, cancellationToken).ConfigureAwait(false);
+            markerWasPresent = File.Exists(pendingDeleteMarker);
+            markerContent = markerWasPresent
+                ? await File.ReadAllTextAsync(pendingDeleteMarker, cancellationToken).ConfigureAwait(false)
+                : null;
+            Directory.CreateDirectory(this.userPluginsDir);
+            var installer = new NuGetPackageInstaller(this.httpClient, this.logger);
+            await installer.InstallAsync(
+                packageId,
+                version,
+                stagingDir,
+                progress,
+                cancellationToken).ConfigureAwait(false);
 
-            // ターゲットディレクトリを準備
-            var targetDir = Path.Combine(UserPluginsDir, packageId);
-            // 古いファイルをバックアップして削除する前に一時フォルダへ移動
-            var backupDir = $"{targetDir}.backup";
-            if (Directory.Exists(targetDir))
+            var currentManifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
+            var updatedManifest = AddOrUpdatePackage(currentManifest, packageId, version);
+
+            if (markerWasPresent)
             {
-                if (Directory.Exists(backupDir))
-                    Directory.Delete(backupDir, recursive: true);
-                Directory.Move(targetDir, backupDir);
+                File.Delete(pendingDeleteMarker);
             }
 
-            Directory.CreateDirectory(targetDir);
+            if (Directory.Exists(targetDir))
+            {
+                Directory.Move(targetDir, backupDir);
+                targetMoved = true;
+            }
+
+            Directory.Move(stagingDir, targetDir);
+            stagingMoved = true;
+            await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
 
             try
             {
-                // nupkgを展開して必要なDLLをコピー
-                ExtractPluginDlls(tempNupkgPath, targetDir);
-                this.logger.LogInformation("パッケージの展開完了: {PackageId} -> {TargetDir}", packageId, targetDir);
-            }
-            catch
-            {
-                // 失敗したら元に戻す
-                Directory.Delete(targetDir, recursive: true);
                 if (Directory.Exists(backupDir))
-                    Directory.Move(backupDir, targetDir);
-                throw;
+                {
+                    Directory.Delete(backupDir, recursive: true);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogWarning(ex, "プラグインバックアップの削除に失敗しました: {BackupDir}", backupDir);
             }
 
-            // バックアップを削除
-            if (Directory.Exists(backupDir))
-                Directory.Delete(backupDir, recursive: true);
-
-            // マニフェストを更新
-            await UpdateManifestAsync(packageId, version, cancellationToken).ConfigureAwait(false);
+            this.logger.LogInformation(
+                "パッケージのインストール完了: {PackageId} {Version} -> {TargetDir}",
+                packageId,
+                version,
+                targetDir);
+        }
+        catch
+        {
+            try
+            {
+                if (stagingMoved && Directory.Exists(targetDir))
+                {
+                    Directory.Move(targetDir, stagingDir);
+                }
+                if (targetMoved && Directory.Exists(backupDir))
+                {
+                    Directory.Move(backupDir, targetDir);
+                }
+                if (markerWasPresent && !File.Exists(pendingDeleteMarker))
+                {
+                    await File.WriteAllTextAsync(
+                        pendingDeleteMarker,
+                        markerContent ?? packageId,
+                        CancellationToken.None).ConfigureAwait(false);
+                }
+            }
+            catch (Exception rollbackException)
+            {
+                this.logger.LogError(
+                    rollbackException,
+                    "プラグイン {PackageId} のインストール失敗後の復旧に失敗しました。",
+                    packageId);
+            }
+            throw;
         }
         finally
         {
-            // 一時ファイルを削除
-            try { File.Delete(tempNupkgPath); } catch { /* ignore */ }
+            TryDeleteDirectory(stagingDir);
+            this.operationLock.Release();
         }
     }
 
@@ -263,17 +350,43 @@ public sealed class NuGetPluginService : IDisposable
     /// </summary>
     public async Task UninstallPackageAsync(string packageId, CancellationToken cancellationToken = default)
     {
-        this.logger.LogInformation("パッケージをアンインストール: {PackageId}", packageId);
+        await this.operationLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            this.logger.LogInformation("パッケージをアンインストール: {PackageId}", packageId);
+            _ = GetPackageDirectory(packageId);
+            Directory.CreateDirectory(this.userPluginsDir);
 
-        var targetDir = Path.Combine(UserPluginsDir, packageId);
-        // 実行中のDLLがロックされている可能性があるため、削除マーカーを置く
-        var pendingDeleteMarker = Path.Combine(UserPluginsDir, $"{packageId}.pending-delete");
-        await File.WriteAllTextAsync(pendingDeleteMarker, packageId, cancellationToken).ConfigureAwait(false);
+            var pendingDeleteMarker = GetPendingDeleteMarker(packageId);
+            var markerAlreadyExisted = File.Exists(pendingDeleteMarker);
+            var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
+            var updatedManifest = RemovePackage(manifest, packageId);
 
-        // マニフェストから削除
-        await RemoveFromManifestAsync(packageId, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await WriteTextAtomicallyAsync(
+                    pendingDeleteMarker,
+                    packageId,
+                    cancellationToken).ConfigureAwait(false);
+                await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                if (!markerAlreadyExisted)
+                {
+                    TryDeleteFile(pendingDeleteMarker);
+                }
+                throw;
+            }
 
-        this.logger.LogInformation("パッケージ {PackageId} をアンインストールキューに追加しました。再起動後に完全に削除されます。", packageId);
+            this.logger.LogInformation(
+                "パッケージ {PackageId} をアンインストールキューに追加しました。再起動後に完全に削除されます。",
+                packageId);
+        }
+        finally
+        {
+            this.operationLock.Release();
+        }
     }
 
     /// <summary>
@@ -281,26 +394,42 @@ public sealed class NuGetPluginService : IDisposable
     /// </summary>
     public void ProcessPendingDeletions()
     {
-        if (!Directory.Exists(UserPluginsDir))
-            return;
-
-        foreach (var markerFile in Directory.GetFiles(UserPluginsDir, "*.pending-delete"))
+        this.operationLock.Wait();
+        try
         {
-            try
+            if (!Directory.Exists(this.userPluginsDir))
             {
-                var packageId = File.ReadAllText(markerFile);
-                var targetDir = Path.Combine(UserPluginsDir, packageId);
-                if (Directory.Exists(targetDir))
+                return;
+            }
+
+            foreach (var markerFile in Directory.GetFiles(this.userPluginsDir, "*.pending-delete"))
+            {
+                try
                 {
-                    Directory.Delete(targetDir, recursive: true);
-                    this.logger.LogInformation("ペンディング削除を処理: {PackageId}", packageId);
+                    var packageId = File.ReadAllText(markerFile);
+                    var markerPackageId = Path.GetFileName(markerFile)[..^".pending-delete".Length];
+                    if (!packageId.Equals(markerPackageId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new InvalidOperationException("削除マーカーのパッケージIDがファイル名と一致しません。");
+                    }
+
+                    var targetDir = GetPackageDirectory(packageId);
+                    if (Directory.Exists(targetDir))
+                    {
+                        Directory.Delete(targetDir, recursive: true);
+                        this.logger.LogInformation("ペンディング削除を処理: {PackageId}", packageId);
+                    }
+                    File.Delete(markerFile);
                 }
-                File.Delete(markerFile);
+                catch (Exception ex)
+                {
+                    this.logger.LogWarning(ex, "ペンディング削除の処理に失敗: {MarkerFile}", markerFile);
+                }
             }
-            catch (Exception ex)
-            {
-                this.logger.LogWarning(ex, "ペンディング削除の処理に失敗: {MarkerFile}", markerFile);
-            }
+        }
+        finally
+        {
+            this.operationLock.Release();
         }
     }
 
@@ -315,9 +444,9 @@ public sealed class NuGetPluginService : IDisposable
 
     private async Task<string> GetSearchUrlAsync(CancellationToken cancellationToken)
     {
-        var response = await this.httpClient.GetAsync(NuGetServiceIndexUrl, cancellationToken).ConfigureAwait(false);
+        using var response = await this.httpClient.GetAsync(NuGetServiceIndexUrl, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        await using var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var index = await JsonSerializer.DeserializeAsync<NuGetServiceIndex>(content, JsonOptions, cancellationToken).ConfigureAwait(false)
             ?? throw new InvalidOperationException("NuGetサービスインデックスのデシリアライズに失敗しました。");
 
@@ -328,147 +457,165 @@ public sealed class NuGetPluginService : IDisposable
         return searchEntry.Id ?? throw new InvalidOperationException("NuGet検索サービスURLが空です。");
     }
 
-    private async Task DownloadFileAsync(string url, string destPath, IProgress<double>? progress, CancellationToken cancellationToken)
+    private static InstalledManifest AddOrUpdatePackage(
+        InstalledManifest manifest,
+        string packageId,
+        string version)
     {
-        using var response = await this.httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-
-        var totalBytes = response.Content.Headers.ContentLength ?? -1;
-        var downloadedBytes = 0L;
-
-        using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        using var fileStream = File.Create(destPath);
-        var buffer = new byte[81920];
-        int bytesRead;
-        while ((bytesRead = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
-        {
-            await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken).ConfigureAwait(false);
-            downloadedBytes += bytesRead;
-            if (totalBytes > 0)
-            {
-                progress?.Report((double)downloadedBytes / totalBytes);
-            }
-        }
-    }
-
-    private static void ExtractPluginDlls(string nupkgPath, string targetDir)
-    {
-        using var archive = ZipFile.OpenRead(nupkgPath);
-
-        // 最適なTFMのlib/エントリを探す
-        var libEntries = archive.Entries
-            .Where(e => e.FullName.StartsWith("lib/", StringComparison.OrdinalIgnoreCase)
-                     && !string.IsNullOrEmpty(e.Name)
-                     && e.Name != "_._")
-            .ToList();
-
-        if (!libEntries.Any())
-        {
-            throw new InvalidOperationException("パッケージにlib/フォルダが見つかりませんでした。");
-        }
-
-        // TFMを選択（net10.0-windows > net10.0 > net9.0-windows > net9.0 > ... の優先順位）
-        var tfmGroups = libEntries
-            .GroupBy(e => e.FullName.Split('/')[1])
-            .ToList();
-
-        var selectedTfm = SelectBestTfm([.. tfmGroups.Select(g => g.Key)]);
-        if (selectedTfm is null)
-        {
-            throw new InvalidOperationException("互換性のあるターゲットフレームワークが見つかりませんでした。");
-        }
-
-        var selectedEntries = tfmGroups.First(g => g.Key == selectedTfm);
-
-        foreach (var entry in selectedEntries)
-        {
-            var destPath = Path.Combine(targetDir, entry.Name);
-            entry.ExtractToFile(destPath, overwrite: true);
-        }
-    }
-
-    private static string? SelectBestTfm(string[] tfms)
-    {
-        // TFMの優先度リスト（.NET 10から降順、Windows版を優先）
-        var orderedPrefixes = new[]
-        {
-            "net10.0-windows",
-            "net10.0",
-            "net9.0-windows",
-            "net9.0",
-            "net8.0-windows",
-            "net8.0",
-            "net7.0-windows",
-            "net7.0",
-            "net6.0-windows",
-            "net6.0",
-            "netstandard2.1",
-            "netstandard2.0",
-        };
-
-        foreach (var prefix in orderedPrefixes)
-        {
-            // 完全一致または前方一致（例: net10.0-windows10.0.20348.0）
-            var match = tfms.OrderByDescending(t => t).FirstOrDefault(t =>
-                t.Equals(prefix, StringComparison.OrdinalIgnoreCase)
-                || t.StartsWith(prefix + ".", StringComparison.OrdinalIgnoreCase)
-                || t.StartsWith(prefix + "_", StringComparison.OrdinalIgnoreCase));
-            if (match is not null)
-                return match;
-        }
-
-        return tfms.FirstOrDefault();
-    }
-
-    private async Task UpdateManifestAsync(string packageId, string version, CancellationToken cancellationToken)
-    {
-        var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
         var packages = manifest.Packages.ToList();
         var existing = packages.FindIndex(p => p.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase));
         var newEntry = new InstalledPackageInfo(packageId, version, DateTime.UtcNow);
         if (existing >= 0)
+        {
             packages[existing] = newEntry;
+        }
         else
+        {
             packages.Add(newEntry);
+        }
 
-        await SaveManifestAsync(new InstalledManifest([.. packages]), cancellationToken).ConfigureAwait(false);
+        return new InstalledManifest([.. packages]);
     }
 
-    private async Task RemoveFromManifestAsync(string packageId, CancellationToken cancellationToken)
-    {
-        var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
-        var packages = manifest.Packages.Where(p => !p.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)).ToList();
-        await SaveManifestAsync(new InstalledManifest([.. packages]), cancellationToken).ConfigureAwait(false);
-    }
+    private static InstalledManifest RemovePackage(InstalledManifest manifest, string packageId)
+        => new([.. manifest.Packages.Where(p =>
+            !p.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase))]);
 
     private async Task<InstalledManifest> LoadManifestAsync(CancellationToken cancellationToken)
     {
+        if (!File.Exists(this.manifestPath))
+        {
+            return new InstalledManifest([]);
+        }
+
         try
         {
-            if (File.Exists(ManifestPath))
-            {
-                using var fs = File.OpenRead(ManifestPath);
-                var manifest = await JsonSerializer.DeserializeAsync<InstalledManifest>(fs, JsonOptions, cancellationToken).ConfigureAwait(false);
-                return manifest ?? new InstalledManifest([]);
-            }
+            await using var fs = File.OpenRead(this.manifestPath);
+            return await JsonSerializer.DeserializeAsync<InstalledManifest>(
+                fs,
+                JsonOptions,
+                cancellationToken).ConfigureAwait(false)
+                ?? throw new InvalidDataException("プラグインマニフェストが空です。");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             this.logger.LogWarning(ex, "プラグインマニフェストの読み込みに失敗しました。");
+            throw new InvalidOperationException("プラグインマニフェストを読み込めませんでした。", ex);
         }
-        return new InstalledManifest([]);
     }
 
-    private static async Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
+    private async Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
     {
-        Directory.CreateDirectory(UserPluginsDir);
-        using var fs = File.Create(ManifestPath);
-        await JsonSerializer.SerializeAsync(fs, manifest, JsonOptions, cancellationToken).ConfigureAwait(false);
+        Directory.CreateDirectory(this.userPluginsDir);
+        var temporaryPath = $"{this.manifestPath}.tmp-{Guid.NewGuid():N}";
+        try
+        {
+            await using (var fs = new FileStream(
+                temporaryPath,
+                FileMode.CreateNew,
+                FileAccess.Write,
+                FileShare.None,
+                bufferSize: 4096,
+                useAsync: true))
+            {
+                await JsonSerializer.SerializeAsync(fs, manifest, JsonOptions, cancellationToken).ConfigureAwait(false);
+                await fs.FlushAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            ReplaceFile(temporaryPath, this.manifestPath);
+        }
+        finally
+        {
+            TryDeleteFile(temporaryPath);
+        }
+    }
+
+    private static async Task WriteTextAtomicallyAsync(
+        string destinationPath,
+        string content,
+        CancellationToken cancellationToken)
+    {
+        var temporaryPath = $"{destinationPath}.tmp-{Guid.NewGuid():N}";
+        try
+        {
+            await File.WriteAllTextAsync(temporaryPath, content, cancellationToken).ConfigureAwait(false);
+            ReplaceFile(temporaryPath, destinationPath);
+        }
+        finally
+        {
+            TryDeleteFile(temporaryPath);
+        }
+    }
+
+    private static void ReplaceFile(string sourcePath, string destinationPath)
+        => File.Move(sourcePath, destinationPath, overwrite: true);
+
+    private string GetPackageDirectory(string packageId)
+    {
+        if (string.IsNullOrWhiteSpace(packageId)
+            || packageId is "." or ".."
+            || packageId.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+            || packageId.Contains(Path.DirectorySeparatorChar)
+            || packageId.Contains(Path.AltDirectorySeparatorChar))
+        {
+            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
+        }
+
+        var root = this.userPluginsDir
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            + Path.DirectorySeparatorChar;
+        var packageDirectory = Path.GetFullPath(Path.Combine(root, packageId));
+        if (!packageDirectory.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
+        }
+
+        return packageDirectory;
+    }
+
+    private string GetPendingDeleteMarker(string packageId)
+    {
+        _ = GetPackageDirectory(packageId);
+        return Path.Combine(this.userPluginsDir, $"{packageId}.pending-delete");
+    }
+
+    private static void TryDeleteDirectory(string directory)
+    {
+        try
+        {
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+        catch
+        {
+            // 後始末の失敗は元の処理結果へ影響させない
+        }
+    }
+
+    private static void TryDeleteFile(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch
+        {
+            // 後始末の失敗は元の処理結果へ影響させない
+        }
     }
 
     public void Dispose()
     {
-        this.httpClient.Dispose();
+        if (this.ownsHttpClient)
+        {
+            this.httpClient.Dispose();
+        }
+        this.operationLock.Dispose();
     }
 }
 

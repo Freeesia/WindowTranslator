@@ -2,6 +2,29 @@
   <!-- 上位階層の Directory.Build.targets をインクルード -->
   <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.targets')" />
 
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);AddPluginRuntimeAssetsToPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <!--
+    PackageReference の build/buildTransitive ターゲットによって出力されるネイティブ資産は、
+    依存パッケージの標準 runtimes/ 配下に存在しない場合があるため、実際のビルド出力を同梱する。
+  -->
+  <Target Name="AddPluginRuntimeAssetsToPackage">
+    <ItemGroup>
+      <_PluginWinX64RuntimeAsset Include="$(TargetDir)runtimes\win-x64\**\*" />
+      <_PluginWinRuntimeAsset Include="$(TargetDir)runtimes\win\**\*" />
+      <_PluginAnyRuntimeAsset Include="$(TargetDir)runtimes\any\**\*" />
+      <BuildOutputInPackage Include="@(_PluginWinX64RuntimeAsset)"
+                            TargetPath="runtimes\win-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+      <BuildOutputInPackage Include="@(_PluginWinRuntimeAsset)"
+                            TargetPath="runtimes\win\%(RecursiveDir)%(Filename)%(Extension)" />
+      <BuildOutputInPackage Include="@(_PluginAnyRuntimeAsset)"
+                            TargetPath="runtimes\any\%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+  </Target>
+
   <Target Condition="'$(IsTestProject)' != 'true' AND ('$(ExcludeFromAppBundle)' != 'true' OR '$(GITHUB_ACTIONS)' != 'true')" Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call $(ProjectDir)..\copy_plugins.bat $(OutDir) $(ProjectName) $(Configuration)" />
   </Target>
