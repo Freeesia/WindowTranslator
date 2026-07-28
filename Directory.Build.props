@@ -8,6 +8,36 @@
     <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj' And (
+      '$(MSBuildProjectName)' == 'HwndExtensions' Or
+      '$(MSBuildProjectName)' == 'Demo' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Tests' Or
+      '$(MSBuildProjectName)' == 'Sandbox' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.BergamotTranslatorPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.GitHubCopilotPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.OneOcrPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.PLaMoPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.TesseractOCRPlugin'
+    )">
+    <Platforms>x64;ARM64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj' And (
+      '$(MSBuildProjectName)' == 'WindowTranslator' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.BergamotTranslatorPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.GitHubCopilotPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.OneOcrPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.PLaMoPlugin' Or
+      '$(MSBuildProjectName)' == 'WindowTranslator.Plugin.TesseractOCRPlugin'
+    )">
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <_UsePlatformRuntimeIdentifier>true</_UsePlatformRuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(_UsePlatformRuntimeIdentifier)' == 'true'
+      And ('$(MSBuildProjectName)' != 'WindowTranslator' Or '$(Configuration)' == 'Release')
+      And ('$(Platform)' == 'x64' Or '$(Platform)' == 'ARM64')">
+    <RuntimeIdentifier>win-$([System.String]::Copy('$(Platform)').ToLowerInvariant())</RuntimeIdentifier>
+  </PropertyGroup>
   <PropertyGroup>
     <Authors>Freesia</Authors>
     <Description>WindowTranslator is a tool to translate the text on the screen.</Description>

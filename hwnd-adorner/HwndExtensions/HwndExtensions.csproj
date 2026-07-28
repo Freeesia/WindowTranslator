@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Platforms>x64;ARM64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
