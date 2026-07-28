@@ -29,7 +29,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double MinimumMovingStructureTextSimilarity = 0.9;
     private const double MaximumStructureAngleDifference = 8;
     private const double MinimumSameRegionCoverage = 0.65;
-    private const double MinimumCompositeStructureOverlap = 0.9;
+    private const double MinimumNearlyIdenticalRegionOverlap = 0.9;
+    private const double MinimumShiftedCompositeStructureOverlap = 0.85;
+    private const double MinimumCompositeStructureSizeRatio = 0.9;
+    private const double MinimumCompositeStructureCenterOffsetWidthRatio = 0.05;
+    private const double MaximumCompositeStructureCenterOffsetHeightRatio = 0.5;
     private const double MinimumSameRegionFontSizeRatio = 0.65;
     private const double StrongOneToOneScore = 0.9;
     private const double AngleVectorEpsilon = 0.000000000001;
@@ -540,12 +544,17 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         double fontSize = RatioSimilarity(previous.FontSize, observation.FontSize);
         double size = (width + height) / 2;
         double coverage = IntersectionOverSmallerArea(predicted, observation);
+        double sameRegionIoU = Math.Max(
+            overlap,
+            IntersectionOverUnion(previous, observation));
         double sameRegionCoverage = Math.Max(
             coverage,
             IntersectionOverSmallerArea(previous, observation));
         bool sameRegionOverlap = HasSameRegionOverlap(previous, observation, sameRegionCoverage);
         bool compatibleFontSize = fontSize >= MinimumSameRegionFontSizeRatio;
-        bool sameRegionGeometry = sameRegionOverlap && compatibleFontSize;
+        bool sameRegionGeometry = sameRegionOverlap
+            && (compatibleFontSize
+                || sameRegionIoU >= MinimumNearlyIdenticalRegionOverlap);
         if (!CanReachTextSimilarity(trackText.Length, observationText.Length, 0.15)
             && overlap < 0.3
             && !sameRegionGeometry)
@@ -564,7 +573,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             return -1;
         }
-        if (text < 0.65 && sameRegionOverlap && !compatibleFontSize)
+        if (text < 0.65
+            && sameRegionOverlap
+            && !compatibleFontSize
+            && sameRegionIoU < MinimumNearlyIdenticalRegionOverlap)
         {
             return -1;
         }
@@ -662,11 +674,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         double fontSizeSimilarity = RatioSimilarity(geometry.FontSize, targetRect.FontSize);
         if (textChangedWithStructure)
         {
-            bool sameLayerReplacement = HasSameRegionOverlap(
+            bool sameLayerReplacement = HasCompatibleCompositeGeometry(
                 geometry,
                 targetRect,
+                overlap,
                 sameRegionCoverage)
-                && overlap >= MinimumCompositeStructureOverlap
                 && fontSizeSimilarity >= MinimumSameRegionFontSizeRatio
                 && MembersRepresentDistinctRegions(members);
             if (!sameLayerReplacement)
@@ -775,6 +787,39 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
         }
         return true;
+    }
+
+    private static bool HasCompatibleCompositeGeometry(
+        TextRect geometry,
+        TextRect targetRect,
+        double overlap,
+        double coverage)
+    {
+        if (!HasSameRegionOverlap(geometry, targetRect, coverage))
+        {
+            return false;
+        }
+        if (overlap >= MinimumNearlyIdenticalRegionOverlap)
+        {
+            return true;
+        }
+
+        double centerDistance = CenterDistance(geometry, targetRect);
+        double minimumCenterOffset = Math.Max(
+            1,
+            Math.Min(geometry.Width, targetRect.Width)
+                * MinimumCompositeStructureCenterOffsetWidthRatio);
+        double maximumCenterOffset = Math.Max(
+            3,
+            Math.Min(geometry.Height, targetRect.Height)
+                * MaximumCompositeStructureCenterOffsetHeightRatio);
+        return overlap >= MinimumShiftedCompositeStructureOverlap
+            && RatioSimilarity(geometry.Width, targetRect.Width)
+                >= MinimumCompositeStructureSizeRatio
+            && RatioSimilarity(geometry.Height, targetRect.Height)
+                >= MinimumCompositeStructureSizeRatio
+            && centerDistance >= minimumCenterOffset
+            && centerDistance <= maximumCenterOffset;
     }
 
     private static bool IsNonSpacingScriptCharacter(char character)
