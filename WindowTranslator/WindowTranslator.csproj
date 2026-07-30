@@ -10,7 +10,7 @@
     <ApplicationIcon>$(MSBuildThisFileDirectory)..\docs\images\wt.ico</ApplicationIcon>
     <AnalysisMode>Recommended</AnalysisMode>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishReadyToRun>true</PublishReadyToRun>
