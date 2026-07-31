@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <Title>WindowTranslator PLaMo Translator Plugin</Title>
+    <Description>Local PLaMo translation for WindowTranslator using LLamaSharp and CUDA.</Description>
     <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
+    <IncludeContentInPack>false</IncludeContentInPack>
+    <IncludePluginRuntimeAssetsInPackage>true</IncludePluginRuntimeAssetsInPackage>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LLamaSharp" />
-    <PackageReference Include="LLamaSharp.Backend.Cuda12.Windows" />
+    <PackageReference Include="LLamaSharp.Backend.Cuda12.Windows" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(CUDA_PATH)\bin\cublas64_12.dll" LinkBase="runtimes\win-x64\native\cuda12" CopyToOutputDirectory="PreserveNewest" />

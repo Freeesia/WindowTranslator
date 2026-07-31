@@ -17,7 +17,6 @@ public partial class PluginStoreViewModel : ObservableObject
     private readonly NuGetPluginService nugetService;
     private readonly ILogger<PluginStoreViewModel> logger;
     private readonly IContentDialogService dialogService;
-    private readonly ISnackbarService snackbarService;
 
     [ObservableProperty]
     private bool isLoading;
@@ -33,13 +32,11 @@ public partial class PluginStoreViewModel : ObservableObject
     public PluginStoreViewModel(
         NuGetPluginService nugetService,
         ILogger<PluginStoreViewModel> logger,
-        IContentDialogService dialogService,
-        ISnackbarService snackbarService)
+        IContentDialogService dialogService)
     {
         this.nugetService = nugetService;
         this.logger = logger;
         this.dialogService = dialogService;
-        this.snackbarService = snackbarService;
     }
 
     /// <summary>
@@ -88,7 +85,7 @@ public partial class PluginStoreViewModel : ObservableObject
                 }
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             // キャンセルは正常
         }
@@ -107,14 +104,20 @@ public partial class PluginStoreViewModel : ObservableObject
     /// プラグインをインストールまたは更新します。
     /// </summary>
     [RelayCommand]
-    public async Task InstallAsync(PluginPackageViewModel package)
+    public async Task InstallAsync(
+        PluginPackageViewModel package,
+        CancellationToken cancellationToken = default)
     {
         package.IsInstalling = true;
         try
         {
             this.logger.LogInformation("プラグインのインストール開始: {PackageId} {Version}", package.Id, package.LatestVersion);
             var progress = new Progress<double>(v => package.InstallProgress = v);
-            await this.nugetService.InstallPackageAsync(package.Id, package.LatestVersion, progress).ConfigureAwait(true);
+            await this.nugetService.InstallPackageAsync(
+                package.Id,
+                package.LatestVersion,
+                progress,
+                cancellationToken).ConfigureAwait(true);
 
             package.IsInstalled = true;
             package.InstalledVersion = package.LatestVersion;
@@ -129,9 +132,9 @@ public partial class PluginStoreViewModel : ObservableObject
                 Title = Resources.PluginInstallSuccess,
                 Content = Resources.RestartRequired,
                 CloseButtonText = Resources.Close,
-            }).ConfigureAwait(true);
+            }, cancellationToken).ConfigureAwait(true);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             // キャンセルは正常
         }
@@ -141,7 +144,8 @@ public partial class PluginStoreViewModel : ObservableObject
             await this.dialogService.ShowAlertAsync(
                 Resources.PluginInstallFailed,
                 ex.Message,
-                Resources.Close).ConfigureAwait(true);
+                Resources.Close,
+                cancellationToken).ConfigureAwait(true);
         }
         finally
         {

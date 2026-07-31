@@ -8,10 +8,8 @@
 
   <!-- NuGet パッケージとして公開する際の共通設定 -->
   <PropertyGroup>
-    <PackageProjectUrl Condition="'$(PackageProjectUrl)' == ''">https://github.com/Freeesia/WindowTranslator</PackageProjectUrl>
-    <Authors Condition="'$(Authors)' == ''">Freeesia</Authors>
-    <!-- 依存パッケージが注入する Content は再梱包せず、必要なランタイム資産は Directory.Build.targets で選択する。 -->
-    <IncludeContentInPack>false</IncludeContentInPack>
+    <IncludePluginRuntimeAssetsInPackage
+      Condition="'$(IncludePluginRuntimeAssetsInPackage)' == ''">false</IncludePluginRuntimeAssetsInPackage>
     <!-- ExcludeFromAppBundle=true のプラグインはGitHub Actionsでのみアプリのpluginsフォルダへのコピーを省略します -->
     <ExcludeFromAppBundle Condition="'$(ExcludeFromAppBundle)' == ''">false</ExcludeFromAppBundle>
   </PropertyGroup>

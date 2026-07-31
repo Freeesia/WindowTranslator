@@ -54,14 +54,6 @@ var d = SplashWindow.ShowSplash();
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
 
-// ペンディング削除処理と設定参照プラグインの自動インストール（カタログ初期化より前に実行する必要がある）
-{
-    using var earlyLoggerFactory = LoggerFactory.Create(b => b.SetMinimumLevel(LogLevel.Warning));
-    using var earlyNuGetService = new NuGetPluginService(earlyLoggerFactory.CreateLogger<NuGetPluginService>());
-    earlyNuGetService.ProcessPendingDeletions();
-    await earlyNuGetService.AutoInstallFromSettingsAsync(PathUtility.UserSettings);
-}
-
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
 builder.Host.ConfigureLogging((c, l) =>
@@ -168,7 +160,7 @@ builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
 builder.Services.AddSingleton<NuGetPluginService>();
 builder.Services.AddTransient<PluginStoreViewModel>();
-builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
+builder.Services.AddTransient<IConfigureOptions<UserSettings>, ConfigureUserSettings>();
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
@@ -236,11 +228,23 @@ static string GetPluginName(PluginNameOptions options, Type type)
     }
 }
 
-class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
+class ConfigureUserSettings(IConfiguration configuration) : IConfigureOptions<UserSettings>
+{
+    private readonly IConfiguration configuration = configuration;
+
+    public void Configure(UserSettings options)
+        => PluginParameterIgnoringConfigurationBinder.Bind(this.configuration, options);
+}
+
+class ConfigurePluginParam<TOptions>(
+    IConfiguration configuration,
+    IProcessInfoStore store,
+    ILogger<ConfigurePluginParam<TOptions>> logger) : IConfigureNamedOptions<TOptions>
     where TOptions : class, IPluginParam
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
+    private readonly ILogger<ConfigurePluginParam<TOptions>> logger = logger;
 
     public void Configure(TOptions options)
     {
@@ -249,7 +253,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
+        this.BindParameter(section, options);
     }
 
     public void Configure(string? name, TOptions options)
@@ -260,7 +264,46 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
+        this.BindParameter(section, options);
+    }
+
+    private void BindParameter(IConfigurationSection targetSection, TOptions options)
+    {
+        var parameterSection = GetTargetSection(targetSection, typeof(TOptions).Name);
+        if (!parameterSection.Exists())
+        {
+            return;
+        }
+
+        try
+        {
+            var configured = parameterSection.Get<TOptions>();
+            if (configured is null)
+            {
+                return;
+            }
+
+            foreach (var property in typeof(TOptions).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (property.CanRead
+                    && property.CanWrite
+                    && property.GetIndexParameters().Length == 0)
+                {
+                    property.SetValue(options, property.GetValue(configured));
+                }
+            }
+        }
+        catch (Exception ex) when (ex is InvalidOperationException
+                                   or FormatException
+                                   or NotSupportedException
+                                   or MissingMethodException
+                                   or ArgumentException
+                                   or TargetInvocationException)
+        {
+            this.logger.LogWarning(
+                "プラグインパラメータ {ParameterType} を読み込めないため無視します。",
+                typeof(TOptions).Name);
+        }
     }
 
     private static IConfigurationSection GetTargetSection(IConfigurationSection section, string name)
@@ -288,7 +331,7 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.Bind(options);
+        PluginParameterIgnoringConfigurationBinder.Bind(section, options);
     }
 
     public void Configure(string? name, TargetSettings options)
@@ -299,7 +342,25 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.Bind(options);
+        PluginParameterIgnoringConfigurationBinder.Bind(section, options);
+    }
+}
+
+static class PluginParameterIgnoringConfigurationBinder
+{
+    public static void Bind(IConfiguration configuration, object options)
+    {
+        var values = configuration
+            .AsEnumerable(makePathsRelative: true)
+            .Where(value => !value.Key
+                .Split(ConfigurationPath.KeyDelimiter, StringSplitOptions.None)
+                .Contains(
+                    nameof(TargetSettings.PluginParams),
+                    StringComparer.OrdinalIgnoreCase));
+        var filteredConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(values)
+            .Build();
+        filteredConfiguration.Bind(options);
     }
 }
 

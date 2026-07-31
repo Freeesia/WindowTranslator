@@ -475,7 +475,7 @@ Monitore werden nicht unterstützt.
     <value>Deinstallieren</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Möchten Sie {0} wirklich deinstallieren? Es wird beim nächsten Start vollständig entfernt.</value>
+    <value>Möchten Sie {0} wirklich deinstallieren?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Update verfügbar</value>

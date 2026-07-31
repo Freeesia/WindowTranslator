@@ -474,7 +474,7 @@ Monitor tidak disokong.</value>
     <value>Nyahpasang</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Adakah anda pasti mahu menyahpasang {0}? Ia akan dibuang sepenuhnya semasa permulaan seterusnya.</value>
+    <value>Adakah anda pasti mahu menyahpasang {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Kemaskini tersedia</value>

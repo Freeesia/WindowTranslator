@@ -26,9 +26,10 @@ cd WindowTranslator.Plugin.YourPlugin
 
     <!-- NuGet パッケージ情報 -->
     <PackageId>WindowTranslator.Plugin.YourPlugin</PackageId>
+    <Title>WindowTranslator Your Plugin</Title>
     <Version>1.0.0</Version>
     <Authors>YourName</Authors>
-    <Description>説明文</Description>
+    <Description>プラグインストアに表示する具体的な説明文</Description>
     <!-- この タグ が必須です（アプリ内一覧への表示条件） -->
     <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -47,6 +48,14 @@ cd WindowTranslator.Plugin.YourPlugin
 
 > **重要**: `<PackageTags>` に `windowtranslator-plugin` を含めることで、
 > WindowTranslator アプリ内のプラグインストアに表示されます。
+>
+> `<Title>`、`<Description>`、`<Authors>`、プロジェクトURL、ライセンス情報は
+> プラグインストアの一覧・詳細に表示されます。利用者が機能と提供元を判断できる
+> 内容を設定してください。
+>
+> `WindowTranslator.Abstractions` の依存バージョン範囲は、インストール先の
+> WindowTranslator との互換性判定に使用されます。サポートする最も古い
+> `WindowTranslator.Abstractions` のバージョンを指定してください。
 
 ### 3. プラグインを実装
 
@@ -123,10 +132,18 @@ NuGetパッケージで宣言されたランタイム依存関係も再帰的に
 同じ依存パッケージに両立しないバージョン条件がある場合は、既存の
 プラグイン配置を変更せずにインストールを中止します。
 
+保存済みのモジュール選択やプラグイン設定パラメータだけを根拠に、パッケージが
+自動インストールされることはありません。インストールはプラグインストアで
+利用者が明示的に実行した場合だけ行われます。
+
+アンインストールすると管理フォルダのパッケージは直ちに削除されます。
+実行中に読み込まれたプラグインを停止するには、WindowTranslator の再起動が必要です。
+
 ## 注意事項
 
 - プラグインは .NET 10 以上をターゲットにしてください
 - `<EnableDynamicLoading>true</EnableDynamicLoading>` を必ず設定してください
 - ホスト側で既に提供されているパッケージは `ExcludeAssets="runtime"` を設定し、DLL を重複させないようにしてください
 - 通常のランタイム依存は `PackageReference` として宣言してください
+- `ProjectReference` は通常、参照先プロジェクトへの NuGet 依存としてパッケージ化されます。参照先をNuGetへ公開しない場合は、`PrivateAssets="all"` を設定したうえで必要なDLLをプラグインパッケージへ同梱し、参照先が必要とする `PackageReference` もプラグイン側で宣言してください
 - パッケージ固有の追加ファイルは、実行時に必要な相対ディレクトリを保って `lib/net10.0/` に含めてください

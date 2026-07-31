@@ -35,17 +35,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     /// <inheritdoc/>
     public async Task Initialize()
     {
-        // ロック解除のために一時フォルダを削除してからコピー
-        if (Directory.Exists(this.tempDir))
-        {
-            Directory.Delete(this.tempDir, recursive: true);
-        }
-        Directory.CreateDirectory(this.tempDir);
-
-        if (Directory.Exists(this.sourceDir))
-        {
-            CopyPluginFiles(this.sourceDir, this.tempDir);
-        }
+        SynchronizePluginFiles(this.sourceDir, this.tempDir);
 
         await this.innerCatalog.Initialize().ConfigureAwait(false);
     }
@@ -56,62 +46,154 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     /// <inheritdoc/>
     public Plugin Get(string name, Version version) => this.innerCatalog.Get(name, version);
 
-    internal static void CopyPluginFiles(string source, string destination)
+    internal static void SynchronizePluginFiles(string source, string destination)
     {
         Directory.CreateDirectory(destination);
 
-        foreach (var file in Directory.GetFiles(source))
+        var sourceFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var sourceDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (Directory.Exists(source))
         {
-            var fileName = Path.GetFileName(file);
-            if (IsManagementFile(fileName))
+            CollectSourceEntries(
+                source,
+                source,
+                isRoot: true,
+                sourceFiles,
+                sourceDirectories);
+        }
+
+        foreach (var relativeDirectory in sourceDirectories.OrderBy(GetPathDepth))
+        {
+            var destinationDirectory = Path.Combine(destination, relativeDirectory);
+            if (File.Exists(destinationDirectory))
+            {
+                File.Delete(destinationDirectory);
+            }
+
+            Directory.CreateDirectory(destinationDirectory);
+        }
+
+        foreach (var (relativePath, sourceFile) in sourceFiles)
+        {
+            var destinationFile = Path.Combine(destination, relativePath);
+            if (FilesMatch(sourceFile, destinationFile))
             {
                 continue;
             }
 
-            var destinationFile = Path.Combine(destination, fileName);
-            if (!File.Exists(destinationFile))
+            if (Directory.Exists(destinationFile))
             {
-                File.Copy(file, destinationFile);
+                Directory.Delete(destinationFile, recursive: true);
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationFile)!);
+            CopyFile(sourceFile, destinationFile);
+        }
+
+        foreach (var destinationFile in Directory.EnumerateFiles(
+                     destination,
+                     "*",
+                     SearchOption.AllDirectories))
+        {
+            var relativePath = Path.GetRelativePath(destination, destinationFile);
+            if (!sourceFiles.ContainsKey(relativePath))
+            {
+                File.Delete(destinationFile);
             }
         }
 
-        foreach (var subDir in Directory.GetDirectories(source))
+        foreach (var destinationDirectory in Directory
+                     .EnumerateDirectories(destination, "*", SearchOption.AllDirectories)
+                     .OrderByDescending(GetPathDepth))
         {
-            var directoryName = Path.GetFileName(subDir);
-            if (IsWorkingDirectory(directoryName))
+            var relativePath = Path.GetRelativePath(destination, destinationDirectory);
+            if (!sourceDirectories.Contains(relativePath))
             {
-                continue;
+                Directory.Delete(destinationDirectory, recursive: true);
             }
-
-            CopyDirectory(subDir, Path.Combine(destination, directoryName));
         }
     }
 
     private static bool IsWorkingDirectory(string directoryName)
         => directoryName.EndsWith(".backup", StringComparison.OrdinalIgnoreCase)
         || directoryName.Contains(".backup-", StringComparison.OrdinalIgnoreCase)
+        || directoryName.Contains(".uninstalling-", StringComparison.OrdinalIgnoreCase)
         || directoryName.Contains(".installing-", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsManagementFile(string fileName)
         => fileName.Equals("nuget-manifest.json", StringComparison.OrdinalIgnoreCase)
-        || fileName.StartsWith("nuget-manifest.json.tmp-", StringComparison.OrdinalIgnoreCase)
-        || fileName.EndsWith(".pending-delete", StringComparison.OrdinalIgnoreCase)
-        || fileName.Contains(".pending-delete.tmp-", StringComparison.OrdinalIgnoreCase);
+        || fileName.StartsWith("nuget-manifest.json.tmp-", StringComparison.OrdinalIgnoreCase);
 
-    private static void CopyDirectory(string source, string destination)
+    private static void CollectSourceEntries(
+        string sourceRoot,
+        string currentDirectory,
+        bool isRoot,
+        Dictionary<string, string> sourceFiles,
+        HashSet<string> sourceDirectories)
     {
-        Directory.CreateDirectory(destination);
-        foreach (var file in Directory.GetFiles(source))
+        foreach (var file in Directory.EnumerateFiles(currentDirectory))
         {
-            var destinationFile = Path.Combine(destination, Path.GetFileName(file));
-            if (!File.Exists(destinationFile))
+            if (isRoot && IsManagementFile(Path.GetFileName(file)))
             {
-                File.Copy(file, destinationFile);
+                continue;
             }
+
+            sourceFiles[Path.GetRelativePath(sourceRoot, file)] = file;
         }
-        foreach (var subDir in Directory.GetDirectories(source))
+
+        foreach (var subDirectory in Directory.EnumerateDirectories(currentDirectory))
         {
-            CopyDirectory(subDir, Path.Combine(destination, Path.GetFileName(subDir)));
+            if (isRoot && IsWorkingDirectory(Path.GetFileName(subDirectory)))
+            {
+                continue;
+            }
+
+            var relativePath = Path.GetRelativePath(sourceRoot, subDirectory);
+            sourceDirectories.Add(relativePath);
+            CollectSourceEntries(
+                sourceRoot,
+                subDirectory,
+                isRoot: false,
+                sourceFiles,
+                sourceDirectories);
         }
     }
+
+    private static bool FilesMatch(string source, string destination)
+    {
+        if (!File.Exists(destination))
+        {
+            return false;
+        }
+
+        var sourceInfo = new FileInfo(source);
+        var destinationInfo = new FileInfo(destination);
+        return sourceInfo.Length == destinationInfo.Length
+            && sourceInfo.LastWriteTimeUtc == destinationInfo.LastWriteTimeUtc
+            && sourceInfo.CreationTimeUtc == destinationInfo.CreationTimeUtc;
+    }
+
+    private static void CopyFile(string source, string destination)
+    {
+        var temporaryPath = $"{destination}.sync-{Guid.NewGuid():N}";
+        try
+        {
+            File.Copy(source, temporaryPath);
+            File.SetCreationTimeUtc(temporaryPath, File.GetCreationTimeUtc(source));
+            File.SetLastWriteTimeUtc(temporaryPath, File.GetLastWriteTimeUtc(source));
+            File.Move(temporaryPath, destination, overwrite: true);
+        }
+        finally
+        {
+            if (File.Exists(temporaryPath))
+            {
+                File.Delete(temporaryPath);
+            }
+        }
+    }
+
+    private static int GetPathDepth(string path)
+        => path.Count(character =>
+            character == Path.DirectorySeparatorChar
+            || character == Path.AltDirectorySeparatorChar);
 }

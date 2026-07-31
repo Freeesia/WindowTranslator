@@ -2,16 +2,20 @@
   <!-- 上位階層の Directory.Build.targets をインクルード -->
   <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.targets')" />
 
-  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true' AND '$(IsPackable)' != 'false'">
     <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);AddPluginRuntimeAssetsToPackage</TargetsForTfmSpecificBuildOutput>
+    <TargetsForTfmSpecificBuildOutput
+      Condition="'$(IncludePluginRuntimeAssetsInPackage)' == 'true'">$(TargetsForTfmSpecificBuildOutput);AddPluginRuntimeAssetsToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <!--
     PackageReference の build/buildTransitive ターゲットによって出力されるネイティブ資産は、
-    依存パッケージの標準 runtimes/ 配下に存在しない場合があるため、実際のビルド出力を同梱する。
+    依存パッケージの標準 runtimes/ 配下に存在しない場合がある。
+    必要なプラグインだけ IncludePluginRuntimeAssetsInPackage=true で実際のビルド出力を同梱する。
   -->
-  <Target Name="AddPluginRuntimeAssetsToPackage">
+  <Target
+    Condition="'$(IsPackable)' != 'false' AND '$(IncludePluginRuntimeAssetsInPackage)' == 'true'"
+    Name="AddPluginRuntimeAssetsToPackage">
     <ItemGroup>
       <_PluginWinX64RuntimeAsset Include="$(TargetDir)runtimes\win-x64\**\*" />
       <_PluginWinRuntimeAsset Include="$(TargetDir)runtimes\win\**\*" />

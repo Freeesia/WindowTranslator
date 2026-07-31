@@ -356,7 +356,7 @@ A monitorok nem támogatottak.
     <value>Eltávolítás</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Biztosan eltávolítja a(z) {0} bővítményt? A következő indításkor teljesen törlődik.</value>
+    <value>Biztosan eltávolítja a(z) {0} bővítményt?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Frissítés érhető el</value>

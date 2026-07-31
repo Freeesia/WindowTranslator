@@ -475,7 +475,7 @@
     <value>ถอนการติดตั้ง</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้ง {0}? จะถูกลบออกอย่างสมบูรณ์เมื่อเริ่มต้นครั้งถัดไป</value>
+    <value>คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้ง {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>มีการอัปเดต</value>

@@ -5,6 +5,9 @@ using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
+using NuGet.Versioning;
+using Weikio.PluginFramework.Catalogs;
+using WindowTranslator.Modules;
 using WindowTranslator.Modules.PluginStore;
 
 namespace WindowTranslator.Tests;
@@ -167,7 +170,7 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task ReinstallAfterUninstallRemovesThePendingDeletionMarker()
+    public async Task UninstallRemovesManagedFilesImmediatelyAndAllowsManualReinstall()
     {
         var testDirectory = CreateTestDirectory();
         try
@@ -201,16 +204,63 @@ public sealed class NuGetPluginServiceTests
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
             await service.UninstallPackageAsync("Root.Plugin");
 
-            var markerPath = Path.Combine(testDirectory, "Root.Plugin.pending-delete");
-            Assert.True(File.Exists(markerPath));
+            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.Empty(await service.GetInstalledPackagesAsync());
 
             await service.InstallPackageAsync("Root.Plugin", "2.0.0");
-            Assert.False(File.Exists(markerPath));
-
-            service.ProcessPendingDeletions();
             Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
             var installed = Assert.Single(await service.GetInstalledPackagesAsync());
             Assert.Equal("2.0.0", installed.Version);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task UninstallRestoresManagedFilesWhenManifestUpdateFails()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "version-one"u8.ToArray(),
+                    }));
+
+            using var client = new HttpClient(handler);
+            using var service = CreateService(client, testDirectory);
+            await service.InstallPackageAsync("Root.Plugin", "1.0.0");
+
+            var manifestPath = Path.Combine(testDirectory, "nuget-manifest.json");
+            using (var manifestLock = new FileStream(
+                manifestPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read))
+            {
+                var exception = await Record.ExceptionAsync(
+                    () => service.UninstallPackageAsync("Root.Plugin"));
+                Assert.True(
+                    exception is IOException or UnauthorizedAccessException,
+                    $"Unexpected exception: {exception}");
+            }
+
+            Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.Empty(Directory.GetDirectories(
+                testDirectory,
+                "Root.Plugin.uninstalling-*"));
+            var installed = Assert.Single(await service.GetInstalledPackagesAsync());
+            Assert.Equal("1.0.0", installed.Version);
         }
         finally
         {
@@ -318,7 +368,136 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public void CatalogCopyIncludesLegacyRootFilesAndSkipsManagementState()
+    public async Task ExistingManifestLoadsInstalledPackages()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new
+                {
+                    Packages = new[]
+                    {
+                        new
+                        {
+                            Id = "Legacy.Plugin",
+                            Version = "1.0.0",
+                        },
+                    },
+                }));
+
+            using var handler = new InMemoryNuGetHandler();
+            using var client = new HttpClient(handler);
+            using var service = CreateService(client, testDirectory);
+
+            var installed = Assert.Single(await service.GetInstalledPackagesAsync());
+
+            Assert.Equal("Legacy.Plugin", installed.Id);
+            Assert.Equal("1.0.0", installed.Version);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InstallRejectsPackageRequiringNewerHostAbstractions()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "2.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "2.0.0",
+                    [
+                        new(
+                            "WindowTranslator.Abstractions",
+                            "[2.0.0, 3.0.0)",
+                            Exclude: "Runtime"),
+                    ],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
+                    }));
+
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["WindowTranslator.Abstractions"] = NuGetVersion.Parse("1.5.0"),
+                });
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.InstallPackageAsync("Root.Plugin", "2.0.0"));
+
+            Assert.Contains("WindowTranslator.Abstractions", exception.Message);
+            Assert.Contains("[2.0.0, 3.0.0)", exception.Message);
+            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.Empty(await service.GetInstalledPackagesAsync());
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InstallAcceptsCompatibleHostAbstractionsWithoutDownloadingIt()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "1.0.0",
+                    [
+                        new(
+                            "WindowTranslator.Abstractions",
+                            "[1.0.0, 2.0.0)"),
+                    ],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
+                    }));
+
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["WindowTranslator.Abstractions"] = NuGetVersion.Parse("1.5.0"),
+                });
+
+            await service.InstallPackageAsync("Root.Plugin", "1.0.0");
+
+            Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.DoesNotContain(
+                handler.RequestedPaths,
+                path => path.Contains(
+                    "windowtranslator.abstractions",
+                    StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public void CatalogSynchronizationCopiesOnlyChangesAndRemovesStaleFiles()
     {
         var sourceDirectory = CreateTestDirectory();
         var destinationDirectory = CreateTestDirectory();
@@ -327,46 +506,161 @@ public sealed class NuGetPluginServiceTests
             File.WriteAllText(Path.Combine(sourceDirectory, "Legacy.Plugin.dll"), "legacy");
             File.WriteAllText(Path.Combine(sourceDirectory, "nuget-manifest.json"), "{}");
             File.WriteAllText(Path.Combine(sourceDirectory, "nuget-manifest.json.tmp-test"), "{}");
-            File.WriteAllText(Path.Combine(sourceDirectory, "Root.Plugin.pending-delete"), "Root.Plugin");
-            File.WriteAllText(
-                Path.Combine(sourceDirectory, "Root.Plugin.pending-delete.tmp-test"),
-                "Root.Plugin");
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin"));
-            File.WriteAllText(
-                Path.Combine(sourceDirectory, "Root.Plugin", "Root.Plugin.dll"),
-                "plugin");
+            var sourcePluginPath =
+                Path.Combine(sourceDirectory, "Root.Plugin", "Root.Plugin.dll");
+            File.WriteAllText(sourcePluginPath, "plugin-new");
+            var unchangedSourcePath =
+                Path.Combine(sourceDirectory, "Root.Plugin", "Unchanged.dll");
+            File.WriteAllText(unchangedSourcePath, "unchanged");
+            Directory.CreateDirectory(Path.Combine(sourceDirectory, "Empty.Plugin"));
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin.backup-test"));
             File.WriteAllText(
                 Path.Combine(sourceDirectory, "Root.Plugin.backup-test", "old.dll"),
                 "old");
             Directory.CreateDirectory(Path.Combine(sourceDirectory, ".Root.Plugin.installing-test"));
+            Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin.uninstalling-test"));
             Directory.CreateDirectory(Path.Combine(destinationDirectory, "Root.Plugin"));
+            var destinationPluginPath =
+                Path.Combine(destinationDirectory, "Root.Plugin", "Root.Plugin.dll");
+            File.WriteAllText(destinationPluginPath, "plugin-old");
+            var unchangedDestinationPath =
+                Path.Combine(destinationDirectory, "Root.Plugin", "Unchanged.dll");
+            File.WriteAllText(unchangedDestinationPath, "unchanged");
+            var unchangedTimestamp = DateTime.UtcNow.AddMinutes(-5);
+            File.SetLastWriteTimeUtc(unchangedSourcePath, unchangedTimestamp);
+            File.SetLastWriteTimeUtc(unchangedDestinationPath, unchangedTimestamp);
+            File.SetCreationTimeUtc(unchangedSourcePath, unchangedTimestamp);
+            File.SetCreationTimeUtc(unchangedDestinationPath, unchangedTimestamp);
+            File.SetLastWriteTimeUtc(sourcePluginPath, unchangedTimestamp);
+            File.SetLastWriteTimeUtc(destinationPluginPath, unchangedTimestamp);
+            File.SetCreationTimeUtc(
+                sourcePluginPath,
+                unchangedTimestamp.AddMinutes(2));
+            File.SetCreationTimeUtc(
+                destinationPluginPath,
+                unchangedTimestamp.AddMinutes(-2));
             File.WriteAllText(
-                Path.Combine(destinationDirectory, "Root.Plugin", "Root.Plugin.dll"),
-                "existing");
+                Path.Combine(destinationDirectory, "Root.Plugin", "Removed.dll"),
+                "stale");
+            Directory.CreateDirectory(Path.Combine(destinationDirectory, "Removed.Plugin"));
+            File.WriteAllText(
+                Path.Combine(destinationDirectory, "Removed.Plugin", "Removed.Plugin.dll"),
+                "stale");
+            File.WriteAllText(
+                Path.Combine(destinationDirectory, "nuget-manifest.json"),
+                "{}");
 
-            NuGetPluginCatalog.CopyPluginFiles(sourceDirectory, destinationDirectory);
+            using var unchangedFileLock = new FileStream(
+                unchangedDestinationPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read);
+            NuGetPluginCatalog.SynchronizePluginFiles(
+                sourceDirectory,
+                destinationDirectory);
+            using var synchronizedFileLock = new FileStream(
+                destinationPluginPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read);
+            NuGetPluginCatalog.SynchronizePluginFiles(
+                sourceDirectory,
+                destinationDirectory);
 
             Assert.True(File.Exists(Path.Combine(destinationDirectory, "Legacy.Plugin.dll")));
             Assert.Equal(
-                "existing",
-                File.ReadAllText(
-                    Path.Combine(destinationDirectory, "Root.Plugin", "Root.Plugin.dll")));
+                "plugin-new",
+                File.ReadAllText(destinationPluginPath));
+            Assert.Equal("unchanged", File.ReadAllText(unchangedDestinationPath));
+            Assert.False(File.Exists(
+                Path.Combine(destinationDirectory, "Root.Plugin", "Removed.dll")));
+            Assert.False(Directory.Exists(
+                Path.Combine(destinationDirectory, "Removed.Plugin")));
+            Assert.True(Directory.Exists(
+                Path.Combine(destinationDirectory, "Empty.Plugin")));
             Assert.False(File.Exists(Path.Combine(destinationDirectory, "nuget-manifest.json")));
             Assert.False(File.Exists(
                 Path.Combine(destinationDirectory, "nuget-manifest.json.tmp-test")));
-            Assert.False(File.Exists(Path.Combine(destinationDirectory, "Root.Plugin.pending-delete")));
-            Assert.False(File.Exists(
-                Path.Combine(destinationDirectory, "Root.Plugin.pending-delete.tmp-test")));
             Assert.False(Directory.Exists(
                 Path.Combine(destinationDirectory, "Root.Plugin.backup-test")));
             Assert.False(Directory.Exists(
                 Path.Combine(destinationDirectory, ".Root.Plugin.installing-test")));
+            Assert.False(Directory.Exists(
+                Path.Combine(destinationDirectory, "Root.Plugin.uninstalling-test")));
         }
         finally
         {
             DeleteTestDirectory(sourceDirectory);
             DeleteTestDirectory(destinationDirectory);
+        }
+    }
+
+    [Fact]
+    public void CatalogSynchronizationClearsStaleFilesWhenSourceIsMissing()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        var destinationDirectory = CreateTestDirectory();
+        try
+        {
+            Directory.Delete(sourceDirectory);
+            Directory.CreateDirectory(Path.Combine(destinationDirectory, "Removed.Plugin"));
+            File.WriteAllText(
+                Path.Combine(destinationDirectory, "Removed.Plugin", "Removed.Plugin.dll"),
+                "stale");
+
+            NuGetPluginCatalog.SynchronizePluginFiles(
+                sourceDirectory,
+                destinationDirectory);
+
+            Assert.Empty(Directory.EnumerateFileSystemEntries(destinationDirectory));
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
+            DeleteTestDirectory(destinationDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task CatalogLoadsARealAssemblyFromAPackageSubdirectory()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        var tempDirectory = CreateTestDirectory();
+        try
+        {
+            var packageDirectory = Path.Combine(sourceDirectory, "Catalog.Probe");
+            Directory.CreateDirectory(packageDirectory);
+            var testAssemblyPath = typeof(NuGetPluginServiceTests).Assembly.Location;
+            File.Copy(
+                testAssemblyPath,
+                Path.Combine(packageDirectory, Path.GetFileName(testAssemblyPath)));
+
+            var options = new FolderPluginCatalogOptions();
+            options.TypeFinderOptions.TypeFinderCriterias.Clear();
+            options.TypeFinderOptions.TypeFinderCriterias.Add(new()
+            {
+                Query = static (_, type) =>
+                    type.Name == nameof(CatalogProbeTranslateModule),
+            });
+            options.PluginLoadContextOptions.AdditionalRuntimePaths =
+                [AppContext.BaseDirectory];
+            var catalog = new NuGetPluginCatalog(
+                sourceDirectory,
+                tempDirectory,
+                options);
+
+            await catalog.Initialize();
+
+            Assert.True(catalog.IsInitialized);
+            Assert.Contains(
+                catalog.GetPlugins(),
+                plugin => plugin.Type.Name == nameof(CatalogProbeTranslateModule));
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
+            DeleteTestDirectory(tempDirectory);
         }
     }
 
@@ -380,11 +674,15 @@ public sealed class NuGetPluginServiceTests
         Assert.Null(NuGetPackageInstaller.SelectBestTfm(["net48"]));
     }
 
-    private static NuGetPluginService CreateService(HttpClient client, string pluginDirectory)
+    private static NuGetPluginService CreateService(
+        HttpClient client,
+        string pluginDirectory,
+        IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null)
         => new(
             NullLogger<NuGetPluginService>.Instance,
             client,
-            pluginDirectory);
+            pluginDirectory,
+            hostPackageVersions: hostPackageVersions);
 
     private static byte[] CreatePackage(
         string id,
@@ -518,4 +816,11 @@ public sealed class NuGetPluginServiceTests
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
         }
     }
+}
+
+public sealed class CatalogProbeTranslateModule : ITranslateModule
+{
+    public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
+        => ValueTask.FromResult(
+            Enumerable.Repeat(string.Empty, srcTexts.Length).ToArray());
 }

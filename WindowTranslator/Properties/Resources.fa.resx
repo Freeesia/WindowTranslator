@@ -460,7 +460,7 @@
     <value>حذف</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>آیا مطمئن هستید که می‌خواهید {0} را حذف کنید؟ در راه‌اندازی بعدی به طور کامل حذف خواهد شد.</value>
+    <value>آیا مطمئن هستید که می‌خواهید {0} را حذف کنید؟</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>به‌روزرسانی موجود است</value>

@@ -474,7 +474,7 @@ Monitor tidak didukung.</value>
     <value>Hapus</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Apakah Anda yakin ingin menghapus {0}? Ini akan dihapus sepenuhnya saat startup berikutnya.</value>
+    <value>Apakah Anda yakin ingin menghapus {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Pembaruan tersedia</value>

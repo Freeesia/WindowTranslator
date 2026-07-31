@@ -475,7 +475,7 @@ Monitors are not supported.
     <value>Uninstall</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Are you sure you want to uninstall {0}? It will be fully removed on next startup.</value>
+    <value>Are you sure you want to uninstall {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Update available</value>

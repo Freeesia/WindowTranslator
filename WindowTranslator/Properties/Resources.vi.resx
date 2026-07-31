@@ -475,7 +475,7 @@ Màn hình không được hỗ trợ.
     <value>Gỡ cài đặt</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Bạn có chắc muốn gỡ cài đặt {0}? Nó sẽ được xóa hoàn toàn khi khởi động lại.</value>
+    <value>Bạn có chắc muốn gỡ cài đặt {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Có cập nhật</value>

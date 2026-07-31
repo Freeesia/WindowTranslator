@@ -468,7 +468,7 @@
     <value>अनइंस्टॉल करें</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>क्या आप {0} को अनइंस्टॉल करना चाहते हैं? यह अगली बार शुरू होने पर पूरी तरह हटा दिया जाएगा।</value>
+    <value>क्या आप {0} को अनइंस्टॉल करना चाहते हैं?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>अपडेट उपलब्ध</value>

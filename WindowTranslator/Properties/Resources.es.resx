@@ -466,7 +466,7 @@
     <value>Desinstalar</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>¿Está seguro de que desea desinstalar {0}? Se eliminará completamente en el próximo inicio.</value>
+    <value>¿Está seguro de que desea desinstalar {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Actualización disponible</value>

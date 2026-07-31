@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Title>WindowTranslator Google Apps Script Translator Plugin</Title>
+    <Description>Translation for WindowTranslator through Google Apps Script.</Description>
     <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
   </PropertyGroup>
   <ItemGroup>

@@ -356,7 +356,7 @@ Monitory nejsou podporovány.
     <value>Odinstalovat</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Opravdu chcete odinstalovat {0}? Bude zcela odstraněn při příštím spuštění.</value>
+    <value>Opravdu chcete odinstalovat {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Dostupná aktualizace</value>

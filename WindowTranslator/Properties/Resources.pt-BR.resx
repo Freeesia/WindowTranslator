@@ -474,7 +474,7 @@ Monitor tidak didukung.</value>
     <value>Desinstalar</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Tem certeza que deseja desinstalar {0}? Ele será completamente removido na próxima inicialização.</value>
+    <value>Tem certeza que deseja desinstalar {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Atualização disponível</value>

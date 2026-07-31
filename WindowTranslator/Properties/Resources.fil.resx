@@ -475,7 +475,7 @@ Ang monitor ay hindi suportado.
     <value>I-uninstall</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Sigurado ka bang gusto mong i-uninstall ang {0}? Ito ay ganap na matatanggal sa susunod na pagsisimula.</value>
+    <value>Sigurado ka bang gusto mong i-uninstall ang {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Available ang update</value>

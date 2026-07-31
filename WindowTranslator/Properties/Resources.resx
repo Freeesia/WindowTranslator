@@ -475,7 +475,7 @@
     <value>アンインストール</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>{0} をアンインストールしますか？次回起動時に完全に削除されます。</value>
+    <value>{0} をアンインストールしますか？</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>更新あり</value>

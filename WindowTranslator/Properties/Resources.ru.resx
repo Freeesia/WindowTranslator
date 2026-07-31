@@ -466,7 +466,7 @@
     <value>Удалить</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>Вы уверены, что хотите удалить {0}? Он будет полностью удалён при следующем запуске.</value>
+    <value>Вы уверены, что хотите удалить {0}?</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Доступно обновление</value>

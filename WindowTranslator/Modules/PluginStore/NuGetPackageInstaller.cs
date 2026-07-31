@@ -12,7 +12,10 @@ namespace WindowTranslator.Modules.PluginStore;
 /// <summary>
 /// NuGetパッケージとそのランタイム依存関係を、プラグインフォルダへ展開します。
 /// </summary>
-internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logger)
+internal sealed class NuGetPackageInstaller(
+    HttpClient httpClient,
+    ILogger logger,
+    IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null)
 {
     private const string FlatContainerBase = "https://api.nuget.org/v3-flatcontainer";
 
@@ -39,6 +42,8 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
 
     private readonly HttpClient httpClient = httpClient;
     private readonly ILogger logger = logger;
+    private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions =
+        hostPackageVersions ?? new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
 
     public async Task InstallAsync(
         string packageId,
@@ -173,10 +178,20 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
                 packagePath,
                 currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase) ? progress : null,
                 cancellationToken).ConfigureAwait(false);
+            ValidateHostPackageDependencies(
+                packagePath,
+                currentId,
+                resolvedVersion,
+                this.hostPackageVersions);
 
             artifacts[currentId] = new PackageArtifact(currentId, resolvedVersion, packagePath);
             foreach (var dependency in ReadRuntimeDependencies(packagePath))
             {
+                if (this.hostPackageVersions.ContainsKey(dependency.Id))
+                {
+                    continue;
+                }
+
                 AddConstraint(dependency.Id, currentId, dependency.VersionRange);
             }
         }
@@ -284,6 +299,14 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
     }
 
     private static List<PackageDependency> ReadRuntimeDependencies(string packagePath)
+        => ReadDependencies(packagePath, runtimeOnly: true);
+
+    private static List<PackageDependency> ReadPackageDependencies(string packagePath)
+        => ReadDependencies(packagePath, runtimeOnly: false);
+
+    private static List<PackageDependency> ReadDependencies(
+        string packagePath,
+        bool runtimeOnly)
     {
         using var archive = ZipFile.OpenRead(packagePath);
         var nuspecEntry = archive.Entries.FirstOrDefault(e =>
@@ -302,7 +325,8 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
 
         var result = new List<PackageDependency>();
         result.AddRange(ParseDependencyElements(
-            dependencies.Elements().Where(e => e.Name.LocalName == "dependency")));
+            dependencies.Elements().Where(e => e.Name.LocalName == "dependency"),
+            runtimeOnly));
 
         var groups = dependencies.Elements()
             .Where(e => e.Name.LocalName == "group")
@@ -327,7 +351,8 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
                     frameworkGroups.First(g => string.Equals(
                         g.Framework,
                         selectedFramework,
-                        StringComparison.OrdinalIgnoreCase)).Element.Elements()));
+                        StringComparison.OrdinalIgnoreCase)).Element.Elements(),
+                    runtimeOnly));
                 return result;
             }
         }
@@ -337,19 +362,24 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
             || g.Framework.Equals("any", StringComparison.OrdinalIgnoreCase));
         if (fallbackGroup.Element is not null)
         {
-            result.AddRange(ParseDependencyElements(fallbackGroup.Element.Elements()));
+            result.AddRange(ParseDependencyElements(
+                fallbackGroup.Element.Elements(),
+                runtimeOnly));
             return result;
         }
 
         throw new InvalidOperationException("互換性のある依存関係グループが見つかりませんでした。");
     }
 
-    private static IEnumerable<PackageDependency> ParseDependencyElements(IEnumerable<XElement> elements)
+    private static IEnumerable<PackageDependency> ParseDependencyElements(
+        IEnumerable<XElement> elements,
+        bool runtimeOnly)
     {
         foreach (var element in elements.Where(e => e.Name.LocalName == "dependency"))
         {
             var id = element.Attribute("id")?.Value;
-            if (string.IsNullOrWhiteSpace(id) || !IncludesRuntimeAssets(element))
+            if (string.IsNullOrWhiteSpace(id)
+                || runtimeOnly && !IncludesRuntimeAssets(element))
             {
                 continue;
             }
@@ -358,6 +388,32 @@ internal sealed class NuGetPackageInstaller(HttpClient httpClient, ILogger logge
             yield return new PackageDependency(
                 id,
                 string.IsNullOrWhiteSpace(versionText) ? VersionRange.All : VersionRange.Parse(versionText));
+        }
+    }
+
+    private static void ValidateHostPackageDependencies(
+        string packagePath,
+        string packageId,
+        NuGetVersion packageVersion,
+        IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions)
+    {
+        if (hostPackageVersions.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var dependency in ReadPackageDependencies(packagePath))
+        {
+            if (!hostPackageVersions.TryGetValue(dependency.Id, out var hostVersion)
+                || dependency.VersionRange.Satisfies(hostVersion))
+            {
+                continue;
+            }
+
+            throw new InvalidOperationException(
+                $"プラグイン {packageId} {packageVersion} は "
+                + $"{dependency.Id} {dependency.VersionRange} を必要としますが、"
+                + $"実行中のWindowTranslatorが提供するバージョンは {hostVersion} です。");
         }
     }
 

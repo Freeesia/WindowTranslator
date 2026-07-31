@@ -475,7 +475,7 @@
     <value>解除安裝</value>
   </data>
   <data name="UninstallConfirm" xml:space="preserve">
-    <value>確定要解除安裝 {0} 嗎？下次啟動時將完全移除。</value>
+    <value>確定要解除安裝 {0} 嗎？</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>有更新</value>
