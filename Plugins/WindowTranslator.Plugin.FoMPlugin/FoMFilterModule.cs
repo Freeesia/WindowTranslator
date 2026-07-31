@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Quickenshtein;
 using WindowTranslator.Modules;
 using WindowTranslator.Stores;
-using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Plugin.FoMPlugin;
 
@@ -280,8 +279,10 @@ public partial class FoMFilterModule : IFilterModule
             SingleWriter = true,
         }, Dropped);
         this.logger = logger;
-        _ = GetWindowThreadProcessId(processInfo.MainWindowHandle, out var processId);
-        if (!options.Value.IsEnabledCorrect || !(GetProcessPath(processId) is { } exePath) || Path.GetFileName(exePath) != "FieldsOfMistria.exe")
+        if (!options.Value.IsEnabledCorrect ||
+            !WindowUtility.TryGetProcessId(processInfo.MainWindowHandle, out var processId) ||
+            !(GetProcessPath(processId) is { } exePath) ||
+            Path.GetFileName(exePath) != "FieldsOfMistria.exe")
         {
             return;
         }
