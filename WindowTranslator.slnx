@@ -19,9 +19,7 @@
   </Folder>
   <Folder Name="/hwnd-adorner/">
     <Project Path="hwnd-adorner/Demo/Demo.csproj" />
-    <Project Path="hwnd-adorner/HwndExtensions/HwndExtensions.csproj">
-      <Platform Project="*" />
-    </Project>
+    <Project Path="hwnd-adorner/HwndExtensions/HwndExtensions.csproj" />
   </Folder>
   <Folder Name="/Plugins/">
     <File Path="Plugins/copy_plugins.bat" />
