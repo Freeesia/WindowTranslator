@@ -11,7 +11,7 @@
 <#@ import namespace="System.Resources" #>
 <#@ import namespace="System.Collections" #>
 <#@ import namespace="System.ComponentModel.Design" #>
-<#@ output extension=".cs" #><#
+<#@ output extension=".cs" encoding="utf-8" #><#
 
 var resxItem = GetResxProjectItem();
 var resxPath = resxItem.FileNames[0];
