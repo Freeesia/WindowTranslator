@@ -44,7 +44,9 @@
     <Project Path="Plugins/WindowTranslator.Plugin.TesseractOCRPlugin/WindowTranslator.Plugin.TesseractOCRPlugin.csproj" />
   </Folder>
   <Project Path="Composition.WindowsRuntimeHelpers/Composition.WindowsRuntimeHelpers.csproj" />
-  <Project Path="Sandbox/Sandbox.csproj" />
+  <Project Path="Sandbox/Sandbox.csproj">
+    <Build Solution="*|ARM64" Project="false" />
+  </Project>
   <Project Path="WindowTranslator.Abstractions/WindowTranslator.Abstractions.csproj" />
   <Project Path="WindowTranslator.Tests/WindowTranslator.Tests.csproj" />
   <Project Path="WindowTranslator.Wix/WindowTranslator.Wix.csproj" />
