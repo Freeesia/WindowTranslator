@@ -470,6 +470,35 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void ShiftedMergeWithNewRegionUsesCurrentNonOverlappingGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+        [
+            new("Open", 40, 100, 40, 30, 24, false),
+            new("Menu", 85, 100, 55, 30, 24, false),
+        ],
+            imageSize,
+            TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("Open Menu", 0, 100, 90, 30, 24, false),
+            new("Settings", 100, 100, 80, 30, 24, false),
+        ],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Open", "Menu", "Settings"], result.Select(rect => rect.SourceText));
+        Assert.Equal((0, 36), (result[0].X, result[0].Width));
+        Assert.Equal(40.5, result[1].X, 5);
+        Assert.Equal(49.5, result[1].Width, 5);
+        Assert.Equal((100, 80), (result[2].X, result[2].Width));
+        Assert.True(result[1].X + result[1].Width <= result[2].X);
+    }
+
+    [Fact]
     public void ContinuouslyChangingTextEventuallyAdvancesToTheLatestObservation()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);

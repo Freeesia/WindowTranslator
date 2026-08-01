@@ -148,6 +148,25 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             .Where(HasReliableOutputGeometry)
             .Select(candidate => candidate.Tracks[0])
             .ToHashSet();
+        List<OutputGeometry[]> reliableMergeOutputGeometryGroups = [];
+        Dictionary<TextTrack, TextRect> mergeOutputGeometries = [];
+        foreach (MatchCandidate candidate in selected.Where(candidate => candidate.Kind == MatchKind.Merge))
+        {
+            TextRect previousUnion = Union(
+                candidate.Tracks.Select(track => track.Stabilized).ToArray(),
+                string.Empty);
+            OutputGeometry[] group = candidate.Tracks
+                .Select(track => new OutputGeometry(
+                    track,
+                    track.ProjectOutputGeometry(previousUnion, candidate.Combined)))
+                .ToArray();
+            foreach (OutputGeometry outputGeometry in group)
+            {
+                tracksWithCurrentGeometry.Add(outputGeometry.Track);
+                mergeOutputGeometries[outputGeometry.Track] = outputGeometry.Geometry;
+            }
+            reliableMergeOutputGeometryGroups.Add(group);
+        }
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
@@ -163,7 +182,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         }
         ResolveHistoricalGeometryConflicts(
             tracksWithReliableOutputGeometry,
-            tracksWithCurrentGeometry);
+            reliableMergeOutputGeometryGroups,
+            tracksWithCurrentGeometry,
+            mergeOutputGeometries);
 
         foreach (TextTrack track in this.tracks.Where(track => !track.IsDormant).ToArray())
         {
@@ -201,21 +222,53 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private static void ResolveHistoricalGeometryConflicts(
         IReadOnlyCollection<TextTrack> tracksWithReliableOutputGeometry,
-        IReadOnlyCollection<TextTrack> tracksWithCurrentGeometry)
+        IReadOnlyCollection<OutputGeometry[]> reliableMergeOutputGeometryGroups,
+        IReadOnlyCollection<TextTrack> tracksWithCurrentGeometry,
+        IReadOnlyDictionary<TextTrack, TextRect> mergeOutputGeometries)
     {
         foreach (TextTrack track in tracksWithReliableOutputGeometry)
         {
             bool hasHistoricalConflict = tracksWithCurrentGeometry.Any(other =>
                 !ReferenceEquals(track, other)
-                && IntersectionOverSmallerArea(track.Stabilized, other.LatestObservation)
-                    > IntersectionOverSmallerArea(track.LatestObservation, other.LatestObservation)
+                && IntersectionOverSmallerArea(
+                    track.Stabilized,
+                    CurrentOutputGeometry(other, mergeOutputGeometries))
+                    > IntersectionOverSmallerArea(
+                        track.LatestObservation,
+                        CurrentOutputGeometry(other, mergeOutputGeometries))
                         + double.Epsilon);
             if (hasHistoricalConflict)
             {
-                track.UseLatestObservationGeometryForOutput();
+                track.UseOutputGeometry(track.LatestObservation);
+            }
+        }
+
+        foreach (OutputGeometry[] group in reliableMergeOutputGeometryGroups)
+        {
+            bool hasHistoricalConflict = group.Any(outputGeometry =>
+                tracksWithCurrentGeometry.Any(other =>
+                    !group.Any(member => ReferenceEquals(member.Track, other))
+                    && IntersectionOverSmallerArea(
+                        outputGeometry.Track.Stabilized,
+                        CurrentOutputGeometry(other, mergeOutputGeometries))
+                        > IntersectionOverSmallerArea(
+                            outputGeometry.Geometry,
+                            CurrentOutputGeometry(other, mergeOutputGeometries))
+                            + double.Epsilon));
+            if (hasHistoricalConflict)
+            {
+                foreach (OutputGeometry outputGeometry in group)
+                {
+                    outputGeometry.Track.UseOutputGeometry(outputGeometry.Geometry);
+                }
             }
         }
     }
+
+    private static TextRect CurrentOutputGeometry(
+        TextTrack track,
+        IReadOnlyDictionary<TextTrack, TextRect> mergeOutputGeometries)
+        => mergeOutputGeometries.GetValueOrDefault(track, track.LatestObservation);
 
     private static bool HasReliableOutputGeometry(MatchCandidate candidate)
     {
@@ -1732,6 +1785,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private sealed record RestorationAssignment(TextTrack Track, int ObservationIndex, TextRect Observation);
 
+    private sealed record OutputGeometry(TextTrack Track, TextRect Geometry);
+
     private readonly struct StructureResourceMask :
         IEquatable<StructureResourceMask>,
         IComparable<StructureResourceMask>
@@ -2120,8 +2175,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             this.geometryCandidateCount = 0;
         }
 
-        public void UseLatestObservationGeometryForOutput()
-            => this.outputGeometryOverride = this.LatestObservation;
+        public TextRect ProjectOutputGeometry(TextRect previousParent, TextRect currentParent)
+            => DormantGeometry.Create(this.Stabilized, previousParent)
+                .Restore(this.Stabilized, currentParent);
+
+        public void UseOutputGeometry(TextRect geometry)
+            => this.outputGeometryOverride = geometry;
 
         public void ClearOutputGeometryOverride()
             => this.outputGeometryOverride = null;
