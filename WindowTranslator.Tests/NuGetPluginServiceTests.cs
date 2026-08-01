@@ -1,12 +1,15 @@
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Versioning;
 using Weikio.PluginFramework.Catalogs;
+using Weikio.PluginFramework.Context;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.PluginStore;
 
@@ -14,6 +17,8 @@ namespace WindowTranslator.Tests;
 
 public sealed class NuGetPluginServiceTests
 {
+    private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
+
     [Fact]
     public async Task InstallResolvesRuntimeDependenciesAndPreservesAssetDirectories()
     {
@@ -35,8 +40,8 @@ public sealed class NuGetPluginServiceTests
                     {
                         ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
                         ["lib/net10.0/fr/Root.Plugin.resources.dll"] = "fr"u8.ToArray(),
-                        ["runtimes/win-x64/native/root-native.dll"] = "native"u8.ToArray(),
-                        ["lib/net10.0/runtimes/win-x64/native/custom-native.dll"] = "custom"u8.ToArray(),
+                        [$"runtimes/{RuntimeIdentifier}/native/root-native.dll"] = "native"u8.ToArray(),
+                        [$"lib/net10.0/runtimes/{RuntimeIdentifier}/native/custom-native.dll"] = "custom"u8.ToArray(),
                     }));
             handler.AddPackage(
                 "Dependency.Package",
@@ -82,7 +87,7 @@ public sealed class NuGetPluginServiceTests
                 await File.ReadAllTextAsync(Path.Combine(
                     pluginDirectory,
                     "runtimes",
-                    "win-x64",
+                    RuntimeIdentifier,
                     "native",
                     "root-native.dll")));
             Assert.Equal(
@@ -90,7 +95,7 @@ public sealed class NuGetPluginServiceTests
                 await File.ReadAllTextAsync(Path.Combine(
                     pluginDirectory,
                     "runtimes",
-                    "win-x64",
+                    RuntimeIdentifier,
                     "native",
                     "custom-native.dll")));
             Assert.DoesNotContain(
@@ -296,7 +301,7 @@ public sealed class NuGetPluginServiceTests
                     new Dictionary<string, byte[]>
                     {
                         ["lib/net48/LegacyOnly.dll"] = "legacy"u8.ToArray(),
-                        ["runtimes/win-x64/native/compatible.dll"] = "native"u8.ToArray(),
+                        [$"runtimes/{RuntimeIdentifier}/native/compatible.dll"] = "native"u8.ToArray(),
                     }));
 
             using var client = new HttpClient(handler);
@@ -312,7 +317,7 @@ public sealed class NuGetPluginServiceTests
                     testDirectory,
                     "Root.Plugin",
                     "runtimes",
-                    "win-x64",
+                    RuntimeIdentifier,
                     "native",
                     "compatible.dll")));
         }
@@ -635,6 +640,20 @@ public sealed class NuGetPluginServiceTests
             File.Copy(
                 testAssemblyPath,
                 Path.Combine(packageDirectory, Path.GetFileName(testAssemblyPath)));
+            var runtimeDirectory = Path.Combine(
+                packageDirectory,
+                "runtimes",
+                "win",
+                "lib",
+                "net10.0");
+            Directory.CreateDirectory(runtimeDirectory);
+            File.Copy(
+                typeof(NuGetVersion).Assembly.Location,
+                Path.Combine(runtimeDirectory, "NuGet.Versioning.dll"));
+            Assert.Empty(Directory.EnumerateFiles(
+                packageDirectory,
+                "*.deps.json",
+                SearchOption.AllDirectories));
 
             var options = new FolderPluginCatalogOptions();
             options.TypeFinderOptions.TypeFinderCriterias.Clear();
@@ -643,8 +662,19 @@ public sealed class NuGetPluginServiceTests
                 Query = static (_, type) =>
                     type.Name == nameof(CatalogProbeTranslateModule),
             });
-            options.PluginLoadContextOptions.AdditionalRuntimePaths =
-                [AppContext.BaseDirectory];
+            options.PluginLoadContextOptions.UseHostApplicationAssemblies =
+                UseHostApplicationAssembliesEnum.Selected;
+            options.PluginLoadContextOptions.HostApplicationAssemblies =
+                AssemblyLoadContext.Default.Assemblies
+                    .Where(assembly => !assembly.IsDynamic
+                        && assembly != typeof(NuGetPluginServiceTests).Assembly
+                        && !string.Equals(
+                            assembly.GetName().Name,
+                            typeof(NuGetVersion).Assembly.GetName().Name,
+                            StringComparison.OrdinalIgnoreCase))
+                    .Select(assembly => assembly.GetName())
+                    .ToList();
+            options.PluginLoadContextOptions.AdditionalRuntimePaths = [];
             var catalog = new NuGetPluginCatalog(
                 sourceDirectory,
                 tempDirectory,
@@ -653,9 +683,13 @@ public sealed class NuGetPluginServiceTests
             await catalog.Initialize();
 
             Assert.True(catalog.IsInitialized);
-            Assert.Contains(
+            var plugin = Assert.Single(
                 catalog.GetPlugins(),
                 plugin => plugin.Type.Name == nameof(CatalogProbeTranslateModule));
+            var module = Assert.IsAssignableFrom<ITranslateModule>(
+                Activator.CreateInstance(plugin.Type));
+            var translated = await module.TranslateAsync([new("source", null)]);
+            Assert.Equal("1.2.3", Assert.Single(translated));
         }
         finally
         {
@@ -671,6 +705,20 @@ public sealed class NuGetPluginServiceTests
             "net10.0-windows10.0.20348.0",
             NuGetPackageInstaller.SelectBestTfm(
                 ["net10.0", "net10.0-windows10.0.20348.0", "netstandard2.0"]));
+        Assert.Equal(
+            "net10.0-windows10.0.19041.0",
+            NuGetPackageInstaller.SelectBestTfm(
+                [
+                    "net10.0",
+                    "net10.0-windows10.0.19041.0",
+                    "net10.0-windows10.0.22621.0",
+                ]));
+        Assert.Equal(
+            ".NETCoreApp,Version=v10.0",
+            NuGetPackageInstaller.SelectBestTfm([".NETCoreApp,Version=v10.0"]));
+        Assert.Null(NuGetPackageInstaller.SelectBestTfm(
+            ["net10.0-windows10.0.22621.0"]));
+        Assert.Null(NuGetPackageInstaller.SelectBestTfm(["net11.0-windows"]));
         Assert.Null(NuGetPackageInstaller.SelectBestTfm(["net48"]));
     }
 
@@ -822,5 +870,7 @@ public sealed class CatalogProbeTranslateModule : ITranslateModule
 {
     public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         => ValueTask.FromResult(
-            Enumerable.Repeat(string.Empty, srcTexts.Length).ToArray());
+            Enumerable.Repeat(
+                new NuGetVersion(1, 2, 3).ToNormalizedString(),
+                srcTexts.Length).ToArray());
 }

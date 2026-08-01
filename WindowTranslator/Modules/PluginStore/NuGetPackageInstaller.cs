@@ -1,10 +1,14 @@
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
+using NuGet.Frameworks;
 using NuGet.Versioning;
 
 namespace WindowTranslator.Modules.PluginStore;
@@ -19,26 +23,11 @@ internal sealed class NuGetPackageInstaller(
 {
     private const string FlatContainerBase = "https://api.nuget.org/v3-flatcontainer";
 
-    private static readonly string[] CompatibleFrameworks =
-    [
-        "net10.0-windows",
-        "net10.0",
-        "net9.0-windows",
-        "net9.0",
-        "net8.0-windows",
-        "net8.0",
-        "net7.0-windows",
-        "net7.0",
-        "net6.0-windows",
-        "net6.0",
-        "net5.0-windows",
-        "net5.0",
-        "netcoreapp3.1",
-        "netstandard2.1",
-        "netstandard2.0",
-    ];
+    private static readonly NuGetFramework HostFramework = GetHostFramework();
+    private static readonly FrameworkReducer FrameworkReducer = new();
 
-    private static readonly string[] CompatibleRuntimeIdentifiers = ["win-x64", "win", "any"];
+    private static readonly string[] CompatibleRuntimeIdentifiers =
+        [RuntimeInformation.RuntimeIdentifier, "win", "any"];
 
     private readonly HttpClient httpClient = httpClient;
     private readonly ILogger logger = logger;
@@ -89,23 +78,44 @@ internal sealed class NuGetPackageInstaller(
     {
         var candidates = frameworks
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(original => (Original: original, Normalized: NormalizeFramework(original)))
+            .Select(original => (Original: original, Framework: ParseFramework(original)))
+            .Where(candidate => candidate.Framework is not null)
             .ToArray();
 
-        foreach (var compatibleFramework in CompatibleFrameworks)
+        var nearest = FrameworkReducer.GetNearest(
+            HostFramework,
+            candidates.Select(candidate => candidate.Framework!));
+        if (nearest is null)
         {
-            var match = candidates
-                .OrderByDescending(c => c.Normalized, StringComparer.OrdinalIgnoreCase)
-                .FirstOrDefault(c => compatibleFramework.EndsWith("-windows", StringComparison.Ordinal)
-                    ? c.Normalized.StartsWith(compatibleFramework, StringComparison.OrdinalIgnoreCase)
-                    : c.Normalized.Equals(compatibleFramework, StringComparison.OrdinalIgnoreCase));
-            if (match.Original is not null)
-            {
-                return match.Original;
-            }
+            return null;
         }
 
-        return null;
+        return candidates.First(candidate => NuGetFrameworkFullComparer.Instance.Equals(
+            candidate.Framework,
+            nearest)).Original;
+    }
+
+    private static NuGetFramework GetHostFramework()
+    {
+        var assembly = typeof(NuGetPackageInstaller).Assembly;
+        var frameworkName = assembly.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName
+            ?? throw new InvalidOperationException("WindowTranslator のターゲットフレームワークを取得できませんでした。");
+        var framework = NuGetFramework.Parse(frameworkName);
+        var platformName = assembly.GetCustomAttribute<TargetPlatformAttribute>()?.PlatformName;
+        return string.IsNullOrWhiteSpace(platformName)
+            ? framework
+            : NuGetFramework.ParseFolder($"{framework.GetShortFolderName()}-{platformName}");
+    }
+
+    private static NuGetFramework? ParseFramework(string framework)
+    {
+        if (string.IsNullOrWhiteSpace(framework))
+        {
+            return null;
+        }
+
+        var parsed = NuGetFramework.Parse(framework);
+        return parsed.IsUnsupported ? null : parsed;
     }
 
     private async Task<IReadOnlyCollection<PackageArtifact>> ResolvePackageGraphAsync(
@@ -595,22 +605,6 @@ internal sealed class NuGetPackageInstaller(
         }
 
         return right.ReadByte() == -1;
-    }
-
-    private static string NormalizeFramework(string framework)
-    {
-        var normalized = framework.Replace(" ", string.Empty, StringComparison.Ordinal);
-        const string netCoreAppPrefix = ".NETCoreApp,Version=v";
-        const string netStandardPrefix = ".NETStandard,Version=v";
-        if (normalized.StartsWith(netCoreAppPrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            return $"net{normalized[netCoreAppPrefix.Length..]}";
-        }
-        if (normalized.StartsWith(netStandardPrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            return $"netstandard{normalized[netStandardPrefix.Length..]}";
-        }
-        return normalized;
     }
 
     private static void ValidatePackageId(string packageId)

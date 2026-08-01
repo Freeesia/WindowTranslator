@@ -1,6 +1,8 @@
 using System.IO;
+using System.Reflection.PortableExecutable;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
+using Weikio.PluginFramework.Context;
 
 namespace WindowTranslator.Modules.PluginStore;
 
@@ -15,7 +17,8 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
     private readonly string sourceDir;
     private readonly string tempDir;
-    private readonly FolderPluginCatalog innerCatalog;
+    private readonly FolderPluginCatalogOptions options;
+    private CompositePluginCatalog innerCatalog = new();
 
     public NuGetPluginCatalog(string sourceDir, FolderPluginCatalogOptions options)
         : this(sourceDir, DefaultTempDir, options)
@@ -26,7 +29,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     {
         this.sourceDir = sourceDir;
         this.tempDir = tempDir;
-        this.innerCatalog = new FolderPluginCatalog(tempDir, options);
+        this.options = options;
     }
 
     /// <inheritdoc/>
@@ -37,6 +40,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     {
         SynchronizePluginFiles(this.sourceDir, this.tempDir);
 
+        this.innerCatalog = CreateCatalog(this.tempDir, this.options);
         await this.innerCatalog.Initialize().ConfigureAwait(false);
     }
 
@@ -45,6 +49,127 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
     /// <inheritdoc/>
     public Plugin Get(string name, Version version) => this.innerCatalog.Get(name, version);
+
+    private static CompositePluginCatalog CreateCatalog(
+        string directory,
+        FolderPluginCatalogOptions baseOptions)
+    {
+        var catalogs = new List<IPluginCatalog>
+        {
+            new FolderPluginCatalog(
+                directory,
+                CreateCatalogOptions(
+                    baseOptions,
+                    directory,
+                    SearchOption.TopDirectoryOnly,
+                    includeSubfolders: false)),
+        };
+
+        foreach (var packageDirectory in Directory
+                     .EnumerateDirectories(directory)
+                     .OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
+        {
+            catalogs.Add(new FolderPluginCatalog(
+                packageDirectory,
+                CreateCatalogOptions(
+                    baseOptions,
+                    packageDirectory,
+                    SearchOption.AllDirectories,
+                    includeSubfolders: true)));
+        }
+
+        return new CompositePluginCatalog([.. catalogs]);
+    }
+
+    private static FolderPluginCatalogOptions CreateCatalogOptions(
+        FolderPluginCatalogOptions baseOptions,
+        string pluginDirectory,
+        SearchOption searchOption,
+        bool includeSubfolders)
+    {
+        var baseLoadOptions = baseOptions.PluginLoadContextOptions;
+        var files = Directory
+            .EnumerateFiles(pluginDirectory, "*", searchOption)
+            .Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
+                || path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            .Select(path => new PluginFile(
+                path,
+                Path.GetRelativePath(pluginDirectory, path),
+                IsManagedAssembly(path)))
+            .OrderBy(file => GetRuntimeAssetPriority(file.RelativePath))
+            .ThenBy(file => file.RelativePath, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        var runtimeHints = new List<RuntimeAssemblyHint>(
+            baseLoadOptions.RuntimeAssemblyHints ?? []);
+        var hintKeys = runtimeHints
+            .Select(hint => GetHintKey(hint.FileName, hint.IsNative))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in files.OrderByDescending(file => file.IsManaged))
+        {
+            var isNative = !file.IsManaged;
+            if (hintKeys.Add(GetHintKey(Path.GetFileName(file.Path), isNative)))
+            {
+                runtimeHints.Add(new RuntimeAssemblyHint(
+                    Path.GetFileName(file.Path),
+                    file.Path,
+                    isNative));
+            }
+        }
+
+        var additionalRuntimePaths = new List<string>(
+            baseLoadOptions.AdditionalRuntimePaths ?? []);
+        foreach (var path in files
+                     .Where(file => file.IsManaged)
+                     .Select(file => Path.GetDirectoryName(file.Path)!)
+                     .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (!additionalRuntimePaths.Contains(path, StringComparer.OrdinalIgnoreCase))
+            {
+                additionalRuntimePaths.Add(path);
+            }
+        }
+
+        return new FolderPluginCatalogOptions
+        {
+            IncludeSubfolders = includeSubfolders,
+            SearchPatterns = [.. baseOptions.SearchPatterns],
+            TypeFinderOptions = baseOptions.TypeFinderOptions,
+            PluginNameOptions = baseOptions.PluginNameOptions,
+            PluginLoadContextOptions = new PluginLoadContextOptions
+            {
+                UseHostApplicationAssemblies = baseLoadOptions.UseHostApplicationAssemblies,
+                HostApplicationAssemblies = [.. baseLoadOptions.HostApplicationAssemblies],
+                LoggerFactory = baseLoadOptions.LoggerFactory,
+                AdditionalRuntimePaths = additionalRuntimePaths,
+                RuntimeAssemblyHints = runtimeHints,
+            },
+        };
+    }
+
+    private static bool IsManagedAssembly(string path)
+    {
+        try
+        {
+            using var stream = File.OpenRead(path);
+            using var reader = new PEReader(stream);
+            return reader.HasMetadata;
+        }
+        catch (BadImageFormatException)
+        {
+            return false;
+        }
+    }
+
+    private static int GetRuntimeAssetPriority(string relativePath)
+        => relativePath.StartsWith(
+            $"runtimes{Path.DirectorySeparatorChar}",
+            StringComparison.OrdinalIgnoreCase)
+            ? 0
+            : 1;
+
+    private static string GetHintKey(string fileName, bool isNative)
+        => $"{(isNative ? 'N' : 'M')}:{fileName}";
 
     internal static void SynchronizePluginFiles(string source, string destination)
     {
@@ -196,4 +321,6 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         => path.Count(character =>
             character == Path.DirectorySeparatorChar
             || character == Path.AltDirectorySeparatorChar);
+
+    private sealed record PluginFile(string Path, string RelativePath, bool IsManaged);
 }
