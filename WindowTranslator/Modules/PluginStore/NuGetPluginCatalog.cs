@@ -1,5 +1,7 @@
 using System.IO;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Loader;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.Context;
@@ -92,20 +94,29 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
             .EnumerateFiles(pluginDirectory, "*", searchOption)
             .Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
                 || path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-            .Select(path => new PluginFile(
-                path,
-                Path.GetRelativePath(pluginDirectory, path),
-                IsManagedAssembly(path)))
+            .Select(path => CreatePluginFile(pluginDirectory, path))
             .OrderBy(file => GetRuntimeAssetPriority(file.RelativePath))
             .ThenBy(file => file.RelativePath, StringComparer.OrdinalIgnoreCase)
             .ToArray();
+
+        var satelliteAssemblies = files
+            .Where(file => file.IsSatelliteAssembly)
+            .GroupBy(file => GetSatelliteKey(
+                file.AssemblyName!.Name!,
+                file.AssemblyName.CultureName!))
+            .ToDictionary(
+                group => group.Key,
+                group => group.First(),
+                StringComparer.OrdinalIgnoreCase);
 
         var runtimeHints = new List<RuntimeAssemblyHint>(
             baseLoadOptions.RuntimeAssemblyHints ?? []);
         var hintKeys = runtimeHints
             .Select(hint => GetHintKey(hint.FileName, hint.IsNative))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        foreach (var file in files.OrderByDescending(file => file.IsManaged))
+        foreach (var file in files
+                     .Where(file => !file.IsSatelliteAssembly)
+                     .OrderByDescending(file => file.IsManaged))
         {
             var isNative = !file.IsManaged;
             if (hintKeys.Add(GetHintKey(Path.GetFileName(file.Path), isNative)))
@@ -120,7 +131,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         var additionalRuntimePaths = new List<string>(
             baseLoadOptions.AdditionalRuntimePaths ?? []);
         foreach (var path in files
-                     .Where(file => file.IsManaged)
+                     .Where(file => file.IsManaged && !file.IsSatelliteAssembly)
                      .Select(file => Path.GetDirectoryName(file.Path)!)
                      .Distinct(StringComparer.OrdinalIgnoreCase))
         {
@@ -135,7 +146,9 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
             IncludeSubfolders = includeSubfolders,
             SearchPatterns = [.. baseOptions.SearchPatterns],
             TypeFinderOptions = baseOptions.TypeFinderOptions,
-            PluginNameOptions = baseOptions.PluginNameOptions,
+            PluginNameOptions = CreatePluginNameOptions(
+                baseOptions.PluginNameOptions,
+                satelliteAssemblies),
             PluginLoadContextOptions = new PluginLoadContextOptions
             {
                 UseHostApplicationAssemblies = baseLoadOptions.UseHostApplicationAssemblies,
@@ -145,6 +158,104 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
                 RuntimeAssemblyHints = runtimeHints,
             },
         };
+    }
+
+    private static PluginFile CreatePluginFile(string pluginDirectory, string path)
+    {
+        var isManaged = IsManagedAssembly(path);
+        return new PluginFile(
+            path,
+            Path.GetRelativePath(pluginDirectory, path),
+            isManaged,
+            isManaged ? TryGetAssemblyName(path) : null);
+    }
+
+    private static PluginNameOptions CreatePluginNameOptions(
+        PluginNameOptions baseOptions,
+        IReadOnlyDictionary<string, PluginFile> satelliteAssemblies)
+    {
+        if (satelliteAssemblies.Count == 0)
+        {
+            return baseOptions;
+        }
+
+        var configuredContexts = new HashSet<AssemblyLoadContext>();
+        var contextLock = new object();
+
+        void EnsureSatelliteResolver(Type type)
+        {
+            var context = AssemblyLoadContext.GetLoadContext(type.Assembly);
+            if (context is null || context == AssemblyLoadContext.Default)
+            {
+                return;
+            }
+
+            lock (contextLock)
+            {
+                if (configuredContexts.Add(context))
+                {
+                    context.Resolving += ResolveSatelliteAssembly;
+                }
+            }
+        }
+
+        Assembly? ResolveSatelliteAssembly(
+            AssemblyLoadContext context,
+            AssemblyName requestedAssembly)
+        {
+            if (string.IsNullOrWhiteSpace(requestedAssembly.Name)
+                || string.IsNullOrWhiteSpace(requestedAssembly.CultureName)
+                || !satelliteAssemblies.TryGetValue(
+                    GetSatelliteKey(requestedAssembly.Name, requestedAssembly.CultureName),
+                    out var satelliteAssembly)
+                || requestedAssembly.Version is not null
+                    && satelliteAssembly.AssemblyName!.Version != requestedAssembly.Version)
+            {
+                return null;
+            }
+
+            return context.LoadFromAssemblyPath(satelliteAssembly.Path);
+        }
+
+        return new PluginNameOptions
+        {
+            PluginNameGenerator = (_, type) =>
+            {
+                EnsureSatelliteResolver(type);
+                return baseOptions.PluginNameGenerator(baseOptions, type);
+            },
+            PluginVersionGenerator = (_, type) =>
+            {
+                EnsureSatelliteResolver(type);
+                return baseOptions.PluginVersionGenerator(baseOptions, type);
+            },
+            PluginDescriptionGenerator = (_, type) =>
+            {
+                EnsureSatelliteResolver(type);
+                return baseOptions.PluginDescriptionGenerator(baseOptions, type);
+            },
+            PluginProductVersionGenerator = (_, type) =>
+            {
+                EnsureSatelliteResolver(type);
+                return baseOptions.PluginProductVersionGenerator(baseOptions, type);
+            },
+        };
+    }
+
+    private static AssemblyName? TryGetAssemblyName(string path)
+    {
+        try
+        {
+            return AssemblyName.GetAssemblyName(path);
+        }
+        catch (BadImageFormatException)
+        {
+            return null;
+        }
+        catch (FileLoadException)
+        {
+            return null;
+        }
     }
 
     private static bool IsManagedAssembly(string path)
@@ -170,6 +281,9 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
     private static string GetHintKey(string fileName, bool isNative)
         => $"{(isNative ? 'N' : 'M')}:{fileName}";
+
+    private static string GetSatelliteKey(string assemblyName, string cultureName)
+        => $"{cultureName}:{assemblyName}";
 
     internal static void SynchronizePluginFiles(string source, string destination)
     {
@@ -322,5 +436,13 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
             character == Path.DirectorySeparatorChar
             || character == Path.AltDirectorySeparatorChar);
 
-    private sealed record PluginFile(string Path, string RelativePath, bool IsManaged);
+    private sealed record PluginFile(
+        string Path,
+        string RelativePath,
+        bool IsManaged,
+        AssemblyName? AssemblyName)
+    {
+        public bool IsSatelliteAssembly
+            => !string.IsNullOrWhiteSpace(this.AssemblyName?.CultureName);
+    }
 }

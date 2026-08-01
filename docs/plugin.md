@@ -141,7 +141,7 @@ NuGetパッケージで宣言されたランタイム依存関係も再帰的に
 
 ## 注意事項
 
-- プラグインは .NET 10 以上をターゲットにしてください
+- プラグインは WindowTranslator と同じ `net10.0` をターゲットにしてください。`net11.0` など、ホストより新しいTFMは読み込めません
 - `<EnableDynamicLoading>true</EnableDynamicLoading>` を必ず設定してください
 - ホスト側で既に提供されているパッケージは `ExcludeAssets="runtime"` を設定し、DLL を重複させないようにしてください
 - 通常のランタイム依存は `PackageReference` として宣言してください

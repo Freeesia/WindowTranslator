@@ -56,6 +56,16 @@ public partial class PluginStoreViewModel : ObservableObject
             var installed = await this.nugetService.GetInstalledPackagesAsync(cancellationToken).ConfigureAwait(true);
             var installedDict = installed.ToDictionary(p => p.Id, StringComparer.OrdinalIgnoreCase);
 
+            this.Packages.Clear();
+            foreach (var inst in installed)
+            {
+                this.Packages.Add(new PluginPackageViewModel(
+                    new NuGetPackageInfo(inst.Id, inst.Version, inst.Id, string.Empty, string.Empty, null, null),
+                    isInstalled: true,
+                    installedVersion: inst.Version,
+                    isUpdateAvailable: false));
+            }
+
             var packages = await this.nugetService.SearchPackagesAsync(cancellationToken).ConfigureAwait(true);
             this.logger.LogInformation("NuGetから{Count}件のプラグインパッケージを取得しました。", packages.Count);
 

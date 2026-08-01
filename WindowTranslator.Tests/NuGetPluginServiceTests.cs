@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Text;
@@ -408,6 +410,42 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task PluginStoreKeepsInstalledPackagesVisibleWhenNuGetSearchFails()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new InstalledManifest(
+                    [new InstalledPackageInfo("Installed.Plugin", "1.2.3")])),
+                Encoding.UTF8);
+            using var handler = new InMemoryNuGetHandler();
+            using var client = new HttpClient(handler);
+            using var service = CreateService(client, testDirectory);
+            var viewModel = new PluginStoreViewModel(
+                service,
+                NullLogger<PluginStoreViewModel>.Instance,
+                dialogService: null!);
+
+            await viewModel.LoadAsync();
+
+            var package = Assert.Single(viewModel.Packages);
+            Assert.Equal("Installed.Plugin", package.Id);
+            Assert.Equal("1.2.3", package.InstalledVersion);
+            Assert.True(package.IsInstalled);
+            Assert.NotNull(viewModel.ErrorMessage);
+            Assert.Contains(
+                handler.RequestedPaths,
+                path => path.Equals("/v3/index.json", StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task InstallRejectsPackageRequiringNewerHostAbstractions()
     {
         var testDirectory = CreateTestDirectory();
@@ -699,6 +737,81 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task CatalogLoadsTheSatelliteAssemblyForTheRequestedCulture()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        var tempDirectory = CreateTestDirectory();
+        var originalCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("fr-FR");
+            var packageDirectory = Path.Combine(sourceDirectory, "Catalog.Probe");
+            Directory.CreateDirectory(packageDirectory);
+            var testAssemblyPath = typeof(NuGetPluginServiceTests).Assembly.Location;
+            File.Copy(
+                testAssemblyPath,
+                Path.Combine(packageDirectory, Path.GetFileName(testAssemblyPath)));
+            foreach (var cultureName in new[] { "ar", "fr" })
+            {
+                var cultureDirectory = Path.Combine(packageDirectory, cultureName);
+                Directory.CreateDirectory(cultureDirectory);
+                File.Copy(
+                    Path.Combine(
+                        Path.GetDirectoryName(testAssemblyPath)!,
+                        cultureName,
+                        "WindowTranslator.Tests.resources.dll"),
+                    Path.Combine(cultureDirectory, "WindowTranslator.Tests.resources.dll"));
+            }
+
+            var options = new FolderPluginCatalogOptions();
+            options.TypeFinderOptions.TypeFinderCriterias.Clear();
+            options.TypeFinderOptions.TypeFinderCriterias.Add(new()
+            {
+                Query = static (_, type) =>
+                    type.Name == nameof(CatalogProbeLocalizedTranslateModule),
+            });
+            options.PluginNameOptions.PluginNameGenerator = static (_, type) =>
+                new ResourceManager(
+                    "WindowTranslator.Tests.CatalogProbeResources",
+                    type.Assembly).GetString("Greeting", CultureInfo.CurrentUICulture)
+                ?? type.Name;
+            options.PluginLoadContextOptions.UseHostApplicationAssemblies =
+                UseHostApplicationAssembliesEnum.Selected;
+            options.PluginLoadContextOptions.HostApplicationAssemblies =
+                AssemblyLoadContext.Default.Assemblies
+                    .Where(assembly => !assembly.IsDynamic
+                        && assembly != typeof(NuGetPluginServiceTests).Assembly)
+                    .Select(assembly => assembly.GetName())
+                    .ToList();
+            options.PluginLoadContextOptions.AdditionalRuntimePaths = [];
+            var catalog = new NuGetPluginCatalog(
+                sourceDirectory,
+                tempDirectory,
+                options);
+
+            await catalog.Initialize();
+
+            var plugin = Assert.Single(
+                catalog.GetPlugins(),
+                plugin => plugin.Type.Name == nameof(CatalogProbeLocalizedTranslateModule));
+            Assert.Equal("français", plugin.Name);
+            Assert.NotSame(
+                AssemblyLoadContext.Default,
+                AssemblyLoadContext.GetLoadContext(plugin.Type.Assembly));
+            var module = Assert.IsAssignableFrom<ITranslateModule>(
+                Activator.CreateInstance(plugin.Type));
+            var translated = await module.TranslateAsync([new("source", null)]);
+            Assert.Equal("français", Assert.Single(translated));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = originalCulture;
+            DeleteTestDirectory(sourceDirectory);
+            DeleteTestDirectory(tempDirectory);
+        }
+    }
+
+    [Fact]
     public void FrameworkSelectionPrefersTheCompatibleWindowsTarget()
     {
         Assert.Equal(
@@ -872,5 +985,18 @@ public sealed class CatalogProbeTranslateModule : ITranslateModule
         => ValueTask.FromResult(
             Enumerable.Repeat(
                 new NuGetVersion(1, 2, 3).ToNormalizedString(),
+                srcTexts.Length).ToArray());
+}
+
+public sealed class CatalogProbeLocalizedTranslateModule : ITranslateModule
+{
+    private static readonly ResourceManager Resources = new(
+        "WindowTranslator.Tests.CatalogProbeResources",
+        typeof(CatalogProbeLocalizedTranslateModule).Assembly);
+
+    public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
+        => ValueTask.FromResult(
+            Enumerable.Repeat(
+                Resources.GetString("Greeting", CultureInfo.CurrentUICulture) ?? string.Empty,
                 srcTexts.Length).ToArray());
 }
