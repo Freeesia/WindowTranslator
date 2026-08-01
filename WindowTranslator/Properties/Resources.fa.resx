@@ -445,7 +445,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>فروشگاه افزونه</value>
+    <value>افزونه‌ها</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>پیش‌انتشار</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>نصب</value>

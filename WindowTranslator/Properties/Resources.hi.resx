@@ -453,7 +453,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>प्लगइन स्टोर</value>
+    <value>प्लगइन</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>प्रीरिलीज़</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>इंस्टॉल करें</value>

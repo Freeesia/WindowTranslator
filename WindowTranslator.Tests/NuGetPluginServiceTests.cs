@@ -446,6 +446,102 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task SearchReturnsReleaseAndPrereleaseVersions()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler
+            {
+                SearchResponseJson = """
+                    {
+                      "totalHits": 1,
+                      "data": [
+                        {
+                          "id": "Test.Plugin",
+                          "version": "1.1.0-beta.2",
+                          "title": "Test Plugin",
+                          "description": "Test description",
+                          "authors": ["WindowTranslator.Tests"],
+                          "versions": [
+                            { "version": "1.0.0" },
+                            { "version": "1.1.0-beta.1" },
+                            { "version": "1.1.0-beta.2" }
+                          ]
+                        }
+                      ]
+                    }
+                    """,
+            };
+            using var client = new HttpClient(handler);
+            using var service = CreateService(client, testDirectory);
+
+            var package = Assert.Single(await service.SearchPackagesAsync());
+
+            Assert.Equal("Test.Plugin", package.Id);
+            Assert.Equal("1.1.0-beta.2", package.Version);
+            Assert.Equal(
+                ["1.0.0", "1.1.0-beta.1", "1.1.0-beta.2"],
+                package.Versions);
+            Assert.Contains(
+                handler.RequestedUris,
+                uri => uri.Contains("prerelease=true", StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public void PackageVersionSelectionRequiresOptInForPrerelease()
+    {
+        var package = new PluginPackageViewModel(
+            new NuGetPackageInfo(
+                "Test.Plugin",
+                "1.1.0-beta.2",
+                "Test Plugin",
+                string.Empty,
+                string.Empty,
+                null,
+                null,
+                ["1.0.0", "1.1.0-beta.1", "1.1.0-beta.2"]),
+            isInstalled: true,
+            installedVersion: "1.0.0");
+
+        Assert.Equal("1.0.0", package.LatestVersion);
+        Assert.False(package.UsePrerelease);
+        Assert.False(package.IsUpdateAvailable);
+
+        package.UsePrerelease = true;
+
+        Assert.Equal("1.1.0-beta.2", package.LatestVersion);
+        Assert.True(package.IsUpdateAvailable);
+        Assert.True(package.CanInstall);
+
+        var prereleaseOnlyPackage = new PluginPackageViewModel(
+            new NuGetPackageInfo(
+                "Preview.Plugin",
+                "2.0.0-preview.1",
+                "Preview Plugin",
+                string.Empty,
+                string.Empty,
+                null,
+                null,
+                ["2.0.0-preview.1"]),
+            isInstalled: false,
+            installedVersion: null);
+
+        Assert.Null(prereleaseOnlyPackage.LatestVersion);
+        Assert.False(prereleaseOnlyPackage.CanInstall);
+
+        prereleaseOnlyPackage.UsePrerelease = true;
+
+        Assert.Equal("2.0.0-preview.1", prereleaseOnlyPackage.LatestVersion);
+        Assert.True(prereleaseOnlyPackage.CanInstall);
+    }
+
+    [Fact]
     public async Task InstallRejectsPackageRequiringNewerHostAbstractions()
     {
         var testDirectory = CreateTestDirectory();
@@ -931,6 +1027,10 @@ public sealed class NuGetPluginServiceTests
 
         public List<string> RequestedPaths { get; } = [];
 
+        public List<string> RequestedUris { get; } = [];
+
+        public string? SearchResponseJson { get; init; }
+
         public void AddPackage(string id, string version, byte[] package)
             => this.packages[(id.ToLowerInvariant(), version.ToLowerInvariant())] = package;
 
@@ -940,6 +1040,40 @@ public sealed class NuGetPluginServiceTests
         {
             var path = request.RequestUri!.AbsolutePath;
             this.RequestedPaths.Add(path);
+            this.RequestedUris.Add(request.RequestUri.PathAndQuery);
+
+            if (path.Equals("/v3/index.json", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(
+                        """
+                        {
+                          "resources": [
+                            {
+                              "@id": "https://nuget.test/query",
+                              "@type": "SearchQueryService/3.5.0"
+                            }
+                          ]
+                        }
+                        """,
+                        Encoding.UTF8,
+                        "application/json"),
+                });
+            }
+
+            if (path.Equals("/query", StringComparison.OrdinalIgnoreCase)
+                && this.SearchResponseJson is not null)
+            {
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(
+                        this.SearchResponseJson,
+                        Encoding.UTF8,
+                        "application/json"),
+                });
+            }
+
             var segments = path.Trim('/').Split('/');
             if (segments.Length == 3
                 && segments[0].Equals("v3-flatcontainer", StringComparison.OrdinalIgnoreCase)

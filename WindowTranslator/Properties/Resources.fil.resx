@@ -460,7 +460,10 @@ Ang monitor ay hindi suportado.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Plugin Store</value>
+    <value>Mga Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prerelease</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>I-install</value>

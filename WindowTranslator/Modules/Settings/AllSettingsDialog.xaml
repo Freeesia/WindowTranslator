@@ -375,6 +375,9 @@
                         </pt:PropertyGrid>
                     </Grid>
                 </TabItem>
+                <TabItem Header="{x:Static properties:Resources.PluginStore}">
+                    <pluginStore:PluginStoreView DataContext="{Binding PluginStore}" />
+                </TabItem>
                 <TabItem Header="{x:Static properties:Resources.About}" Visibility="{Binding IsVisibleAbout, Converter={StaticResource b2vConv}}">
                     <DockPanel>
                         <ui:Button
@@ -399,9 +402,6 @@
                             </pt:PropertyGrid.Resources>
                         </pt:PropertyGrid>
                     </DockPanel>
-                </TabItem>
-                <TabItem Header="{x:Static properties:Resources.PluginStore}">
-                    <pluginStore:PluginStoreView DataContext="{Binding PluginStore}" />
                 </TabItem>
             </TabControl>
         </DockPanel>

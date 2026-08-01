@@ -459,7 +459,10 @@ Monitor tidak didukung.</value>
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Loja de Plugins</value>
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Pré-lançamento</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Instalar</value>

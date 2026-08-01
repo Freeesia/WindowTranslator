@@ -451,7 +451,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Магазин плагинов</value>
+    <value>Плагины</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Предварительная версия</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Установить</value>

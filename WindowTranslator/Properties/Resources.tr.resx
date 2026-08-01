@@ -460,7 +460,10 @@ Monitör desteklenmiyor.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Eklenti Mağazası</value>
+    <value>Eklentiler</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Ön sürüm</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Yükle</value>

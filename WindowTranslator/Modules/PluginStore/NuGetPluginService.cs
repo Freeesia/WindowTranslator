@@ -67,7 +67,7 @@ public sealed class NuGetPluginService : IDisposable
             this.searchUrl = await GetSearchUrlAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        var url = $"{this.searchUrl}?q=tags:{PluginTag}&take=100&semVerLevel=2.0.0&prerelease=false";
+        var url = $"{this.searchUrl}?q=tags:{PluginTag}&take=100&semVerLevel=2.0.0&prerelease=true";
         this.logger.LogDebug("NuGet検索URL: {Url}", url);
 
         using var response = await this.httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -86,7 +86,12 @@ public sealed class NuGetPluginService : IDisposable
             Description: d.Description ?? string.Empty,
             Authors: string.Join(", ", d.Authors ?? []),
             ProjectUrl: d.ProjectUrl,
-            LicenseUrl: d.LicenseUrl
+            LicenseUrl: d.LicenseUrl,
+            Versions: d.Versions?
+                .Select(version => version.Version)
+                .Where(version => !string.IsNullOrWhiteSpace(version))
+                .Select(version => version!)
+                .ToArray()
         )).ToArray() ?? [];
     }
 
@@ -457,7 +462,8 @@ public record NuGetPackageInfo(
     string Description,
     string Authors,
     string? ProjectUrl,
-    string? LicenseUrl
+    string? LicenseUrl,
+    IReadOnlyList<string>? Versions = null
 );
 
 /// <summary>インストール済みパッケージ情報</summary>
@@ -491,5 +497,10 @@ internal record NuGetSearchData(
     [property: JsonPropertyName("description")] string? Description,
     [property: JsonPropertyName("authors")] string[]? Authors,
     [property: JsonPropertyName("projectUrl")] string? ProjectUrl,
-    [property: JsonPropertyName("licenseUrl")] string? LicenseUrl
+    [property: JsonPropertyName("licenseUrl")] string? LicenseUrl,
+    [property: JsonPropertyName("versions")] NuGetSearchVersion[]? Versions
+);
+
+internal record NuGetSearchVersion(
+    [property: JsonPropertyName("version")] string? Version
 );

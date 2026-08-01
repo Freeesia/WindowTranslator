@@ -460,7 +460,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>外掛程式商店</value>
+    <value>外掛程式</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>預發行版本</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>安裝</value>

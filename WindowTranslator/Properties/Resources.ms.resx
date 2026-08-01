@@ -459,7 +459,10 @@ Monitor tidak disokong.</value>
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Kedai Plugin</value>
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prakeluaran</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Pasang</value>

@@ -451,7 +451,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Boutique de plugins</value>
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Préversion</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Installer</value>

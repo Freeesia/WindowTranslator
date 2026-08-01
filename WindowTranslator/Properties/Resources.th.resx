@@ -460,7 +460,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>ร้านปลั๊กอิน</value>
+    <value>ปลั๊กอิน</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>รุ่นก่อนเผยแพร่</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>ติดตั้ง</value>

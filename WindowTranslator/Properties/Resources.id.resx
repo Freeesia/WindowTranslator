@@ -459,7 +459,10 @@ Monitor tidak didukung.</value>
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Toko Plugin</value>
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prarilis</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Pasang</value>

@@ -460,7 +460,10 @@ Monitore werden nicht unterstützt.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Plugin-Store</value>
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Vorabversion</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Installieren</value>

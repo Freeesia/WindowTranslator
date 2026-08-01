@@ -460,7 +460,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>플러그인 스토어</value>
+    <value>플러그인</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>시험판</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>설치</value>

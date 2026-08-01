@@ -451,7 +451,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>متجر المكونات الإضافية</value>
+    <value>المكونات الإضافية</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>إصدار أولي</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>تثبيت</value>

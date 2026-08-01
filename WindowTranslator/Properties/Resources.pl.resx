@@ -460,7 +460,10 @@ Monitory nie są obsługiwane.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Sklep wtyczek</value>
+    <value>Wtyczki</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Wersja wstępna</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Zainstaluj</value>

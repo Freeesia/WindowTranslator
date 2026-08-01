@@ -458,9 +458,14 @@ internal class Resources
     public static string PluginInstallSuccess => ResourceManager.GetString("PluginInstallSuccess", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "プラグインストア" に類似しているローカライズされた文字列を検索します。
+    /// "プラグイン" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PluginStore => ResourceManager.GetString("PluginStore", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "プレリリース" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Prerelease => ResourceManager.GetString("Prerelease", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "プロジェクトページ" に類似しているローカライズされた文字列を検索します。

@@ -460,7 +460,10 @@
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>プラグインストア</value>
+    <value>プラグイン</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>プレリリース</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>インストール</value>

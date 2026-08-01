@@ -341,7 +341,10 @@ Monitory nejsou podporovány.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Obchod s pluginy</value>
+    <value>Pluginy</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Předběžná verze</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Nainstalovat</value>

@@ -460,7 +460,10 @@ Màn hình không được hỗ trợ.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Cửa hàng Plugin</value>
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Bản phát hành trước</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Cài đặt</value>

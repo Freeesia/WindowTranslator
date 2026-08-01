@@ -341,7 +341,10 @@ A monitorok nem támogatottak.
 </value>
   </data>
   <data name="PluginStore" xml:space="preserve">
-    <value>Bővítményáruház</value>
+    <value>Bővítmények</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Előzetes kiadás</value>
   </data>
   <data name="Install" xml:space="preserve">
     <value>Telepítés</value>
