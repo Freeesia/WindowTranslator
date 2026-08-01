@@ -144,6 +144,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             .Where(candidate => candidate.Kind is MatchKind.OneToOne or MatchKind.Split)
             .Select(candidate => candidate.Tracks[0])
             .ToHashSet();
+        HashSet<TextTrack> tracksWithReliableOutputGeometry = selected
+            .Where(HasReliableOutputGeometry)
+            .Select(candidate => candidate.Tracks[0])
+            .ToHashSet();
         this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
@@ -157,7 +161,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 tracksWithCurrentGeometry.Add(track);
             }
         }
-        ResolveHistoricalGeometryConflicts(tracksWithCurrentGeometry);
+        ResolveHistoricalGeometryConflicts(
+            tracksWithReliableOutputGeometry,
+            tracksWithCurrentGeometry);
 
         foreach (TextTrack track in this.tracks.Where(track => !track.IsDormant).ToArray())
         {
@@ -194,15 +200,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     }
 
     private static void ResolveHistoricalGeometryConflicts(
+        IReadOnlyCollection<TextTrack> tracksWithReliableOutputGeometry,
         IReadOnlyCollection<TextTrack> tracksWithCurrentGeometry)
     {
-        foreach (TextTrack track in tracksWithCurrentGeometry)
+        foreach (TextTrack track in tracksWithReliableOutputGeometry)
         {
-            bool hasHistoricalConflict = RatioSimilarity(track.Stabilized.Width, track.LatestObservation.Width)
-                    >= MinimumCompositeStructureSizeRatio
-                && RatioSimilarity(track.Stabilized.Height, track.LatestObservation.Height)
-                    >= MinimumCompositeStructureSizeRatio
-                && tracksWithCurrentGeometry.Any(other =>
+            bool hasHistoricalConflict = tracksWithCurrentGeometry.Any(other =>
                 !ReferenceEquals(track, other)
                 && IntersectionOverSmallerArea(track.Stabilized, other.LatestObservation)
                     > IntersectionOverSmallerArea(track.LatestObservation, other.LatestObservation)
@@ -212,6 +215,25 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 track.UseLatestObservationGeometryForOutput();
             }
         }
+    }
+
+    private static bool HasReliableOutputGeometry(MatchCandidate candidate)
+    {
+        if (candidate.Kind == MatchKind.Split)
+        {
+            return true;
+        }
+        if (candidate.Kind != MatchKind.OneToOne)
+        {
+            return false;
+        }
+
+        TextTrack track = candidate.Tracks[0];
+        return track.NormalizedConfirmedText == NormalizeText(candidate.Combined.SourceText)
+            || (RatioSimilarity(track.Stabilized.Width, candidate.Combined.Width)
+                    >= MinimumCompositeStructureSizeRatio
+                && RatioSimilarity(track.Stabilized.Height, candidate.Combined.Height)
+                    >= MinimumCompositeStructureSizeRatio);
     }
 
     private static bool IsValid(TextRect rect)
