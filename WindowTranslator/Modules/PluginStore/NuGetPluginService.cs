@@ -1,9 +1,11 @@
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using NuGet.Packaging;
 using NuGet.Versioning;
 
 namespace WindowTranslator.Modules.PluginStore;
@@ -14,7 +16,9 @@ namespace WindowTranslator.Modules.PluginStore;
 public sealed class NuGetPluginService : IDisposable
 {
     private const string NuGetServiceIndexUrl = "https://api.nuget.org/v3/index.json";
-    private const string PluginTag = "windowtranslator-plugin";
+    internal const string PluginTag = "windowtranslator-plugin";
+    internal const string AbstractionsPackageId = "WindowTranslator.Abstractions";
+    private const int MaxConcurrentMetadataRequests = 8;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -30,13 +34,19 @@ public sealed class NuGetPluginService : IDisposable
     private readonly string manifestPath;
     private readonly bool ownsHttpClient;
     private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions;
+    private readonly INuGetPluginMetadataSource metadataSource;
     private readonly SemaphoreSlim operationLock = new(1, 1);
-    private string? searchUrl;
 
     public NuGetPluginService(ILogger<NuGetPluginService> logger)
         : this(
             logger,
-            new HttpClient { Timeout = TimeSpan.FromSeconds(30) },
+            new HttpClient(new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.All,
+            })
+            {
+                Timeout = TimeSpan.FromSeconds(30),
+            },
             Path.Combine(PathUtility.UserDir, "plugins"),
             ownsHttpClient: true)
     {
@@ -47,7 +57,8 @@ public sealed class NuGetPluginService : IDisposable
         HttpClient httpClient,
         string userPluginsDir,
         bool ownsHttpClient = false,
-        IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null)
+        IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null,
+        INuGetPluginMetadataSource? metadataSource = null)
     {
         this.logger = logger;
         this.httpClient = httpClient;
@@ -55,6 +66,8 @@ public sealed class NuGetPluginService : IDisposable
         this.manifestPath = Path.Combine(this.userPluginsDir, "nuget-manifest.json");
         this.ownsHttpClient = ownsHttpClient;
         this.hostPackageVersions = hostPackageVersions ?? CreateHostPackageVersions();
+        this.metadataSource = metadataSource
+            ?? new NuGetProtocolPluginMetadataSource(NuGetServiceIndexUrl);
     }
 
     /// <summary>
@@ -62,37 +75,79 @@ public sealed class NuGetPluginService : IDisposable
     /// </summary>
     public async Task<IReadOnlyList<NuGetPackageInfo>> SearchPackagesAsync(CancellationToken cancellationToken = default)
     {
-        if (this.searchUrl is null)
+        var searchResults = await this.metadataSource
+            .SearchAsync(PluginTag, includePrerelease: true, cancellationToken)
+            .ConfigureAwait(false);
+        this.logger.LogInformation("NuGetタグ検索完了: {Count}件の候補が見つかりました。", searchResults.Count);
+
+        using var requestGate = new SemaphoreSlim(MaxConcurrentMetadataRequests);
+        var packageTasks = searchResults.Select(async data =>
         {
-            this.searchUrl = await GetSearchUrlAsync(cancellationToken).ConfigureAwait(false);
+            await requestGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await CreateCompatiblePackageInfoAsync(
+                    data,
+                    cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogWarning(
+                    ex,
+                    "NuGetパッケージのプラグイン互換性を確認できなかったため除外します: {PackageId}",
+                    data.Id);
+                return null;
+            }
+            finally
+            {
+                requestGate.Release();
+            }
+        });
+        var packages = await Task.WhenAll(packageTasks).ConfigureAwait(false);
+        var compatiblePackages = packages.Where(package => package is not null).Select(package => package!).ToArray();
+
+        this.logger.LogInformation(
+            "NuGet互換性確認完了: {Count}件のWindowTranslatorプラグインが見つかりました。",
+            compatiblePackages.Length);
+        return compatiblePackages;
+    }
+
+    /// <summary>
+    /// 指定したパッケージバージョンのREADMEを取得します。
+    /// </summary>
+    public async Task<string?> GetPackageReadmeAsync(
+        string packageId,
+        string version,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(packageId))
+        {
+            throw new ArgumentException("NuGetパッケージIDが空です。", nameof(packageId));
+        }
+        if (!NuGetVersion.TryParse(version, out var packageVersion))
+        {
+            throw new ArgumentException($"不正なNuGetパッケージバージョンです: {version}", nameof(version));
         }
 
-        var url = $"{this.searchUrl}?q=tags:{PluginTag}&take=100&semVerLevel=2.0.0&prerelease=true";
-        this.logger.LogDebug("NuGet検索URL: {Url}", url);
+        var readmeUrl = await this.metadataSource
+            .GetReadmeUrlAsync(packageId, packageVersion, cancellationToken)
+            .ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(readmeUrl))
+        {
+            return null;
+        }
+        using var response = await this.httpClient.GetAsync(readmeUrl, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
 
-        using var response = await this.httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-
-        await using var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        var result = await JsonSerializer.DeserializeAsync<NuGetSearchResponse>(content, JsonOptions, cancellationToken).ConfigureAwait(false)
-            ?? throw new InvalidOperationException("NuGet検索結果のデシリアライズに失敗しました。");
-
-        this.logger.LogInformation("NuGet検索完了: {Count}件のパッケージが見つかりました。", result.Data?.Length ?? 0);
-
-        return result.Data?.Select(d => new NuGetPackageInfo(
-            Id: d.PackageId ?? string.Empty,
-            Version: d.Version ?? string.Empty,
-            Title: d.Title ?? d.PackageId ?? string.Empty,
-            Description: d.Description ?? string.Empty,
-            Authors: string.Join(", ", d.Authors ?? []),
-            ProjectUrl: d.ProjectUrl,
-            LicenseUrl: d.LicenseUrl,
-            Versions: d.Versions?
-                .Select(version => version.Version)
-                .Where(version => !string.IsNullOrWhiteSpace(version))
-                .Select(version => version!)
-                .ToArray()
-        )).ToArray() ?? [];
+        return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -265,19 +320,57 @@ public sealed class NuGetPluginService : IDisposable
         return manifest.Packages;
     }
 
-    private async Task<string> GetSearchUrlAsync(CancellationToken cancellationToken)
+    private async Task<NuGetPackageInfo?> CreateCompatiblePackageInfoAsync(
+        NuGetPluginSearchMetadata data,
+        CancellationToken cancellationToken)
     {
-        using var response = await this.httpClient.GetAsync(NuGetServiceIndexUrl, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-        await using var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        var index = await JsonSerializer.DeserializeAsync<NuGetServiceIndex>(content, JsonOptions, cancellationToken).ConfigureAwait(false)
-            ?? throw new InvalidOperationException("NuGetサービスインデックスのデシリアライズに失敗しました。");
+        var versions = await this.metadataSource
+            .GetPackageVersionsAsync(data.Id, cancellationToken)
+            .ConfigureAwait(false);
+        var compatibleVersions = versions
+            .Where(version => version.IsListed
+                && HasCompatibleAbstractionsDependency(version.DependencyGroups))
+            .OrderBy(version => version.Version)
+            .ToArray();
+        if (compatibleVersions.Length == 0)
+        {
+            this.logger.LogDebug(
+                "WindowTranslator.Abstractionsへの互換依存がないため除外します: {PackageId}",
+                data.Id);
+            return null;
+        }
 
-        var searchEntry = index.Resources?.FirstOrDefault(r => r.Type == "SearchQueryService/3.5.0")
-            ?? index.Resources?.FirstOrDefault(r => r.Type?.StartsWith("SearchQueryService", StringComparison.Ordinal) == true)
-            ?? throw new InvalidOperationException("NuGet検索サービスURLが見つかりませんでした。");
+        var latestVersion = compatibleVersions[^1].Version.ToNormalizedString();
+        return new NuGetPackageInfo(
+            Id: data.Id,
+            Version: latestVersion,
+            Title: data.Title ?? data.Id,
+            Description: data.Description ?? string.Empty,
+            Authors: data.Authors ?? string.Empty,
+            ProjectUrl: data.ProjectUrl,
+            LicenseUrl: data.LicenseUrl,
+            Versions: compatibleVersions
+                .Select(version => version.Version.ToNormalizedString())
+                .ToArray());
+    }
 
-        return searchEntry.Id ?? throw new InvalidOperationException("NuGet検索サービスURLが空です。");
+    private bool HasCompatibleAbstractionsDependency(
+        IReadOnlyList<PackageDependencyGroup> dependencyGroups)
+    {
+        if (!this.hostPackageVersions.TryGetValue(AbstractionsPackageId, out var hostVersion))
+        {
+            return false;
+        }
+
+        var dependencyGroup = NuGetPackageInstaller.SelectBestDependencyGroup(dependencyGroups);
+        var dependency = dependencyGroup?.Packages.FirstOrDefault(item =>
+            item.Id.Equals(AbstractionsPackageId, StringComparison.OrdinalIgnoreCase));
+        if (dependency is null)
+        {
+            return false;
+        }
+
+        return dependency.VersionRange?.Satisfies(hostVersion) is not false;
     }
 
     private static InstalledManifest AddOrUpdatePackage(
@@ -311,7 +404,7 @@ public sealed class NuGetPluginService : IDisposable
         {
             return new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
             {
-                ["WindowTranslator.Abstractions"] = packageVersion,
+                [AbstractionsPackageId] = packageVersion,
             };
         }
 
@@ -324,7 +417,7 @@ public sealed class NuGetPluginService : IDisposable
             Math.Max(assemblyVersion.Build, 0));
         return new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
         {
-            ["WindowTranslator.Abstractions"] = fallbackVersion,
+            [AbstractionsPackageId] = fallbackVersion,
         };
     }
 
@@ -474,33 +567,3 @@ public record InstalledPackageInfo(
 
 /// <summary>NuGetプラグインの管理マニフェスト</summary>
 public record InstalledManifest(List<InstalledPackageInfo> Packages);
-
-// NuGet V3 API レスポンス型
-internal record NuGetServiceIndex(
-    [property: JsonPropertyName("resources")] NuGetServiceResource[]? Resources
-);
-
-internal record NuGetServiceResource(
-    [property: JsonPropertyName("@id")] string? Id,
-    [property: JsonPropertyName("@type")] string? Type
-);
-
-internal record NuGetSearchResponse(
-    [property: JsonPropertyName("totalHits")] int TotalHits,
-    [property: JsonPropertyName("data")] NuGetSearchData[]? Data
-);
-
-internal record NuGetSearchData(
-    [property: JsonPropertyName("id")] string? PackageId,
-    [property: JsonPropertyName("version")] string? Version,
-    [property: JsonPropertyName("title")] string? Title,
-    [property: JsonPropertyName("description")] string? Description,
-    [property: JsonPropertyName("authors")] string[]? Authors,
-    [property: JsonPropertyName("projectUrl")] string? ProjectUrl,
-    [property: JsonPropertyName("licenseUrl")] string? LicenseUrl,
-    [property: JsonPropertyName("versions")] NuGetSearchVersion[]? Versions
-);
-
-internal record NuGetSearchVersion(
-    [property: JsonPropertyName("version")] string? Version
-);

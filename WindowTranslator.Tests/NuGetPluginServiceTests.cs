@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Globalization;
 using System.IO.Compression;
 using System.Net;
@@ -9,6 +10,9 @@ using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
+using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.Context;
@@ -422,7 +426,14 @@ public sealed class NuGetPluginServiceTests
                 Encoding.UTF8);
             using var handler = new InMemoryNuGetHandler();
             using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            var metadataSource = new InMemoryNuGetMetadataSource
+            {
+                SearchException = new HttpRequestException("NuGet search failed."),
+            };
+            using var service = CreateService(
+                client,
+                testDirectory,
+                metadataSource: metadataSource);
             var viewModel = new PluginStoreViewModel(
                 service,
                 NullLogger<PluginStoreViewModel>.Instance,
@@ -435,9 +446,7 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal("1.2.3", package.InstalledVersion);
             Assert.True(package.IsInstalled);
             Assert.NotNull(viewModel.ErrorMessage);
-            Assert.Contains(
-                handler.RequestedPaths,
-                path => path.Equals("/v3/index.json", StringComparison.OrdinalIgnoreCase));
+            Assert.Equal(["windowtranslator-plugin"], metadataSource.RequestedTags);
         }
         finally
         {
@@ -451,30 +460,30 @@ public sealed class NuGetPluginServiceTests
         var testDirectory = CreateTestDirectory();
         try
         {
-            using var handler = new InMemoryNuGetHandler
+            using var handler = new InMemoryNuGetHandler();
+            var metadataSource = new InMemoryNuGetMetadataSource
             {
-                SearchResponseJson = """
-                    {
-                      "totalHits": 1,
-                      "data": [
-                        {
-                          "id": "Test.Plugin",
-                          "version": "1.1.0-beta.2",
-                          "title": "Test Plugin",
-                          "description": "Test description",
-                          "authors": ["WindowTranslator.Tests"],
-                          "versions": [
-                            { "version": "1.0.0" },
-                            { "version": "1.1.0-beta.1" },
-                            { "version": "1.1.0-beta.2" }
-                          ]
-                        }
-                      ]
-                    }
-                    """,
+                SearchResults =
+                [
+                    new NuGetPluginSearchMetadata(
+                        "Test.Plugin",
+                        "Test Plugin",
+                        "Test description",
+                        "WindowTranslator.Tests",
+                        null,
+                        null),
+                ],
             };
+            metadataSource.AddVersions(
+                "Test.Plugin",
+                CreatePluginVersionMetadata("1.0.0"),
+                CreatePluginVersionMetadata("1.1.0-beta.1"),
+                CreatePluginVersionMetadata("1.1.0-beta.2"));
             using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                metadataSource: metadataSource);
 
             var package = Assert.Single(await service.SearchPackagesAsync());
 
@@ -483,9 +492,67 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal(
                 ["1.0.0", "1.1.0-beta.1", "1.1.0-beta.2"],
                 package.Versions);
-            Assert.Contains(
-                handler.RequestedUris,
-                uri => uri.Contains("prerelease=true", StringComparison.OrdinalIgnoreCase));
+            Assert.Equal([true], metadataSource.RequestedPrereleaseOptions);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task SearchKeepsOnlyVersionsWithCompatibleDirectAbstractionsDependency()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            var metadataSource = new InMemoryNuGetMetadataSource
+            {
+                SearchResults =
+                [
+                    new NuGetPluginSearchMetadata(
+                        "Compatible.Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                    new NuGetPluginSearchMetadata(
+                        "Missing.Dependency.Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                ],
+            };
+            metadataSource.AddVersions(
+                "Compatible.Plugin",
+                CreatePluginVersionMetadata("1.0.0", "[1.0.0, 2.0.0)"),
+                CreatePluginVersionMetadata("2.0.0", "[2.0.0, 3.0.0)"));
+            metadataSource.AddVersions(
+                "Missing.Dependency.Plugin",
+                CreatePluginVersionMetadata(
+                    "1.0.0",
+                    includeAbstractionsDependency: false));
+
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["WindowTranslator.Abstractions"] = NuGetVersion.Parse("1.5.0"),
+                },
+                metadataSource);
+
+            var package = Assert.Single(await service.SearchPackagesAsync());
+
+            Assert.Equal("Compatible.Plugin", package.Id);
+            Assert.Equal("1.0.0", package.Version);
+            Assert.Equal(["1.0.0"], package.Versions);
+            Assert.Equal(["windowtranslator-plugin"], metadataSource.RequestedTags);
         }
         finally
         {
@@ -628,6 +695,165 @@ public sealed class NuGetPluginServiceTests
                 path => path.Contains(
                     "windowtranslator.abstractions",
                     StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InstallRejectsPackageWithoutDirectAbstractionsDependency()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
+                    },
+                    includeAbstractionsDependency: false));
+
+            using var client = new HttpClient(handler);
+            using var service = CreateService(client, testDirectory);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.InstallPackageAsync("Root.Plugin", "1.0.0"));
+
+            Assert.Contains("WindowTranslator.Abstractions", exception.Message);
+            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.Empty(await service.GetInstalledPackagesAsync());
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InstallRejectsPackageWithoutPluginTag()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
+                    },
+                    includePluginTag: false));
+
+            using var client = new HttpClient(handler);
+            using var service = CreateService(client, testDirectory);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.InstallPackageAsync("Root.Plugin", "1.0.0"));
+
+            Assert.Contains("プラグインタグ", exception.Message);
+            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.Empty(await service.GetInstalledPackagesAsync());
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task SelectedPackageLoadsReadmeForTheSelectedReleaseChannel()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Readme.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Readme.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Readme.Plugin.dll"] = "release"u8.ToArray(),
+                        ["README.md"] = "# Release README"u8.ToArray(),
+                    }));
+            handler.AddPackage(
+                "Readme.Plugin",
+                "2.0.0-preview.1",
+                CreatePackage(
+                    "Readme.Plugin",
+                    "2.0.0-preview.1",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Readme.Plugin.dll"] = "preview"u8.ToArray(),
+                        ["README.md"] = "# Preview README"u8.ToArray(),
+                    }));
+
+            var metadataSource = new InMemoryNuGetMetadataSource();
+            metadataSource.AddReadmeUrl(
+                "Readme.Plugin",
+                "1.0.0",
+                "https://nuget.test/readme/readme.plugin/1.0.0");
+            metadataSource.AddReadmeUrl(
+                "Readme.Plugin",
+                "2.0.0-preview.1",
+                "https://nuget.test/readme/readme.plugin/2.0.0-preview.1");
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                metadataSource: metadataSource);
+            var viewModel = new PluginStoreViewModel(
+                service,
+                NullLogger<PluginStoreViewModel>.Instance,
+                dialogService: null!);
+            var package = new PluginPackageViewModel(
+                new NuGetPackageInfo(
+                    "Readme.Plugin",
+                    "2.0.0-preview.1",
+                    "README Plugin",
+                    string.Empty,
+                    string.Empty,
+                    null,
+                    null,
+                    ["1.0.0", "2.0.0-preview.1"]),
+                isInstalled: false,
+                installedVersion: null);
+
+            viewModel.SelectedPackage = package;
+            await WaitForReadmeAsync(package, "# Release README");
+
+            package.UsePrerelease = true;
+            await WaitForReadmeAsync(package, "# Preview README");
+
+            Assert.Contains(
+                handler.RequestedPaths,
+                path => path.Equals("/readme/readme.plugin/1.0.0", StringComparison.OrdinalIgnoreCase));
+            Assert.Contains(
+                handler.RequestedPaths,
+                path => path.Equals(
+                    "/readme/readme.plugin/2.0.0-preview.1",
+                    StringComparison.OrdinalIgnoreCase));
+            Assert.DoesNotContain(
+                handler.RequestedPaths,
+                path => path.EndsWith(".nupkg", StringComparison.OrdinalIgnoreCase));
         }
         finally
         {
@@ -934,23 +1160,95 @@ public sealed class NuGetPluginServiceTests
     private static NuGetPluginService CreateService(
         HttpClient client,
         string pluginDirectory,
-        IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null)
+        IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null,
+        INuGetPluginMetadataSource? metadataSource = null)
         => new(
             NullLogger<NuGetPluginService>.Instance,
             client,
             pluginDirectory,
-            hostPackageVersions: hostPackageVersions);
+            hostPackageVersions: hostPackageVersions,
+            metadataSource: metadataSource ?? new InMemoryNuGetMetadataSource());
+
+    private static NuGetPluginVersionMetadata CreatePluginVersionMetadata(
+        string version,
+        string? abstractionsRange = null,
+        bool includeAbstractionsDependency = true)
+        => new(
+            NuGetVersion.Parse(version),
+            IsListed: true,
+            [
+                new PackageDependencyGroup(
+                    NuGetFramework.ParseFolder("net10.0"),
+                    includeAbstractionsDependency
+                        ? [
+                            new PackageDependency(
+                                NuGetPluginService.AbstractionsPackageId,
+                                abstractionsRange is null
+                                    ? VersionRange.All
+                                    : VersionRange.Parse(abstractionsRange)),
+                        ]
+                        : []),
+            ]);
+
+    private static async Task WaitForReadmeAsync(
+        PluginPackageViewModel package,
+        string expectedReadme)
+    {
+        if (package.ReadmeMarkdown == expectedReadme)
+        {
+            return;
+        }
+
+        var completion = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        PropertyChangedEventHandler? handler = null;
+        handler = (_, e) =>
+        {
+            if (e.PropertyName == nameof(PluginPackageViewModel.ReadmeMarkdown)
+                && package.ReadmeMarkdown == expectedReadme)
+            {
+                completion.TrySetResult();
+            }
+        };
+        package.PropertyChanged += handler;
+        try
+        {
+            if (package.ReadmeMarkdown == expectedReadme)
+            {
+                return;
+            }
+            await completion.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        finally
+        {
+            package.PropertyChanged -= handler;
+        }
+    }
 
     private static byte[] CreatePackage(
         string id,
         string version,
         IReadOnlyCollection<TestDependency> dependencies,
-        IReadOnlyDictionary<string, byte[]> entries)
+        IReadOnlyDictionary<string, byte[]> entries,
+        bool includePluginTag = true,
+        bool includeAbstractionsDependency = true)
     {
+        var packageDependencies = dependencies.ToList();
+        if (includeAbstractionsDependency
+            && !packageDependencies.Any(dependency => dependency.Id.Equals(
+                "WindowTranslator.Abstractions",
+                StringComparison.OrdinalIgnoreCase)))
+        {
+            packageDependencies.Add(new(
+                "WindowTranslator.Abstractions",
+                "(, )",
+                Exclude: "Runtime"));
+        }
+
         using var stream = new MemoryStream();
         using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
         {
-            var dependencyElements = dependencies.Select(dependency =>
+            var dependencyElements = packageDependencies.Select(dependency =>
             {
                 var element = new XElement(
                     "dependency",
@@ -962,21 +1260,27 @@ public sealed class NuGetPluginServiceTests
                 }
                 return element;
             });
-            var nuspec = new XDocument(
+            var metadata = new XElement(
+                "metadata",
+                new XElement("id", id),
+                new XElement("version", version),
+                new XElement("authors", "WindowTranslator.Tests"),
+                new XElement("description", "Test package"));
+            if (includePluginTag)
+            {
+                metadata.Add(new XElement("tags", "windowtranslator-plugin"));
+            }
+            if (entries.ContainsKey("README.md"))
+            {
+                metadata.Add(new XElement("readme", "README.md"));
+            }
+            metadata.Add(new XElement(
+                "dependencies",
                 new XElement(
-                    "package",
-                    new XElement(
-                        "metadata",
-                        new XElement("id", id),
-                        new XElement("version", version),
-                        new XElement("authors", "WindowTranslator.Tests"),
-                        new XElement("description", "Test package"),
-                        new XElement(
-                            "dependencies",
-                            new XElement(
-                                "group",
-                                new XAttribute("targetFramework", "net10.0"),
-                                dependencyElements)))));
+                    "group",
+                    new XAttribute("targetFramework", "net10.0"),
+                    dependencyElements)));
+            var nuspec = new XDocument(new XElement("package", metadata));
             var nuspecEntry = archive.CreateEntry($"{id}.nuspec");
             using (var nuspecStream = nuspecEntry.Open())
             {
@@ -1021,15 +1325,70 @@ public sealed class NuGetPluginServiceTests
 
     private sealed record TestDependency(string Id, string Version, string? Exclude = null);
 
+    private sealed class InMemoryNuGetMetadataSource : INuGetPluginMetadataSource
+    {
+        private readonly Dictionary<string, IReadOnlyList<NuGetPluginVersionMetadata>> versions =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> readmeUrls =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        public IReadOnlyList<NuGetPluginSearchMetadata> SearchResults { get; init; } = [];
+
+        public Exception? SearchException { get; init; }
+
+        public List<string> RequestedTags { get; } = [];
+
+        public List<bool> RequestedPrereleaseOptions { get; } = [];
+
+        public void AddVersions(string packageId, params NuGetPluginVersionMetadata[] packageVersions)
+            => this.versions[packageId] = packageVersions;
+
+        public void AddReadmeUrl(string packageId, string version, string url)
+            => this.readmeUrls[GetReadmeKey(packageId, NuGetVersion.Parse(version))] = url;
+
+        public Task<IReadOnlyList<NuGetPluginSearchMetadata>> SearchAsync(
+            string tag,
+            bool includePrerelease,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            this.RequestedTags.Add(tag);
+            this.RequestedPrereleaseOptions.Add(includePrerelease);
+            return this.SearchException is null
+                ? Task.FromResult(this.SearchResults)
+                : Task.FromException<IReadOnlyList<NuGetPluginSearchMetadata>>(this.SearchException);
+        }
+
+        public Task<IReadOnlyList<NuGetPluginVersionMetadata>> GetPackageVersionsAsync(
+            string packageId,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(
+                this.versions.TryGetValue(packageId, out var packageVersions)
+                    ? packageVersions
+                    : (IReadOnlyList<NuGetPluginVersionMetadata>)[]);
+        }
+
+        public Task<string?> GetReadmeUrlAsync(
+            string packageId,
+            NuGetVersion version,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            this.readmeUrls.TryGetValue(GetReadmeKey(packageId, version), out var readmeUrl);
+            return Task.FromResult(readmeUrl);
+        }
+
+        private static string GetReadmeKey(string packageId, NuGetVersion version)
+            => $"{packageId}\n{version.ToNormalizedString()}";
+    }
+
     private sealed class InMemoryNuGetHandler : HttpMessageHandler
     {
         private readonly Dictionary<(string Id, string Version), byte[]> packages = new();
 
         public List<string> RequestedPaths { get; } = [];
-
-        public List<string> RequestedUris { get; } = [];
-
-        public string? SearchResponseJson { get; init; }
 
         public void AddPackage(string id, string version, byte[] package)
             => this.packages[(id.ToLowerInvariant(), version.ToLowerInvariant())] = package;
@@ -1040,41 +1399,14 @@ public sealed class NuGetPluginServiceTests
         {
             var path = request.RequestUri!.AbsolutePath;
             this.RequestedPaths.Add(path);
-            this.RequestedUris.Add(request.RequestUri.PathAndQuery);
-
-            if (path.Equals("/v3/index.json", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(
-                        """
-                        {
-                          "resources": [
-                            {
-                              "@id": "https://nuget.test/query",
-                              "@type": "SearchQueryService/3.5.0"
-                            }
-                          ]
-                        }
-                        """,
-                        Encoding.UTF8,
-                        "application/json"),
-                });
-            }
-
-            if (path.Equals("/query", StringComparison.OrdinalIgnoreCase)
-                && this.SearchResponseJson is not null)
-            {
-                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(
-                        this.SearchResponseJson,
-                        Encoding.UTF8,
-                        "application/json"),
-                });
-            }
 
             var segments = path.Trim('/').Split('/');
+            if (segments.Length == 3
+                && segments[0].Equals("readme", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(CreateReadmeResponse(segments[1], segments[2]));
+            }
+
             if (segments.Length == 3
                 && segments[0].Equals("v3-flatcontainer", StringComparison.OrdinalIgnoreCase)
                 && segments[2].Equals("index.json", StringComparison.OrdinalIgnoreCase))
@@ -1110,6 +1442,32 @@ public sealed class NuGetPluginServiceTests
 
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
         }
+
+        private HttpResponseMessage CreateReadmeResponse(string packageId, string version)
+        {
+            if (!this.packages.TryGetValue(
+                    (packageId.ToLowerInvariant(), version.ToLowerInvariant()),
+                    out var package))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+
+            using var stream = new MemoryStream(package);
+            using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+            var readmeEntry = archive.Entries.FirstOrDefault(entry =>
+                entry.FullName.Equals("README.md", StringComparison.OrdinalIgnoreCase));
+            if (readmeEntry is null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+
+            using var reader = new StreamReader(readmeEntry.Open(), Encoding.UTF8);
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(reader.ReadToEnd(), Encoding.UTF8, "text/markdown"),
+            };
+        }
+
     }
 }
 

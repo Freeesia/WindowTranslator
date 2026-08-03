@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,8 @@ public partial class PluginStoreViewModel : ObservableObject
     private readonly NuGetPluginService nugetService;
     private readonly ILogger<PluginStoreViewModel> logger;
     private readonly IContentDialogService dialogService;
+    private CancellationTokenSource? readmeLoadCancellation;
+    private PluginPackageViewModel? selectedPackage;
 
     [ObservableProperty]
     private bool isLoading;
@@ -24,8 +27,34 @@ public partial class PluginStoreViewModel : ObservableObject
     [ObservableProperty]
     private string? errorMessage;
 
-    [ObservableProperty]
-    private PluginPackageViewModel? selectedPackage;
+    public PluginPackageViewModel? SelectedPackage
+    {
+        get => this.selectedPackage;
+        set
+        {
+            var previous = this.selectedPackage;
+            if (!SetProperty(ref this.selectedPackage, value))
+            {
+                return;
+            }
+
+            if (previous is not null)
+            {
+                previous.PropertyChanged -= OnSelectedPackagePropertyChanged;
+                previous.IsReadmeLoading = false;
+            }
+            if (value is not null)
+            {
+                value.PropertyChanged += OnSelectedPackagePropertyChanged;
+                StartReadmeLoad(value);
+            }
+            else
+            {
+                this.readmeLoadCancellation?.Cancel();
+                this.readmeLoadCancellation = null;
+            }
+        }
+    }
 
     public ObservableCollection<PluginPackageViewModel> Packages { get; } = [];
 
@@ -202,6 +231,76 @@ public partial class PluginStoreViewModel : ObservableObject
         }
     }
 
+    private void OnSelectedPackagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is PluginPackageViewModel package
+            && ReferenceEquals(package, this.SelectedPackage)
+            && e.PropertyName == nameof(PluginPackageViewModel.LatestVersion))
+        {
+            StartReadmeLoad(package);
+        }
+    }
+
+    private void StartReadmeLoad(PluginPackageViewModel package)
+    {
+        this.readmeLoadCancellation?.Cancel();
+        this.readmeLoadCancellation = null;
+        package.ReadmeMarkdown = null;
+
+        var version = package.LatestVersion;
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            package.IsReadmeLoading = false;
+            return;
+        }
+
+        var cancellationSource = new CancellationTokenSource();
+        this.readmeLoadCancellation = cancellationSource;
+        package.IsReadmeLoading = true;
+        _ = LoadPackageReadmeAsync(package, version, cancellationSource);
+    }
+
+    private async Task LoadPackageReadmeAsync(
+        PluginPackageViewModel package,
+        string version,
+        CancellationTokenSource cancellationSource)
+    {
+        try
+        {
+            var readme = await this.nugetService.GetPackageReadmeAsync(
+                package.Id,
+                version,
+                cancellationSource.Token).ConfigureAwait(true);
+            if (!cancellationSource.IsCancellationRequested
+                && ReferenceEquals(package, this.SelectedPackage)
+                && string.Equals(version, package.LatestVersion, StringComparison.OrdinalIgnoreCase))
+            {
+                package.ReadmeMarkdown = readme;
+            }
+        }
+        catch (OperationCanceledException) when (cancellationSource.IsCancellationRequested)
+        {
+            // 選択変更によるキャンセルは正常
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning(
+                ex,
+                "プラグインREADMEの取得に失敗しました: {PackageId} {Version}",
+                package.Id,
+                version);
+        }
+        finally
+        {
+            if (ReferenceEquals(this.readmeLoadCancellation, cancellationSource))
+            {
+                package.IsReadmeLoading = false;
+                this.readmeLoadCancellation = null;
+            }
+            cancellationSource.Dispose();
+        }
+    }
+
 }
 
 /// <summary>
@@ -242,10 +341,19 @@ public partial class PluginPackageViewModel : ObservableObject
     private double installProgress;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasReadme))]
+    private string? readmeMarkdown;
+
+    [ObservableProperty]
+    private bool isReadmeLoading;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(LatestVersion))]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
     [NotifyPropertyChangedFor(nameof(StatusText))]
     private bool usePrerelease;
+
+    public bool HasReadme => !string.IsNullOrWhiteSpace(this.ReadmeMarkdown);
 
     public string StatusText
     {

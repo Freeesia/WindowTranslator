@@ -4,9 +4,21 @@
 
   <PropertyGroup Condition="'$(IsTestProject)' != 'true' AND '$(IsPackable)' != 'false'">
     <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
+    <PackageReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\README.md')">README.md</PackageReadmeFile>
+    <TargetsForTfmSpecificContentInPackage
+      Condition="Exists('$(MSBuildProjectDirectory)\README.md')">$(TargetsForTfmSpecificContentInPackage);AddPluginReadmeToPackage</TargetsForTfmSpecificContentInPackage>
     <TargetsForTfmSpecificBuildOutput
       Condition="'$(IncludePluginRuntimeAssetsInPackage)' == 'true'">$(TargetsForTfmSpecificBuildOutput);AddPluginRuntimeAssetsToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
+
+  <!-- IncludeContentInPack=false のプラグインでも README を常にパッケージへ含める。 -->
+  <Target Name="AddPluginReadmeToPackage">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(MSBuildProjectDirectory)\README.md">
+        <PackagePath>README.md</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
 
   <!--
     PackageReference の build/buildTransitive ターゲットによって出力されるネイティブ資産は、

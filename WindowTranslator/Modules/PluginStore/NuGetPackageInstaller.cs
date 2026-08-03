@@ -6,9 +6,10 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.Versioning;
 
 namespace WindowTranslator.Modules.PluginStore;
@@ -93,6 +94,26 @@ internal sealed class NuGetPackageInstaller(
         return candidates.First(candidate => NuGetFrameworkFullComparer.Instance.Equals(
             candidate.Framework,
             nearest)).Original;
+    }
+
+    internal static PackageDependencyGroup? SelectBestDependencyGroup(
+        IEnumerable<PackageDependencyGroup> dependencyGroups)
+    {
+        var groups = dependencyGroups.ToArray();
+        var frameworkGroups = groups
+            .Where(group => !group.TargetFramework.IsAny && !group.TargetFramework.IsUnsupported)
+            .ToArray();
+        var nearest = FrameworkReducer.GetNearest(
+            HostFramework,
+            frameworkGroups.Select(group => group.TargetFramework));
+        if (nearest is not null)
+        {
+            return frameworkGroups.First(group => NuGetFrameworkFullComparer.Instance.Equals(
+                group.TargetFramework,
+                nearest));
+        }
+
+        return groups.FirstOrDefault(group => group.TargetFramework.IsAny);
     }
 
     private static NuGetFramework GetHostFramework()
@@ -192,7 +213,8 @@ internal sealed class NuGetPackageInstaller(
                 packagePath,
                 currentId,
                 resolvedVersion,
-                this.hostPackageVersions);
+                this.hostPackageVersions,
+                requirePluginPackage: currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase));
 
             artifacts[currentId] = new PackageArtifact(currentId, resolvedVersion, packagePath);
             foreach (var dependency in ReadRuntimeDependencies(packagePath))
@@ -318,101 +340,64 @@ internal sealed class NuGetPackageInstaller(
         string packagePath,
         bool runtimeOnly)
     {
-        using var archive = ZipFile.OpenRead(packagePath);
-        var nuspecEntry = archive.Entries.FirstOrDefault(e =>
-            e.FullName.EndsWith(".nuspec", StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidOperationException("パッケージにnuspecが見つかりませんでした。");
-
-        using var stream = nuspecEntry.Open();
-        var document = XDocument.Load(stream);
-        var metadata = document.Root?.Elements().FirstOrDefault(e => e.Name.LocalName == "metadata")
-            ?? throw new InvalidOperationException("nuspecのmetadataが見つかりませんでした。");
-        var dependencies = metadata.Elements().FirstOrDefault(e => e.Name.LocalName == "dependencies");
-        if (dependencies is null)
+        using var packageStream = File.OpenRead(packagePath);
+        using var packageReader = new PackageArchiveReader(packageStream);
+        var groups = packageReader.NuspecReader.GetDependencyGroups().ToArray();
+        var selectedGroup = SelectBestDependencyGroup(groups);
+        if (selectedGroup is null && groups.Length > 0)
         {
-            return [];
+            throw new InvalidOperationException("互換性のある依存関係グループが見つかりませんでした。");
         }
 
-        var result = new List<PackageDependency>();
-        result.AddRange(ParseDependencyElements(
-            dependencies.Elements().Where(e => e.Name.LocalName == "dependency"),
-            runtimeOnly));
-
-        var groups = dependencies.Elements()
-            .Where(e => e.Name.LocalName == "group")
-            .Select(e => (
-                Element: e,
-                Framework: e.Attribute("targetFramework")?.Value))
-            .ToArray();
-        if (groups.Length == 0)
+        var dependencies = new List<PackageDependency>();
+        var anyGroup = groups.FirstOrDefault(group => group.TargetFramework.IsAny);
+        if (anyGroup is not null && !ReferenceEquals(anyGroup, selectedGroup))
         {
-            return result;
+            dependencies.AddRange(anyGroup.Packages);
+        }
+        if (selectedGroup is not null)
+        {
+            dependencies.AddRange(selectedGroup.Packages);
         }
 
-        var frameworkGroups = groups.Where(g =>
-            !string.IsNullOrWhiteSpace(g.Framework)
-            && !g.Framework.Equals("any", StringComparison.OrdinalIgnoreCase)).ToArray();
-        if (frameworkGroups.Length > 0)
-        {
-            var selectedFramework = SelectBestTfm(frameworkGroups.Select(g => g.Framework!));
-            if (selectedFramework is not null)
-            {
-                result.AddRange(ParseDependencyElements(
-                    frameworkGroups.First(g => string.Equals(
-                        g.Framework,
-                        selectedFramework,
-                        StringComparison.OrdinalIgnoreCase)).Element.Elements(),
-                    runtimeOnly));
-                return result;
-            }
-        }
-
-        var fallbackGroup = groups.FirstOrDefault(g =>
-            string.IsNullOrWhiteSpace(g.Framework)
-            || g.Framework.Equals("any", StringComparison.OrdinalIgnoreCase));
-        if (fallbackGroup.Element is not null)
-        {
-            result.AddRange(ParseDependencyElements(
-                fallbackGroup.Element.Elements(),
-                runtimeOnly));
-            return result;
-        }
-
-        throw new InvalidOperationException("互換性のある依存関係グループが見つかりませんでした。");
-    }
-
-    private static IEnumerable<PackageDependency> ParseDependencyElements(
-        IEnumerable<XElement> elements,
-        bool runtimeOnly)
-    {
-        foreach (var element in elements.Where(e => e.Name.LocalName == "dependency"))
-        {
-            var id = element.Attribute("id")?.Value;
-            if (string.IsNullOrWhiteSpace(id)
-                || runtimeOnly && !IncludesRuntimeAssets(element))
-            {
-                continue;
-            }
-
-            var versionText = element.Attribute("version")?.Value;
-            yield return new PackageDependency(
-                id,
-                string.IsNullOrWhiteSpace(versionText) ? VersionRange.All : VersionRange.Parse(versionText));
-        }
+        return dependencies
+            .Where(dependency => !runtimeOnly || IncludesRuntimeAssets(dependency))
+            .ToList();
     }
 
     private static void ValidateHostPackageDependencies(
         string packagePath,
         string packageId,
         NuGetVersion packageVersion,
-        IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions)
+        IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions,
+        bool requirePluginPackage)
     {
-        if (hostPackageVersions.Count == 0)
+        var dependencies = ReadPackageDependencies(packagePath);
+        if (requirePluginPackage)
         {
-            return;
+            if (!HasPackageTag(packagePath, NuGetPluginService.PluginTag))
+            {
+                throw new InvalidOperationException(
+                    $"パッケージ {packageId} {packageVersion} はWindowTranslatorプラグインタグを持っていません。");
+            }
+
+            if (!hostPackageVersions.ContainsKey(NuGetPluginService.AbstractionsPackageId))
+            {
+                throw new InvalidOperationException(
+                    $"実行中の{NuGetPluginService.AbstractionsPackageId}のバージョンを確認できません。");
+            }
+
+            if (!dependencies.Any(dependency => dependency.Id.Equals(
+                    NuGetPluginService.AbstractionsPackageId,
+                    StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException(
+                    $"パッケージ {packageId} {packageVersion} は"
+                    + $"{NuGetPluginService.AbstractionsPackageId}へ直接依存していません。");
+            }
         }
 
-        foreach (var dependency in ReadPackageDependencies(packagePath))
+        foreach (var dependency in dependencies)
         {
             if (!hostPackageVersions.TryGetValue(dependency.Id, out var hostVersion)
                 || dependency.VersionRange.Satisfies(hostVersion))
@@ -427,23 +412,29 @@ internal sealed class NuGetPackageInstaller(
         }
     }
 
-    private static bool IncludesRuntimeAssets(XElement dependency)
+    private static bool HasPackageTag(string packagePath, string requiredTag)
     {
-        var excluded = SplitAssets(dependency.Attribute("exclude")?.Value);
-        if (excluded.Contains("all") || excluded.Contains("runtime"))
+        using var packageStream = File.OpenRead(packagePath);
+        using var packageReader = new PackageArchiveReader(packageStream);
+        var tags = packageReader.NuspecReader.GetTags();
+        return tags?.Split(
+                [' ', '\t', '\r', '\n', ';', ','],
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Contains(requiredTag, StringComparer.OrdinalIgnoreCase) == true;
+    }
+
+    private static bool IncludesRuntimeAssets(PackageDependency dependency)
+    {
+        if (dependency.Exclude.Contains("all", StringComparer.OrdinalIgnoreCase)
+            || dependency.Exclude.Contains("runtime", StringComparer.OrdinalIgnoreCase))
         {
             return false;
         }
 
-        var included = SplitAssets(dependency.Attribute("include")?.Value);
-        return included.Count == 0 || included.Contains("all") || included.Contains("runtime");
+        return dependency.Include.Count == 0
+            || dependency.Include.Contains("all", StringComparer.OrdinalIgnoreCase)
+            || dependency.Include.Contains("runtime", StringComparer.OrdinalIgnoreCase);
     }
-
-    private static HashSet<string> SplitAssets(string? assets)
-        => string.IsNullOrWhiteSpace(assets)
-            ? new(StringComparer.OrdinalIgnoreCase)
-            : assets.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     private static void ExtractPackageAssets(
         string packagePath,
@@ -634,8 +625,6 @@ internal sealed class NuGetPackageInstaller(
     }
 
     private sealed record PackageArtifact(string Id, NuGetVersion Version, string PackagePath);
-
-    private sealed record PackageDependency(string Id, VersionRange VersionRange);
 
     private sealed record DependencyConstraint(string Source, VersionRange Range);
 
