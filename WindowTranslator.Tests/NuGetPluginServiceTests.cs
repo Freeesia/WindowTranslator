@@ -9,6 +9,7 @@ using System.Runtime.Loader;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Frameworks;
 using NuGet.Packaging;
@@ -73,7 +74,7 @@ public sealed class NuGetPluginServiceTests
                     }));
 
             using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(client, testDirectory, hostMajorVersion: 7);
 
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
 
@@ -112,6 +113,8 @@ public sealed class NuGetPluginServiceTests
             var package = Assert.Single(installed);
             Assert.Equal("Root.Plugin", package.Id);
             Assert.Equal("1.0.0", package.Version);
+            Assert.Equal(7, package.HostMajorVersion);
+            Assert.True(package.IsCompatible);
         }
         finally
         {
@@ -414,6 +417,126 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task ExistingManifestRecordsCurrentHostMajorVersionOnFirstRead()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new InstalledManifest(
+                    [new InstalledPackageInfo("Legacy.Plugin", "1.0.0")])));
+            using var handler = new InMemoryNuGetHandler();
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                hostMajorVersion: 7);
+
+            var package = Assert.Single(await service.GetInstalledPackagesAsync());
+
+            Assert.Equal(7, package.HostMajorVersion);
+            Assert.True(package.IsCompatible);
+            using var document = JsonDocument.Parse(await File.ReadAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json")));
+            Assert.Equal(
+                7,
+                document.RootElement
+                    .GetProperty("Packages")[0]
+                    .GetProperty("HostMajorVersion")
+                    .GetInt32());
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InstalledPackageFromAnotherHostMajorVersionIsMarkedIncompatible()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new InstalledManifest(
+                    [new InstalledPackageInfo("Old.Plugin", "1.0.0", HostMajorVersion: 6)])));
+            using var handler = new InMemoryNuGetHandler();
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                hostMajorVersion: 7);
+
+            var package = Assert.Single(await service.GetInstalledPackagesAsync());
+
+            Assert.False(package.IsCompatible);
+            Assert.Equal(6, package.HostMajorVersion);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task BackgroundServiceRefreshesPluginInformationWithoutOpeningSettings()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            var metadataSource = new InMemoryNuGetMetadataSource
+            {
+                SearchResults =
+                [
+                    new NuGetPluginSearchMetadata(
+                        "Background.Plugin",
+                        "Background Plugin",
+                        null,
+                        null,
+                        null,
+                        null),
+                ],
+            };
+            metadataSource.AddVersions(
+                "Background.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            using var client = new HttpClient(handler);
+            using var service = CreateService(
+                client,
+                testDirectory,
+                metadataSource: metadataSource);
+            var updated = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            service.PackageInformationUpdated += (_, _) => updated.TrySetResult();
+
+            Assert.IsAssignableFrom<IHostedService>(service);
+            await service.StartAsync(CancellationToken.None);
+            try
+            {
+                await updated.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            }
+            finally
+            {
+                await service.StopAsync(CancellationToken.None);
+            }
+
+            Assert.True(service.PackageSnapshot.IsInitialized);
+            Assert.Null(service.PackageSnapshot.Error);
+            Assert.Equal(
+                "Background.Plugin",
+                Assert.Single(service.PackageSnapshot.Packages).Id);
+            Assert.Equal(["windowtranslator-plugin"], metadataSource.RequestedTags);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task PluginStoreKeepsInstalledPackagesVisibleWhenNuGetSearchFails()
     {
         var testDirectory = CreateTestDirectory();
@@ -606,6 +729,49 @@ public sealed class NuGetPluginServiceTests
 
         Assert.Equal("2.0.0-preview.1", prereleaseOnlyPackage.LatestVersion);
         Assert.True(prereleaseOnlyPackage.CanInstall);
+    }
+
+    [Fact]
+    public void IncompatibleInstalledPackageCanReinstallACompatibleVersion()
+    {
+        var package = new PluginPackageViewModel(
+            new NuGetPackageInfo(
+                "Test.Plugin",
+                "1.0.0",
+                "Test Plugin",
+                string.Empty,
+                string.Empty,
+                null,
+                null,
+                ["1.0.0"]),
+            isInstalled: true,
+            installedVersion: "1.0.0",
+            isCompatible: false,
+            hasCompatiblePackageVersion: true);
+
+        Assert.False(package.IsUpdateAvailable);
+        Assert.True(package.RequiresReinstall);
+        Assert.True(package.CanUpdate);
+        Assert.Equal(WindowTranslator.Properties.Resources.PluginIncompatible, package.StatusText);
+
+        package.IsCompatible = true;
+
+        Assert.False(package.RequiresReinstall);
+        Assert.False(package.CanUpdate);
+    }
+
+    [Fact]
+    public void RestartArgumentsAreNotForwardedToTheRestartedApplication()
+    {
+        var arguments = ApplicationRestart.RemoveRestartArguments(
+        [
+            "--IgnoreUpdate",
+            ApplicationRestart.RestartProcessIdArgument,
+            "1234",
+            "--SuppressMode",
+        ]);
+
+        Assert.Equal(["--IgnoreUpdate", "--SuppressMode"], arguments);
     }
 
     [Fact]
@@ -988,6 +1154,55 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public void CatalogSynchronizationExcludesPackagesFromAnotherHostMajorVersion()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        var destinationDirectory = CreateTestDirectory();
+        try
+        {
+            var compatibleDirectory = Path.Combine(sourceDirectory, "Compatible.Plugin");
+            var incompatibleDirectory = Path.Combine(sourceDirectory, "Incompatible.Plugin");
+            Directory.CreateDirectory(compatibleDirectory);
+            Directory.CreateDirectory(incompatibleDirectory);
+            File.WriteAllText(Path.Combine(compatibleDirectory, "Compatible.Plugin.dll"), "compatible");
+            File.WriteAllText(Path.Combine(incompatibleDirectory, "Incompatible.Plugin.dll"), "incompatible");
+            Directory.CreateDirectory(Path.Combine(destinationDirectory, "Incompatible.Plugin"));
+            File.WriteAllText(
+                Path.Combine(destinationDirectory, "Incompatible.Plugin", "Incompatible.Plugin.dll"),
+                "stale");
+            File.WriteAllText(
+                Path.Combine(sourceDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new InstalledManifest(
+                [
+                    new InstalledPackageInfo("Compatible.Plugin", "1.0.0", HostMajorVersion: 7),
+                    new InstalledPackageInfo("Incompatible.Plugin", "1.0.0", HostMajorVersion: 6),
+                ])));
+
+            var incompatiblePackages = NuGetPluginCatalog.GetIncompatiblePackageIds(
+                sourceDirectory,
+                hostMajorVersion: 7);
+            NuGetPluginCatalog.SynchronizePluginFiles(
+                sourceDirectory,
+                destinationDirectory,
+                incompatiblePackages);
+
+            Assert.True(File.Exists(Path.Combine(
+                destinationDirectory,
+                "Compatible.Plugin",
+                "Compatible.Plugin.dll")));
+            Assert.False(Directory.Exists(Path.Combine(
+                destinationDirectory,
+                "Incompatible.Plugin")));
+            Assert.Equal(["Incompatible.Plugin"], incompatiblePackages);
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
+            DeleteTestDirectory(destinationDirectory);
+        }
+    }
+
+    [Fact]
     public async Task CatalogLoadsARealAssemblyFromAPackageSubdirectory()
     {
         var sourceDirectory = CreateTestDirectory();
@@ -1161,13 +1376,15 @@ public sealed class NuGetPluginServiceTests
         HttpClient client,
         string pluginDirectory,
         IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null,
-        INuGetPluginMetadataSource? metadataSource = null)
+        INuGetPluginMetadataSource? metadataSource = null,
+        int? hostMajorVersion = null)
         => new(
             NullLogger<NuGetPluginService>.Instance,
             client,
             pluginDirectory,
             hostPackageVersions: hostPackageVersions,
-            metadataSource: metadataSource ?? new InMemoryNuGetMetadataSource());
+            metadataSource: metadataSource ?? new InMemoryNuGetMetadataSource(),
+            hostMajorVersion: hostMajorVersion);
 
     private static NuGetPluginVersionMetadata CreatePluginVersionMetadata(
         string version,

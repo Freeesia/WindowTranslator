@@ -38,6 +38,8 @@ using Wpf.Ui;
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 
+args = ApplicationRestart.WaitForPreviousProcess(args);
+
 #if NO_MUTEX
 var createdNew = true;
 #else
@@ -119,6 +121,7 @@ if (Directory.Exists(appPluginDir))
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 pluginFolderCatalog.AddCatalog(new NuGetPluginCatalog(
     userPluginsDir,
+    AppInfo.Instance.Version.Major,
     new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);
@@ -158,7 +161,8 @@ builder.Services.AddPresentation<LogWindow, LogViewModel>();
 builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
-builder.Services.AddSingleton<NuGetPluginService>();
+builder.Services.AddSingleton<NuGetPluginService>()
+    .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
 builder.Services.AddTransient<PluginStoreViewModel>();
 builder.Services.AddTransient<IConfigureOptions<UserSettings>, ConfigureUserSettings>();
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));

@@ -338,6 +338,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         this.updateChecker.UpdateAvailable -= UpdateChecker_UpdateAvailable;
+        this.PluginStore.Dispose();
     }
 }
 

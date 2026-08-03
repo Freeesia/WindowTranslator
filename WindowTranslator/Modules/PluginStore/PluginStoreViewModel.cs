@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using NuGet.Versioning;
+using System.Windows;
 using WindowTranslator.Properties;
 using Wpf.Ui;
 using Wpf.Ui.Extensions;
@@ -13,13 +14,16 @@ namespace WindowTranslator.Modules.PluginStore;
 /// <summary>
 /// プラグインストアのViewModel
 /// </summary>
-public partial class PluginStoreViewModel : ObservableObject
+public partial class PluginStoreViewModel : ObservableObject, IDisposable
 {
     private readonly NuGetPluginService nugetService;
     private readonly ILogger<PluginStoreViewModel> logger;
     private readonly IContentDialogService dialogService;
     private CancellationTokenSource? readmeLoadCancellation;
     private PluginPackageViewModel? selectedPackage;
+    private PluginStoreSnapshot? pendingSnapshot;
+    private PluginStoreSnapshot? appliedSnapshot;
+    private bool disposed;
 
     [ObservableProperty]
     private bool isLoading;
@@ -66,6 +70,7 @@ public partial class PluginStoreViewModel : ObservableObject
         this.nugetService = nugetService;
         this.logger = logger;
         this.dialogService = dialogService;
+        this.nugetService.PackageInformationUpdated += OnPackageInformationUpdated;
     }
 
     /// <summary>
@@ -82,41 +87,14 @@ public partial class PluginStoreViewModel : ObservableObject
 
         try
         {
-            var installed = await this.nugetService.GetInstalledPackagesAsync(cancellationToken).ConfigureAwait(true);
-            var installedDict = installed.ToDictionary(p => p.Id, StringComparer.OrdinalIgnoreCase);
-
-            this.Packages.Clear();
-            foreach (var inst in installed)
+            if (!this.nugetService.PackageSnapshot.IsInitialized)
             {
-                this.Packages.Add(new PluginPackageViewModel(
-                    new NuGetPackageInfo(inst.Id, inst.Version, inst.Id, string.Empty, string.Empty, null, null),
-                    isInstalled: true,
-                    installedVersion: inst.Version));
+                await this.nugetService
+                    .RefreshPackageInformationAsync(cancellationToken)
+                    .ConfigureAwait(true);
             }
 
-            var packages = await this.nugetService.SearchPackagesAsync(cancellationToken).ConfigureAwait(true);
-            this.logger.LogInformation("NuGetから{Count}件のプラグインパッケージを取得しました。", packages.Count);
-
-            this.Packages.Clear();
-            foreach (var pkg in packages)
-            {
-                installedDict.TryGetValue(pkg.Id, out var installedInfo);
-                var isInstalled = installedInfo is not null;
-                var installedVersion = installedInfo?.Version;
-                this.Packages.Add(new PluginPackageViewModel(pkg, isInstalled, installedVersion));
-            }
-
-            // インストール済みだがNuGetに見つからないパッケージも表示
-            foreach (var inst in installed)
-            {
-                if (!this.Packages.Any(p => p.Id.Equals(inst.Id, StringComparison.OrdinalIgnoreCase)))
-                {
-                    this.Packages.Add(new PluginPackageViewModel(
-                        new NuGetPackageInfo(inst.Id, inst.Version, inst.Id, string.Empty, string.Empty, null, null),
-                        isInstalled: true,
-                        installedVersion: inst.Version));
-                }
-            }
+            ApplyPackageSnapshot(this.nugetService.PackageSnapshot);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -130,6 +108,114 @@ public partial class PluginStoreViewModel : ObservableObject
         finally
         {
             this.IsLoading = false;
+        }
+    }
+
+    private void OnPackageInformationUpdated(object? sender, EventArgs e)
+    {
+        if (this.disposed)
+        {
+            return;
+        }
+
+        var snapshot = this.nugetService.PackageSnapshot;
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null || dispatcher.CheckAccess())
+        {
+            ApplyPackageSnapshot(snapshot);
+        }
+        else
+        {
+            _ = dispatcher.BeginInvoke(() => ApplyPackageSnapshot(snapshot));
+        }
+    }
+
+    private void ApplyPackageSnapshot(PluginStoreSnapshot snapshot)
+    {
+        if (this.disposed)
+        {
+            return;
+        }
+        if (ReferenceEquals(this.appliedSnapshot, snapshot))
+        {
+            return;
+        }
+        if (this.Packages.Any(package => package.IsInstalling))
+        {
+            this.pendingSnapshot = snapshot;
+            return;
+        }
+
+        this.pendingSnapshot = null;
+        this.appliedSnapshot = snapshot;
+        var selectedPackageId = this.SelectedPackage?.Id;
+        var prereleaseSelections = this.Packages.ToDictionary(
+            package => package.Id,
+            package => package.UsePrerelease,
+            StringComparer.OrdinalIgnoreCase);
+        var installedPackages = snapshot.InstalledPackages.ToDictionary(
+            package => package.Id,
+            StringComparer.OrdinalIgnoreCase);
+
+        this.Packages.Clear();
+        foreach (var packageInfo in snapshot.Packages)
+        {
+            installedPackages.TryGetValue(packageInfo.Id, out var installedPackage);
+            var package = new PluginPackageViewModel(
+                packageInfo,
+                isInstalled: installedPackage is not null,
+                installedVersion: installedPackage?.Version,
+                isCompatible: installedPackage?.IsCompatible ?? true,
+                hasCompatiblePackageVersion: true);
+            if (package.HasPrereleaseVersion
+                && prereleaseSelections.TryGetValue(package.Id, out var usePrerelease))
+            {
+                package.UsePrerelease = usePrerelease;
+            }
+            this.Packages.Add(package);
+        }
+
+        foreach (var installedPackage in snapshot.InstalledPackages)
+        {
+            if (this.Packages.Any(package => package.Id.Equals(
+                    installedPackage.Id,
+                    StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            this.Packages.Add(new PluginPackageViewModel(
+                new NuGetPackageInfo(
+                    installedPackage.Id,
+                    installedPackage.Version,
+                    installedPackage.Id,
+                    string.Empty,
+                    string.Empty,
+                    null,
+                    null),
+                isInstalled: true,
+                installedVersion: installedPackage.Version,
+                isCompatible: installedPackage.IsCompatible,
+                hasCompatiblePackageVersion: false));
+        }
+
+        this.SelectedPackage = selectedPackageId is null
+            ? null
+            : this.Packages.FirstOrDefault(package => package.Id.Equals(
+                selectedPackageId,
+                StringComparison.OrdinalIgnoreCase));
+        this.ErrorMessage = snapshot.Error is null ? null : Resources.NuGetSearchFailed;
+        this.logger.LogInformation(
+            "バックグラウンド更新から{Count}件のプラグインパッケージを反映しました。",
+            snapshot.Packages.Count);
+    }
+
+    private void ApplyPendingSnapshot()
+    {
+        if (this.pendingSnapshot is { } snapshot
+            && !this.Packages.Any(package => package.IsInstalling))
+        {
+            ApplyPackageSnapshot(snapshot);
         }
     }
 
@@ -160,17 +246,14 @@ public partial class PluginStoreViewModel : ObservableObject
 
             package.IsInstalled = true;
             package.InstalledVersion = version;
+            package.IsCompatible = true;
             package.InstallProgress = 0;
 
             this.logger.LogInformation("プラグインのインストール完了: {PackageId}", package.Id);
 
-            // 再起動が必要な旨を表示
-            await this.dialogService.ShowSimpleDialogAsync(new()
-            {
-                Title = Resources.PluginInstallSuccess,
-                Content = Resources.RestartRequired,
-                CloseButtonText = Resources.Close,
-            }, cancellationToken).ConfigureAwait(true);
+            await ShowRestartDialogAsync(
+                Resources.PluginInstallSuccess,
+                cancellationToken).ConfigureAwait(true);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -188,6 +271,7 @@ public partial class PluginStoreViewModel : ObservableObject
         finally
         {
             package.IsInstalling = false;
+            ApplyPendingSnapshot();
         }
     }
 
@@ -208,18 +292,15 @@ public partial class PluginStoreViewModel : ObservableObject
         if (result != Wpf.Ui.Controls.ContentDialogResult.Primary)
             return;
 
+        package.IsInstalling = true;
         try
         {
             await this.nugetService.UninstallPackageAsync(package.Id).ConfigureAwait(true);
             package.IsInstalled = false;
             package.InstalledVersion = null;
+            package.IsCompatible = true;
 
-            await this.dialogService.ShowSimpleDialogAsync(new()
-            {
-                Title = Resources.Uninstall,
-                Content = Resources.RestartRequired,
-                CloseButtonText = Resources.Close,
-            }).ConfigureAwait(true);
+            await ShowRestartDialogAsync(Resources.Uninstall).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -228,6 +309,28 @@ public partial class PluginStoreViewModel : ObservableObject
                 Resources.Uninstall,
                 ex.Message,
                 Resources.Close).ConfigureAwait(true);
+        }
+        finally
+        {
+            package.IsInstalling = false;
+            ApplyPendingSnapshot();
+        }
+    }
+
+    private async Task ShowRestartDialogAsync(
+        string title,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await this.dialogService.ShowSimpleDialogAsync(new()
+        {
+            Title = title,
+            Content = Resources.RestartRequired,
+            PrimaryButtonText = Resources.RestartNow,
+            CloseButtonText = Resources.Close,
+        }, cancellationToken).ConfigureAwait(true);
+        if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+        {
+            ApplicationRestart.Restart();
         }
     }
 
@@ -301,6 +404,20 @@ public partial class PluginStoreViewModel : ObservableObject
         }
     }
 
+    public void Dispose()
+    {
+        if (this.disposed)
+        {
+            return;
+        }
+
+        this.disposed = true;
+        this.nugetService.PackageInformationUpdated -= OnPackageInformationUpdated;
+        this.readmeLoadCancellation?.Cancel();
+        this.readmeLoadCancellation = null;
+        GC.SuppressFinalize(this);
+    }
+
 }
 
 /// <summary>
@@ -319,10 +436,18 @@ public partial class PluginPackageViewModel : ObservableObject
         : this.ReleaseVersion;
     public bool HasPrereleaseVersion => this.PrereleaseVersion is not null;
     public bool CanInstall => !this.IsInstalling && this.LatestVersion is not null;
+    public bool RequiresReinstall => this.IsInstalled
+        && !this.IsCompatible
+        && this.hasCompatiblePackageVersion
+        && this.LatestVersion is not null;
+    public bool CanUpdate => this.IsUpdateAvailable || this.RequiresReinstall;
     public string? ProjectUrl { get; }
     public string? LicenseUrl { get; }
+    private readonly bool hasCompatiblePackageVersion;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RequiresReinstall))]
+    [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool isInstalled;
 
     [ObservableProperty]
@@ -331,7 +456,14 @@ public partial class PluginPackageViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusText))]
+    [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool isUpdateAvailable;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StatusText))]
+    [NotifyPropertyChangedFor(nameof(RequiresReinstall))]
+    [NotifyPropertyChangedFor(nameof(CanUpdate))]
+    private bool isCompatible;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
@@ -351,6 +483,8 @@ public partial class PluginPackageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(LatestVersion))]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
     [NotifyPropertyChangedFor(nameof(StatusText))]
+    [NotifyPropertyChangedFor(nameof(RequiresReinstall))]
+    [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool usePrerelease;
 
     public bool HasReadme => !string.IsNullOrWhiteSpace(this.ReadmeMarkdown);
@@ -359,6 +493,8 @@ public partial class PluginPackageViewModel : ObservableObject
     {
         get
         {
+            if (this.IsInstalled && !this.IsCompatible)
+                return Resources.PluginIncompatible;
             if (this.IsUpdateAvailable
                 && this.InstalledVersion is not null
                 && this.LatestVersion is not null)
@@ -372,7 +508,9 @@ public partial class PluginPackageViewModel : ObservableObject
     public PluginPackageViewModel(
         NuGetPackageInfo info,
         bool isInstalled,
-        string? installedVersion)
+        string? installedVersion,
+        bool isCompatible = true,
+        bool hasCompatiblePackageVersion = true)
     {
         var versions = new[] { info.Version }
             .Concat(info.Versions ?? [])
@@ -398,8 +536,10 @@ public partial class PluginPackageViewModel : ObservableObject
             .FirstOrDefault();
         this.ProjectUrl = info.ProjectUrl;
         this.LicenseUrl = info.LicenseUrl;
+        this.hasCompatiblePackageVersion = hasCompatiblePackageVersion;
         this.isInstalled = isInstalled;
         this.installedVersion = installedVersion;
+        this.isCompatible = isCompatible;
         this.usePrerelease = this.PrereleaseVersion is not null
             && NuGetVersion.TryParse(installedVersion, out var installed)
             && installed.IsPrerelease;
@@ -411,6 +551,8 @@ public partial class PluginPackageViewModel : ObservableObject
     partial void OnInstalledVersionChanged(string? value) => RefreshUpdateAvailable();
 
     partial void OnUsePrereleaseChanged(bool value) => RefreshUpdateAvailable();
+
+    partial void OnIsCompatibleChanged(bool value) => RefreshUpdateAvailable();
 
     private void RefreshUpdateAvailable()
     {

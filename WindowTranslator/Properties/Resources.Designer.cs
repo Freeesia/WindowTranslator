@@ -458,6 +458,11 @@ internal class Resources
     public static string PluginInstallSuccess => ResourceManager.GetString("PluginInstallSuccess", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "現在のWindowTranslatorメジャーバージョンとは互換性がありません。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginIncompatible => ResourceManager.GetString("PluginIncompatible", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "プラグイン" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PluginStore => ResourceManager.GetString("PluginStore", resourceCulture) ?? string.Empty;
@@ -481,6 +486,11 @@ internal class Resources
     /// "{0}を自動起動に登録しました。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string RegisterAutoStart => ResourceManager.GetString("RegisterAutoStart", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "今すぐ再起動" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string RestartNow => ResourceManager.GetString("RestartNow", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "プラグインの変更を適用するには、WindowTranslatorを再起動してください。" に類似しているローカライズされた文字列を検索します。

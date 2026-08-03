@@ -2,6 +2,7 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Runtime.Loader;
+using System.Text.Json;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.Context;
@@ -19,18 +20,37 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
     private readonly string sourceDir;
     private readonly string tempDir;
+    private readonly int hostMajorVersion;
     private readonly FolderPluginCatalogOptions options;
     private CompositePluginCatalog innerCatalog = new();
 
     public NuGetPluginCatalog(string sourceDir, FolderPluginCatalogOptions options)
-        : this(sourceDir, DefaultTempDir, options)
+        : this(sourceDir, DefaultTempDir, AppInfo.Instance.Version.Major, options)
+    {
+    }
+
+    public NuGetPluginCatalog(
+        string sourceDir,
+        int hostMajorVersion,
+        FolderPluginCatalogOptions options)
+        : this(sourceDir, DefaultTempDir, hostMajorVersion, options)
     {
     }
 
     internal NuGetPluginCatalog(string sourceDir, string tempDir, FolderPluginCatalogOptions options)
+        : this(sourceDir, tempDir, AppInfo.Instance.Version.Major, options)
+    {
+    }
+
+    internal NuGetPluginCatalog(
+        string sourceDir,
+        string tempDir,
+        int hostMajorVersion,
+        FolderPluginCatalogOptions options)
     {
         this.sourceDir = sourceDir;
         this.tempDir = tempDir;
+        this.hostMajorVersion = hostMajorVersion;
         this.options = options;
     }
 
@@ -40,7 +60,10 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     /// <inheritdoc/>
     public async Task Initialize()
     {
-        SynchronizePluginFiles(this.sourceDir, this.tempDir);
+        var incompatiblePackages = GetIncompatiblePackageIds(
+            this.sourceDir,
+            this.hostMajorVersion);
+        SynchronizePluginFiles(this.sourceDir, this.tempDir, incompatiblePackages);
 
         this.innerCatalog = CreateCatalog(this.tempDir, this.options);
         await this.innerCatalog.Initialize().ConfigureAwait(false);
@@ -285,7 +308,10 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     private static string GetSatelliteKey(string assemblyName, string cultureName)
         => $"{cultureName}:{assemblyName}";
 
-    internal static void SynchronizePluginFiles(string source, string destination)
+    internal static void SynchronizePluginFiles(
+        string source,
+        string destination,
+        IReadOnlySet<string>? excludedRootDirectories = null)
     {
         Directory.CreateDirectory(destination);
 
@@ -298,7 +324,8 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
                 source,
                 isRoot: true,
                 sourceFiles,
-                sourceDirectories);
+                sourceDirectories,
+                excludedRootDirectories);
         }
 
         foreach (var relativeDirectory in sourceDirectories.OrderBy(GetPathDepth))
@@ -363,12 +390,45 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         => fileName.Equals("nuget-manifest.json", StringComparison.OrdinalIgnoreCase)
         || fileName.StartsWith("nuget-manifest.json.tmp-", StringComparison.OrdinalIgnoreCase);
 
+    internal static IReadOnlySet<string> GetIncompatiblePackageIds(
+        string sourceDirectory,
+        int hostMajorVersion)
+    {
+        var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
+        if (!File.Exists(manifestPath))
+        {
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        try
+        {
+            using var stream = File.OpenRead(manifestPath);
+            var manifest = JsonSerializer.Deserialize<InstalledManifest>(
+                stream,
+                NuGetPluginService.ManifestJsonOptions);
+            return manifest?.Packages
+                .Where(package => package.HostMajorVersion is not null
+                    && package.HostMajorVersion != hostMajorVersion)
+                .Select(package => package.Id)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase)
+                ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        }
+        catch (Exception ex) when (ex is IOException
+            or UnauthorizedAccessException
+            or JsonException)
+        {
+            // 壊れたマニフェストはNuGetPluginService側で報告する。ここでは既存動作を維持する。
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
     private static void CollectSourceEntries(
         string sourceRoot,
         string currentDirectory,
         bool isRoot,
         Dictionary<string, string> sourceFiles,
-        HashSet<string> sourceDirectories)
+        HashSet<string> sourceDirectories,
+        IReadOnlySet<string>? excludedRootDirectories)
     {
         foreach (var file in Directory.EnumerateFiles(currentDirectory))
         {
@@ -382,7 +442,10 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
         foreach (var subDirectory in Directory.EnumerateDirectories(currentDirectory))
         {
-            if (isRoot && IsWorkingDirectory(Path.GetFileName(subDirectory)))
+            var directoryName = Path.GetFileName(subDirectory);
+            if (isRoot
+                && (IsWorkingDirectory(directoryName)
+                    || excludedRootDirectories?.Contains(directoryName) is true))
             {
                 continue;
             }
@@ -394,7 +457,8 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
                 subDirectory,
                 isRoot: false,
                 sourceFiles,
-                sourceDirectories);
+                sourceDirectories,
+                excludedRootDirectories);
         }
     }
 

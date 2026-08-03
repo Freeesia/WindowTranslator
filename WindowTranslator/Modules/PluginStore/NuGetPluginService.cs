@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NuGet.Packaging;
 using NuGet.Versioning;
@@ -13,14 +14,15 @@ namespace WindowTranslator.Modules.PluginStore;
 /// <summary>
 /// NuGet V3 REST APIを使用してプラグインパッケージの検索・インストール・管理を行うサービスです。
 /// </summary>
-public sealed class NuGetPluginService : IDisposable
+public sealed class NuGetPluginService : BackgroundService
 {
     private const string NuGetServiceIndexUrl = "https://api.nuget.org/v3/index.json";
     internal const string PluginTag = "windowtranslator-plugin";
     internal const string AbstractionsPackageId = "WindowTranslator.Abstractions";
     private const int MaxConcurrentMetadataRequests = 8;
+    private static readonly TimeSpan PackageInformationRefreshInterval = TimeSpan.FromHours(1);
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    internal static readonly JsonSerializerOptions ManifestJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
@@ -35,9 +37,16 @@ public sealed class NuGetPluginService : IDisposable
     private readonly bool ownsHttpClient;
     private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions;
     private readonly INuGetPluginMetadataSource metadataSource;
+    private readonly App? app;
+    private readonly int hostMajorVersion;
     private readonly SemaphoreSlim operationLock = new(1, 1);
+    private readonly SemaphoreSlim refreshLock = new(1, 1);
+    private readonly object snapshotLock = new();
+    private PluginStoreSnapshot packageSnapshot = PluginStoreSnapshot.Empty;
+    private long installedPackagesGeneration;
+    private int disposeState;
 
-    public NuGetPluginService(ILogger<NuGetPluginService> logger)
+    public NuGetPluginService(ILogger<NuGetPluginService> logger, App app)
         : this(
             logger,
             new HttpClient(new HttpClientHandler
@@ -48,7 +57,8 @@ public sealed class NuGetPluginService : IDisposable
                 Timeout = TimeSpan.FromSeconds(30),
             },
             Path.Combine(PathUtility.UserDir, "plugins"),
-            ownsHttpClient: true)
+            ownsHttpClient: true,
+            app: app)
     {
     }
 
@@ -58,7 +68,9 @@ public sealed class NuGetPluginService : IDisposable
         string userPluginsDir,
         bool ownsHttpClient = false,
         IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null,
-        INuGetPluginMetadataSource? metadataSource = null)
+        INuGetPluginMetadataSource? metadataSource = null,
+        App? app = null,
+        int? hostMajorVersion = null)
     {
         this.logger = logger;
         this.httpClient = httpClient;
@@ -68,6 +80,85 @@ public sealed class NuGetPluginService : IDisposable
         this.hostPackageVersions = hostPackageVersions ?? CreateHostPackageVersions();
         this.metadataSource = metadataSource
             ?? new NuGetProtocolPluginMetadataSource(NuGetServiceIndexUrl);
+        this.app = app;
+        this.hostMajorVersion = hostMajorVersion ?? AppInfo.Instance.Version.Major;
+    }
+
+    internal event EventHandler? PackageInformationUpdated;
+
+    internal PluginStoreSnapshot PackageSnapshot
+    {
+        get
+        {
+            lock (this.snapshotLock)
+            {
+                return this.packageSnapshot;
+            }
+        }
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        if (this.app is not null)
+        {
+            await this.app.WaitForStartupAsync().ConfigureAwait(false);
+        }
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await RefreshPackageInformationAsync(stoppingToken).ConfigureAwait(false);
+            await Task.Delay(PackageInformationRefreshInterval, stoppingToken).ConfigureAwait(false);
+        }
+    }
+
+    internal async Task RefreshPackageInformationAsync(CancellationToken cancellationToken = default)
+    {
+        await this.refreshLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var previousSnapshot = this.PackageSnapshot;
+            var packages = previousSnapshot.Packages;
+            Exception? error = null;
+            try
+            {
+                packages = await SearchPackagesAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                this.logger.LogWarning(ex, "NuGetからプラグイン情報を更新できませんでした。");
+                error = ex;
+            }
+
+            var installedGenerationBefore = Volatile.Read(ref this.installedPackagesGeneration);
+            IReadOnlyList<InstalledPackageInfo> installedPackages;
+            try
+            {
+                installedPackages = await GetInstalledPackagesAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                this.logger.LogWarning(ex, "インストール済みプラグイン情報を更新できませんでした。");
+                installedPackages = this.PackageSnapshot.InstalledPackages;
+                error = ex;
+            }
+
+            var installedGenerationAfter = Volatile.Read(ref this.installedPackagesGeneration);
+            if (installedGenerationBefore != installedGenerationAfter)
+            {
+                installedPackages = this.PackageSnapshot.InstalledPackages;
+            }
+            SetPackageSnapshot(
+                new(
+                    IsInitialized: true,
+                    InstalledPackages: installedPackages,
+                    Packages: packages,
+                    Error: error),
+                installedGenerationAfter);
+        }
+        finally
+        {
+            this.refreshLock.Release();
+        }
     }
 
     /// <summary>
@@ -188,6 +279,7 @@ public sealed class NuGetPluginService : IDisposable
             Directory.Move(stagingDir, targetDir);
             stagingMoved = true;
             await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
+            UpdateInstalledPackages(updatedManifest.Packages);
 
             try
             {
@@ -264,6 +356,7 @@ public sealed class NuGetPluginService : IDisposable
             try
             {
                 await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
+                UpdateInstalledPackages(updatedManifest.Packages);
             }
             catch
             {
@@ -316,8 +409,28 @@ public sealed class NuGetPluginService : IDisposable
     /// </summary>
     public async Task<IReadOnlyList<InstalledPackageInfo>> GetInstalledPackagesAsync(CancellationToken cancellationToken = default)
     {
-        var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
-        return manifest.Packages;
+        await this.operationLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
+            var migratedPackages = manifest.Packages
+                .Select(package => package.HostMajorVersion is null
+                    ? package with { HostMajorVersion = this.hostMajorVersion }
+                    : package)
+                .ToList();
+            if (migratedPackages.Where((package, index) =>
+                    package != manifest.Packages[index]).Any())
+            {
+                manifest = new InstalledManifest(migratedPackages);
+                await SaveManifestAsync(manifest, cancellationToken).ConfigureAwait(false);
+            }
+
+            return GetCompatibilityAwarePackages(manifest.Packages);
+        }
+        finally
+        {
+            this.operationLock.Release();
+        }
     }
 
     private async Task<NuGetPackageInfo?> CreateCompatiblePackageInfoAsync(
@@ -373,14 +486,17 @@ public sealed class NuGetPluginService : IDisposable
         return dependency.VersionRange?.Satisfies(hostVersion) is not false;
     }
 
-    private static InstalledManifest AddOrUpdatePackage(
+    private InstalledManifest AddOrUpdatePackage(
         InstalledManifest manifest,
         string packageId,
         string version)
     {
         var packages = manifest.Packages.ToList();
         var existing = packages.FindIndex(p => p.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase));
-        var newEntry = new InstalledPackageInfo(packageId, version);
+        var newEntry = new InstalledPackageInfo(
+            packageId,
+            version,
+            this.hostMajorVersion);
         if (existing >= 0)
         {
             packages[existing] = newEntry;
@@ -421,6 +537,65 @@ public sealed class NuGetPluginService : IDisposable
         };
     }
 
+    private InstalledPackageInfo[] GetCompatibilityAwarePackages(
+        IEnumerable<InstalledPackageInfo> packages)
+        => packages
+            .Select(package => package with
+            {
+                IsCompatible = package.HostMajorVersion is null
+                    || package.HostMajorVersion == this.hostMajorVersion,
+            })
+            .ToArray();
+
+    private void UpdateInstalledPackages(IEnumerable<InstalledPackageInfo> packages)
+    {
+        lock (this.snapshotLock)
+        {
+            this.installedPackagesGeneration++;
+            this.packageSnapshot = this.packageSnapshot with
+            {
+                InstalledPackages = GetCompatibilityAwarePackages(packages),
+            };
+        }
+        NotifyPackageInformationUpdated();
+    }
+
+    private void SetPackageSnapshot(
+        PluginStoreSnapshot snapshot,
+        long? expectedInstalledPackagesGeneration = null)
+    {
+        lock (this.snapshotLock)
+        {
+            if (expectedInstalledPackagesGeneration is not null
+                && expectedInstalledPackagesGeneration != this.installedPackagesGeneration)
+            {
+                snapshot = snapshot with
+                {
+                    InstalledPackages = this.packageSnapshot.InstalledPackages,
+                };
+            }
+            this.packageSnapshot = snapshot;
+        }
+
+        NotifyPackageInformationUpdated();
+    }
+
+    private void NotifyPackageInformationUpdated()
+    {
+        foreach (EventHandler handler in this.PackageInformationUpdated?.GetInvocationList()
+                     .Cast<EventHandler>() ?? [])
+        {
+            try
+            {
+                handler(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogWarning(ex, "プラグイン情報更新イベントの通知に失敗しました。");
+            }
+        }
+    }
+
     private static InstalledManifest RemovePackage(InstalledManifest manifest, string packageId)
         => new([.. manifest.Packages.Where(p =>
             !p.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase))]);
@@ -437,7 +612,7 @@ public sealed class NuGetPluginService : IDisposable
             await using var fs = File.OpenRead(this.manifestPath);
             var manifest = await JsonSerializer.DeserializeAsync<InstalledManifest>(
                 fs,
-                JsonOptions,
+                ManifestJsonOptions,
                 cancellationToken).ConfigureAwait(false)
                 ?? throw new InvalidDataException("プラグインマニフェストが空です。");
             if (manifest.Packages is null)
@@ -469,7 +644,11 @@ public sealed class NuGetPluginService : IDisposable
                 bufferSize: 4096,
                 useAsync: true))
             {
-                await JsonSerializer.SerializeAsync(fs, manifest, JsonOptions, cancellationToken).ConfigureAwait(false);
+                await JsonSerializer.SerializeAsync(
+                    fs,
+                    manifest,
+                    ManifestJsonOptions,
+                    cancellationToken).ConfigureAwait(false);
                 await fs.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
 
@@ -537,13 +716,20 @@ public sealed class NuGetPluginService : IDisposable
         }
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
+        if (Interlocked.Exchange(ref this.disposeState, 1) != 0)
+        {
+            return;
+        }
+
+        base.Dispose();
         if (this.ownsHttpClient)
         {
             this.httpClient.Dispose();
         }
         this.operationLock.Dispose();
+        this.refreshLock.Dispose();
     }
 }
 
@@ -562,8 +748,21 @@ public record NuGetPackageInfo(
 /// <summary>インストール済みパッケージ情報</summary>
 public record InstalledPackageInfo(
     string Id,
-    string Version
-);
+    string Version,
+    int? HostMajorVersion = null)
+{
+    [JsonIgnore]
+    public bool IsCompatible { get; init; } = true;
+}
 
 /// <summary>NuGetプラグインの管理マニフェスト</summary>
 public record InstalledManifest(List<InstalledPackageInfo> Packages);
+
+internal sealed record PluginStoreSnapshot(
+    bool IsInitialized,
+    IReadOnlyList<InstalledPackageInfo> InstalledPackages,
+    IReadOnlyList<NuGetPackageInfo> Packages,
+    Exception? Error)
+{
+    public static PluginStoreSnapshot Empty { get; } = new(false, [], [], null);
+}

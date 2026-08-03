@@ -504,6 +504,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>インストール失敗</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>現在のWindowTranslatorメジャーバージョンとは互換性がありません。</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>今すぐ再起動</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>プラグインの変更を適用するには、WindowTranslatorを再起動してください。</value>
   </data>

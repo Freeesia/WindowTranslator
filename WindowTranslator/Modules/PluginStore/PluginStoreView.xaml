@@ -148,7 +148,7 @@
                                     Icon="{ui:SymbolIcon ArrowSync24}"
                                     IsEnabled="{Binding CanInstall}"
                                     Style="{StaticResource InstallButtonStyle}"
-                                    Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}" />
+                                    Visibility="{Binding CanUpdate, Converter={StaticResource b2vConv}}" />
 
                                 <!--  アンインストールボタン（インストール済み）  -->
                                 <ui:Button
