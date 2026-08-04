@@ -503,6 +503,12 @@ Monitor tidak didukung.</value>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Falha na instalação</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Este plugin não é compatível com a versão principal atual do WindowTranslator.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Reiniciar agora</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Reinicie o WindowTranslator para aplicar as alterações de plugin.</value>
   </data>

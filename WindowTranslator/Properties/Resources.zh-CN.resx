@@ -504,6 +504,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>安装失败</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>此插件与当前 WindowTranslator 主版本不兼容。</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>立即重启</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>请重启 WindowTranslator 以应用插件更改。</value>
   </data>

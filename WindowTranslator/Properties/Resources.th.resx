@@ -504,6 +504,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>การติดตั้งล้มเหลว</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>ปลั๊กอินนี้ไม่เข้ากันกับ WindowTranslator เวอร์ชันหลักปัจจุบัน</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>เริ่มใหม่ตอนนี้</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>กรุณาเริ่ม WindowTranslator ใหม่เพื่อนำการเปลี่ยนแปลงปลั๊กอินไปใช้</value>
   </data>

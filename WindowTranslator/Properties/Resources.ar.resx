@@ -495,6 +495,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>فشل التثبيت</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>هذا المكون الإضافي غير متوافق مع الإصدار الرئيسي الحالي من WindowTranslator.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>إعادة التشغيل الآن</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>يرجى إعادة تشغيل WindowTranslator لتطبيق تغييرات المكون الإضافي.</value>
   </data>

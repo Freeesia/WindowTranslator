@@ -95,7 +95,9 @@ public sealed class NuGetPluginService : BackgroundService
         Exception? error = null;
         try
         {
-            packages = await SearchPackagesAsync(cancellationToken).ConfigureAwait(false);
+            var searchResult = await SearchPackagesCoreAsync(cancellationToken).ConfigureAwait(false);
+            packages = searchResult.Packages;
+            error = searchResult.Error;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -135,6 +137,18 @@ public sealed class NuGetPluginService : BackgroundService
     /// </summary>
     public async Task<IReadOnlyList<NuGetPackageInfo>> SearchPackagesAsync(CancellationToken cancellationToken = default)
     {
+        var result = await SearchPackagesCoreAsync(cancellationToken).ConfigureAwait(false);
+        if (result.Error is not null)
+        {
+            throw result.Error;
+        }
+
+        return result.Packages;
+    }
+
+    private async Task<PackageSearchResult> SearchPackagesCoreAsync(
+        CancellationToken cancellationToken)
+    {
         var searchResource = await this.repository
             .GetResourceAsync<PackageSearchResource>(cancellationToken)
             .ConfigureAwait(false);
@@ -158,10 +172,11 @@ public sealed class NuGetPluginService : BackgroundService
             using var request = await requestGate.EnterAsync(cancellationToken);
             try
             {
-                return await CreateCompatiblePackageInfoAsync(
+                var package = await CreateCompatiblePackageInfoAsync(
                     data,
                     metadataResource,
                     cancellationToken).ConfigureAwait(false);
+                return new PackageMetadataResult(package, null);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -169,20 +184,35 @@ public sealed class NuGetPluginService : BackgroundService
             }
             catch (Exception ex)
             {
+                var packageError = new InvalidOperationException(
+                    $"NuGetパッケージ {data.Identity.Id} のメタデータを取得できませんでした。",
+                    ex);
                 this.logger.LogWarning(
-                    ex,
+                    packageError,
                     "NuGetパッケージのプラグイン互換性を確認できなかったため除外します: {PackageId}",
                     data.Identity.Id);
-                return null;
+                return new PackageMetadataResult(null, packageError);
             }
         });
-        var packages = await Task.WhenAll(packageTasks).ConfigureAwait(false);
-        var compatiblePackages = packages.Where(package => package is not null).Select(package => package!).ToArray();
+        var results = await Task.WhenAll(packageTasks).ConfigureAwait(false);
+        var compatiblePackages = results
+            .Where(result => result.Package is not null)
+            .Select(result => result.Package!)
+            .ToArray();
+        var errors = results
+            .Where(result => result.Error is not null)
+            .Select(result => result.Error!)
+            .ToArray();
+        var error = errors.Length == 0
+            ? null
+            : new AggregateException(
+                "一部のNuGetパッケージ情報を取得できませんでした。",
+                errors);
 
         this.logger.LogInformation(
             "NuGet互換性確認完了: {Count}件のWindowTranslatorプラグインが見つかりました。",
             compatiblePackages.Length);
-        return compatiblePackages;
+        return new(compatiblePackages, error);
     }
 
     /// <summary>
@@ -696,6 +726,13 @@ public sealed class NuGetPluginService : BackgroundService
         }
     }
 
+    private sealed record PackageMetadataResult(
+        NuGetPackageInfo? Package,
+        Exception? Error);
+
+    private sealed record PackageSearchResult(
+        IReadOnlyList<NuGetPackageInfo> Packages,
+        Exception? Error);
 }
 
 /// <summary>NuGetパッケージ情報</summary>

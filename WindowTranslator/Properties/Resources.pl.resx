@@ -504,6 +504,12 @@ Monitory nie są obsługiwane.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Instalacja nie powiodła się</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Ta wtyczka nie jest zgodna z bieżącą główną wersją WindowTranslator.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Uruchom ponownie teraz</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Uruchom ponownie WindowTranslator, aby zastosować zmiany wtyczki.</value>
   </data>

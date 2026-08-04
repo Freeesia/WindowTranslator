@@ -18,6 +18,7 @@ using NuGet.Packaging.Core;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.Context;
 using WindowTranslator.Modules;
@@ -554,6 +555,90 @@ public sealed class NuGetPluginServiceTests
             Assert.True(package.IsInstalled);
             Assert.NotNull(viewModel.ErrorMessage);
             Assert.Equal(["tags:windowtranslator-plugin"], handler.RequestedSearchTerms);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task RefreshReportsMetadataFailuresAndKeepsSuccessfulPackages()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults =
+                [
+                    CreatePackageSearchMetadata(
+                        "Available.Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                    CreatePackageSearchMetadata(
+                        "Unavailable.Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                ];
+            handler.AddMetadataVersions(
+                "Available.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            handler.AddMetadataException(
+                "Unavailable.Plugin",
+                new HttpRequestException("Metadata request failed."));
+            using var service = CreateService(handler, testDirectory);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.Equal(
+                "Available.Plugin",
+                Assert.Single(service.PackageSnapshot.Packages).Id);
+            var error = Assert.IsType<AggregateException>(service.PackageSnapshot.Error);
+            Assert.Contains(
+                error.InnerExceptions,
+                exception => exception.Message.Contains(
+                    "Unavailable.Plugin",
+                    StringComparison.Ordinal));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task RefreshReportsAnErrorWhenEveryMetadataRequestFails()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults =
+                [
+                    CreatePackageSearchMetadata(
+                        "Unavailable.Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                ];
+            handler.AddMetadataException(
+                "Unavailable.Plugin",
+                new HttpRequestException("Metadata request failed."));
+            using var service = CreateService(handler, testDirectory);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.True(service.PackageSnapshot.IsInitialized);
+            Assert.Empty(service.PackageSnapshot.Packages);
+            Assert.NotNull(service.PackageSnapshot.Error);
         }
         finally
         {
@@ -1183,6 +1268,32 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task PrioritizedCatalogUsesNuGetPluginAndRemovesBundledDuplicate()
+    {
+        var nugetCatalog = new TestPluginCatalog(
+            typeof(NuGetPluginTypes.ReplacedPlugin),
+            typeof(NuGetPluginTypes.NuGetOnlyPlugin));
+        var bundledCatalog = new TestPluginCatalog(
+            typeof(BundledPluginTypes.ReplacedPlugin),
+            typeof(BundledPluginTypes.BundledOnlyPlugin));
+        var catalog = new PrioritizedPluginCatalog(nugetCatalog, bundledCatalog);
+
+        await catalog.Initialize();
+
+        Assert.True(catalog.IsInitialized);
+        Assert.Equal(
+            [
+                typeof(NuGetPluginTypes.ReplacedPlugin),
+                typeof(NuGetPluginTypes.NuGetOnlyPlugin),
+                typeof(BundledPluginTypes.BundledOnlyPlugin),
+            ],
+            catalog.GetPlugins().Select(plugin => plugin.Type));
+        Assert.Equal(
+            typeof(NuGetPluginTypes.ReplacedPlugin),
+            catalog.Get(nameof(NuGetPluginTypes.ReplacedPlugin), new Version(1, 0)).Type);
+    }
+
+    [Fact]
     public async Task CatalogLoadsARealAssemblyFromAPackageSubdirectory()
     {
         var sourceDirectory = CreateTestDirectory();
@@ -1585,6 +1696,63 @@ public sealed class NuGetPluginServiceTests
             => Task.FromResult<IEnumerable<VersionInfo>>([]);
     }
 
+    private sealed class TestPluginCatalog : IPluginCatalog
+    {
+        private readonly List<Plugin> plugins;
+
+        public TestPluginCatalog(params Type[] pluginTypes)
+        {
+            this.plugins = pluginTypes
+                .Select(type => new Plugin(
+                    type.Assembly,
+                    type,
+                    type.Name,
+                    new Version(1, 0),
+                    this,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    []))
+                .ToList();
+        }
+
+        public bool IsInitialized { get; private set; }
+
+        public Task Initialize()
+        {
+            this.IsInitialized = true;
+            return Task.CompletedTask;
+        }
+
+        public List<Plugin> GetPlugins() => [.. this.plugins];
+
+        public Plugin Get(string name, Version version)
+            => this.plugins.FirstOrDefault(plugin =>
+                plugin.Name == name && plugin.Version == version)!;
+    }
+
+    private static class NuGetPluginTypes
+    {
+        public sealed class ReplacedPlugin
+        {
+        }
+
+        public sealed class NuGetOnlyPlugin
+        {
+        }
+    }
+
+    private static class BundledPluginTypes
+    {
+        public sealed class ReplacedPlugin
+        {
+        }
+
+        public sealed class BundledOnlyPlugin
+        {
+        }
+    }
+
     private sealed class InMemoryHttpClientFactory(InMemoryNuGetHandler handler) : IHttpClientFactory
     {
         public HttpClient CreateClient(string name) => new(handler, disposeHandler: false);
@@ -1594,6 +1762,8 @@ public sealed class NuGetPluginServiceTests
     {
         private readonly Dictionary<(string Id, string Version), byte[]> packages = new();
         private readonly Dictionary<string, IReadOnlyList<TestPackageVersion>> metadataVersions =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Exception> metadataExceptions =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string> readmeUrls =
             new(StringComparer.OrdinalIgnoreCase);
@@ -1613,6 +1783,9 @@ public sealed class NuGetPluginServiceTests
 
         public void AddMetadataVersions(string packageId, params TestPackageVersion[] packageVersions)
             => this.metadataVersions[packageId] = packageVersions;
+
+        public void AddMetadataException(string packageId, Exception exception)
+            => this.metadataExceptions[packageId] = exception;
 
         public void AddReadmeUrl(string packageId, string version, string url)
             => this.readmeUrls[GetReadmeKey(packageId, NuGetVersion.Parse(version))] = url;
@@ -1711,6 +1884,10 @@ public sealed class NuGetPluginServiceTests
                 CancellationToken cancellationToken)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                if (source.metadataExceptions.TryGetValue(packageId, out var exception))
+                {
+                    return Task.FromException<IEnumerable<IPackageSearchMetadata>>(exception);
+                }
                 var versions = source.metadataVersions.TryGetValue(packageId, out var packageVersions)
                     ? packageVersions
                     : [];

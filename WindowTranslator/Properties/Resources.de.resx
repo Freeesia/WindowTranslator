@@ -504,6 +504,12 @@ Monitore werden nicht unterstützt.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Installation fehlgeschlagen</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Dieses Plugin ist mit der aktuellen Hauptversion von WindowTranslator nicht kompatibel.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Jetzt neu starten</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Bitte starten Sie WindowTranslator neu, um Plugin-Änderungen anzuwenden.</value>
   </data>

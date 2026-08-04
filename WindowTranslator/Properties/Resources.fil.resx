@@ -504,6 +504,12 @@ Ang monitor ay hindi suportado.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Nabigo ang pag-install</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Hindi tugma ang plugin na ito sa kasalukuyang pangunahing bersyon ng WindowTranslator.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>I-restart ngayon</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Mangyaring i-restart ang WindowTranslator upang mailapat ang mga pagbabago sa plugin.</value>
   </data>

@@ -385,6 +385,12 @@ Monitory nejsou podporovány.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Instalace se nezdařila</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Tento plugin není kompatibilní s aktuální hlavní verzí aplikace WindowTranslator.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Restartovat nyní</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Restartujte WindowTranslator, aby se změny pluginu projevily.</value>
   </data>

@@ -115,18 +115,18 @@ builder.Services.AddPluginFramework()
     .AddPluginType<ITargetSettingsValidator>()
     .AddPluginType<IPluginParam>();
 
-var pluginFolderCatalog = new CompositePluginCatalog();
+var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
+IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
+    userPluginsDir,
+    AppInfo.Instance.Version.Major,
+    new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    pluginFolderCatalog = new PrioritizedPluginCatalog(
+        pluginFolderCatalog,
+        new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
-
-var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
-pluginFolderCatalog.AddCatalog(new NuGetPluginCatalog(
-    userPluginsDir,
-    AppInfo.Instance.Version.Major,
-    new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);
 builder.Configuration

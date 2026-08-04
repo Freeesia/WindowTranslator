@@ -504,6 +504,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>설치 실패</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>이 플러그인은 현재 WindowTranslator 주 버전과 호환되지 않습니다.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>지금 다시 시작</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>플러그인 변경 사항을 적용하려면 WindowTranslator를 다시 시작하세요.</value>
   </data>

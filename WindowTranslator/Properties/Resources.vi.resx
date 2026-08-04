@@ -504,6 +504,12 @@ Màn hình không được hỗ trợ.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Cài đặt thất bại</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Plugin này không tương thích với phiên bản chính hiện tại của WindowTranslator.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Khởi động lại ngay</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Vui lòng khởi động lại WindowTranslator để áp dụng thay đổi plugin.</value>
   </data>

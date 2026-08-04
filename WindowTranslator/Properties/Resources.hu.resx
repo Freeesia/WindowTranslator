@@ -385,6 +385,12 @@ A monitorok nem támogatottak.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>A telepítés sikertelen</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Ez a bővítmény nem kompatibilis a WindowTranslator jelenlegi főverziójával.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Újraindítás most</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>A bővítménymódosítások alkalmazásához indítsa újra a WindowTranslator alkalmazást.</value>
   </data>

@@ -497,6 +497,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>इंस्टॉलेशन विफल</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>यह प्लगइन WindowTranslator के वर्तमान प्रमुख संस्करण के साथ संगत नहीं है।</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>अभी पुनः आरंभ करें</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>प्लगइन परिवर्तन लागू करने के लिए कृपया WindowTranslator को पुनः आरंभ करें।</value>
   </data>

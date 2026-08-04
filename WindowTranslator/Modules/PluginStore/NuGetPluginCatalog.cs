@@ -24,11 +24,6 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     private readonly FolderPluginCatalogOptions options;
     private CompositePluginCatalog innerCatalog = new();
 
-    public NuGetPluginCatalog(string sourceDir, FolderPluginCatalogOptions options)
-        : this(sourceDir, DefaultTempDir, AppInfo.Instance.Version.Major, options)
-    {
-    }
-
     public NuGetPluginCatalog(
         string sourceDir,
         int hostMajorVersion,

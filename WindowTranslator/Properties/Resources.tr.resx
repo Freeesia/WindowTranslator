@@ -504,6 +504,12 @@ Monitör desteklenmiyor.
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Kurulum başarısız</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>Bu eklenti, WindowTranslator'ın mevcut ana sürümüyle uyumlu değil.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Şimdi yeniden başlat</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>Eklenti değişikliklerini uygulamak için lütfen WindowTranslator'ı yeniden başlatın.</value>
   </data>

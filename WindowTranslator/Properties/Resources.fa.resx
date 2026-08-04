@@ -489,6 +489,12 @@
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>نصب ناموفق بود</value>
   </data>
+  <data name="PluginIncompatible" xml:space="preserve">
+    <value>این افزونه با نسخه اصلی فعلی WindowTranslator سازگار نیست.</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>اکنون راه‌اندازی مجدد شود</value>
+  </data>
   <data name="RestartRequired" xml:space="preserve">
     <value>لطفاً WindowTranslator را مجدداً راه‌اندازی کنید تا تغییرات افزونه اعمال شود.</value>
   </data>
