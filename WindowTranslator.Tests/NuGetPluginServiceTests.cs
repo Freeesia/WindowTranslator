@@ -3,6 +3,8 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
@@ -271,7 +273,7 @@ public sealed class NuGetPluginServiceTests
 
             Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
             Assert.Empty(Directory.GetDirectories(
-                testDirectory,
+                Path.Combine(testDirectory, NuGetPluginService.OperationsDirectoryName),
                 "Root.Plugin.uninstalling-*"));
             var installed = Assert.Single(await service.GetInstalledPackagesAsync());
             Assert.Equal("1.0.0", installed.Version);
@@ -1108,11 +1110,16 @@ public sealed class NuGetPluginServiceTests
                 Path.Combine(sourceDirectory, "Root.Plugin", "Unchanged.dll");
             File.WriteAllText(unchangedSourcePath, "unchanged");
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Empty.Plugin"));
+            Directory.CreateDirectory(Path.Combine(sourceDirectory, ".operations"));
+            Directory.CreateDirectory(Path.Combine(sourceDirectory, ".operations", "backup-test"));
+            File.WriteAllText(
+                Path.Combine(sourceDirectory, ".operations", "backup-test", "old.dll"),
+                "old");
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin.backup-test"));
             File.WriteAllText(
                 Path.Combine(sourceDirectory, "Root.Plugin.backup-test", "old.dll"),
                 "old");
-            Directory.CreateDirectory(Path.Combine(sourceDirectory, ".Root.Plugin.installing-test"));
+            Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin.installing-test"));
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin.uninstalling-test"));
             Directory.CreateDirectory(Path.Combine(destinationDirectory, "Root.Plugin"));
             var destinationPluginPath =
@@ -1177,10 +1184,12 @@ public sealed class NuGetPluginServiceTests
             Assert.False(File.Exists(
                 Path.Combine(destinationDirectory, "nuget-manifest.json.tmp-test")));
             Assert.False(Directory.Exists(
+                Path.Combine(destinationDirectory, ".operations")));
+            Assert.True(Directory.Exists(
                 Path.Combine(destinationDirectory, "Root.Plugin.backup-test")));
-            Assert.False(Directory.Exists(
-                Path.Combine(destinationDirectory, ".Root.Plugin.installing-test")));
-            Assert.False(Directory.Exists(
+            Assert.True(Directory.Exists(
+                Path.Combine(destinationDirectory, "Root.Plugin.installing-test")));
+            Assert.True(Directory.Exists(
                 Path.Combine(destinationDirectory, "Root.Plugin.uninstalling-test")));
         }
         finally
@@ -1268,14 +1277,37 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task PrioritizedCatalogUsesNuGetPluginAndRemovesBundledDuplicate()
+    public async Task PrioritizedCatalogReplacesFallbackAssemblyAndKeepsSameTypeNameFromOtherAssembly()
     {
+        var replacedAssemblyName = $"Replaced.Plugin.{Guid.NewGuid():N}";
+        var nugetTypes = CreatePluginTypes(
+            replacedAssemblyName,
+            "NuGet.ReplacedPlugin",
+            "NuGet.NuGetOnlyPlugin");
+        var replacedBundledTypes = CreatePluginTypes(
+            replacedAssemblyName,
+            "Bundled.ReplacedPlugin",
+            "Bundled.AlsoReplacedPlugin");
+        var duplicateNugetTypes = CreatePluginTypes(
+            replacedAssemblyName,
+            "DuplicateNuGet.ReplacedPlugin",
+            "DuplicateNuGet.AlsoReplacedPlugin");
+        var bundledOnlyType = CreatePluginTypes(
+            $"Bundled.Plugin.{Guid.NewGuid():N}",
+            "Bundled.BundledOnlyPlugin")[0];
+        var sameTypeNameFromOtherAssembly = CreatePluginTypes(
+            $"Other.Plugin.{Guid.NewGuid():N}",
+            "Other.ReplacedPlugin")[0];
         var nugetCatalog = new TestPluginCatalog(
-            typeof(NuGetPluginTypes.ReplacedPlugin),
-            typeof(NuGetPluginTypes.NuGetOnlyPlugin));
+            nugetTypes[0],
+            nugetTypes[1],
+            duplicateNugetTypes[0],
+            duplicateNugetTypes[1]);
         var bundledCatalog = new TestPluginCatalog(
-            typeof(BundledPluginTypes.ReplacedPlugin),
-            typeof(BundledPluginTypes.BundledOnlyPlugin));
+            replacedBundledTypes[0],
+            replacedBundledTypes[1],
+            bundledOnlyType,
+            sameTypeNameFromOtherAssembly);
         var catalog = new PrioritizedPluginCatalog(nugetCatalog, bundledCatalog);
 
         await catalog.Initialize();
@@ -1283,14 +1315,15 @@ public sealed class NuGetPluginServiceTests
         Assert.True(catalog.IsInitialized);
         Assert.Equal(
             [
-                typeof(NuGetPluginTypes.ReplacedPlugin),
-                typeof(NuGetPluginTypes.NuGetOnlyPlugin),
-                typeof(BundledPluginTypes.BundledOnlyPlugin),
+                nugetTypes[0],
+                nugetTypes[1],
+                bundledOnlyType,
+                sameTypeNameFromOtherAssembly,
             ],
             catalog.GetPlugins().Select(plugin => plugin.Type));
         Assert.Equal(
-            typeof(NuGetPluginTypes.ReplacedPlugin),
-            catalog.Get(nameof(NuGetPluginTypes.ReplacedPlugin), new Version(1, 0)).Type);
+            nugetTypes[0],
+            catalog.Get("ReplacedPlugin", new Version(1, 0)).Type);
     }
 
     [Fact]
@@ -1731,26 +1764,17 @@ public sealed class NuGetPluginServiceTests
                 plugin.Name == name && plugin.Version == version)!;
     }
 
-    private static class NuGetPluginTypes
+    private static Type[] CreatePluginTypes(string assemblyName, params string[] typeNames)
     {
-        public sealed class ReplacedPlugin
-        {
-        }
-
-        public sealed class NuGetOnlyPlugin
-        {
-        }
-    }
-
-    private static class BundledPluginTypes
-    {
-        public sealed class ReplacedPlugin
-        {
-        }
-
-        public sealed class BundledOnlyPlugin
-        {
-        }
+        var assembly = AssemblyBuilder.DefineDynamicAssembly(
+            new AssemblyName(assemblyName),
+            AssemblyBuilderAccess.Run);
+        var module = assembly.DefineDynamicModule(assemblyName);
+        return typeNames
+            .Select(typeName => module
+                .DefineType(typeName, TypeAttributes.Public | TypeAttributes.Class)
+                .CreateType()!)
+            .ToArray();
     }
 
     private sealed class InMemoryHttpClientFactory(InMemoryNuGetHandler handler) : IHttpClientFactory

@@ -116,16 +116,28 @@ builder.Services.AddPluginFramework()
     .AddPluginType<IPluginParam>();
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
+var nugetPluginsDir = Path.Combine(PathUtility.UserDir, "nuget-plugins");
 IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
-    userPluginsDir,
+    nugetPluginsDir,
     AppInfo.Instance.Version.Major,
     new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
+var fallbackPluginCatalogs = new List<IPluginCatalog>();
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
+    fallbackPluginCatalogs.Add(
+        new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+}
+if (Directory.Exists(userPluginsDir))
+{
+    fallbackPluginCatalogs.Add(
+        new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+}
+if (fallbackPluginCatalogs.Count > 0)
+{
     pluginFolderCatalog = new PrioritizedPluginCatalog(
         pluginFolderCatalog,
-        new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+        new CompositePluginCatalog([.. fallbackPluginCatalogs]));
 }
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);
@@ -177,7 +189,7 @@ builder.Services.AddSingleton(sp => new NuGetPluginService(
         sp.GetRequiredService<ILogger<NuGetPluginService>>(),
         sp.GetRequiredService<IHttpClientFactory>(),
         sp.GetRequiredService<SourceRepository>(),
-        userPluginsDir,
+        nugetPluginsDir,
         NuGetPluginService.CreateHostPackageVersions(),
         AppInfo.Instance.Version.Major))
     .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());

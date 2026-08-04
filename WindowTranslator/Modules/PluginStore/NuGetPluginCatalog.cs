@@ -16,7 +16,7 @@ namespace WindowTranslator.Modules.PluginStore;
 public sealed class NuGetPluginCatalog : IPluginCatalog
 {
     private static readonly string DefaultTempDir =
-        Path.Combine(Path.GetTempPath(), "WindowTranslator", "plugins");
+        Path.Combine(Path.GetTempPath(), "WindowTranslator", "nuget-plugins");
 
     private readonly string sourceDir;
     private readonly string tempDir;
@@ -376,10 +376,9 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     }
 
     private static bool IsWorkingDirectory(string directoryName)
-        => directoryName.EndsWith(".backup", StringComparison.OrdinalIgnoreCase)
-        || directoryName.Contains(".backup-", StringComparison.OrdinalIgnoreCase)
-        || directoryName.Contains(".uninstalling-", StringComparison.OrdinalIgnoreCase)
-        || directoryName.Contains(".installing-", StringComparison.OrdinalIgnoreCase);
+        => directoryName.Equals(
+            NuGetPluginService.OperationsDirectoryName,
+            StringComparison.OrdinalIgnoreCase);
 
     private static bool IsManagementFile(string fileName)
         => fileName.Equals("nuget-manifest.json", StringComparison.OrdinalIgnoreCase)

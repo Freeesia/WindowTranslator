@@ -23,6 +23,7 @@ public sealed class NuGetPluginService : BackgroundService
     internal const string HttpClientName = "NuGetPluginReadme";
     internal const string PluginTag = "windowtranslator-plugin";
     internal const string AbstractionsPackageId = "WindowTranslator.Abstractions";
+    internal const string OperationsDirectoryName = ".operations";
     private const int SearchResultLimit = 100;
     private const int MaxConcurrentMetadataRequests = 8;
     private static readonly TimeSpan PackageInformationRefreshInterval = TimeSpan.FromHours(1);
@@ -38,7 +39,8 @@ public sealed class NuGetPluginService : BackgroundService
     private readonly IHttpClientFactory httpClientFactory;
     private readonly SourceRepository repository;
     private readonly ILogger<NuGetPluginService> logger;
-    private readonly string userPluginsDir;
+    private readonly string nugetPluginsDir;
+    private readonly string operationsDir;
     private readonly string manifestPath;
     private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions;
     private readonly int hostMajorVersion;
@@ -52,15 +54,16 @@ public sealed class NuGetPluginService : BackgroundService
         ILogger<NuGetPluginService> logger,
         IHttpClientFactory httpClientFactory,
         SourceRepository repository,
-        string userPluginsDir,
+        string nugetPluginsDir,
         IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions,
         int hostMajorVersion)
     {
         this.logger = logger;
         this.httpClientFactory = httpClientFactory;
         this.repository = repository;
-        this.userPluginsDir = Path.GetFullPath(userPluginsDir);
-        this.manifestPath = Path.Combine(this.userPluginsDir, "nuget-manifest.json");
+        this.nugetPluginsDir = Path.GetFullPath(nugetPluginsDir);
+        this.operationsDir = Path.Combine(this.nugetPluginsDir, OperationsDirectoryName);
+        this.manifestPath = Path.Combine(this.nugetPluginsDir, "nuget-manifest.json");
         this.hostPackageVersions = hostPackageVersions;
         this.hostMajorVersion = hostMajorVersion;
     }
@@ -265,14 +268,14 @@ public sealed class NuGetPluginService : BackgroundService
     {
         var operationId = Guid.NewGuid().ToString("N");
         var targetDir = GetPackageDirectory(packageId);
-        var stagingDir = Path.Combine(this.userPluginsDir, $".{packageId}.installing-{operationId}");
-        var backupDir = $"{targetDir}.backup-{operationId}";
+        var stagingDir = Path.Combine(this.operationsDir, $"{packageId}.installing-{operationId}");
+        var backupDir = Path.Combine(this.operationsDir, $"{packageId}.backup-{operationId}");
         var targetMoved = false;
         var stagingMoved = false;
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
         try
         {
-            Directory.CreateDirectory(this.userPluginsDir);
+            Directory.CreateDirectory(this.operationsDir);
             var packageResource = await this.repository
                 .GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -355,11 +358,11 @@ public sealed class NuGetPluginService : BackgroundService
     {
         var operationId = Guid.NewGuid().ToString("N");
         var targetDir = GetPackageDirectory(packageId);
-        var uninstallingDir = $"{targetDir}.uninstalling-{operationId}";
+        var uninstallingDir = Path.Combine(this.operationsDir, $"{packageId}.uninstalling-{operationId}");
         var targetMoved = false;
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
         this.logger.LogInformation("パッケージをアンインストール: {PackageId}", packageId);
-        Directory.CreateDirectory(this.userPluginsDir);
+        Directory.CreateDirectory(this.operationsDir);
 
         var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
         var updatedManifest = RemovePackage(manifest, packageId);
@@ -642,7 +645,7 @@ public sealed class NuGetPluginService : BackgroundService
 
     private async Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
     {
-        Directory.CreateDirectory(this.userPluginsDir);
+        Directory.CreateDirectory(this.nugetPluginsDir);
         var temporaryPath = $"{this.manifestPath}.tmp-{Guid.NewGuid():N}";
         try
         {
@@ -684,7 +687,7 @@ public sealed class NuGetPluginService : BackgroundService
             throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
         }
 
-        var root = this.userPluginsDir
+        var root = this.nugetPluginsDir
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
             + Path.DirectorySeparatorChar;
         var packageDirectory = Path.GetFullPath(Path.Combine(root, packageId));

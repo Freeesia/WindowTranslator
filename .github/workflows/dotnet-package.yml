@@ -70,7 +70,8 @@ jobs:
               -p:Version=${{ steps.package-version.outputs.version }} `
               -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
               -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-              -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
+              -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
+              -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
             if ($LASTEXITCODE -ne 0) {
               exit $LASTEXITCODE
             }

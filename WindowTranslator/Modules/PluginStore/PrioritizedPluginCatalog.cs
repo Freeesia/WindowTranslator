@@ -1,9 +1,10 @@
+using System.Reflection;
 using Weikio.PluginFramework.Abstractions;
 
 namespace WindowTranslator.Modules.PluginStore;
 
 /// <summary>
-/// 優先カタログのプラグインを先に返し、同じ型名のフォールバックプラグインを除外します。
+/// 優先カタログのプラグインを先に返し、同じアセンブリ名のフォールバックプラグインを除外します。
 /// </summary>
 internal sealed class PrioritizedPluginCatalog(
     IPluginCatalog preferredCatalog,
@@ -26,11 +27,38 @@ internal sealed class PrioritizedPluginCatalog(
     /// <inheritdoc/>
     public List<Plugin> GetPlugins()
     {
-        var typeNames = new HashSet<string>(StringComparer.Ordinal);
-        return this.preferredCatalog
-            .GetPlugins()
-            .Concat(this.fallbackCatalog.GetPlugins())
-            .Where(plugin => typeNames.Add(plugin.Type.Name))
+        var selectedAssemblyNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        return SelectPluginsByAssembly(
+                this.preferredCatalog.GetPlugins(),
+                selectedAssemblyNames)
+            .Concat(SelectPluginsByAssembly(
+                this.fallbackCatalog.GetPlugins(),
+                selectedAssemblyNames))
+            .ToList();
+    }
+
+    private static List<Plugin> SelectPluginsByAssembly(
+        List<Plugin> plugins,
+        HashSet<string> selectedAssemblyNames)
+    {
+        var selectedAssemblies = new HashSet<Assembly>(ReferenceEqualityComparer.Instance);
+        foreach (var plugin in plugins)
+        {
+            var assembly = plugin.Type.Assembly;
+            if (selectedAssemblies.Contains(assembly))
+            {
+                continue;
+            }
+
+            var assemblyName = assembly.GetName().Name;
+            if (assemblyName is null || selectedAssemblyNames.Add(assemblyName))
+            {
+                selectedAssemblies.Add(assembly);
+            }
+        }
+
+        return plugins
+            .Where(plugin => selectedAssemblies.Contains(plugin.Type.Assembly))
             .ToList();
     }
 

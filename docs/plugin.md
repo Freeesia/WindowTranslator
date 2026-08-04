@@ -119,7 +119,10 @@ public class MyTranslateModule : ITranslateModule { ... }
 
 インストールされたプラグインは以下のフォルダに配置されます:
 
-- Windows: `%USERPROFILE%\.wt\plugins\{PackageId}\`
+- NuGetからインストール: `%USERPROFILE%\.wt\nuget-plugins\{PackageId}\`
+- ユーザーが手動で配置: `%USERPROFILE%\.wt\plugins\`
+
+NuGetのインストール・更新・アンインストールでは、手動配置用フォルダの内容を変更しません。
 
 ## アプリからインストールする
 
