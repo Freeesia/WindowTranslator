@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Markup;
@@ -12,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using Octokit;
 using Sentry.Extensions.Logging;
 using Weikio.PluginFramework.Abstractions;
@@ -161,7 +165,21 @@ builder.Services.AddPresentation<LogWindow, LogViewModel>();
 builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
-builder.Services.AddSingleton<NuGetPluginService>()
+builder.Services.AddHttpClient(NuGetPluginService.HttpClientName, client =>
+    client.Timeout = TimeSpan.FromSeconds(30))
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All,
+    });
+builder.Services.AddSingleton<SourceRepository>(_ =>
+    NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3(NuGetPluginService.NuGetServiceIndexUrl));
+builder.Services.AddSingleton(sp => new NuGetPluginService(
+        sp.GetRequiredService<ILogger<NuGetPluginService>>(),
+        sp.GetRequiredService<IHttpClientFactory>(),
+        sp.GetRequiredService<SourceRepository>(),
+        userPluginsDir,
+        NuGetPluginService.CreateHostPackageVersions(),
+        AppInfo.Instance.Version.Major))
     .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
 builder.Services.AddTransient<PluginStoreViewModel>();
 builder.Services.AddTransient<IConfigureOptions<UserSettings>, ConfigureUserSettings>();

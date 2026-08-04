@@ -407,8 +407,9 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
                 stream,
                 NuGetPluginService.ManifestJsonOptions);
             return manifest?.Packages
-                .Where(package => package.HostMajorVersion is not null
-                    && package.HostMajorVersion != hostMajorVersion)
+                .Where(package => !PluginCompatibility.IsHostMajorCompatible(
+                    package.HostMajorVersion,
+                    hostMajorVersion))
                 .Select(package => package.Id)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase)
                 ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);

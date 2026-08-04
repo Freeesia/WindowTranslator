@@ -11,9 +11,12 @@ using System.Text.Json;
 using System.Xml.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
+using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.Context;
@@ -73,8 +76,7 @@ public sealed class NuGetPluginServiceTests
                         ["lib/netstandard2.0/Transitive.Package.dll"] = "transitive"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory, hostMajorVersion: 7);
+            using var service = CreateService(handler, testDirectory, hostMajorVersion: 7);
 
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
 
@@ -152,8 +154,7 @@ public sealed class NuGetPluginServiceTests
                         ["lib/net10.0/Root.Plugin.dll"] = "version-two"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
 
             var manifestPath = Path.Combine(testDirectory, "nuget-manifest.json");
@@ -213,8 +214,7 @@ public sealed class NuGetPluginServiceTests
                         ["lib/net10.0/Root.Plugin.dll"] = "version-two"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
             await service.UninstallPackageAsync("Root.Plugin");
 
@@ -251,8 +251,7 @@ public sealed class NuGetPluginServiceTests
                         ["lib/net10.0/Root.Plugin.dll"] = "version-one"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
 
             var manifestPath = Path.Combine(testDirectory, "nuget-manifest.json");
@@ -313,8 +312,7 @@ public sealed class NuGetPluginServiceTests
                         [$"runtimes/{RuntimeIdentifier}/native/compatible.dll"] = "native"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
 
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
 
@@ -364,8 +362,7 @@ public sealed class NuGetPluginServiceTests
                         ["lib/net10.0/Root.Plugin.dll"] = "replacement"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
 
             await Assert.ThrowsAsync<InvalidOperationException>(
                 () => service.InstallPackageAsync("Root.Plugin", "2.0.0"));
@@ -402,8 +399,7 @@ public sealed class NuGetPluginServiceTests
                 }));
 
             using var handler = new InMemoryNuGetHandler();
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
 
             var installed = Assert.Single(await service.GetInstalledPackagesAsync());
 
@@ -427,9 +423,8 @@ public sealed class NuGetPluginServiceTests
                 JsonSerializer.Serialize(new InstalledManifest(
                     [new InstalledPackageInfo("Legacy.Plugin", "1.0.0")])));
             using var handler = new InMemoryNuGetHandler();
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
+                handler,
                 testDirectory,
                 hostMajorVersion: 7);
 
@@ -453,7 +448,7 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task InstalledPackageFromAnotherHostMajorVersionIsMarkedIncompatible()
+    public async Task InstalledPackageCompatibilityFollowsValidationSetting()
     {
         var testDirectory = CreateTestDirectory();
         try
@@ -463,15 +458,14 @@ public sealed class NuGetPluginServiceTests
                 JsonSerializer.Serialize(new InstalledManifest(
                     [new InstalledPackageInfo("Old.Plugin", "1.0.0", HostMajorVersion: 6)])));
             using var handler = new InMemoryNuGetHandler();
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
+                handler,
                 testDirectory,
                 hostMajorVersion: 7);
 
             var package = Assert.Single(await service.GetInstalledPackagesAsync());
 
-            Assert.False(package.IsCompatible);
+            Assert.Equal(PluginCompatibility.ValidationDisabled, package.IsCompatible);
             Assert.Equal(6, package.HostMajorVersion);
         }
         finally
@@ -487,27 +481,22 @@ public sealed class NuGetPluginServiceTests
         try
         {
             using var handler = new InMemoryNuGetHandler();
-            var metadataSource = new InMemoryNuGetMetadataSource
-            {
-                SearchResults =
+            handler.SearchResults =
                 [
-                    new NuGetPluginSearchMetadata(
+                    CreatePackageSearchMetadata(
                         "Background.Plugin",
                         "Background Plugin",
                         null,
                         null,
                         null,
                         null),
-                ],
-            };
-            metadataSource.AddVersions(
+                ];
+            handler.AddMetadataVersions(
                 "Background.Plugin",
                 CreatePluginVersionMetadata("1.0.0"));
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
-                testDirectory,
-                metadataSource: metadataSource);
+                handler,
+                testDirectory);
             var updated = new TaskCompletionSource(
                 TaskCreationOptions.RunContinuationsAsynchronously);
             service.PackageInformationUpdated += (_, _) => updated.TrySetResult();
@@ -528,7 +517,7 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal(
                 "Background.Plugin",
                 Assert.Single(service.PackageSnapshot.Packages).Id);
-            Assert.Equal(["windowtranslator-plugin"], metadataSource.RequestedTags);
+            Assert.Equal(["tags:windowtranslator-plugin"], handler.RequestedSearchTerms);
         }
         finally
         {
@@ -548,15 +537,10 @@ public sealed class NuGetPluginServiceTests
                     [new InstalledPackageInfo("Installed.Plugin", "1.2.3")])),
                 Encoding.UTF8);
             using var handler = new InMemoryNuGetHandler();
-            using var client = new HttpClient(handler);
-            var metadataSource = new InMemoryNuGetMetadataSource
-            {
-                SearchException = new HttpRequestException("NuGet search failed."),
-            };
+            handler.SearchException = new HttpRequestException("NuGet search failed.");
             using var service = CreateService(
-                client,
-                testDirectory,
-                metadataSource: metadataSource);
+                handler,
+                testDirectory);
             var viewModel = new PluginStoreViewModel(
                 service,
                 NullLogger<PluginStoreViewModel>.Instance,
@@ -569,7 +553,7 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal("1.2.3", package.InstalledVersion);
             Assert.True(package.IsInstalled);
             Assert.NotNull(viewModel.ErrorMessage);
-            Assert.Equal(["windowtranslator-plugin"], metadataSource.RequestedTags);
+            Assert.Equal(["tags:windowtranslator-plugin"], handler.RequestedSearchTerms);
         }
         finally
         {
@@ -584,29 +568,24 @@ public sealed class NuGetPluginServiceTests
         try
         {
             using var handler = new InMemoryNuGetHandler();
-            var metadataSource = new InMemoryNuGetMetadataSource
-            {
-                SearchResults =
+            handler.SearchResults =
                 [
-                    new NuGetPluginSearchMetadata(
+                    CreatePackageSearchMetadata(
                         "Test.Plugin",
                         "Test Plugin",
                         "Test description",
                         "WindowTranslator.Tests",
                         null,
                         null),
-                ],
-            };
-            metadataSource.AddVersions(
+                ];
+            handler.AddMetadataVersions(
                 "Test.Plugin",
                 CreatePluginVersionMetadata("1.0.0"),
                 CreatePluginVersionMetadata("1.1.0-beta.1"),
                 CreatePluginVersionMetadata("1.1.0-beta.2"));
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
-                testDirectory,
-                metadataSource: metadataSource);
+                handler,
+                testDirectory);
 
             var package = Assert.Single(await service.SearchPackagesAsync());
 
@@ -615,7 +594,7 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal(
                 ["1.0.0", "1.1.0-beta.1", "1.1.0-beta.2"],
                 package.Versions);
-            Assert.Equal([true], metadataSource.RequestedPrereleaseOptions);
+            Assert.Equal([true], handler.RequestedPrereleaseOptions);
         }
         finally
         {
@@ -630,52 +609,51 @@ public sealed class NuGetPluginServiceTests
         try
         {
             using var handler = new InMemoryNuGetHandler();
-            var metadataSource = new InMemoryNuGetMetadataSource
-            {
-                SearchResults =
+            handler.SearchResults =
                 [
-                    new NuGetPluginSearchMetadata(
+                    CreatePackageSearchMetadata(
                         "Compatible.Plugin",
                         null,
                         null,
                         null,
                         null,
                         null),
-                    new NuGetPluginSearchMetadata(
+                    CreatePackageSearchMetadata(
                         "Missing.Dependency.Plugin",
                         null,
                         null,
                         null,
                         null,
                         null),
-                ],
-            };
-            metadataSource.AddVersions(
+                ];
+            handler.AddMetadataVersions(
                 "Compatible.Plugin",
                 CreatePluginVersionMetadata("1.0.0", "[1.0.0, 2.0.0)"),
                 CreatePluginVersionMetadata("2.0.0", "[2.0.0, 3.0.0)"));
-            metadataSource.AddVersions(
+            handler.AddMetadataVersions(
                 "Missing.Dependency.Plugin",
                 CreatePluginVersionMetadata(
                     "1.0.0",
                     includeAbstractionsDependency: false));
 
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
+                handler,
                 testDirectory,
                 new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["WindowTranslator.Abstractions"] = NuGetVersion.Parse("1.5.0"),
-                },
-                metadataSource);
+                });
 
             var package = Assert.Single(await service.SearchPackagesAsync());
 
             Assert.Equal("Compatible.Plugin", package.Id);
-            Assert.Equal("1.0.0", package.Version);
-            Assert.Equal(["1.0.0"], package.Versions);
-            Assert.Equal(["windowtranslator-plugin"], metadataSource.RequestedTags);
+            Assert.Equal(
+                PluginCompatibility.ValidationDisabled ? "2.0.0" : "1.0.0",
+                package.Version);
+            Assert.Equal(
+                PluginCompatibility.ValidationDisabled ? ["1.0.0", "2.0.0"] : ["1.0.0"],
+                package.Versions);
+            Assert.Equal(["tags:windowtranslator-plugin"], handler.RequestedSearchTerms);
         }
         finally
         {
@@ -775,7 +753,7 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task InstallRejectsPackageRequiringNewerHostAbstractions()
+    public async Task InstallCompatibilityFollowsValidationSetting()
     {
         var testDirectory = CreateTestDirectory();
         try
@@ -798,22 +776,28 @@ public sealed class NuGetPluginServiceTests
                         ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
+                handler,
                 testDirectory,
                 new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["WindowTranslator.Abstractions"] = NuGetVersion.Parse("1.5.0"),
                 });
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => service.InstallPackageAsync("Root.Plugin", "2.0.0"));
-
-            Assert.Contains("WindowTranslator.Abstractions", exception.Message);
-            Assert.Contains("[2.0.0, 3.0.0)", exception.Message);
-            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
-            Assert.Empty(await service.GetInstalledPackagesAsync());
+            if (PluginCompatibility.ValidationDisabled)
+            {
+                await service.InstallPackageAsync("Root.Plugin", "2.0.0");
+                Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            }
+            else
+            {
+                var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => service.InstallPackageAsync("Root.Plugin", "2.0.0"));
+                Assert.Contains("WindowTranslator.Abstractions", exception.Message);
+                Assert.Contains("[2.0.0, 3.0.0)", exception.Message);
+                Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+                Assert.Empty(await service.GetInstalledPackagesAsync());
+            }
         }
         finally
         {
@@ -844,9 +828,8 @@ public sealed class NuGetPluginServiceTests
                         ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
                     }));
 
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
+                handler,
                 testDirectory,
                 new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
                 {
@@ -888,8 +871,7 @@ public sealed class NuGetPluginServiceTests
                     },
                     includeAbstractionsDependency: false));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => service.InstallPackageAsync("Root.Plugin", "1.0.0"));
@@ -924,8 +906,7 @@ public sealed class NuGetPluginServiceTests
                     },
                     includePluginTag: false));
 
-            using var client = new HttpClient(handler);
-            using var service = CreateService(client, testDirectory);
+            using var service = CreateService(handler, testDirectory);
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => service.InstallPackageAsync("Root.Plugin", "1.0.0"));
@@ -972,20 +953,17 @@ public sealed class NuGetPluginServiceTests
                         ["README.md"] = "# Preview README"u8.ToArray(),
                     }));
 
-            var metadataSource = new InMemoryNuGetMetadataSource();
-            metadataSource.AddReadmeUrl(
+            handler.AddReadmeUrl(
                 "Readme.Plugin",
                 "1.0.0",
                 "https://nuget.test/readme/readme.plugin/1.0.0");
-            metadataSource.AddReadmeUrl(
+            handler.AddReadmeUrl(
                 "Readme.Plugin",
                 "2.0.0-preview.1",
                 "https://nuget.test/readme/readme.plugin/2.0.0-preview.1");
-            using var client = new HttpClient(handler);
             using var service = CreateService(
-                client,
-                testDirectory,
-                metadataSource: metadataSource);
+                handler,
+                testDirectory);
             var viewModel = new PluginStoreViewModel(
                 service,
                 NullLogger<PluginStoreViewModel>.Instance,
@@ -1154,7 +1132,7 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public void CatalogSynchronizationExcludesPackagesFromAnotherHostMajorVersion()
+    public void CatalogSynchronizationFollowsCompatibilityValidationSetting()
     {
         var sourceDirectory = CreateTestDirectory();
         var destinationDirectory = CreateTestDirectory();
@@ -1190,10 +1168,12 @@ public sealed class NuGetPluginServiceTests
                 destinationDirectory,
                 "Compatible.Plugin",
                 "Compatible.Plugin.dll")));
-            Assert.False(Directory.Exists(Path.Combine(
-                destinationDirectory,
-                "Incompatible.Plugin")));
-            Assert.Equal(["Incompatible.Plugin"], incompatiblePackages);
+            Assert.Equal(
+                PluginCompatibility.ValidationDisabled,
+                Directory.Exists(Path.Combine(destinationDirectory, "Incompatible.Plugin")));
+            Assert.Equal(
+                PluginCompatibility.ValidationDisabled ? [] : ["Incompatible.Plugin"],
+                incompatiblePackages);
         }
         finally
         {
@@ -1373,20 +1353,19 @@ public sealed class NuGetPluginServiceTests
     }
 
     private static NuGetPluginService CreateService(
-        HttpClient client,
+        InMemoryNuGetHandler handler,
         string pluginDirectory,
         IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null,
-        INuGetPluginMetadataSource? metadataSource = null,
         int? hostMajorVersion = null)
         => new(
             NullLogger<NuGetPluginService>.Instance,
-            client,
+            new InMemoryHttpClientFactory(handler),
+            handler.CreateRepository(),
             pluginDirectory,
-            hostPackageVersions: hostPackageVersions,
-            metadataSource: metadataSource ?? new InMemoryNuGetMetadataSource(),
-            hostMajorVersion: hostMajorVersion);
+            hostPackageVersions ?? NuGetPluginService.CreateHostPackageVersions(),
+            hostMajorVersion ?? AppInfo.Instance.Version.Major);
 
-    private static NuGetPluginVersionMetadata CreatePluginVersionMetadata(
+    private static TestPackageVersion CreatePluginVersionMetadata(
         string version,
         string? abstractionsRange = null,
         bool includeAbstractionsDependency = true)
@@ -1406,6 +1385,32 @@ public sealed class NuGetPluginServiceTests
                         ]
                         : []),
             ]);
+
+    private static IPackageSearchMetadata CreatePackageSearchMetadata(
+        string packageId,
+        string? title,
+        string? description,
+        string? authors,
+        string? projectUrl,
+        string? licenseUrl,
+        NuGetVersion? version = null,
+        IEnumerable<PackageDependencyGroup>? dependencySets = null,
+        bool isListed = true,
+        string? readmeFileUrl = null)
+        => new TestPackageSearchMetadata
+        {
+            Identity = new PackageIdentity(
+                packageId,
+                version ?? NuGetVersion.Parse("0.0.0")),
+            Title = title!,
+            Description = description!,
+            Authors = authors!,
+            ProjectUrl = projectUrl is null ? null! : new Uri(projectUrl),
+            LicenseUrl = licenseUrl is null ? null! : new Uri(licenseUrl),
+            DependencySets = dependencySets ?? [],
+            IsListed = isListed,
+            ReadmeFileUrl = readmeFileUrl!,
+        };
 
     private static async Task WaitForReadmeAsync(
         PluginPackageViewModel package,
@@ -1542,73 +1547,90 @@ public sealed class NuGetPluginServiceTests
 
     private sealed record TestDependency(string Id, string Version, string? Exclude = null);
 
-    private sealed class InMemoryNuGetMetadataSource : INuGetPluginMetadataSource
+    private sealed record TestPackageVersion(
+        NuGetVersion Version,
+        bool IsListed,
+        IReadOnlyList<PackageDependencyGroup> DependencyGroups);
+
+    private sealed class TestPackageSearchMetadata : IPackageSearchMetadata
     {
-        private readonly Dictionary<string, IReadOnlyList<NuGetPluginVersionMetadata>> versions =
-            new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, string> readmeUrls =
-            new(StringComparer.OrdinalIgnoreCase);
+        public string Authors { get; init; } = null!;
+        public IEnumerable<PackageDependencyGroup> DependencySets { get; init; } = [];
+        public string Description { get; init; } = null!;
+        public long? DownloadCount { get; init; }
+        public Uri IconUrl { get; init; } = null!;
+        public PackageIdentity Identity { get; init; } = null!;
+        public Uri LicenseUrl { get; init; } = null!;
+        public Uri ProjectUrl { get; init; } = null!;
+        public Uri ReadmeUrl { get; init; } = null!;
+        public string ReadmeFileUrl { get; init; } = null!;
+        public Uri ReportAbuseUrl { get; init; } = null!;
+        public Uri PackageDetailsUrl { get; init; } = null!;
+        public DateTimeOffset? Published { get; init; }
+        public IReadOnlyList<string> OwnersList { get; init; } = [];
+        public string Owners { get; init; } = null!;
+        public bool RequireLicenseAcceptance { get; init; }
+        public string Summary { get; init; } = null!;
+        public string Tags { get; init; } = null!;
+        public string Title { get; init; } = null!;
+        public bool IsListed { get; init; }
+        public bool PrefixReserved { get; init; }
+        public LicenseMetadata LicenseMetadata { get; init; } = null!;
+        public IEnumerable<PackageVulnerabilityMetadata> Vulnerabilities { get; init; } = [];
 
-        public IReadOnlyList<NuGetPluginSearchMetadata> SearchResults { get; init; } = [];
+        public Task<PackageDeprecationMetadata?> GetDeprecationMetadataAsync()
+            => Task.FromResult<PackageDeprecationMetadata?>(null);
 
-        public Exception? SearchException { get; init; }
+        public Task<IEnumerable<VersionInfo>> GetVersionsAsync()
+            => Task.FromResult<IEnumerable<VersionInfo>>([]);
+    }
 
-        public List<string> RequestedTags { get; } = [];
-
-        public List<bool> RequestedPrereleaseOptions { get; } = [];
-
-        public void AddVersions(string packageId, params NuGetPluginVersionMetadata[] packageVersions)
-            => this.versions[packageId] = packageVersions;
-
-        public void AddReadmeUrl(string packageId, string version, string url)
-            => this.readmeUrls[GetReadmeKey(packageId, NuGetVersion.Parse(version))] = url;
-
-        public Task<IReadOnlyList<NuGetPluginSearchMetadata>> SearchAsync(
-            string tag,
-            bool includePrerelease,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            this.RequestedTags.Add(tag);
-            this.RequestedPrereleaseOptions.Add(includePrerelease);
-            return this.SearchException is null
-                ? Task.FromResult(this.SearchResults)
-                : Task.FromException<IReadOnlyList<NuGetPluginSearchMetadata>>(this.SearchException);
-        }
-
-        public Task<IReadOnlyList<NuGetPluginVersionMetadata>> GetPackageVersionsAsync(
-            string packageId,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return Task.FromResult(
-                this.versions.TryGetValue(packageId, out var packageVersions)
-                    ? packageVersions
-                    : (IReadOnlyList<NuGetPluginVersionMetadata>)[]);
-        }
-
-        public Task<string?> GetReadmeUrlAsync(
-            string packageId,
-            NuGetVersion version,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            this.readmeUrls.TryGetValue(GetReadmeKey(packageId, version), out var readmeUrl);
-            return Task.FromResult(readmeUrl);
-        }
-
-        private static string GetReadmeKey(string packageId, NuGetVersion version)
-            => $"{packageId}\n{version.ToNormalizedString()}";
+    private sealed class InMemoryHttpClientFactory(InMemoryNuGetHandler handler) : IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name) => new(handler, disposeHandler: false);
     }
 
     private sealed class InMemoryNuGetHandler : HttpMessageHandler
     {
         private readonly Dictionary<(string Id, string Version), byte[]> packages = new();
+        private readonly Dictionary<string, IReadOnlyList<TestPackageVersion>> metadataVersions =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> readmeUrls =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        public IReadOnlyList<IPackageSearchMetadata> SearchResults { get; set; } = [];
+
+        public Exception? SearchException { get; set; }
+
+        public List<string> RequestedSearchTerms { get; } = [];
+
+        public List<bool> RequestedPrereleaseOptions { get; } = [];
 
         public List<string> RequestedPaths { get; } = [];
 
         public void AddPackage(string id, string version, byte[] package)
-            => this.packages[(id.ToLowerInvariant(), version.ToLowerInvariant())] = package;
+            => this.packages[(NormalizeId(id), NormalizeVersion(version))] = package;
+
+        public void AddMetadataVersions(string packageId, params TestPackageVersion[] packageVersions)
+            => this.metadataVersions[packageId] = packageVersions;
+
+        public void AddReadmeUrl(string packageId, string version, string url)
+            => this.readmeUrls[GetReadmeKey(packageId, NuGetVersion.Parse(version))] = url;
+
+        public SourceRepository CreateRepository()
+            => new(
+                new PackageSource("https://nuget.test/v3/index.json"),
+                [
+                    new InMemoryResourceProvider<PackageSearchResource>(
+                        new InMemoryPackageSearchResource(this)),
+                    new InMemoryResourceProvider<PackageMetadataResource>(
+                        new InMemoryPackageMetadataResource(this)),
+                    new InMemoryResourceProvider<FindPackageByIdResource>(
+                        new InMemoryFindPackageByIdResource(this)),
+                ]);
+
+        private static string GetReadmeKey(string packageId, NuGetVersion version)
+            => $"{packageId}\n{version.ToNormalizedString()}";
 
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
@@ -1624,46 +1646,13 @@ public sealed class NuGetPluginServiceTests
                 return Task.FromResult(CreateReadmeResponse(segments[1], segments[2]));
             }
 
-            if (segments.Length == 3
-                && segments[0].Equals("v3-flatcontainer", StringComparison.OrdinalIgnoreCase)
-                && segments[2].Equals("index.json", StringComparison.OrdinalIgnoreCase))
-            {
-                var id = segments[1].ToLowerInvariant();
-                var versions = this.packages.Keys
-                    .Where(key => key.Id == id)
-                    .Select(key => key.Version)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(version => version, StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(
-                        JsonSerializer.Serialize(new { versions }),
-                        Encoding.UTF8,
-                        "application/json"),
-                });
-            }
-
-            if (segments.Length == 4
-                && segments[0].Equals("v3-flatcontainer", StringComparison.OrdinalIgnoreCase))
-            {
-                var key = (segments[1].ToLowerInvariant(), segments[2].ToLowerInvariant());
-                if (this.packages.TryGetValue(key, out var package))
-                {
-                    return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new ByteArrayContent(package),
-                    });
-                }
-            }
-
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
         }
 
         private HttpResponseMessage CreateReadmeResponse(string packageId, string version)
         {
             if (!this.packages.TryGetValue(
-                    (packageId.ToLowerInvariant(), version.ToLowerInvariant()),
+                    (NormalizeId(packageId), NormalizeVersion(version)),
                     out var package))
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -1685,6 +1674,157 @@ public sealed class NuGetPluginServiceTests
             };
         }
 
+        private static string NormalizeId(string packageId) => packageId.ToLowerInvariant();
+
+        private static string NormalizeVersion(string version)
+            => NuGetVersion.Parse(version).ToNormalizedString().ToLowerInvariant();
+
+        private sealed class InMemoryPackageSearchResource(InMemoryNuGetHandler source)
+            : PackageSearchResource
+        {
+            public override Task<IEnumerable<IPackageSearchMetadata>> SearchAsync(
+                string searchTerm,
+                SearchFilter filters,
+                int skip,
+                int take,
+                NuGet.Common.ILogger log,
+                CancellationToken cancellationToken)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                source.RequestedSearchTerms.Add(searchTerm);
+                source.RequestedPrereleaseOptions.Add(filters.IncludePrerelease);
+                return source.SearchException is null
+                    ? Task.FromResult(source.SearchResults.Skip(skip).Take(take).AsEnumerable())
+                    : Task.FromException<IEnumerable<IPackageSearchMetadata>>(source.SearchException);
+            }
+        }
+
+        private sealed class InMemoryPackageMetadataResource(InMemoryNuGetHandler source)
+            : PackageMetadataResource
+        {
+            public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync(
+                string packageId,
+                bool includePrerelease,
+                bool includeUnlisted,
+                SourceCacheContext sourceCacheContext,
+                NuGet.Common.ILogger log,
+                CancellationToken cancellationToken)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var versions = source.metadataVersions.TryGetValue(packageId, out var packageVersions)
+                    ? packageVersions
+                    : [];
+                var metadata = versions
+                    .Where(version => includePrerelease || !version.Version.IsPrerelease)
+                    .Where(version => includeUnlisted || version.IsListed)
+                    .Select(version => CreatePackageSearchMetadata(
+                        packageId,
+                        title: null,
+                        description: null,
+                        authors: null,
+                        projectUrl: null,
+                        licenseUrl: null,
+                        version.Version,
+                        version.DependencyGroups,
+                        version.IsListed));
+                return Task.FromResult(metadata);
+            }
+
+            public override Task<IPackageSearchMetadata> GetMetadataAsync(
+                PackageIdentity identity,
+                SourceCacheContext sourceCacheContext,
+                NuGet.Common.ILogger log,
+                CancellationToken cancellationToken)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                source.readmeUrls.TryGetValue(GetReadmeKey(identity.Id, identity.Version), out var readmeUrl);
+                return Task.FromResult(CreatePackageSearchMetadata(
+                    identity.Id,
+                    title: null,
+                    description: null,
+                    authors: null,
+                    projectUrl: null,
+                    licenseUrl: null,
+                    identity.Version,
+                    readmeFileUrl: readmeUrl));
+            }
+        }
+
+        private sealed class InMemoryFindPackageByIdResource(InMemoryNuGetHandler source)
+            : FindPackageByIdResource
+        {
+            public override Task<IEnumerable<NuGetVersion>> GetAllVersionsAsync(
+                string id,
+                SourceCacheContext cacheContext,
+                NuGet.Common.ILogger logger,
+                CancellationToken token)
+            {
+                token.ThrowIfCancellationRequested();
+                var normalizedId = NormalizeId(id);
+                source.RequestedPaths.Add($"/v3-flatcontainer/{normalizedId}/index.json");
+                return Task.FromResult(source.packages.Keys
+                    .Where(key => key.Id == normalizedId)
+                    .Select(key => NuGetVersion.Parse(key.Version))
+                    .OrderBy(version => version)
+                    .AsEnumerable());
+            }
+
+            public override async Task<bool> CopyNupkgToStreamAsync(
+                string id,
+                NuGetVersion version,
+                Stream destination,
+                SourceCacheContext cacheContext,
+                NuGet.Common.ILogger logger,
+                CancellationToken token)
+            {
+                token.ThrowIfCancellationRequested();
+                var normalizedId = NormalizeId(id);
+                var normalizedVersion = NormalizeVersion(version.ToNormalizedString());
+                source.RequestedPaths.Add(
+                    $"/v3-flatcontainer/{normalizedId}/{normalizedVersion}/{normalizedId}.{normalizedVersion}.nupkg");
+                if (!source.packages.TryGetValue((normalizedId, normalizedVersion), out var package))
+                {
+                    return false;
+                }
+
+                await destination.WriteAsync(package, token);
+                return true;
+            }
+
+            public override Task<FindPackageByIdDependencyInfo> GetDependencyInfoAsync(
+                string id,
+                NuGetVersion version,
+                SourceCacheContext cacheContext,
+                NuGet.Common.ILogger logger,
+                CancellationToken token)
+                => throw new NotSupportedException();
+
+            public override Task<IPackageDownloader> GetPackageDownloaderAsync(
+                PackageIdentity packageIdentity,
+                SourceCacheContext cacheContext,
+                NuGet.Common.ILogger logger,
+                CancellationToken token)
+                => throw new NotSupportedException();
+
+            public override Task<bool> DoesPackageExistAsync(
+                string id,
+                NuGetVersion version,
+                SourceCacheContext cacheContext,
+                NuGet.Common.ILogger logger,
+                CancellationToken token)
+                => Task.FromResult(source.packages.ContainsKey(
+                    (NormalizeId(id), NormalizeVersion(version.ToNormalizedString()))));
+        }
+    }
+
+    private sealed class InMemoryResourceProvider<TResource>(TResource resource)
+        : ResourceProvider(typeof(TResource))
+        where TResource : class, INuGetResource
+    {
+        public override Task<Tuple<bool, INuGetResource?>> TryCreate(
+            SourceRepository source,
+            CancellationToken token)
+            => Task.FromResult(Tuple.Create<bool, INuGetResource?>(true, resource));
     }
 }
 

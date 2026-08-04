@@ -1,15 +1,13 @@
 using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using NuGet.Frameworks;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace WindowTranslator.Modules.PluginStore;
@@ -18,22 +16,19 @@ namespace WindowTranslator.Modules.PluginStore;
 /// NuGetパッケージとそのランタイム依存関係を、プラグインフォルダへ展開します。
 /// </summary>
 internal sealed class NuGetPackageInstaller(
-    HttpClient httpClient,
+    FindPackageByIdResource packageResource,
     ILogger logger,
-    IReadOnlyDictionary<string, NuGetVersion>? hostPackageVersions = null)
+    IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions)
 {
-    private const string FlatContainerBase = "https://api.nuget.org/v3-flatcontainer";
-
     private static readonly NuGetFramework HostFramework = GetHostFramework();
     private static readonly FrameworkReducer FrameworkReducer = new();
 
     private static readonly string[] CompatibleRuntimeIdentifiers =
         [RuntimeInformation.RuntimeIdentifier, "win", "any"];
 
-    private readonly HttpClient httpClient = httpClient;
+    private readonly FindPackageByIdResource packageResource = packageResource;
     private readonly ILogger logger = logger;
-    private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions =
-        hostPackageVersions ?? new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+    private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions = hostPackageVersions;
 
     public async Task InstallAsync(
         string packageId,
@@ -151,6 +146,7 @@ internal sealed class NuGetPackageInstaller(
         var artifacts = new Dictionary<string, PackageArtifact>(StringComparer.OrdinalIgnoreCase);
         var queue = new Queue<string>();
         var queued = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using var cacheContext = new SourceCacheContext();
 
         AddConstraint(
             rootPackageId,
@@ -181,7 +177,11 @@ internal sealed class NuGetPackageInstaller(
             var ranges = currentConstraints.Select(c => c.Range).ToArray();
             var resolvedVersion = currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase)
                 ? rootVersion
-                : await ResolveDependencyVersionAsync(currentId, ranges, cancellationToken).ConfigureAwait(false);
+                : await ResolveDependencyVersionAsync(
+                    currentId,
+                    ranges,
+                    cacheContext,
+                    cancellationToken).ConfigureAwait(false);
 
             if (!ranges.All(r => r.Satisfies(resolvedVersion)))
             {
@@ -208,6 +208,7 @@ internal sealed class NuGetPackageInstaller(
                 resolvedVersion,
                 packagePath,
                 currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase) ? progress : null,
+                cacheContext,
                 cancellationToken).ConfigureAwait(false);
             ValidateHostPackageDependencies(
                 packagePath,
@@ -274,21 +275,18 @@ internal sealed class NuGetPackageInstaller(
     private async Task<NuGetVersion> ResolveDependencyVersionAsync(
         string packageId,
         IReadOnlyCollection<VersionRange> ranges,
+        SourceCacheContext cacheContext,
         CancellationToken cancellationToken)
     {
-        var versionsUrl = $"{FlatContainerBase}/{packageId.ToLowerInvariant()}/index.json";
-        using var response = await this.httpClient.GetAsync(versionsUrl, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-        await using var content = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        var versionList = await JsonSerializer.DeserializeAsync<VersionIndex>(
-            content,
-            cancellationToken: cancellationToken).ConfigureAwait(false);
-
-        var compatibleVersions = versionList?.Versions?
-            .Select(NuGetVersion.Parse)
+        var versions = await this.packageResource.GetAllVersionsAsync(
+            packageId,
+            cacheContext,
+            NuGet.Common.NullLogger.Instance,
+            cancellationToken).ConfigureAwait(false);
+        var compatibleVersions = versions
             .Where(v => ranges.All(r => r.Satisfies(v)))
             .OrderBy(v => v)
-            .ToArray() ?? [];
+            .ToArray();
         return compatibleVersions.FirstOrDefault(v => !v.IsPrerelease)
             ?? compatibleVersions.FirstOrDefault()
             ?? throw new InvalidOperationException(
@@ -300,34 +298,24 @@ internal sealed class NuGetPackageInstaller(
         NuGetVersion version,
         string destinationPath,
         IProgress<double>? progress,
+        SourceCacheContext cacheContext,
         CancellationToken cancellationToken)
     {
-        var packageIdLower = packageId.ToLowerInvariant();
-        var versionLower = version.ToNormalizedString().ToLowerInvariant();
-        var url = $"{FlatContainerBase}/{packageIdLower}/{versionLower}/{packageIdLower}.{versionLower}.nupkg";
         this.logger.LogInformation("NuGetパッケージをダウンロード中: {PackageId} {Version}", packageId, version);
-
-        using var response = await this.httpClient.GetAsync(
-            url,
-            HttpCompletionOption.ResponseHeadersRead,
-            cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-
-        var totalBytes = response.Content.Headers.ContentLength ?? -1;
-        var downloadedBytes = 0L;
-        await using var source = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        progress?.Report(0);
         await using var destination = File.Create(destinationPath);
-        var buffer = new byte[81920];
-        int bytesRead;
-        while ((bytesRead = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
+        var copied = await this.packageResource.CopyNupkgToStreamAsync(
+            packageId,
+            version,
+            destination,
+            cacheContext,
+            NuGet.Common.NullLogger.Instance,
+            cancellationToken).ConfigureAwait(false);
+        if (!copied)
         {
-            await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken).ConfigureAwait(false);
-            downloadedBytes += bytesRead;
-            if (totalBytes > 0)
-            {
-                progress?.Report((double)downloadedBytes / totalBytes);
-            }
+            throw new InvalidOperationException($"NuGetパッケージを取得できませんでした: {packageId} {version}");
         }
+        progress?.Report(1);
     }
 
     private static List<PackageDependency> ReadRuntimeDependencies(string packagePath)
@@ -381,7 +369,8 @@ internal sealed class NuGetPackageInstaller(
                     $"パッケージ {packageId} {packageVersion} はWindowTranslatorプラグインタグを持っていません。");
             }
 
-            if (!hostPackageVersions.ContainsKey(NuGetPluginService.AbstractionsPackageId))
+            if (!PluginCompatibility.ValidationDisabled
+                && !hostPackageVersions.ContainsKey(NuGetPluginService.AbstractionsPackageId))
             {
                 throw new InvalidOperationException(
                     $"実行中の{NuGetPluginService.AbstractionsPackageId}のバージョンを確認できません。");
@@ -400,7 +389,7 @@ internal sealed class NuGetPackageInstaller(
         foreach (var dependency in dependencies)
         {
             if (!hostPackageVersions.TryGetValue(dependency.Id, out var hostVersion)
-                || dependency.VersionRange.Satisfies(hostVersion))
+                || PluginCompatibility.IsVersionCompatible(dependency.VersionRange, hostVersion))
             {
                 continue;
             }
@@ -628,6 +617,4 @@ internal sealed class NuGetPackageInstaller(
 
     private sealed record DependencyConstraint(string Source, VersionRange Range);
 
-    private sealed record VersionIndex(
-        [property: JsonPropertyName("versions")] string[]? Versions);
 }
