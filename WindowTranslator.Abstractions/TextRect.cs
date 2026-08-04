@@ -33,6 +33,16 @@ public record TextRect(string SourceText, double X, double Y, double Width, doub
     public double MaxWidth { get; init; } = double.NaN;
 
     /// <summary>
+    /// 表示可能な翻訳結果を待っている理由。
+    /// </summary>
+    public TextRegionBusyReason BusyReasons { get; init; }
+
+    /// <summary>
+    /// 領域内にBusyを表示するかどうか。
+    /// </summary>
+    public bool IsBusy => this.BusyReasons != TextRegionBusyReason.None;
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="text">テキスト</param>

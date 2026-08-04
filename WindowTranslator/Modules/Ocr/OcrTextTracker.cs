@@ -23,6 +23,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double TextVoteDecay = 0.75;
     private const double TextVoteThreshold = 1.5;
     private const int TextVoteHistorySize = 5;
+    private const int TypewriterCandidateHistorySize = 7;
+    private const int TypewriterCooldownFrames = 2;
     private const double MinimumStructureSizeRatio = 0.65;
     private const double MinimumStructureOverlap = 0.45;
     private const double MinimumStructureTextSimilarity = 0.65;
@@ -38,6 +40,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private const double StrongOneToOneScore = 0.9;
     private const double AngleVectorEpsilon = 0.000000000001;
     private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan typewriterStableDuration = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan typewriterTailDuration = TimeSpan.FromMilliseconds(1500);
 
     private readonly ILogger<OcrTextTracker> logger = logger;
     private readonly object syncRoot = new();
@@ -1885,6 +1889,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         private TextRect? geometryCandidate;
         private int geometryCandidateCount;
         private readonly List<TextVote> textVotes = [];
+        private TypewriterState? typewriter;
+        private int typewriterCooldownFrames;
         private string normalizedConfirmedText = NormalizeText(observation.SourceText);
         private DormantGeometry? dormantGeometry;
         private TextRect? outputGeometryOverride;
@@ -1931,9 +1937,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         {
             this.MissedFrames = 0;
             this.UpdateMotion(current, timestamp);
+            string previousText = this.LatestObservation.SourceText;
             this.LatestObservation = current;
             this.LastObservationTime = timestamp;
-            this.UpdateText(current.SourceText);
+            this.UpdateText(previousText, current.SourceText, timestamp);
             this.UpdateGeometry(current);
             this.Stabilized = current with
             {
@@ -1945,6 +1952,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 FontSize = this.Stabilized.FontSize,
                 MultiLine = this.Stabilized.MultiLine,
                 Angle = this.Stabilized.Angle,
+                BusyReasons = this.typewriter is null
+                    ? current.BusyReasons & ~TextRegionBusyReason.Typewriter
+                    : current.BusyReasons | TextRegionBusyReason.Typewriter,
             };
         }
 
@@ -1999,11 +2009,52 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             this.ResetMotion(timestamp);
         }
 
-        private void UpdateText(string current)
+        private void UpdateText(string previous, string current, TimeSpan timestamp)
         {
+            string normalizedPrevious = NormalizeText(previous);
             string normalizedCurrent = NormalizeText(current);
+
+            if (this.typewriter is not null)
+            {
+                if (normalizedCurrent == this.typewriter.Start.Normalized)
+                {
+                    this.typewriter = null;
+                    this.textVotes.Clear();
+                    return;
+                }
+
+                if (this.typewriter.Observe(new(normalizedCurrent, current), timestamp, out TextVote? final))
+                {
+                    TextVote confirmed = final
+                        ?? throw new InvalidOperationException("文字送りの最終候補がありません。");
+                    this.ConfirmedText = confirmed.Original;
+                    this.normalizedConfirmedText = confirmed.Normalized;
+                    this.typewriter = null;
+                    this.typewriterCooldownFrames = TypewriterCooldownFrames;
+                    this.textVotes.Clear();
+                }
+                return;
+            }
+
+            bool canStartTypewriter = this.typewriterCooldownFrames == 0;
+            if (this.typewriterCooldownFrames > 0)
+            {
+                this.typewriterCooldownFrames--;
+            }
+
             if (normalizedCurrent == this.normalizedConfirmedText)
             {
+                this.textVotes.Clear();
+                return;
+            }
+
+            if (canStartTypewriter && IsProgressiveTextChange(normalizedPrevious, normalizedCurrent))
+            {
+                this.typewriter = new(
+                    new(this.normalizedConfirmedText, this.ConfirmedText),
+                    new(normalizedPrevious, previous),
+                    new(normalizedCurrent, current),
+                    timestamp);
                 this.textVotes.Clear();
                 return;
             }
@@ -2041,6 +2092,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 this.textVotes.Clear();
             }
         }
+
+        private static bool IsProgressiveTextChange(string previous, string current)
+            => previous.Length > 0
+                && current.Length > previous.Length
+                && current.StartsWith(previous, StringComparison.Ordinal);
 
         private void UpdateMotion(TextRect current, TimeSpan timestamp)
         {
@@ -2226,6 +2282,90 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                     Angle = NormalizeAngle(parent.Angle + this.AngleOffset),
                 };
             }
+        }
+
+        private sealed class TypewriterState(
+            TextVote start,
+            TextVote previous,
+            TextVote current,
+            TimeSpan timestamp)
+        {
+            private readonly List<TextVote> history = [previous, current];
+            private TextVote last = current;
+            private int consecutiveCount = 1;
+            private TimeSpan lastProgressTime = timestamp;
+
+            public TextVote Start { get; } = start;
+
+            public TextVote MostProgressed { get; private set; } = current;
+
+            public bool Observe(TextVote current, TimeSpan timestamp, out TextVote? final)
+            {
+                this.AddHistory(current);
+                if (current.Normalized == this.last.Normalized)
+                {
+                    this.consecutiveCount++;
+                }
+                else
+                {
+                    this.last = current;
+                    this.consecutiveCount = 1;
+                }
+
+                if (IsProgressiveTextChange(this.MostProgressed.Normalized, current.Normalized))
+                {
+                    this.MostProgressed = current;
+                    this.lastProgressTime = timestamp;
+                    final = null;
+                    return false;
+                }
+
+                if (current.Normalized == this.MostProgressed.Normalized
+                    && this.consecutiveCount >= 2)
+                {
+                    if (timestamp - this.lastProgressTime >= typewriterStableDuration)
+                    {
+                        final = current;
+                        return true;
+                    }
+                }
+
+                if (timestamp - this.lastProgressTime >= typewriterTailDuration)
+                {
+                    final = this.SelectFinal();
+                    return true;
+                }
+
+                final = null;
+                return false;
+            }
+
+            private void AddHistory(TextVote candidate)
+            {
+                this.history.Add(candidate);
+                if (this.history.Count > TypewriterCandidateHistorySize)
+                {
+                    this.history.RemoveAt(0);
+                }
+            }
+
+            private TextVote SelectFinal()
+                => this.history
+                    .Where(candidate => candidate.Normalized != this.Start.Normalized)
+                    .Select((candidate, index) => (candidate, index))
+                    .GroupBy(item => item.candidate.Normalized)
+                    .Select(group => new
+                    {
+                        Candidate = group.Last().candidate,
+                        Count = group.Count(),
+                        IsMostProgressed = group.Key == this.MostProgressed.Normalized,
+                        LastIndex = group.Max(item => item.index),
+                    })
+                    .OrderByDescending(candidate => candidate.Count)
+                    .ThenByDescending(candidate => candidate.IsMostProgressed)
+                    .ThenByDescending(candidate => candidate.LastIndex)
+                    .Select(candidate => candidate.Candidate)
+                    .FirstOrDefault(this.MostProgressed);
         }
 
         private sealed record TextVote(string Normalized, string Original);
