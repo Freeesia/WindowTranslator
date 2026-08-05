@@ -42,7 +42,7 @@ public sealed partial class WindowsMediaOcr(
     public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
         => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
@@ -70,7 +70,7 @@ public sealed partial class WindowsMediaOcr(
 
         try
         {
-            return await RecognizeRegionAsync(workingBitmap);
+            return await RecognizeRegionAsync(workingBitmap, source.PixelWidth * this.scale, source.PixelHeight * this.scale);
         }
         finally
         {
@@ -81,7 +81,13 @@ public sealed partial class WindowsMediaOcr(
         }
     }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="baseWidth">画像全体を基準にした閾値の計算に使う幅</param>
+    /// <param name="baseHeight">画像全体を基準にした閾値の計算に使う高さ</param>
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, double baseWidth, double baseHeight)
     {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
@@ -114,7 +120,7 @@ public sealed partial class WindowsMediaOcr(
             .Lines
             .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < workingBitmap.PixelHeight * 0.1)
+            .Where(w => w.Height < baseHeight * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -122,8 +128,8 @@ public sealed partial class WindowsMediaOcr(
             return lineResults;
         }
 
-        var xt = xPosThrethold * workingBitmap.PixelWidth;
-        var yt = yPosThrethold * workingBitmap.PixelHeight;
+        var xt = xPosThrethold * baseWidth;
+        var yt = yPosThrethold * baseHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {

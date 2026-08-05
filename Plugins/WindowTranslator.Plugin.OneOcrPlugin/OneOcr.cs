@@ -133,7 +133,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
     public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
         => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
         // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
@@ -154,7 +154,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
         try
         {
-            return await RecognizeRegionAsync(workingBitmap);
+            return await RecognizeRegionAsync(workingBitmap, source);
         }
         finally
         {
@@ -165,16 +165,21 @@ public sealed class OneOcr : IOcrModule, IDisposable
         }
     }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="source">閾値の計算に使う元の全体画像</param>
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, SoftwareBitmap source)
     {
 
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
-        textRects = ProcessTextRects(textRects, workingBitmap.PixelWidth, workingBitmap.PixelHeight);
+        textRects = ProcessTextRects(textRects, (int)(source.PixelWidth * this.scale), (int)(source.PixelHeight * this.scale));
 
-        var wFat = workingBitmap.PixelWidth * 0.004;
+        var wFat = source.PixelWidth * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い

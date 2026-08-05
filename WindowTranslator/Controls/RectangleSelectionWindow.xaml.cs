@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
 
@@ -35,7 +36,7 @@ public partial class RectangleSelectionWindow : Window
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-        if (!TryFitToTargetClientArea())
+        if (!TryFitToCaptureArea())
         {
             DialogResult = false;
             Close();
@@ -53,10 +54,15 @@ public partial class RectangleSelectionWindow : Window
     }
 
     /// <summary>
-    /// 対象ウィンドウのクライアント領域に一致するようにウィンドウを配置する
+    /// キャプチャ画像と同じ範囲になるようにウィンドウを配置する
     /// </summary>
+    /// <remarks>
+    /// キャプチャ画像はウィンドウ全体のフレームから
+    /// <see cref="WINDOWINFO.rcWindow"/>の上端と<see cref="WINDOWINFO.rcClient"/>の左右下端で切り出した範囲になるため、
+    /// <see cref="Main.OverlayMainWindow"/>と同じ計算で位置と大きさを求める
+    /// </remarks>
     /// <returns>配置できた場合は<see langword="true"/></returns>
-    private bool TryFitToTargetClientArea()
+    private bool TryFitToCaptureArea()
     {
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
         if (this.targetHandle == IntPtr.Zero || !GetWindowInfo(new(this.targetHandle), ref windowInfo))
@@ -65,8 +71,23 @@ public partial class RectangleSelectionWindow : Window
         }
 
         var client = windowInfo.rcClient;
-        var width = client.right - client.left;
-        var height = client.bottom - client.top;
+        var left = client.left;
+        var top = windowInfo.rcWindow.top;
+        var placement = default(WINDOWPLACEMENT);
+        // 最大化時はウィンドウの上端が画面外に出るため、作業領域の上端を使う
+        if (GetWindowPlacement(new(this.targetHandle), ref placement) && placement.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE))
+        {
+            var monitor = MonitorFromWindow(new(this.targetHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+            var monitorInfo = default(MONITORINFOEXW);
+            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+            if (GetMonitorInfo(monitor, ref monitorInfo.monitorInfo))
+            {
+                top = monitorInfo.monitorInfo.rcWork.top;
+            }
+        }
+
+        var width = client.right - left;
+        var height = client.bottom - top;
         if (width <= 0 || height <= 0)
         {
             return false;
@@ -74,8 +95,8 @@ public partial class RectangleSelectionWindow : Window
 
         // Win32のスクリーン座標(物理ピクセル)をWPFの座標(DIP)に変換する
         var dpiScale = GetDpiForSystem() / 96.0;
-        SetCurrentValue(LeftProperty, client.left / dpiScale);
-        SetCurrentValue(TopProperty, client.top / dpiScale);
+        SetCurrentValue(LeftProperty, left / dpiScale);
+        SetCurrentValue(TopProperty, top / dpiScale);
         SetCurrentValue(WidthProperty, width / dpiScale);
         SetCurrentValue(HeightProperty, height / dpiScale);
         return true;

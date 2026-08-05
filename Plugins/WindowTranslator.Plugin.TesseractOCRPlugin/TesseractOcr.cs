@@ -47,7 +47,7 @@ public sealed class TesseractOcr(
     public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
         => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
         // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
@@ -70,7 +70,7 @@ public sealed class TesseractOcr(
 
         try
         {
-            return await RecognizeRegionAsync(workingBitmap);
+            return await RecognizeRegionAsync(workingBitmap, source);
         }
         finally
         {
@@ -81,7 +81,12 @@ public sealed class TesseractOcr(
         }
     }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="bitmap">認識対象の画像</param>
+    /// <param name="source">閾値の計算に使う元の全体画像</param>
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
 
         var sw = Stopwatch.StartNew();
@@ -96,8 +101,8 @@ public sealed class TesseractOcr(
         }
 
         // マージ処理
-        var xt = xPosThreshold * bitmap.PixelWidth;
-        var yt = yPosThreshold * bitmap.PixelHeight;
+        var xt = xPosThreshold * source.PixelWidth;
+        var yt = yPosThreshold * source.PixelHeight;
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));
