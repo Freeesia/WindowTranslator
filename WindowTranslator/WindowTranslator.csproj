@@ -21,7 +21,7 @@
     <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>$(DefineConstants);NO_MUTEX</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_MUTEX;DISABLE_PLUGIN_COMPATIBILITY_VALIDATION</DefineConstants>
   </PropertyGroup>
   <!-- Configure Sentry -->
   <PropertyGroup Condition="'$(SENTRY_AUTH_TOKEN)' != ''">
@@ -44,6 +44,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
@@ -51,6 +52,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="NuGet.Frameworks" />
+    <PackageReference Include="NuGet.Packaging" />
+    <PackageReference Include="NuGet.Protocol" />
+    <PackageReference Include="NuGet.Versioning" />
     <PackageReference Include="Octokit" />
     <PackageReference Include="PropertyTools.Wpf" />
     <PackageReference Include="Sentry.Extensions.Logging" />

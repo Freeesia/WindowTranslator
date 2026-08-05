@@ -283,6 +283,26 @@ internal class Resources
     public static string InMemoryCache => ResourceManager.GetString("InMemoryCache", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "インストール" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Install => ResourceManager.GetString("Install", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "インストール済み" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Installed => ResourceManager.GetString("Installed", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "インストール済み: {0}" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string InstalledVersion => ResourceManager.GetString("InstalledVersion", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "インストール済みバージョン" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string InstalledVersionLabel => ResourceManager.GetString("InstalledVersionLabel", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "新しいバージョン: {0} のインストール" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string InstallNewVersion => ResourceManager.GetString("InstallNewVersion", resourceCulture) ?? string.Empty;
@@ -323,9 +343,19 @@ internal class Resources
     public static string Language => ResourceManager.GetString("Language", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "最新バージョン" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string LatestVersion => ResourceManager.GetString("LatestVersion", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "ライセンス" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string License => ResourceManager.GetString("License", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "ライセンス情報" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string LicenseUrl => ResourceManager.GetString("LicenseUrl", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "ローカルファイルキャッシュ" に類似しているローカライズされた文字列を検索します。
@@ -361,6 +391,11 @@ internal class Resources
     /// "翻訳しない" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string NoTranslateModule => ResourceManager.GetString("NoTranslateModule", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "NuGetからのプラグイン一覧の取得に失敗しました。ネットワーク接続を確認してください。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string NuGetSearchFailed => ResourceManager.GetString("NuGetSearchFailed", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "{0}のOCR機能が使えません。対象の言語機能をインストールしてください" に類似しているローカライズされた文字列を検索します。
@@ -413,6 +448,36 @@ internal class Resources
     public static string Plugin => ResourceManager.GetString("Plugin", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "インストール失敗" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginInstallFailed => ResourceManager.GetString("PluginInstallFailed", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "インストール完了" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginInstallSuccess => ResourceManager.GetString("PluginInstallSuccess", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "現在のWindowTranslatorメジャーバージョンとは互換性がありません。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginIncompatible => ResourceManager.GetString("PluginIncompatible", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "プラグイン" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginStore => ResourceManager.GetString("PluginStore", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "プレリリース" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Prerelease => ResourceManager.GetString("Prerelease", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "プロジェクトページ" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string ProjectUrl => ResourceManager.GetString("ProjectUrl", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "公開ページ" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PublishPage => ResourceManager.GetString("PublishPage", resourceCulture) ?? string.Empty;
@@ -421,6 +486,16 @@ internal class Resources
     /// "{0}を自動起動に登録しました。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string RegisterAutoStart => ResourceManager.GetString("RegisterAutoStart", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "今すぐ再起動" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string RestartNow => ResourceManager.GetString("RestartNow", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "プラグインの変更を適用するには、WindowTranslatorを再起動してください。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string RestartRequired => ResourceManager.GetString("RestartRequired", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "後で" に類似しているローカライズされた文字列を検索します。
@@ -558,6 +633,16 @@ internal class Resources
     public static string UnhundledErrorMessage => ResourceManager.GetString("UnhundledErrorMessage", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "アンインストール" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Uninstall => ResourceManager.GetString("Uninstall", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "{0} をアンインストールしますか？" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string UninstallConfirm => ResourceManager.GetString("UninstallConfirm", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "選択したウィンドウ「{0}」はプロセスを特定できないため、キャプチャー出来ません。&amp;#13;..." に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string UnknownWindow => ResourceManager.GetString("UnknownWindow", resourceCulture) ?? string.Empty;
@@ -566,6 +651,21 @@ internal class Resources
     /// "{0}の自動起動を解除しました。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string UnregisterAutoStart => ResourceManager.GetString("UnregisterAutoStart", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "更新" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Update => ResourceManager.GetString("Update", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "更新あり" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string UpdateAvailable => ResourceManager.GetString("UpdateAvailable", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "インストール済み: {0} → 最新: {1}" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string UpdateAvailableVersion => ResourceManager.GetString("UpdateAvailableVersion", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "最新バージョンに更新" に類似しているローカライズされた文字列を検索します。

@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Markup;
@@ -12,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using Octokit;
 using Sentry.Extensions.Logging;
 using Weikio.PluginFramework.Abstractions;
@@ -27,6 +31,7 @@ using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Modules.Validate;
@@ -36,6 +41,8 @@ using Wpf.Ui;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
+
+args = ApplicationRestart.WaitForPreviousProcess(args);
 
 #if NO_MUTEX
 var createdNew = true;
@@ -108,17 +115,29 @@ builder.Services.AddPluginFramework()
     .AddPluginType<ITargetSettingsValidator>()
     .AddPluginType<IPluginParam>();
 
-var pluginFolderCatalog = new CompositePluginCatalog();
+var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
+var nugetPluginsDir = Path.Combine(PathUtility.UserDir, "nuget-plugins");
+IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
+    nugetPluginsDir,
+    AppInfo.Instance.Version.Major,
+    new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
+var fallbackPluginCatalogs = new List<IPluginCatalog>();
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    fallbackPluginCatalogs.Add(
+        new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
-
-var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    fallbackPluginCatalogs.Add(
+        new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+}
+if (fallbackPluginCatalogs.Count > 0)
+{
+    pluginFolderCatalog = new PrioritizedPluginCatalog(
+        pluginFolderCatalog,
+        new CompositePluginCatalog([.. fallbackPluginCatalogs]));
 }
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);
@@ -158,7 +177,24 @@ builder.Services.AddPresentation<LogWindow, LogViewModel>();
 builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
-builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
+builder.Services.AddHttpClient(NuGetPluginService.HttpClientName, client =>
+    client.Timeout = TimeSpan.FromSeconds(30))
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All,
+    });
+builder.Services.AddSingleton<SourceRepository>(_ =>
+    NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3(NuGetPluginService.NuGetServiceIndexUrl));
+builder.Services.AddSingleton(sp => new NuGetPluginService(
+        sp.GetRequiredService<ILogger<NuGetPluginService>>(),
+        sp.GetRequiredService<IHttpClientFactory>(),
+        sp.GetRequiredService<SourceRepository>(),
+        nugetPluginsDir,
+        NuGetPluginService.CreateHostPackageVersions(),
+        AppInfo.Instance.Version.Major))
+    .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
+builder.Services.AddTransient<PluginStoreViewModel>();
+builder.Services.AddTransient<IConfigureOptions<UserSettings>, ConfigureUserSettings>();
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
@@ -226,11 +262,23 @@ static string GetPluginName(PluginNameOptions options, Type type)
     }
 }
 
-class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
+class ConfigureUserSettings(IConfiguration configuration) : IConfigureOptions<UserSettings>
+{
+    private readonly IConfiguration configuration = configuration;
+
+    public void Configure(UserSettings options)
+        => PluginParameterIgnoringConfigurationBinder.Bind(this.configuration, options);
+}
+
+class ConfigurePluginParam<TOptions>(
+    IConfiguration configuration,
+    IProcessInfoStore store,
+    ILogger<ConfigurePluginParam<TOptions>> logger) : IConfigureNamedOptions<TOptions>
     where TOptions : class, IPluginParam
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
+    private readonly ILogger<ConfigurePluginParam<TOptions>> logger = logger;
 
     public void Configure(TOptions options)
     {
@@ -239,7 +287,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
+        this.BindParameter(section, options);
     }
 
     public void Configure(string? name, TOptions options)
@@ -250,7 +298,46 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
+        this.BindParameter(section, options);
+    }
+
+    private void BindParameter(IConfigurationSection targetSection, TOptions options)
+    {
+        var parameterSection = GetTargetSection(targetSection, typeof(TOptions).Name);
+        if (!parameterSection.Exists())
+        {
+            return;
+        }
+
+        try
+        {
+            var configured = parameterSection.Get<TOptions>();
+            if (configured is null)
+            {
+                return;
+            }
+
+            foreach (var property in typeof(TOptions).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (property.CanRead
+                    && property.CanWrite
+                    && property.GetIndexParameters().Length == 0)
+                {
+                    property.SetValue(options, property.GetValue(configured));
+                }
+            }
+        }
+        catch (Exception ex) when (ex is InvalidOperationException
+                                   or FormatException
+                                   or NotSupportedException
+                                   or MissingMethodException
+                                   or ArgumentException
+                                   or TargetInvocationException)
+        {
+            this.logger.LogWarning(
+                "プラグインパラメータ {ParameterType} を読み込めないため無視します。",
+                typeof(TOptions).Name);
+        }
     }
 
     private static IConfigurationSection GetTargetSection(IConfigurationSection section, string name)
@@ -278,7 +365,7 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.Bind(options);
+        PluginParameterIgnoringConfigurationBinder.Bind(section, options);
     }
 
     public void Configure(string? name, TargetSettings options)
@@ -289,7 +376,25 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.Bind(options);
+        PluginParameterIgnoringConfigurationBinder.Bind(section, options);
+    }
+}
+
+static class PluginParameterIgnoringConfigurationBinder
+{
+    public static void Bind(IConfiguration configuration, object options)
+    {
+        var values = configuration
+            .AsEnumerable(makePathsRelative: true)
+            .Where(value => !value.Key
+                .Split(ConfigurationPath.KeyDelimiter, StringSplitOptions.None)
+                .Contains(
+                    nameof(TargetSettings.PluginParams),
+                    StringComparer.OrdinalIgnoreCase));
+        var filteredConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(values)
+            .Build();
+        filteredConfiguration.Bind(options);
     }
 }
 
