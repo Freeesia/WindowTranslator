@@ -1,4 +1,4 @@
-namespace WindowTranslator.Tests;
+﻿namespace WindowTranslator.Tests;
 
 /// <summary>
 /// 優先矩形の座標計算に関するテスト

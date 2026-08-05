@@ -1,7 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
@@ -40,7 +41,13 @@ public partial class RectangleSelectionWindow : Window
         {
             DialogResult = false;
             Close();
+            return;
         }
+
+        // 設定画面が対象ウィンドウに重なっていても選択範囲が見えるように、対象ウィンドウを前面に出す
+        SetWindowPos(new(this.targetHandle), HWND.Null, 0, 0, 0, 0,
+            SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+        Activate();
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

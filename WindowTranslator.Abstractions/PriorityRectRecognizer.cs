@@ -1,4 +1,4 @@
-#if WINDOWS
+﻿#if WINDOWS
 using Windows.Graphics.Imaging;
 
 namespace WindowTranslator;
@@ -17,7 +17,8 @@ public static class PriorityRectRecognizer
     /// 全体の認識結果と優先矩形の認識結果をマージする
     /// </summary>
     /// <remarks>
-    /// 優先矩形はリストの前方ほど優先度が高く、優先度の高い矩形で認識した文字と重なった結果は破棄する
+    /// 優先矩形はリストの前方ほど優先度が高く、優先度の高い矩形で文字を認識できた領域と重なった結果は破棄する。
+    /// 文字を認識できなかった矩形はその領域の全体の認識結果を残すため、優先領域として扱わない
     /// </remarks>
     /// <param name="bitmap">認識対象の画像</param>
     /// <param name="priorityRects">優先矩形のリスト</param>
@@ -39,7 +40,7 @@ public static class PriorityRectRecognizer
         }
 
         var results = new List<TextRect>();
-        // 優先度の高い矩形で認識済みの文字の領域
+        // 優先度の高い矩形のうち、文字を認識できた領域
         var recognized = new List<RectInfo>();
 
         foreach (var priorityRect in priorityRects)
@@ -59,17 +60,30 @@ public static class PriorityRectRecognizer
                 .Where(r => !IsCoveredBy(r, recognized))
                 .ToArray();
 
+            // 何も認識できなかった矩形は、その領域の全体の認識結果を残すため優先領域として扱わない
+            if (rectResults.Length == 0)
+            {
+                continue;
+            }
+
             results.AddRange(rectResults);
-            recognized.AddRange(rectResults.Select(r => r.GetRotatedBoundingBox()));
+            recognized.Add(absRect);
         }
 
-        // 全体の認識結果のうち、優先矩形で認識済みの文字と重なるものは破棄する
+        // 全体の認識結果のうち、優先矩形で認識済みの領域と重なるものは破棄する
         var fullResults = await recognizeAsync(bitmap, bitmap).ConfigureAwait(false);
         results.AddRange(fullResults.Where(r => !IsCoveredBy(r, recognized)));
 
         return results;
     }
 
+    /// <summary>
+    /// 認識結果が優先領域に覆われているかどうかを判定する
+    /// </summary>
+    /// <remarks>
+    /// 全体の認識では優先矩形の内外の文字がひとつのブロックに結合されることがあるため、
+    /// 個々の文字ではなく矩形の領域を基準に判定する
+    /// </remarks>
     private static bool IsCoveredBy(TextRect text, List<RectInfo> areas)
     {
         if (areas.Count == 0)

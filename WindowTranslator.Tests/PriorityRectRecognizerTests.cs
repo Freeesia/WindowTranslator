@@ -1,4 +1,4 @@
-using Windows.Graphics.Imaging;
+﻿using Windows.Graphics.Imaging;
 
 namespace WindowTranslator.Tests;
 
@@ -78,6 +78,22 @@ public class PriorityRectRecognizerTests
                 : [Text("priority", 10, 10)]));
 
         Assert.Equal(["priority", "full"], results.Select(r => r.SourceText));
+    }
+
+    [Fact]
+    public async Task 優先矩形の内外の文字が結合された全体の結果は破棄される()
+    {
+        using var bitmap = CreateBitmap();
+        // 画像の左上4分の1（200x150）を優先矩形にする
+        PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
+
+        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+            ValueTask.FromResult<IEnumerable<TextRect>>(ReferenceEquals(target, source)
+                // 全体の認識では優先矩形の中の文字と外の文字がひとつのブロックに結合されることがある
+                ? [Text("full-merged", 5, 5, 200, 100)]
+                : [Text("priority", 10, 10)]));
+
+        Assert.Equal("priority", Assert.Single(results).SourceText);
     }
 
     [Fact]
