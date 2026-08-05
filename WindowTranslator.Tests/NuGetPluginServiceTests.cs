@@ -382,7 +382,36 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task ExistingManifestLoadsInstalledPackages()
+    public async Task ManifestLoadsInstalledPackages()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new InstalledManifest(
+                    [new InstalledPackageInfo("Root.Plugin", "1.0.0", HostMajorVersion: 7)])));
+
+            using var handler = new InMemoryNuGetHandler();
+            using var service = CreateService(
+                handler,
+                testDirectory,
+                hostMajorVersion: 7);
+
+            var installed = Assert.Single(await service.GetInstalledPackagesAsync());
+
+            Assert.Equal("Root.Plugin", installed.Id);
+            Assert.Equal("1.0.0", installed.Version);
+            Assert.Equal(7, installed.HostMajorVersion);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task ManifestWithoutHostMajorVersionIsRejected()
     {
         var testDirectory = CreateTestDirectory();
         try
@@ -400,49 +429,14 @@ public sealed class NuGetPluginServiceTests
                         },
                     },
                 }));
-
-            using var handler = new InMemoryNuGetHandler();
-            using var service = CreateService(handler, testDirectory);
-
-            var installed = Assert.Single(await service.GetInstalledPackagesAsync());
-
-            Assert.Equal("Legacy.Plugin", installed.Id);
-            Assert.Equal("1.0.0", installed.Version);
-        }
-        finally
-        {
-            DeleteTestDirectory(testDirectory);
-        }
-    }
-
-    [Fact]
-    public async Task ExistingManifestRecordsCurrentHostMajorVersionOnFirstRead()
-    {
-        var testDirectory = CreateTestDirectory();
-        try
-        {
-            await File.WriteAllTextAsync(
-                Path.Combine(testDirectory, "nuget-manifest.json"),
-                JsonSerializer.Serialize(new InstalledManifest(
-                    [new InstalledPackageInfo("Legacy.Plugin", "1.0.0")])));
             using var handler = new InMemoryNuGetHandler();
             using var service = CreateService(
                 handler,
                 testDirectory,
                 hostMajorVersion: 7);
 
-            var package = Assert.Single(await service.GetInstalledPackagesAsync());
-
-            Assert.Equal(7, package.HostMajorVersion);
-            Assert.True(package.IsCompatible);
-            using var document = JsonDocument.Parse(await File.ReadAllTextAsync(
-                Path.Combine(testDirectory, "nuget-manifest.json")));
-            Assert.Equal(
-                7,
-                document.RootElement
-                    .GetProperty("Packages")[0]
-                    .GetProperty("HostMajorVersion")
-                    .GetInt32());
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.GetInstalledPackagesAsync());
         }
         finally
         {
@@ -537,13 +531,14 @@ public sealed class NuGetPluginServiceTests
             await File.WriteAllTextAsync(
                 Path.Combine(testDirectory, "nuget-manifest.json"),
                 JsonSerializer.Serialize(new InstalledManifest(
-                    [new InstalledPackageInfo("Installed.Plugin", "1.2.3")])),
+                    [new InstalledPackageInfo("Installed.Plugin", "1.2.3", HostMajorVersion: 7)])),
                 Encoding.UTF8);
             using var handler = new InMemoryNuGetHandler();
             handler.SearchException = new HttpRequestException("NuGet search failed.");
             using var service = CreateService(
                 handler,
-                testDirectory);
+                testDirectory,
+                hostMajorVersion: 7);
             var viewModel = new PluginStoreViewModel(
                 service,
                 NullLogger<PluginStoreViewModel>.Instance,
@@ -1222,6 +1217,111 @@ public sealed class NuGetPluginServiceTests
         {
             DeleteTestDirectory(sourceDirectory);
             DeleteTestDirectory(destinationDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InterruptedInstallIsRolledBackBeforeItIsTreatedAsCompleted()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        try
+        {
+            const string packageId = "Root.Plugin";
+            var originalManifest = new InstalledManifest(
+                [new InstalledPackageInfo(packageId, "1.0.0", HostMajorVersion: 1)]);
+            var updatedManifest = new InstalledManifest(
+                [new InstalledPackageInfo(packageId, "2.0.0", HostMajorVersion: 1)]);
+            var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
+            await NuGetPluginOperation.SaveManifestAsync(
+                manifestPath,
+                updatedManifest,
+                CancellationToken.None);
+
+            var operationPaths = NuGetPluginOperation.CreatePaths(sourceDirectory, packageId);
+            Directory.CreateDirectory(operationPaths.BackupPath);
+            File.WriteAllText(Path.Combine(operationPaths.BackupPath, "plugin.txt"), "old");
+            var targetDirectory = NuGetPluginOperation.GetPackageDirectory(sourceDirectory, packageId);
+            Directory.CreateDirectory(targetDirectory);
+            File.WriteAllText(Path.Combine(targetDirectory, "plugin.txt"), "new");
+            await NuGetPluginOperation.WriteJournalAsync(
+                operationPaths,
+                new(
+                    operationPaths.OperationId,
+                    packageId,
+                    NuGetPluginOperationKind.Install,
+                    ManifestExisted: true,
+                    originalManifest),
+                CancellationToken.None);
+
+            var unresolved = await NuGetPluginOperation.RecoverInterruptedOperationsAsync(
+                sourceDirectory);
+
+            Assert.Empty(unresolved);
+            Assert.Equal("old", File.ReadAllText(Path.Combine(targetDirectory, "plugin.txt")));
+            var restoredManifest = JsonSerializer.Deserialize<InstalledManifest>(
+                File.ReadAllText(manifestPath),
+                NuGetPluginService.ManifestJsonOptions);
+            Assert.Equal("1.0.0", Assert.Single(restoredManifest!.Packages).Version);
+            Assert.False(File.Exists(operationPaths.JournalPath));
+            Assert.False(Directory.Exists(operationPaths.StagingPath));
+            Assert.False(Directory.Exists(operationPaths.BackupPath));
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task CompletedInstallKeepsNewFilesAndOnlyCleansOperationData()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        try
+        {
+            const string packageId = "Root.Plugin";
+            var originalManifest = new InstalledManifest(
+                [new InstalledPackageInfo(packageId, "1.0.0", HostMajorVersion: 1)]);
+            var updatedManifest = new InstalledManifest(
+                [new InstalledPackageInfo(packageId, "2.0.0", HostMajorVersion: 1)]);
+            var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
+            await NuGetPluginOperation.SaveManifestAsync(
+                manifestPath,
+                updatedManifest,
+                CancellationToken.None);
+
+            var operationPaths = NuGetPluginOperation.CreatePaths(sourceDirectory, packageId);
+            Directory.CreateDirectory(operationPaths.BackupPath);
+            File.WriteAllText(Path.Combine(operationPaths.BackupPath, "plugin.txt"), "old");
+            var targetDirectory = NuGetPluginOperation.GetPackageDirectory(sourceDirectory, packageId);
+            Directory.CreateDirectory(targetDirectory);
+            File.WriteAllText(Path.Combine(targetDirectory, "plugin.txt"), "new");
+            await NuGetPluginOperation.WriteJournalAsync(
+                operationPaths,
+                new(
+                    operationPaths.OperationId,
+                    packageId,
+                    NuGetPluginOperationKind.Install,
+                    ManifestExisted: true,
+                    originalManifest),
+                CancellationToken.None);
+            NuGetPluginOperation.MarkCommitted(operationPaths);
+
+            var unresolved = await NuGetPluginOperation.RecoverInterruptedOperationsAsync(
+                sourceDirectory);
+
+            Assert.Empty(unresolved);
+            Assert.Equal("new", File.ReadAllText(Path.Combine(targetDirectory, "plugin.txt")));
+            var retainedManifest = JsonSerializer.Deserialize<InstalledManifest>(
+                File.ReadAllText(manifestPath),
+                NuGetPluginService.ManifestJsonOptions);
+            Assert.Equal("2.0.0", Assert.Single(retainedManifest!.Packages).Version);
+            Assert.False(File.Exists(operationPaths.JournalPath));
+            Assert.False(File.Exists(operationPaths.CommittedPath));
+            Assert.False(Directory.Exists(operationPaths.BackupPath));
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
         }
     }
 

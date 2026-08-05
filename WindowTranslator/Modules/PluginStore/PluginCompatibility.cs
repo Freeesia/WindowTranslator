@@ -14,8 +14,7 @@ internal static class PluginCompatibility
         => ValidationDisabled
             || (hostVersion is not null && requiredVersion?.Satisfies(hostVersion) is not false);
 
-    internal static bool IsHostMajorCompatible(int? installedHostMajorVersion, int hostMajorVersion)
+    internal static bool IsHostMajorCompatible(int installedHostMajorVersion, int hostMajorVersion)
         => ValidationDisabled
-            || installedHostMajorVersion is null
             || installedHostMajorVersion == hostMajorVersion;
 }

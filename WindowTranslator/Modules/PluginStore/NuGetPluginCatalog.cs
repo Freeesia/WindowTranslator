@@ -55,9 +55,13 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     /// <inheritdoc/>
     public async Task Initialize()
     {
+        var unresolvedOperations = await NuGetPluginOperation
+            .RecoverInterruptedOperationsAsync(this.sourceDir)
+            .ConfigureAwait(false);
         var incompatiblePackages = GetIncompatiblePackageIds(
             this.sourceDir,
-            this.hostMajorVersion);
+            this.hostMajorVersion).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        incompatiblePackages.UnionWith(unresolvedOperations);
         SynchronizePluginFiles(this.sourceDir, this.tempDir, incompatiblePackages);
 
         this.innerCatalog = CreateCatalog(this.tempDir, this.options);

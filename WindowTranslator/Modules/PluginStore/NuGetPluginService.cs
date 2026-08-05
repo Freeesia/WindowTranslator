@@ -40,7 +40,6 @@ public sealed class NuGetPluginService : BackgroundService
     private readonly SourceRepository repository;
     private readonly ILogger<NuGetPluginService> logger;
     private readonly string nugetPluginsDir;
-    private readonly string operationsDir;
     private readonly string manifestPath;
     private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions;
     private readonly int hostMajorVersion;
@@ -62,7 +61,6 @@ public sealed class NuGetPluginService : BackgroundService
         this.httpClientFactory = httpClientFactory;
         this.repository = repository;
         this.nugetPluginsDir = Path.GetFullPath(nugetPluginsDir);
-        this.operationsDir = Path.Combine(this.nugetPluginsDir, OperationsDirectoryName);
         this.manifestPath = Path.Combine(this.nugetPluginsDir, "nuget-manifest.json");
         this.hostPackageVersions = hostPackageVersions;
         this.hostMajorVersion = hostMajorVersion;
@@ -266,16 +264,14 @@ public sealed class NuGetPluginService : BackgroundService
     /// </summary>
     public async Task InstallPackageAsync(string packageId, string version, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
-        var operationId = Guid.NewGuid().ToString("N");
+        var operationPaths = NuGetPluginOperation.CreatePaths(this.nugetPluginsDir, packageId);
         var targetDir = GetPackageDirectory(packageId);
-        var stagingDir = Path.Combine(this.operationsDir, $"{packageId}.installing-{operationId}");
-        var backupDir = Path.Combine(this.operationsDir, $"{packageId}.backup-{operationId}");
-        var targetMoved = false;
-        var stagingMoved = false;
+        NuGetPluginOperationState? operationState = null;
+        var journalWritten = false;
+        var committed = false;
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
         try
         {
-            Directory.CreateDirectory(this.operationsDir);
             var packageResource = await this.repository
                 .GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -286,34 +282,48 @@ public sealed class NuGetPluginService : BackgroundService
             await installer.InstallAsync(
                 packageId,
                 version,
-                stagingDir,
+                operationPaths.StagingPath,
                 progress,
                 cancellationToken).ConfigureAwait(false);
 
+            var manifestExisted = File.Exists(this.manifestPath);
             var currentManifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
             var updatedManifest = AddOrUpdatePackage(currentManifest, packageId, version);
+            operationState = new(
+                operationPaths.OperationId,
+                packageId,
+                NuGetPluginOperationKind.Install,
+                manifestExisted,
+                currentManifest);
+            await NuGetPluginOperation.WriteJournalAsync(
+                operationPaths,
+                operationState,
+                cancellationToken).ConfigureAwait(false);
+            journalWritten = true;
 
             if (Directory.Exists(targetDir))
             {
-                Directory.Move(targetDir, backupDir);
-                targetMoved = true;
+                Directory.Move(targetDir, operationPaths.BackupPath);
             }
 
-            Directory.Move(stagingDir, targetDir);
-            stagingMoved = true;
+            Directory.Move(operationPaths.StagingPath, targetDir);
             await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
+            NuGetPluginOperation.MarkCommitted(operationPaths);
+            committed = true;
             UpdateInstalledPackages(updatedManifest.Packages);
 
             try
             {
-                if (Directory.Exists(backupDir))
-                {
-                    Directory.Delete(backupDir, recursive: true);
-                }
+                NuGetPluginOperation.CleanupCommitted(operationPaths);
+                journalWritten = false;
             }
             catch (Exception ex)
             {
-                this.logger.LogWarning(ex, "プラグインバックアップの削除に失敗しました: {BackupDir}", backupDir);
+                this.logger.LogWarning(
+                    ex,
+                    "完了したプラグイン操作の後片付けに失敗しました: {PackageId} {OperationId}",
+                    packageId,
+                    operationPaths.OperationId);
             }
 
             this.logger.LogInformation(
@@ -324,29 +334,34 @@ public sealed class NuGetPluginService : BackgroundService
         }
         catch
         {
-            try
+            if (journalWritten && !committed && operationState is not null)
             {
-                if (stagingMoved && Directory.Exists(targetDir))
+                try
                 {
-                    Directory.Move(targetDir, stagingDir);
+                    await NuGetPluginOperation.RollbackAsync(
+                        this.nugetPluginsDir,
+                        operationState,
+                        operationPaths,
+                        CancellationToken.None).ConfigureAwait(false);
+                    NuGetPluginOperation.CleanupRolledBack(operationPaths);
+                    journalWritten = false;
                 }
-                if (targetMoved && Directory.Exists(backupDir))
+                catch (Exception rollbackException)
                 {
-                    Directory.Move(backupDir, targetDir);
+                    this.logger.LogError(
+                        rollbackException,
+                        "プラグイン {PackageId} のインストール失敗後の復旧に失敗しました。",
+                        packageId);
                 }
-            }
-            catch (Exception rollbackException)
-            {
-                this.logger.LogError(
-                    rollbackException,
-                    "プラグイン {PackageId} のインストール失敗後の復旧に失敗しました。",
-                    packageId);
             }
             throw;
         }
         finally
         {
-            TryDeleteDirectory(stagingDir);
+            if (!journalWritten)
+            {
+                TryDeleteDirectory(operationPaths.StagingPath);
+            }
         }
     }
 
@@ -356,62 +371,77 @@ public sealed class NuGetPluginService : BackgroundService
     /// </summary>
     public async Task UninstallPackageAsync(string packageId, CancellationToken cancellationToken = default)
     {
-        var operationId = Guid.NewGuid().ToString("N");
+        var operationPaths = NuGetPluginOperation.CreatePaths(this.nugetPluginsDir, packageId);
         var targetDir = GetPackageDirectory(packageId);
-        var uninstallingDir = Path.Combine(this.operationsDir, $"{packageId}.uninstalling-{operationId}");
-        var targetMoved = false;
+        NuGetPluginOperationState? operationState = null;
+        var journalWritten = false;
+        var committed = false;
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
         this.logger.LogInformation("パッケージをアンインストール: {PackageId}", packageId);
-        Directory.CreateDirectory(this.operationsDir);
-
-        var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
-        var updatedManifest = RemovePackage(manifest, packageId);
-
-        if (Directory.Exists(targetDir))
-        {
-            Directory.Move(targetDir, uninstallingDir);
-            targetMoved = true;
-        }
 
         try
         {
+            var manifestExisted = File.Exists(this.manifestPath);
+            var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
+            var updatedManifest = RemovePackage(manifest, packageId);
+            operationState = new(
+                operationPaths.OperationId,
+                packageId,
+                NuGetPluginOperationKind.Uninstall,
+                manifestExisted,
+                manifest);
+            await NuGetPluginOperation.WriteJournalAsync(
+                operationPaths,
+                operationState,
+                cancellationToken).ConfigureAwait(false);
+            journalWritten = true;
+
+            if (Directory.Exists(targetDir))
+            {
+                Directory.Move(targetDir, operationPaths.UninstallingPath);
+            }
+
             await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
+            NuGetPluginOperation.MarkCommitted(operationPaths);
+            committed = true;
             UpdateInstalledPackages(updatedManifest.Packages);
+
+            try
+            {
+                NuGetPluginOperation.CleanupCommitted(operationPaths);
+                journalWritten = false;
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogWarning(
+                    ex,
+                    "完了したプラグイン操作の後片付けに失敗しました: {PackageId} {OperationId}",
+                    packageId,
+                    operationPaths.OperationId);
+            }
         }
         catch
         {
-            try
+            if (journalWritten && !committed && operationState is not null)
             {
-                if (targetMoved
-                    && Directory.Exists(uninstallingDir)
-                    && !Directory.Exists(targetDir))
+                try
                 {
-                    Directory.Move(uninstallingDir, targetDir);
+                    await NuGetPluginOperation.RollbackAsync(
+                        this.nugetPluginsDir,
+                        operationState,
+                        operationPaths,
+                        CancellationToken.None).ConfigureAwait(false);
+                    NuGetPluginOperation.CleanupRolledBack(operationPaths);
+                }
+                catch (Exception rollbackException)
+                {
+                    this.logger.LogError(
+                        rollbackException,
+                        "プラグイン {PackageId} のアンインストール失敗後の復旧に失敗しました。",
+                        packageId);
                 }
             }
-            catch (Exception rollbackException)
-            {
-                this.logger.LogError(
-                    rollbackException,
-                    "プラグイン {PackageId} のアンインストール失敗後の復旧に失敗しました。",
-                    packageId);
-            }
             throw;
-        }
-
-        try
-        {
-            if (Directory.Exists(uninstallingDir))
-            {
-                Directory.Delete(uninstallingDir, recursive: true);
-            }
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogWarning(
-                ex,
-                "アンインストール済みプラグインフォルダの削除に失敗しました: {Directory}",
-                uninstallingDir);
         }
 
         this.logger.LogInformation(
@@ -426,18 +456,6 @@ public sealed class NuGetPluginService : BackgroundService
     {
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
         var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
-        var migratedPackages = manifest.Packages
-            .Select(package => package.HostMajorVersion is null
-                ? package with { HostMajorVersion = this.hostMajorVersion }
-                : package)
-            .ToList();
-        if (migratedPackages.Where((package, index) =>
-                package != manifest.Packages[index]).Any())
-        {
-            manifest = new InstalledManifest(migratedPackages);
-            await SaveManifestAsync(manifest, cancellationToken).ConfigureAwait(false);
-        }
-
         return GetCompatibilityAwarePackages(manifest.Packages);
     }
 
@@ -643,61 +661,14 @@ public sealed class NuGetPluginService : BackgroundService
         }
     }
 
-    private async Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
-    {
-        Directory.CreateDirectory(this.nugetPluginsDir);
-        var temporaryPath = $"{this.manifestPath}.tmp-{Guid.NewGuid():N}";
-        try
-        {
-            await using (var fs = new FileStream(
-                temporaryPath,
-                FileMode.CreateNew,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 4096,
-                useAsync: true))
-            {
-                await JsonSerializer.SerializeAsync(
-                    fs,
-                    manifest,
-                    ManifestJsonOptions,
-                    cancellationToken).ConfigureAwait(false);
-                await fs.FlushAsync(cancellationToken).ConfigureAwait(false);
-            }
-
-            ReplaceFile(temporaryPath, this.manifestPath);
-        }
-        finally
-        {
-            TryDeleteFile(temporaryPath);
-        }
-    }
-
-    private static void ReplaceFile(string sourcePath, string destinationPath)
-        => File.Move(sourcePath, destinationPath, overwrite: true);
+    private Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
+        => NuGetPluginOperation.SaveManifestAsync(
+            this.manifestPath,
+            manifest,
+            cancellationToken);
 
     private string GetPackageDirectory(string packageId)
-    {
-        if (string.IsNullOrWhiteSpace(packageId)
-            || packageId is "." or ".."
-            || packageId.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
-            || packageId.Contains(Path.DirectorySeparatorChar)
-            || packageId.Contains(Path.AltDirectorySeparatorChar))
-        {
-            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
-        }
-
-        var root = this.nugetPluginsDir
-            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            + Path.DirectorySeparatorChar;
-        var packageDirectory = Path.GetFullPath(Path.Combine(root, packageId));
-        if (!packageDirectory.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
-        }
-
-        return packageDirectory;
-    }
+        => NuGetPluginOperation.GetPackageDirectory(this.nugetPluginsDir, packageId);
 
     private static void TryDeleteDirectory(string directory)
     {
@@ -706,21 +677,6 @@ public sealed class NuGetPluginService : BackgroundService
             if (Directory.Exists(directory))
             {
                 Directory.Delete(directory, recursive: true);
-            }
-        }
-        catch
-        {
-            // 後始末の失敗は元の処理結果へ影響させない
-        }
-    }
-
-    private static void TryDeleteFile(string path)
-    {
-        try
-        {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
             }
         }
         catch
@@ -754,7 +710,7 @@ public record NuGetPackageInfo(
 public record InstalledPackageInfo(
     string Id,
     string Version,
-    int? HostMajorVersion = null)
+    [property: JsonRequired] int HostMajorVersion)
 {
     [JsonIgnore]
     public bool IsCompatible { get; init; } = true;
