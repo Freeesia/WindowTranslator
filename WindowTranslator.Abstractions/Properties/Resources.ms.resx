@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Kadar pembesaran</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Kecerahan</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontras</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Ambang gabungan</value>
   </data>
@@ -98,22 +104,10 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Elakkan penggabungan senarai</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Saiz penimbal</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Tetapan OCR asas</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Lain-lain</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Fungsi penimbal</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Pembetulan ralat pengecaman</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Penindasan getaran</value>
   </data>
 </root>

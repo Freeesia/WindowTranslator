@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>扩大率</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>亮度</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>对比度</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>合并阈值</value>
   </data>
@@ -156,23 +162,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>避免合并列表</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>缓冲区大小</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>基本 OCR 设置</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>缓冲功能</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>识别错误纠正</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振动抑制</value>
   </data>
   <data name="PriorityRect" xml:space="preserve">
     <value>优先矩形</value>

@@ -76,7 +76,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>Gagal membuat pipeline OCR. Kode kesalahan: {0}
-Silakan coba perbarui aplikasi "Snipping Tool" atau "Microsoft Photos".</value>
+Silakan coba perbarui aplikasi "Snipping Tool".</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Falha ao criar opções de processo OCR. Código de erro: {0}</value>

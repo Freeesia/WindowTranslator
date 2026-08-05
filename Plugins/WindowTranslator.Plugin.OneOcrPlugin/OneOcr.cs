@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Panlingo.LanguageIdentification.FastText;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Panlingo.LanguageIdentification.FastText;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
@@ -23,7 +23,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 {
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
     const int maxLineCount = 1000;
-    private readonly FastTextDetector fastText;
+    private readonly FastTextDetector? fastText;
     private readonly ILogger<OneOcr> logger;
     private readonly string source;
     private readonly HashSet<string> targets;
@@ -38,6 +38,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
     private readonly bool isAvoidMergeList;
     private readonly double scale = 1.0; // スケールのデフォルト値
     private readonly List<PriorityRect> priorityRects;
+    private readonly int brightness; // 明るさ（-127 - 128）
+    private readonly int contrast; // コントラスト（-99 - 100）
 
     static OneOcr()
     {
@@ -61,8 +63,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
     public OneOcr(ILogger<OneOcr> logger, IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BasicOcrParam> ocrParam)
     {
         this.logger = logger;
-        this.fastText = new FastTextDetector();
-        this.fastText.LoadDefaultModel();
+        this.fastText = FastTextDetector.IsSupported() ? new() : null;
+        this.fastText?.LoadDefaultModel();
         this.source = langOptions.Value.Source;
         this.targets = [langOptions.Value.Target[..2]];
         if (this.targets.Overlaps(["ja", "zh"]) && this.source[..2] is not "ja" and not "zh")
@@ -79,6 +81,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
         this.scale = ocrParam.Value.Scale;
         this.priorityRects = ocrParam.Value.PriorityRects ?? [];
+        this.brightness = ocrParam.Value.Brightness;
+        this.contrast = ocrParam.Value.Contrast;
 
         // OCR初期化オプションの作成
         var res = CreateOcrInitOptions(out this.context);
@@ -123,7 +127,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     public void Dispose()
     {
-        this.fastText.Dispose();
+        this.fastText?.Dispose();
     }
 
     public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
@@ -149,16 +153,16 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
             // 元の画像から矩形を切り出し
             using var croppedBitmap = bitmap.Crop(absRect);
-            
+
             // 切り出した画像をスケーリング
             using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale);
-            
+
             // スケーリングされた切り出し画像をOCR
             var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
 
             // 座標をスケール変換して元の画像座標系に変換
             // RecognizeRegionAsyncの結果はスケール済み画像の座標なので、スケールで割る
-            allResults.AddRange(rectResults.Select(text => 
+            allResults.AddRange(rectResults.Select(text =>
                 new TextRect(
                     text.SourceText,
                     text.X / this.scale + absRect.X,
@@ -177,8 +181,22 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
     {
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
+
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
+        {
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
+        }
 
         var results = await RecognizeRegionAsync(workingBitmap);
 
@@ -192,6 +210,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
     {
+
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
@@ -214,7 +233,9 @@ public sealed class OneOcr : IOcrModule, IDisposable
     }
 
     private bool IsTargetLangText(string text)
-        => this.fastText.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..]));
+        => this.fastText?.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..]))
+            // fastTextがサポートされていない場合は無条件で対象外
+            ?? false;
 
     private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap)
     {
@@ -312,7 +333,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         var rects = textRects.Where(r => !string.IsNullOrEmpty(r.SourceText)).ToArray();
         if (rects.Length == 0)
         {
-            return Array.Empty<TextRect>();
+            return [];
         }
 
         // 閾値の計算

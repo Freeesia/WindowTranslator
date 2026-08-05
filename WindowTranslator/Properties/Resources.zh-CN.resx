@@ -306,11 +306,14 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>显示忙碌图标</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>仅在启用覆盖层时翻译</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>仅在鼠标指针位置的文本上显示覆盖翻译</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>鼠标指针命中检测边距</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>为鼠标指针命中检测区域增加的像素数</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>覆盖层背景不透明度</value>

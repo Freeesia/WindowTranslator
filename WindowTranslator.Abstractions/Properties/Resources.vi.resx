@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Tỷ lệ mở rộng</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Độ sáng</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Độ tương phản</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Hợp nhất ngưỡng</value>
   </data>
@@ -156,23 +162,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Tránh danh sách hợp nhất</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Kích thước bộ đệm</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>基本的なOCRの設定</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>người khác</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Chức năng bộ đệm</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Hiệu chỉnh lỗi nhận dạng</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Ngăn chặn rung động</value>
   </data>
   <data name="PriorityRect" xml:space="preserve">
     <value>Hình chữ nhật ưu tiên</value>

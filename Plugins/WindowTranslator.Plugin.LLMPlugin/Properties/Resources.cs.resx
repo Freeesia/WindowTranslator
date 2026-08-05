@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="CorrectMode_Image" xml:space="preserve">
+    <value>Oprava pomocí rozpoznání obrazu</value>
+  </data>
+  <data name="CorrectMode_None" xml:space="preserve">
+    <value>Bez opravy</value>
+  </data>
+  <data name="CorrectMode_Text" xml:space="preserve">
+    <value>Pouze textová oprava</value>
+  </data>
+  <data name="CorrectMode" xml:space="preserve">
+    <value>Oprava rozpoznání</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model k použití</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API klíč</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Připojení k lokálnímu LLM</value>
+  </data>
+  <data name="CorrectSample" xml:space="preserve">
+    <value>Ukázka opravy</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Kontextové informace použité při překladu</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Cesta ke glosáři</value>
+  </data>
+  <data name="Endpoint_Desc" xml:space="preserve">
+    <value>Ponechte prázdné při použití OpenAI</value>
+  </data>
+  <data name="LLMOptions" xml:space="preserve">
+    <value>Nastavení ChatGPT API</value>
+  </data>
+  <data name="LLMTranslator" xml:space="preserve">
+    <value>Překlad přes ChatGPT API</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>Počkat na dokončení opravy před zahájením překladu</value>
+  </data>
+  <data name="NeedSettings" xml:space="preserve">
+    <value>Funkce LLM není inicializována. Nakonfigurujte prosím možnosti LLM v dialogu nastavení</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>Jako překladový modul je vybrán „Překlad přes ChatGPT API“ nebo je povolena oprava rozpoznání.
+
+Použití ChatGPT API vyžaduje API klíč.
+Nastavte prosím API klíč na kartě „Nastavení cíle“ → „Nastavení ChatGPT API“.
+
+※ Při použití lokálního LLM je API klíč kvůli omezením knihovny také vyžadován.</value>
+  </data>
+  <data name="NeedApiKey" xml:space="preserve">
+    <value>Pro používání funkcí ChatGPT je vyžadováno zadání API klíče. Nastavte prosím API klíč v dialogu nastavení.
+
+※ Při použití lokálního LLM je API klíč kvůli omezením knihovny také vyžadován.</value>
+  </data>
+</root>

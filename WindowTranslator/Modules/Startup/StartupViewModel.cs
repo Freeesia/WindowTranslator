@@ -160,18 +160,18 @@ public partial class StartupViewModel
 
         EnumWindows((hWnd, _) =>
         {
-            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
+            if (hWnd.ShouldIgnore() || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
             {
                 return true;
             }
 
-            var windowTitle = GetWindowText(hWnd);
+            var windowTitle = hWnd.GetText();
             if (windowTitle != targetTitle)
             {
                 return true;
             }
 
-            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            if (!hWnd.TryGetProcessId(out var processId))
             {
                 return true;
             }
@@ -187,7 +187,7 @@ public partial class StartupViewModel
             }
 
             // ウィンドウサイズを取得
-            var (width, height) = GetWindowSizeForWgcCompare(hWnd);
+            var (width, height) = hWnd.GetSizeForWgcCompare();
             // サイズが完全一致する場合は即座に結果を設定して終了
             if (width == targetSize.Width && height == targetSize.Height)
             {
