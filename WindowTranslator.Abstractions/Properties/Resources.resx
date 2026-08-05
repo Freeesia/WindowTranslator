@@ -199,7 +199,8 @@
     <value>矩形選択</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）</value>
+    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
+文字が途中で切れないように少し広めに囲んでください</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>選択中</value>

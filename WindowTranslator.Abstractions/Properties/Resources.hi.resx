@@ -140,7 +140,8 @@
     <value>आयत चयन</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>आयत चुनने के लिए खींचें (रद्द करने के लिए Esc दबाएं)</value>
+    <value>आयत चुनने के लिए खींचें (रद्द करने के लिए Esc दबाएं)
+टेक्स्ट कटने से बचाने के लिए थोड़ा बड़ा क्षेत्र चुनें</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>चयन जारी है</value>

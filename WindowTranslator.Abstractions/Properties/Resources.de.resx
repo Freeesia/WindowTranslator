@@ -199,7 +199,8 @@
     <value>Rechteckauswahl</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Ziehen Sie, um ein Rechteck auszuwählen (Esc zum Abbrechen)</value>
+    <value>Ziehen Sie, um ein Rechteck auszuwählen (Esc zum Abbrechen)
+Wählen Sie einen etwas größeren Bereich, damit der Text nicht abgeschnitten wird</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Auswählen</value>

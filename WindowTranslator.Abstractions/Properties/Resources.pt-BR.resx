@@ -140,7 +140,8 @@
     <value>Seleção de retângulo</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Arraste para selecionar um retângulo (pressione Esc para cancelar)</value>
+    <value>Arraste para selecionar um retângulo (pressione Esc para cancelar)
+Selecione uma área um pouco maior para que o texto não seja cortado</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Selecionando</value>

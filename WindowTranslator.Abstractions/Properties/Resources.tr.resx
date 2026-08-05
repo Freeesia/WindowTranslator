@@ -152,7 +152,8 @@
     <value>Dikdörtgen seçimi</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Dikdörtgen seçmek için sürükleyin (iptal için Esc)</value>
+    <value>Dikdörtgen seçmek için sürükleyin (iptal için Esc)
+Metnin kesilmemesi için biraz daha geniş bir alan seçin</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Seçiliyor</value>

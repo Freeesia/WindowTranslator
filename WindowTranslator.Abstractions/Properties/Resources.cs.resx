@@ -210,7 +210,8 @@
     <value>Výběr obdélníku</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Tažením vyberte obdélník (Esc zruší výběr)</value>
+    <value>Tažením vyberte obdélník (Esc zruší výběr)
+Vyberte o něco větší oblast, aby text nebyl oříznutý</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Vybírání</value>

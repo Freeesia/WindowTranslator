@@ -199,7 +199,8 @@
     <value>Chọn hình chữ nhật</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Kéo để chọn hình chữ nhật (nhấn Esc để hủy)</value>
+    <value>Kéo để chọn hình chữ nhật (nhấn Esc để hủy)
+Hãy chọn vùng rộng hơn một chút để chữ không bị cắt</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Đang chọn</value>

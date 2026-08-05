@@ -140,7 +140,8 @@
     <value>تحديد المستطيل</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>اسحب لتحديد مستطيل (اضغط Esc للإلغاء)</value>
+    <value>اسحب لتحديد مستطيل (اضغط Esc للإلغاء)
+حدد منطقة أوسع قليلاً حتى لا يُقتطع النص</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>جارٍ التحديد</value>

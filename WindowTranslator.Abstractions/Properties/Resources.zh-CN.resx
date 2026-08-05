@@ -199,7 +199,8 @@
     <value>矩形选择</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>拖动以选择矩形（按 Esc 取消）</value>
+    <value>拖动以选择矩形（按 Esc 取消）
+请稍微框选大一些，以免文字被截断</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>选择中</value>

@@ -199,7 +199,8 @@
     <value>사각형 선택</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>드래그하여 사각형을 선택하세요 (Esc로 취소)</value>
+    <value>드래그하여 사각형을 선택하세요 (Esc로 취소)
+문자가 잘리지 않도록 조금 넓게 선택하세요</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>선택 중</value>

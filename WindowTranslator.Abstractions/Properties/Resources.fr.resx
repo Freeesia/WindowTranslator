@@ -140,7 +140,8 @@
     <value>Sélection du rectangle</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Faites glisser pour sélectionner un rectangle (Échap pour annuler)</value>
+    <value>Faites glisser pour sélectionner un rectangle (Échap pour annuler)
+Sélectionnez une zone un peu plus large pour que le texte ne soit pas coupé</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Sélection en cours</value>

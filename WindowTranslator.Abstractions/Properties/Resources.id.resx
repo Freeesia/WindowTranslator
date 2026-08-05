@@ -140,7 +140,8 @@
     <value>Pemilihan persegi panjang</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Seret untuk memilih persegi panjang (tekan Esc untuk membatalkan)</value>
+    <value>Seret untuk memilih persegi panjang (tekan Esc untuk membatalkan)
+Pilih area yang sedikit lebih luas agar teks tidak terpotong</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Memilih</value>

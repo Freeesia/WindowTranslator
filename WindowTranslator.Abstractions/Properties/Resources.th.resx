@@ -152,7 +152,8 @@
     <value>การเลือกสี่เหลี่ยม</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>ลากเพื่อเลือกสี่เหลี่ยม (กด Esc เพื่อยกเลิก)</value>
+    <value>ลากเพื่อเลือกสี่เหลี่ยม (กด Esc เพื่อยกเลิก)
+เลือกพื้นที่ให้กว้างขึ้นเล็กน้อยเพื่อไม่ให้ข้อความถูกตัด</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>กำลังเลือก</value>

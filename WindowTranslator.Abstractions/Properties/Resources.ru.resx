@@ -152,7 +152,8 @@
     <value>Выбор прямоугольника</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Перетащите, чтобы выбрать прямоугольник (Esc — отмена)</value>
+    <value>Перетащите, чтобы выбрать прямоугольник (Esc — отмена)
+Выделите область немного шире, чтобы текст не обрезался</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Выбор</value>

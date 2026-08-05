@@ -140,7 +140,8 @@
     <value>Pemilihan segi empat</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Seret untuk memilih segi empat (tekan Esc untuk batal)</value>
+    <value>Seret untuk memilih segi empat (tekan Esc untuk batal)
+Pilih kawasan yang sedikit lebih luas supaya teks tidak terpotong</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Memilih</value>

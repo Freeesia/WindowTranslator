@@ -199,7 +199,8 @@
     <value>Rectangle Selection</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Drag to select a rectangle (press Esc to cancel)</value>
+    <value>Drag to select a rectangle (press Esc to cancel)
+Select a slightly wider area so that text is not cut off</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Selecting</value>

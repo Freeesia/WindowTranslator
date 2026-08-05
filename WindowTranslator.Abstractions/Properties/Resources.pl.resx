@@ -210,7 +210,8 @@
     <value>Wybór prostokąta</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Przeciągnij, aby wybrać prostokąt (Esc anuluje)</value>
+    <value>Przeciągnij, aby wybrać prostokąt (Esc anuluje)
+Zaznacz nieco większy obszar, aby tekst nie został ucięty</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Wybieranie</value>

@@ -140,7 +140,8 @@
     <value>انتخاب مستطیل</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>برای انتخاب مستطیل بکشید (برای لغو Esc را بزنید)</value>
+    <value>برای انتخاب مستطیل بکشید (برای لغو Esc را بزنید)
+ناحیه‌ای کمی بزرگ‌تر انتخاب کنید تا متن بریده نشود</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>در حال انتخاب</value>

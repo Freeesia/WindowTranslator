@@ -97,7 +97,8 @@
     <value>Téglalap kijelölése</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Húzással jelöljön ki egy téglalapot (Esc a megszakításhoz)</value>
+    <value>Húzással jelöljön ki egy téglalapot (Esc a megszakításhoz)
+Válasszon kicsit nagyobb területet, hogy a szöveg ne vágódjon le</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Kijelölés</value>

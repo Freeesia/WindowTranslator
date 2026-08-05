@@ -152,7 +152,8 @@
     <value>Pagpili ng rektanggulo</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>I-drag para pumili ng rektanggulo (pindutin ang Esc para kanselahin)</value>
+    <value>I-drag para pumili ng rektanggulo (pindutin ang Esc para kanselahin)
+Pumili ng bahagyang mas malawak na bahagi para hindi maputol ang teksto</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Pinipili</value>
