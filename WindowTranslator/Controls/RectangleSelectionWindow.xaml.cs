@@ -8,12 +8,12 @@ using static Windows.Win32.PInvoke;
 namespace WindowTranslator.Controls;
 
 /// <summary>
-/// 対象ウィンドウのクライアント領域に重�Eて矩形を選択するウィンドウ
+/// 対象ウィンドウのクライアント領域に重ねて矩形を選択するウィンドウ
 /// </summary>
 public partial class RectangleSelectionWindow : Window
 {
     /// <summary>
-    /// 選択された矩形として扱ぁE��小�E大きさ�E�クライアント領域に対する割合！E
+    /// 選択された矩形として扱う最小の大きさ（クライアント領域に対する割合）
     /// </summary>
     private const double MinimumRelativeSize = 0.005;
 
@@ -22,7 +22,7 @@ public partial class RectangleSelectionWindow : Window
     private bool isSelecting;
 
     /// <summary>
-    /// 選択された矩形�E�クライアント領域に対する相対座樁E0.0-1.0�E�E
+    /// 選択された矩形（クライアント領域に対する相対座標 0.0-1.0）
     /// </summary>
     public PriorityRect? SelectedRect { get; private set; }
 
@@ -53,9 +53,9 @@ public partial class RectangleSelectionWindow : Window
     }
 
     /// <summary>
-    /// 対象ウィンドウのクライアント領域に一致するようにウィンドウを�E置する
+    /// 対象ウィンドウのクライアント領域に一致するようにウィンドウを配置する
     /// </summary>
-    /// <returns>配置できた場合�E<see langword="true"/></returns>
+    /// <returns>配置できた場合は<see langword="true"/></returns>
     private bool TryFitToTargetClientArea()
     {
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
@@ -72,7 +72,7 @@ public partial class RectangleSelectionWindow : Window
             return false;
         }
 
-        // Win32のスクリーン座樁E物琁E��クセル)をWPFの座樁EDIP)に変換する
+        // Win32のスクリーン座標(物理ピクセル)をWPFの座標(DIP)に変換する
         var dpiScale = GetDpiForSystem() / 96.0;
         SetCurrentValue(LeftProperty, client.left / dpiScale);
         SetCurrentValue(TopProperty, client.top / dpiScale);
@@ -125,7 +125,7 @@ public partial class RectangleSelectionWindow : Window
             (int)canvasWidth,
             (int)canvasHeight);
 
-        // 誤クリチE��による極小�E矩形は選択し直してもらぁE
+        // 誤クリックによる極端に小さい矩形は選択し直してもらう
         if (rect.Width < MinimumRelativeSize || rect.Height < MinimumRelativeSize)
         {
             this.SelectionRect.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
