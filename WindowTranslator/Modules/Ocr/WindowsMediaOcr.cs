@@ -39,45 +39,10 @@ public sealed partial class WindowsMediaOcr(
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
-    {
-        // 優先矩形が指定されている場合は、それらのみを認識
-        if (this.priorityRects.Count > 0)
-        {
-            return await RecognizePriorityRectsAsync(bitmap);
-        }
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-        // 優先矩形がない場合は通常の全体認識
-        return await RecognizeFullScreenAsync(bitmap);
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
-    {
-        var allResults = new List<TextRect>();
-
-        foreach (var priorityRect in this.priorityRects)
-        {
-            // 元の画像サイズで絶対座標を計算
-            var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight);
-
-            // 元の画像から矩形を切り出し
-            using var croppedBitmap = bitmap.Crop(absRect);
-            
-            // 切り出した画像をスケーリング
-            using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-            this.cts.Token.ThrowIfCancellationRequested();
-            
-            // スケーリングされた切り出し画像をOCR
-            var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
-
-            // 座標を元の画像座標系に変換（切り出し位置分オフセット）
-            allResults.AddRange(rectResults.Select(text => text.Offset(absRect.X, absRect.Y, priorityRect.Keyword)));
-        }
-
-        return allResults;
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap)
     {
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
@@ -103,19 +68,21 @@ public sealed partial class WindowsMediaOcr(
         }
         this.cts.Token.ThrowIfCancellationRequested();
 
-        var results = await RecognizeRegionAsync(workingBitmap);
-
-        if (bitmap != workingBitmap)
+        try
         {
-            workingBitmap.Dispose();
+            return await RecognizeRegionAsync(workingBitmap);
         }
-
-        return results;
+        finally
+        {
+            if (bitmap != workingBitmap)
+            {
+                workingBitmap.Dispose();
+            }
+        }
     }
 
     private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
     {
-
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
         this.cts.Token.ThrowIfCancellationRequested();

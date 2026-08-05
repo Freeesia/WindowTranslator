@@ -1,0 +1,73 @@
+<UserControl
+    x:Class="WindowTranslator.Controls.PriorityRectsEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:WindowTranslator.Controls"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ListBox
+            x:Name="RectList"
+            Grid.Row="0"
+            Grid.Column="0"
+            Height="120"
+            DisplayMemberPath="DisplayText"
+            SelectionChanged="RectList_SelectionChanged" />
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="4,0,0,0">
+            <ui:Button
+                x:Name="AddButton"
+                Margin="0,0,0,4"
+                HorizontalAlignment="Stretch"
+                Click="AddButton_Click"
+                Content="{x:Static local:PriorityRectResources.Add}"
+                Icon="{ui:SymbolIcon Add24}" />
+            <ui:Button
+                x:Name="RemoveButton"
+                Margin="0,0,0,4"
+                HorizontalAlignment="Stretch"
+                Click="RemoveButton_Click"
+                Content="{x:Static local:PriorityRectResources.Remove}"
+                Icon="{ui:SymbolIcon Delete24}" />
+            <ui:Button
+                x:Name="MoveUpButton"
+                Margin="0,0,0,4"
+                HorizontalAlignment="Stretch"
+                Click="MoveUpButton_Click"
+                Content="{x:Static local:PriorityRectResources.MoveUp}"
+                Icon="{ui:SymbolIcon ArrowUp24}" />
+            <ui:Button
+                x:Name="MoveDownButton"
+                HorizontalAlignment="Stretch"
+                Click="MoveDownButton_Click"
+                Content="{x:Static local:PriorityRectResources.MoveDown}"
+                Icon="{ui:SymbolIcon ArrowDown24}" />
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,8,0,0">
+            <TextBlock Text="{x:Static local:PriorityRectResources.Keyword}" />
+            <ui:TextBox
+                x:Name="KeywordBox"
+                Margin="0,4,0,0"
+                DataContext="{Binding SelectedItem, ElementName=RectList}"
+                IsEnabled="{Binding SelectedItem, ElementName=RectList, Converter={x:Static local:NotNullToBooleanConverter.Default}}"
+                PlaceholderText="{x:Static local:PriorityRectResources.KeywordDescription}"
+                Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

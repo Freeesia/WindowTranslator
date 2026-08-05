@@ -390,6 +390,13 @@ public partial class TargetSettingsViewModel(
     [Browsable(false)]
     public string Name { get; } = name;
 
+    /// <summary>
+    /// 対象ウィンドウのハンドル（翻訳中でない場合は<see cref="IntPtr.Zero"/>）
+    /// </summary>
+    [Browsable(false)]
+    public nint TargetWindowHandle
+        => sp.GetService<IMainWindowModule>()?.OpenedWindows.FirstOrDefault(w => w.Name == Name)?.Target ?? IntPtr.Zero;
+
     [Browsable(false)]
     public IEnumerable<ModuleItem> OcrModules { get; } = ocrModules;
     [Browsable(false)]

@@ -150,6 +150,42 @@ public readonly record struct RectInfo(double X, double Y, double Width, double 
     /// <returns>重なっている場合はtrue、そうでなければfalse</returns>
     public bool OverlapsWith(RectInfo other) =>
         !(Right <= other.Left || other.Right <= Left || Bottom <= other.Top || other.Bottom <= Top);
+
+    /// <summary>
+    /// 指定した矩形のうち、この矩形と重なっている割合を計算する
+    /// </summary>
+    /// <param name="other">比較対象</param>
+    /// <returns>比較対象の面積に対する重なり部分の面積の割合（0.0-1.0）</returns>
+    public double IntersectionRatio(RectInfo other)
+    {
+        var area = other.Width * other.Height;
+        if (area <= 0)
+        {
+            return 0;
+        }
+        var width = Math.Min(Right, other.Right) - Math.Max(Left, other.Left);
+        var height = Math.Min(Bottom, other.Bottom) - Math.Max(Top, other.Top);
+        if (width <= 0 || height <= 0)
+        {
+            return 0;
+        }
+        return width * height / area;
+    }
+
+    /// <summary>
+    /// 指定したサイズの画像内に収まるように矩形を丸める
+    /// </summary>
+    /// <param name="imageWidth">画像の幅</param>
+    /// <param name="imageHeight">画像の高さ</param>
+    /// <returns>丸めた矩形</returns>
+    public RectInfo Clamp(int imageWidth, int imageHeight)
+    {
+        var left = Math.Clamp(Left, 0, imageWidth);
+        var top = Math.Clamp(Top, 0, imageHeight);
+        var right = Math.Clamp(Right, 0, imageWidth);
+        var bottom = Math.Clamp(Bottom, 0, imageHeight);
+        return new(left, top, Math.Max(0, right - left), Math.Max(0, bottom - top));
+    }
 }
 
 /// <summary>

@@ -121,5 +121,46 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>โมดูลแคช</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>สี่เหลี่ยมที่มีลำดับความสำคัญ</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>สี่เหลี่ยมที่ทำ OCR ก่อน</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>สี่เหลี่ยมที่ตั้งค่าไว้จะถูกรู้จำก่อน ยิ่งอยู่ด้านบนของรายการยิ่งมีลำดับความสำคัญสูง</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>เพิ่ม</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>ลบ</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>ขึ้น</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>ลง</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>คำสำคัญ</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>ใช้เป็นบริบทของการแปล</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>การเลือกสี่เหลี่ยม</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>ลากเพื่อเลือกสี่เหลี่ยม (กด Esc เพื่อยกเลิก)</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>กำลังเลือก</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>สี่เหลี่ยมเล็กเกินไป กรุณาเลือกใหม่</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>ไม่มีหน้าต่างที่กำลังแปลอยู่ จึงไม่สามารถเลือกสี่เหลี่ยมได้ กรุณาเริ่มแปลหน้าต่างเป้าหมายก่อนตั้งค่า</value>
   </data>
 </root>

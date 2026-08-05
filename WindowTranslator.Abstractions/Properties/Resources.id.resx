@@ -109,5 +109,46 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Lainnya</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Persegi panjang prioritas</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Persegi panjang yang di-OCR lebih dulu</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Persegi panjang yang diatur dikenali lebih dulu. Semakin atas posisinya dalam daftar, semakin tinggi prioritasnya.</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tambah</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Naik</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Turun</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Kata kunci</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Digunakan sebagai konteks terjemahan</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Pemilihan persegi panjang</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Seret untuk memilih persegi panjang (tekan Esc untuk membatalkan)</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Memilih</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>Persegi panjang terlalu kecil. Silakan pilih lagi.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Tidak ada jendela yang sedang diterjemahkan sehingga persegi panjang tidak dapat dipilih. Mulai terjemahan jendela target sebelum mengatur.</value>
   </data>
 </root>

@@ -45,6 +45,15 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             fe.SetBinding(TextBox.TextProperty, property.CreateBinding());
         }
 
+        // 優先矩形は専用のエディタで編集する
+        if (property.Is(typeof(List<PriorityRect>)))
+        {
+            var editor = new PriorityRectsEditor();
+            editor.SetBinding(PriorityRectsEditor.RectsProperty, property.CreateOneWayBinding());
+            editor.SetBinding(PriorityRectsEditor.TargetWindowHandleProperty, new Binding(nameof(TargetSettingsViewModel.TargetWindowHandle)));
+            fe = editor;
+        }
+
         // EditableItemsSourceAttributeが指定されている場合、編集可能ComboBoxを生成
         if (fe == null && property is IEditableItemsPropertyItem editableItem && editableItem.EditableCandidates != null)
         {

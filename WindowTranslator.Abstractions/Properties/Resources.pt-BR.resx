@@ -109,5 +109,46 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Outros</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Retângulo prioritário</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Retângulos com OCR prioritário</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Os retângulos configurados são reconhecidos com prioridade. Quanto mais acima o item estiver na lista, maior será sua prioridade.</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Adicionar</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Para cima</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Para baixo</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Palavra-chave</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Usada como contexto para a tradução</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Seleção de retângulo</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Arraste para selecionar um retângulo (pressione Esc para cancelar)</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Selecionando</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>O retângulo é muito pequeno. Selecione novamente.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Nenhuma janela está sendo traduzida, portanto não é possível selecionar um retângulo. Inicie a tradução da janela de destino antes de configurar.</value>
   </data>
 </root>

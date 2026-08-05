@@ -172,42 +172,42 @@
     <value>Priority Rectangle</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Priority OCR Rectangles</value>
+    <value>Rectangles for priority OCR</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>OCR will prioritize the configured rectangles. The order of the list represents priority.</value>
+    <value>The configured rectangles are recognized with priority. Items higher in the list have higher priority.</value>
   </data>
-  <data name="AddPriorityRect" xml:space="preserve">
-    <value>Add Rectangle</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Add</value>
   </data>
-  <data name="RemovePriorityRect" xml:space="preserve">
-    <value>Remove Rectangle</value>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Remove</value>
   </data>
-  <data name="MoveUp" xml:space="preserve">
-    <value>Move Up</value>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Up</value>
   </data>
-  <data name="MoveDown" xml:space="preserve">
-    <value>Move Down</value>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Down</value>
   </data>
-  <data name="EditKeyword" xml:space="preserve">
-    <value>Edit Keyword</value>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Keyword</value>
   </data>
-  <data name="RectangleSelection" xml:space="preserve">
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Used as context for translation</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
     <value>Rectangle Selection</value>
   </data>
-  <data name="SelectRectangle" xml:space="preserve">
-    <value>Please select a rectangle (Press Esc to cancel)</value>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Drag to select a rectangle (press Esc to cancel)</value>
   </data>
-  <data name="Selecting" xml:space="preserve">
+  <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Selecting</value>
   </data>
-  <data name="RectangleTooSmall" xml:space="preserve">
+  <data name="PriorityRectTooSmall" xml:space="preserve">
     <value>The rectangle is too small. Please select again.</value>
   </data>
-  <data name="EnterKeyword" xml:space="preserve">
-    <value>Enter keyword (will be used as translation context)</value>
-  </data>
-  <data name="KeywordEdit" xml:space="preserve">
-    <value>Keyword Edit</value>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>No window is being translated, so a rectangle cannot be selected. Start translating the target window before configuring.</value>
   </data>
 </root>

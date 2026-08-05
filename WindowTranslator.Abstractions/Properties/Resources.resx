@@ -175,40 +175,40 @@
     <value>優先的にOCRを行う矩形</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>設定した矩形を優先的にOCR処理します。リストの順序が優先度を表します。</value>
+    <value>設定した矩形を優先的にOCRします。リストの上にあるものほど優先度が高くなります。</value>
   </data>
-  <data name="AddPriorityRect" xml:space="preserve">
-    <value>矩形を追加</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>追加</value>
   </data>
-  <data name="RemovePriorityRect" xml:space="preserve">
-    <value>矩形を削除</value>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>削除</value>
   </data>
-  <data name="MoveUp" xml:space="preserve">
-    <value>上へ移動</value>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>上へ</value>
   </data>
-  <data name="MoveDown" xml:space="preserve">
-    <value>下へ移動</value>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>下へ</value>
   </data>
-  <data name="EditKeyword" xml:space="preserve">
-    <value>キーワード編集</value>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>キーワード</value>
   </data>
-  <data name="RectangleSelection" xml:space="preserve">
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>翻訳のコンテキストとして使用されます</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
     <value>矩形選択</value>
   </data>
-  <data name="SelectRectangle" xml:space="preserve">
-    <value>矩形を選択してください（Escキーでキャンセル）</value>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）</value>
   </data>
-  <data name="Selecting" xml:space="preserve">
+  <data name="PriorityRectSelecting" xml:space="preserve">
     <value>選択中</value>
   </data>
-  <data name="RectangleTooSmall" xml:space="preserve">
+  <data name="PriorityRectTooSmall" xml:space="preserve">
     <value>矩形が小さすぎます。もう一度選択してください。</value>
   </data>
-  <data name="EnterKeyword" xml:space="preserve">
-    <value>キーワードを入力してください（翻訳のコンテキストとして使用されます）</value>
-  </data>
-  <data name="KeywordEdit" xml:space="preserve">
-    <value>キーワード編集</value>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>言語設定</value>

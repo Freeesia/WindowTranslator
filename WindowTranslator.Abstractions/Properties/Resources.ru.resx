@@ -121,5 +121,46 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Модуль кэша</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Приоритетный прямоугольник</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Прямоугольники с приоритетным распознаванием</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Заданные прямоугольники распознаются в первую очередь. Чем выше элемент в списке, тем выше его приоритет.</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Вверх</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Вниз</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Ключевое слово</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Используется как контекст для перевода</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Выбор прямоугольника</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Перетащите, чтобы выбрать прямоугольник (Esc — отмена)</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Выбор</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>Прямоугольник слишком мал. Выберите его снова.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Ни одно окно не переводится, поэтому выбрать прямоугольник нельзя. Перед настройкой начните перевод целевого окна.</value>
   </data>
 </root>

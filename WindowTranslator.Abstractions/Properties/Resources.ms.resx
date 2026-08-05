@@ -109,5 +109,46 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Lain-lain</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Segi empat keutamaan</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Segi empat yang di-OCR terlebih dahulu</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Segi empat yang ditetapkan dikenali terlebih dahulu. Semakin tinggi kedudukannya dalam senarai, semakin tinggi keutamaannya.</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tambah</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Buang</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Ke atas</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Ke bawah</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Kata kunci</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Digunakan sebagai konteks terjemahan</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Pemilihan segi empat</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Seret untuk memilih segi empat (tekan Esc untuk batal)</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Memilih</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>Segi empat terlalu kecil. Sila pilih semula.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Tiada tetingkap sedang diterjemahkan, jadi segi empat tidak boleh dipilih. Mulakan terjemahan tetingkap sasaran sebelum menetapkannya.</value>
   </data>
 </root>

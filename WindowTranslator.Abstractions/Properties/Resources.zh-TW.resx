@@ -172,42 +172,42 @@
     <value>優先矩形</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>優先 OCR 矩形</value>
+    <value>優先進行 OCR 的矩形</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>OCR 將優先處理配置的矩形。列表順序表示優先級。</value>
+    <value>優先辨識所設定的矩形。在清單中越靠上的項目優先度越高。</value>
   </data>
-  <data name="AddPriorityRect" xml:space="preserve">
-    <value>新增矩形</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>新增</value>
   </data>
-  <data name="RemovePriorityRect" xml:space="preserve">
-    <value>刪除矩形</value>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>刪除</value>
   </data>
-  <data name="MoveUp" xml:space="preserve">
+  <data name="PriorityRectMoveUp" xml:space="preserve">
     <value>上移</value>
   </data>
-  <data name="MoveDown" xml:space="preserve">
+  <data name="PriorityRectMoveDown" xml:space="preserve">
     <value>下移</value>
   </data>
-  <data name="EditKeyword" xml:space="preserve">
-    <value>編輯關鍵字</value>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>關鍵字</value>
   </data>
-  <data name="RectangleSelection" xml:space="preserve">
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>用作翻譯的上下文</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
     <value>矩形選擇</value>
   </data>
-  <data name="SelectRectangle" xml:space="preserve">
-    <value>請選擇一個矩形（按 Esc 取消）</value>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>拖曳以選擇矩形（按 Esc 取消）</value>
   </data>
-  <data name="Selecting" xml:space="preserve">
+  <data name="PriorityRectSelecting" xml:space="preserve">
     <value>選擇中</value>
   </data>
-  <data name="RectangleTooSmall" xml:space="preserve">
+  <data name="PriorityRectTooSmall" xml:space="preserve">
     <value>矩形太小。請重新選擇。</value>
   </data>
-  <data name="EnterKeyword" xml:space="preserve">
-    <value>輸入關鍵字（將用作翻譯上下文）</value>
-  </data>
-  <data name="KeywordEdit" xml:space="preserve">
-    <value>關鍵字編輯</value>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>沒有正在翻譯的視窗，因此無法選擇矩形。請先開始翻譯目標視窗後再設定。</value>
   </data>
 </root>
