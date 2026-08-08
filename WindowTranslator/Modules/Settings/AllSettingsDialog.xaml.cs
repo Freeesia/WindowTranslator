@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
+using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -13,12 +14,16 @@ namespace WindowTranslator.Modules.Settings;
 /// </summary>
 public partial class AllSettingsDialog : FluentWindow
 {
-    public AllSettingsDialog(IContentDialogService contentDialogService)
+    public AllSettingsDialog(IContentDialogService contentDialogService, IModelHistoryStore modelHistoryStore)
     {
         SystemThemeWatcher.Watch(this);
         InitializeComponent();
         this.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
         contentDialogService.SetDialogHost(this.RootContentDialog);
+        if (this.Resources["operator"] is SettingsPropertyGridOperator op)
+        {
+            op.HistoryStore = modelHistoryStore;
+        }
     }
 }
 

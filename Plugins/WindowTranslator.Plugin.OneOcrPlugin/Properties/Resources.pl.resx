@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>Nie udało się utworzyć potoku OCR. Kod błędu: {0}
-Spróbuj zaktualizować aplikację "Wycinanie ekranu" lub "Zdjęcia Microsoft".</value>
+Spróbuj zaktualizować aplikację "Wycinanie ekranu".</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Nie udało się utworzyć opcji procesu OCR. Kod błędu: {0}</value>

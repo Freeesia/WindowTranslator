@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>आवर्धन दर</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>चमक</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>कंट्रास्ट</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>मर्ज थ्रेशोल्ड</value>
   </data>
@@ -98,22 +104,52 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>सूची को मर्ज करने से बचें</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>बफर साइज़</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>बुनियादी OCR सेटअप</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>अन्य</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>प्राथमिकता आयत</value>
   </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>बफर फ़ंक्शन</value>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>प्राथमिकता से OCR किए जाने वाले आयत</value>
   </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>पहचान त्रुटि सुधार</value>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>सेट किए गए आयतों को प्राथमिकता से पहचाना जाता है। सूची में जो आइटम जितना ऊपर होगा, उसकी प्राथमिकता उतनी अधिक होगी।</value>
   </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>कंपन दमन</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>जोड़ें</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>हटाएं</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>ऊपर</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>नीचे</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>कीवर्ड</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>अनुवाद के संदर्भ के रूप में उपयोग किया जाता है</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>आयत चयन</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>आयत चुनने के लिए खींचें (रद्द करने के लिए Esc दबाएं)
+टेक्स्ट कटने से बचाने के लिए थोड़ा बड़ा क्षेत्र चुनें</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>चयन जारी है</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>आयत बहुत छोटा है। कृपया फिर से चुनें।</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>कोई विंडो अनुवादित नहीं हो रही है, इसलिए आयत नहीं चुना जा सकता। सेट करने से पहले लक्ष्य विंडो का अनुवाद प्रारंभ करें।</value>
   </data>
 </root>

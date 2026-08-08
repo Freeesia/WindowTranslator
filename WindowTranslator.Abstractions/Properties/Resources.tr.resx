@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Ölçek</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Parlaklık</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Birleştirme Eşiği</value>
   </data>
@@ -98,23 +104,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Birleştirmeden Kaçınılacak Karakterler</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Tampon Boyutu</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Temel OCR Parametreleri</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Diğer</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Tampon İşlevi</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Tanıma Hatası Düzeltmesi</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Titreşim Bastırma</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Dil Ayarları</value>
@@ -127,5 +121,47 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Önbellek Modülü</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Öncelikli dikdörtgen</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Öncelikli OCR yapılacak dikdörtgenler</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Ayarlanan dikdörtgenler öncelikli olarak tanınır. Listede ne kadar yukarıdaysa önceliği o kadar yüksektir.</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Yukarı</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Aşağı</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Anahtar kelime</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Çeviri bağlamı olarak kullanılır</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Dikdörtgen seçimi</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Dikdörtgen seçmek için sürükleyin (iptal için Esc)
+Metnin kesilmemesi için biraz daha geniş bir alan seçin</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Seçiliyor</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>Dikdörtgen çok küçük. Lütfen tekrar seçin.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Çevrilen bir pencere olmadığı için dikdörtgen seçilemiyor. Ayarlamadan önce hedef pencerenin çevirisini başlatın.</value>
   </data>
 </root>

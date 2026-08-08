@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>扩大率</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>亮度</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>对比度</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>合并阈值</value>
   </data>
@@ -156,64 +162,53 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>避免合并列表</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>缓冲区大小</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>基本 OCR 设置</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
   </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>缓冲功能</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>识别错误纠正</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>振动抑制</value>
-  </data>
   <data name="PriorityRect" xml:space="preserve">
     <value>优先矩形</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>优先 OCR 矩形</value>
+    <value>优先进行 OCR 的矩形</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>OCR 将优先处理配置的矩形。列表顺序表示优先级。</value>
+    <value>优先识别所配置的矩形。列表中位置越靠上，优先级越高。</value>
   </data>
-  <data name="AddPriorityRect" xml:space="preserve">
-    <value>添加矩形</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>添加</value>
   </data>
-  <data name="RemovePriorityRect" xml:space="preserve">
-    <value>删除矩形</value>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>删除</value>
   </data>
-  <data name="MoveUp" xml:space="preserve">
+  <data name="PriorityRectMoveUp" xml:space="preserve">
     <value>上移</value>
   </data>
-  <data name="MoveDown" xml:space="preserve">
+  <data name="PriorityRectMoveDown" xml:space="preserve">
     <value>下移</value>
   </data>
-  <data name="EditKeyword" xml:space="preserve">
-    <value>编辑关键字</value>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>关键字</value>
   </data>
-  <data name="RectangleSelection" xml:space="preserve">
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>用作翻译的上下文</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
     <value>矩形选择</value>
   </data>
-  <data name="SelectRectangle" xml:space="preserve">
-    <value>请选择一个矩形（按 Esc 取消）</value>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>拖动以选择矩形（按 Esc 取消）
+请稍微框选大一些，以免文字被截断</value>
   </data>
-  <data name="Selecting" xml:space="preserve">
+  <data name="PriorityRectSelecting" xml:space="preserve">
     <value>选择中</value>
   </data>
-  <data name="RectangleTooSmall" xml:space="preserve">
+  <data name="PriorityRectTooSmall" xml:space="preserve">
     <value>矩形太小。请重新选择。</value>
   </data>
-  <data name="EnterKeyword" xml:space="preserve">
-    <value>输入关键字（将用作翻译上下文）</value>
-  </data>
-  <data name="KeywordEdit" xml:space="preserve">
-    <value>关键字编辑</value>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>没有正在翻译的窗口，无法选择矩形。请先开始翻译目标窗口，然后再进行设置。</value>
   </data>
 </root>

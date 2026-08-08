@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Factor de escala</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Brillo</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Contraste</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Umbral de fusión</value>
   </data>
@@ -98,22 +104,52 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Evitar fusión de lista</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Tamaño del búfer</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Configuración básica de OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Otros</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Rectángulo prioritario</value>
   </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Función de búfer</value>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Rectángulos con OCR prioritario</value>
   </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Corrección de errores de reconocimiento</value>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Los rectángulos configurados se reconocen con prioridad. Cuanto más arriba esté un elemento en la lista, mayor será su prioridad.</value>
   </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Supresión de vibraciones</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Agregar</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>Subir</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>Bajar</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Palabra clave</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Se usa como contexto para la traducción</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Selección de rectángulo</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Arrastre para seleccionar un rectángulo (pulse Esc para cancelar)
+Seleccione un área un poco más amplia para que el texto no se corte</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Seleccionando</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>El rectángulo es demasiado pequeño. Selecciónelo de nuevo.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>No hay ninguna ventana en traducción, por lo que no se puede seleccionar un rectángulo. Inicie la traducción de la ventana de destino antes de configurarlo.</value>
   </data>
 </root>

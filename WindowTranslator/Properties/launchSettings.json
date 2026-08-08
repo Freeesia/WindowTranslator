@@ -6,7 +6,9 @@
       "environmentVariables": {
         "SELECTEDPLUGINS__ITRANSLATEMODULE": "DeepLTranslator",
         "LOGGING__LOGLEVEL__WindowTranslator.Plugin.TesseractOCRPlugin": "Debug",
-        "LOGGING__LOGLEVEL__WindowTranslator.Plugin.PLaMoPlugin": "Debug"
+        "LOGGING__LOGLEVEL__WindowTranslator.Plugin.PLaMoPlugin": "Debug",
+        "OCR_BRIGHTNESS_WindowTranslator": "0",
+        "OCR_CONTRAST_WindowTranslator": "0"
       }
     },
     "StartupMode": {

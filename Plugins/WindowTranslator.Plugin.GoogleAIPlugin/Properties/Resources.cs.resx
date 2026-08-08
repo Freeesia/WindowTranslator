@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="CorrectMode_Image" xml:space="preserve">
+    <value>Oprava pomocí rozpoznání obrazu</value>
+  </data>
+  <data name="CorrectMode_None" xml:space="preserve">
+    <value>Bez opravy</value>
+  </data>
+  <data name="CorrectMode_Text" xml:space="preserve">
+    <value>Pouze textová oprava</value>
+  </data>
+  <data name="Gemini20FlashLite" xml:space="preserve">
+    <value>Gemini 2.0 Flash Lite</value>
+  </data>
+  <data name="Gemini20Flash" xml:space="preserve">
+    <value>Gemini 2.0 Flash</value>
+  </data>
+  <data name="PreviewModel" xml:space="preserve">
+    <value>Náhledový model k použití</value>
+  </data>
+  <data name="PreviewModel_Desc" xml:space="preserve">
+    <value>Pokud zadáte název modelu, bude mít přednost před „Modelem k použití“</value>
+  </data>
+  <data name="CorrectSample" xml:space="preserve">
+    <value>Ukázka opravy </value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API klíč</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Koncový bod</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Cesta ke glosáři</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model k použití</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Kontextové informace použité při překladu</value>
+  </data>
+  <data name="CorrectMode" xml:space="preserve">
+    <value>Oprava rozpoznání</value>
+  </data>
+  <data name="GoogleAIOptions" xml:space="preserve">
+    <value>Nastavení Gemini</value>
+  </data>
+  <data name="GoogleAITranslator" xml:space="preserve">
+    <value>Překlad Gemini</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>Počkat na dokončení opravy před zahájením překladu</value>
+  </data>
+  <data name="Gemini25Flash" xml:space="preserve">
+    <value>Gemini 2.5 Flash</value>
+  </data>
+  <data name="Gemini25Pro" xml:space="preserve">
+    <value>Gemini 2.5 Pro</value>
+  </data>
+  <data name="Gemini25FlashLite" xml:space="preserve">
+    <value>Gemini 2.5 Flash Lite</value>
+  </data>
+  <data name="GeminiNotInitialized" xml:space="preserve">
+    <value>Funkce Gemini není inicializována. Nakonfigurujte prosím možnosti Google AI v dialogu nastavení</value>
+  </data>
+  <data name="InvalidApiKey" xml:space="preserve">
+    <value>Klíč Gemini API je neplatný. Nakonfigurujte prosím možnosti Google AI v dialogu nastavení</value>
+  </data>
+</root>

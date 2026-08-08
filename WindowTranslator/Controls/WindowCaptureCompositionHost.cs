@@ -95,14 +95,8 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
 
     private void OnCaptureModuleChanged(ICaptureModule? oldValue, ICaptureModule? newValue)
     {
-        if (oldValue is not null)
-        {
-            oldValue.Captured -= CaptureModule_CapturedAsync;
-        }
-        if (newValue is not null)
-        {
-            newValue.Captured += CaptureModule_CapturedAsync;
-        }
+        oldValue?.Captured -= CaptureModule_CapturedAsync;
+        newValue?.Captured += CaptureModule_CapturedAsync;
     }
 
     private Task CaptureModule_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -142,23 +136,20 @@ public class WindowCaptureCompositionHost : HwndExtensions.Host.HwndHostPresente
                 {
                     InitComposition(hwndHost);
                 }
-                if (compositionTarget is not null)
-                {
-                    compositionTarget.Root = value;
-                }
+                compositionTarget?.Root = value;
             }
         }
 
-        protected override HandleRef BuildWindowCore(HandleRef hwndParent)
+        protected override unsafe HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             hwndHost = CreateWindowEx(0, "static", "",
                 WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
                 0, 0,
                 hostWidth, hostHeight,
                 (HWND)hwndParent.Handle,
-                null!,
-                null!,
-                []);
+                null,
+                null,
+                null);
 
             // ほかのコントローラをオーバーレイさせるためにキャプチャーは一番下のレイヤー扱い
             SetWindowPos(hwndHost, new(1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);

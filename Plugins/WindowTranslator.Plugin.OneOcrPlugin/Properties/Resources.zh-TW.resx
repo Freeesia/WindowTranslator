@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>OCR 管線建立失敗。錯誤代碼：{0}
-請嘗試更新「剪取工具」或「Microsoft 相片」應用程式。</value>
+請嘗試更新「剪取工具」應用程式。</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>OCR 處理選項建立失敗。錯誤代碼：{0}</value>

@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>OCR 파이프라인 생성에 실패했습니다. 오류 코드: {0}
-"캡처 도구(Snipping Tool)" 또는 "Microsoft 사진" 앱을 업데이트해 보세요.</value>
+"캡처 도구(Snipping Tool)" 앱을 업데이트해 보세요.</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>OCR 프로세스 옵션 생성에 실패했습니다. 오류 코드: {0}</value>

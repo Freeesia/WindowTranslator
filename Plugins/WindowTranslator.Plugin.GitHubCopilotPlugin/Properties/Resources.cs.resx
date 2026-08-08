@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GitHubCopilotOptions" xml:space="preserve">
+    <value>Nastavení GitHub Copilot</value>
+  </data>
+  <data name="GitHubCopilotTranslator" xml:space="preserve">
+    <value>Překlad GitHub Copilot</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Cesta ke glosáři</value>
+  </data>
+  <data name="InvalidOptions" xml:space="preserve">
+    <value>Jako překladový modul je vybrán „Překlad GitHub Copilot".
+
+Použití překladu GitHub Copilot vyžaduje nainstalované a přihlášené GitHub Copilot CLI.
+
+Informace o instalaci GitHub Copilot CLI naleznete v [dokumentaci GitHub Copilot CLI](https://docs.github.com/en/copilot/github-copilot-in-the-cli).</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model k použití</value>
+  </data>
+  <data name="Model_Desc" xml:space="preserve">
+    <value>ID modelu dostupného na GitHub Copilot (např. gpt-4o, claude-sonnet-4.5)</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Kontextové informace použité při překladu</value>
+  </data>
+</root>
