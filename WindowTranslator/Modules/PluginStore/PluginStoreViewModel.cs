@@ -26,10 +26,10 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
     private bool disposed;
 
     [ObservableProperty]
-    private bool isLoading;
-
-    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     private string? errorMessage;
+
+    public bool HasError => this.ErrorMessage is not null;
 
     public PluginPackageViewModel? SelectedPackage
     {
@@ -71,44 +71,7 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
         this.logger = logger;
         this.dialogService = dialogService;
         this.nugetService.PackageInformationUpdated += OnPackageInformationUpdated;
-    }
-
-    /// <summary>
-    /// プラグイン一覧を読み込みます。
-    /// </summary>
-    [RelayCommand]
-    public async Task LoadAsync(CancellationToken cancellationToken = default)
-    {
-        if (this.IsLoading)
-            return;
-
-        this.IsLoading = true;
-        this.ErrorMessage = null;
-
-        try
-        {
-            if (!this.nugetService.PackageSnapshot.IsInitialized)
-            {
-                await this.nugetService
-                    .RefreshPackageInformationAsync(cancellationToken)
-                    .ConfigureAwait(true);
-            }
-
-            ApplyPackageSnapshot(this.nugetService.PackageSnapshot);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            // キャンセルは正常
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "NuGet検索に失敗しました。");
-            this.ErrorMessage = Resources.NuGetSearchFailed;
-        }
-        finally
-        {
-            this.IsLoading = false;
-        }
+        ApplyPackageSnapshot(this.nugetService.PackageSnapshot);
     }
 
     private void OnPackageInformationUpdated(object? sender, EventArgs e)
@@ -186,13 +149,13 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
 
             this.Packages.Add(new PluginPackageViewModel(
                 new NuGetPackageInfo(
-                    installedPackage.Id,
-                    installedPackage.Version,
-                    installedPackage.Id,
-                    string.Empty,
-                    string.Empty,
-                    null,
-                    null),
+                    Id: installedPackage.Id,
+                    Title: installedPackage.Id,
+                    Description: string.Empty,
+                    Authors: string.Empty,
+                    ProjectUrl: null,
+                    LicenseUrl: null,
+                    Versions: []),
                 isInstalled: true,
                 installedVersion: installedPackage.Version,
                 isCompatible: installedPackage.IsCompatible,
@@ -443,12 +406,17 @@ public partial class PluginPackageViewModel : ObservableObject
     public bool CanUpdate => this.IsUpdateAvailable || this.RequiresReinstall;
     public string? ProjectUrl { get; }
     public string? LicenseUrl { get; }
+    public bool HasProjectUrl => this.ProjectUrl is not null;
+    public bool HasLicenseUrl => this.LicenseUrl is not null;
     private readonly bool hasCompatiblePackageVersion;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotInstalled))]
     [NotifyPropertyChangedFor(nameof(RequiresReinstall))]
     [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool isInstalled;
+
+    public bool IsNotInstalled => !this.IsInstalled;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusText))]
@@ -512,8 +480,7 @@ public partial class PluginPackageViewModel : ObservableObject
         bool isCompatible = true,
         bool hasCompatiblePackageVersion = true)
     {
-        var versions = new[] { info.Version }
-            .Concat(info.Versions ?? [])
+        var versions = info.Versions
             .Where(version => !string.IsNullOrWhiteSpace(version))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Select(version => (Text: version, Parsed: ParseVersion(version)))

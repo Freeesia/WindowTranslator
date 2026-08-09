@@ -1,6 +1,5 @@
 using System.IO;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 using System.Runtime.Loader;
 using System.Text.Json;
 using Weikio.PluginFramework.Abstractions;
@@ -32,11 +31,6 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     {
     }
 
-    internal NuGetPluginCatalog(string sourceDir, string tempDir, FolderPluginCatalogOptions options)
-        : this(sourceDir, tempDir, AppInfo.Instance.Version.Major, options)
-    {
-    }
-
     internal NuGetPluginCatalog(
         string sourceDir,
         string tempDir,
@@ -58,11 +52,11 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         var unresolvedOperations = await NuGetPluginOperation
             .RecoverInterruptedOperationsAsync(this.sourceDir)
             .ConfigureAwait(false);
-        var incompatiblePackages = GetIncompatiblePackageIds(
+        var loadablePackages = GetLoadablePackageIds(
             this.sourceDir,
-            this.hostMajorVersion).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        incompatiblePackages.UnionWith(unresolvedOperations);
-        SynchronizePluginFiles(this.sourceDir, this.tempDir, incompatiblePackages);
+            this.hostMajorVersion);
+        loadablePackages.ExceptWith(unresolvedOperations);
+        SynchronizePluginFiles(this.sourceDir, this.tempDir, loadablePackages);
 
         this.innerCatalog = CreateCatalog(this.tempDir, this.options);
         await this.innerCatalog.Initialize().ConfigureAwait(false);
@@ -78,42 +72,21 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         string directory,
         FolderPluginCatalogOptions baseOptions)
     {
-        var catalogs = new List<IPluginCatalog>
-        {
-            new FolderPluginCatalog(
-                directory,
-                CreateCatalogOptions(
-                    baseOptions,
-                    directory,
-                    SearchOption.TopDirectoryOnly,
-                    includeSubfolders: false)),
-        };
-
-        foreach (var packageDirectory in Directory
-                     .EnumerateDirectories(directory)
-                     .OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
-        {
-            catalogs.Add(new FolderPluginCatalog(
+        return new CompositePluginCatalog([.. Directory
+            .EnumerateDirectories(directory)
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .Select(packageDirectory => new FolderPluginCatalog(
                 packageDirectory,
-                CreateCatalogOptions(
-                    baseOptions,
-                    packageDirectory,
-                    SearchOption.AllDirectories,
-                    includeSubfolders: true)));
-        }
-
-        return new CompositePluginCatalog([.. catalogs]);
+                CreateCatalogOptions(baseOptions, packageDirectory))) ]);
     }
 
     private static FolderPluginCatalogOptions CreateCatalogOptions(
         FolderPluginCatalogOptions baseOptions,
-        string pluginDirectory,
-        SearchOption searchOption,
-        bool includeSubfolders)
+        string pluginDirectory)
     {
         var baseLoadOptions = baseOptions.PluginLoadContextOptions;
         var files = Directory
-            .EnumerateFiles(pluginDirectory, "*", searchOption)
+            .EnumerateFiles(pluginDirectory, "*", SearchOption.AllDirectories)
             .Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
                 || path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
             .Select(path => CreatePluginFile(pluginDirectory, path))
@@ -165,7 +138,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
         return new FolderPluginCatalogOptions
         {
-            IncludeSubfolders = includeSubfolders,
+            IncludeSubfolders = true,
             SearchPatterns = [.. baseOptions.SearchPatterns],
             TypeFinderOptions = baseOptions.TypeFinderOptions,
             PluginNameOptions = CreatePluginNameOptions(
@@ -184,12 +157,12 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
     private static PluginFile CreatePluginFile(string pluginDirectory, string path)
     {
-        var isManaged = IsManagedAssembly(path);
+        var assemblyName = TryGetAssemblyName(path);
         return new PluginFile(
             path,
             Path.GetRelativePath(pluginDirectory, path),
-            isManaged,
-            isManaged ? TryGetAssemblyName(path) : null);
+            assemblyName is not null,
+            assemblyName);
     }
 
     private static PluginNameOptions CreatePluginNameOptions(
@@ -280,20 +253,6 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         }
     }
 
-    private static bool IsManagedAssembly(string path)
-    {
-        try
-        {
-            using var stream = File.OpenRead(path);
-            using var reader = new PEReader(stream);
-            return reader.HasMetadata;
-        }
-        catch (BadImageFormatException)
-        {
-            return false;
-        }
-    }
-
     private static int GetRuntimeAssetPriority(string relativePath)
         => relativePath.StartsWith(
             $"runtimes{Path.DirectorySeparatorChar}",
@@ -310,7 +269,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     internal static void SynchronizePluginFiles(
         string source,
         string destination,
-        IReadOnlySet<string>? excludedRootDirectories = null)
+        IReadOnlySet<string> includedRootDirectories)
     {
         Directory.CreateDirectory(destination);
 
@@ -318,13 +277,16 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         var sourceDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         if (Directory.Exists(source))
         {
-            CollectSourceEntries(
-                source,
-                source,
-                isRoot: true,
-                sourceFiles,
-                sourceDirectories,
-                excludedRootDirectories);
+            foreach (var packageDirectory in Directory.EnumerateDirectories(source)
+                         .Where(path => includedRootDirectories.Contains(Path.GetFileName(path))))
+            {
+                sourceDirectories.Add(Path.GetRelativePath(source, packageDirectory));
+                CollectSourceEntries(
+                    source,
+                    packageDirectory,
+                    sourceFiles,
+                    sourceDirectories);
+            }
         }
 
         foreach (var relativeDirectory in sourceDirectories.OrderBy(GetPathDepth))
@@ -379,44 +341,31 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         }
     }
 
-    private static bool IsWorkingDirectory(string directoryName)
-        => directoryName.Equals(
-            NuGetPluginService.OperationsDirectoryName,
-            StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsManagementFile(string fileName)
-        => fileName.Equals("nuget-manifest.json", StringComparison.OrdinalIgnoreCase)
-        || fileName.StartsWith("nuget-manifest.json.tmp-", StringComparison.OrdinalIgnoreCase);
-
-    internal static IReadOnlySet<string> GetIncompatiblePackageIds(
+    internal static HashSet<string> GetLoadablePackageIds(
         string sourceDirectory,
         int hostMajorVersion)
     {
-        var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
-        if (!File.Exists(manifestPath))
-        {
-            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        }
-
         try
         {
-            using var stream = File.OpenRead(manifestPath);
-            var manifest = JsonSerializer.Deserialize<InstalledManifest>(
+            using var stream = File.OpenRead(Path.Combine(
+                sourceDirectory,
+                "nuget-manifest.json"));
+            var packages = JsonSerializer.Deserialize<InstalledManifest>(
                 stream,
-                NuGetPluginService.ManifestJsonOptions);
-            return manifest?.Packages
-                .Where(package => !PluginCompatibility.IsHostMajorCompatible(
+                NuGetPluginService.ManifestJsonOptions)?.Packages
+                ?? throw new InvalidDataException("プラグインmanifestにパッケージ一覧がありません。");
+            return packages
+                .Where(package => PluginCompatibility.IsHostMajorCompatible(
                     package.HostMajorVersion,
                     hostMajorVersion))
                 .Select(package => package.Id)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase)
-                ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
         catch (Exception ex) when (ex is IOException
             or UnauthorizedAccessException
+            or InvalidDataException
             or JsonException)
         {
-            // 壊れたマニフェストはNuGetPluginService側で報告する。ここでは既存動作を維持する。
             return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
     }
@@ -424,40 +373,23 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     private static void CollectSourceEntries(
         string sourceRoot,
         string currentDirectory,
-        bool isRoot,
         Dictionary<string, string> sourceFiles,
-        HashSet<string> sourceDirectories,
-        IReadOnlySet<string>? excludedRootDirectories)
+        HashSet<string> sourceDirectories)
     {
         foreach (var file in Directory.EnumerateFiles(currentDirectory))
         {
-            if (isRoot && IsManagementFile(Path.GetFileName(file)))
-            {
-                continue;
-            }
-
             sourceFiles[Path.GetRelativePath(sourceRoot, file)] = file;
         }
 
         foreach (var subDirectory in Directory.EnumerateDirectories(currentDirectory))
         {
-            var directoryName = Path.GetFileName(subDirectory);
-            if (isRoot
-                && (IsWorkingDirectory(directoryName)
-                    || excludedRootDirectories?.Contains(directoryName) is true))
-            {
-                continue;
-            }
-
             var relativePath = Path.GetRelativePath(sourceRoot, subDirectory);
             sourceDirectories.Add(relativePath);
             CollectSourceEntries(
                 sourceRoot,
                 subDirectory,
-                isRoot: false,
                 sourceFiles,
-                sourceDirectories,
-                excludedRootDirectories);
+                sourceDirectories);
         }
     }
 

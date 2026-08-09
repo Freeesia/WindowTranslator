@@ -37,7 +37,7 @@ internal sealed class NuGetPackageInstaller(
         IProgress<double>? progress,
         CancellationToken cancellationToken)
     {
-        ValidatePackageId(packageId);
+        PackageIdValidator.ValidatePackageId(packageId);
         var requestedVersion = NuGetVersion.Parse(version);
         var workDirectory = Path.Combine(
             Path.GetTempPath(),
@@ -210,15 +210,16 @@ internal sealed class NuGetPackageInstaller(
                 currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase) ? progress : null,
                 cacheContext,
                 cancellationToken).ConfigureAwait(false);
+            var metadata = ReadPackageMetadata(packagePath);
             ValidateHostPackageDependencies(
-                packagePath,
+                metadata,
                 currentId,
                 resolvedVersion,
                 this.hostPackageVersions,
                 requirePluginPackage: currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase));
 
-            artifacts[currentId] = new PackageArtifact(currentId, resolvedVersion, packagePath);
-            foreach (var dependency in ReadRuntimeDependencies(packagePath))
+            artifacts[currentId] = new PackageArtifact(currentId, packagePath);
+            foreach (var dependency in metadata.Dependencies.Where(IncludesRuntimeAssets))
             {
                 if (this.hostPackageVersions.ContainsKey(dependency.Id))
                 {
@@ -233,7 +234,7 @@ internal sealed class NuGetPackageInstaller(
 
         void AddConstraint(string id, string source, VersionRange range)
         {
-            ValidatePackageId(id);
+            PackageIdValidator.ValidatePackageId(id);
             if (!constraints.TryGetValue(id, out var packageConstraints))
             {
                 packageConstraints = [];
@@ -318,15 +319,7 @@ internal sealed class NuGetPackageInstaller(
         progress?.Report(1);
     }
 
-    private static List<PackageDependency> ReadRuntimeDependencies(string packagePath)
-        => ReadDependencies(packagePath, runtimeOnly: true);
-
-    private static List<PackageDependency> ReadPackageDependencies(string packagePath)
-        => ReadDependencies(packagePath, runtimeOnly: false);
-
-    private static List<PackageDependency> ReadDependencies(
-        string packagePath,
-        bool runtimeOnly)
+    private static PackageMetadata ReadPackageMetadata(string packagePath)
     {
         using var packageStream = File.OpenRead(packagePath);
         using var packageReader = new PackageArchiveReader(packageStream);
@@ -348,22 +341,24 @@ internal sealed class NuGetPackageInstaller(
             dependencies.AddRange(selectedGroup.Packages);
         }
 
-        return dependencies
-            .Where(dependency => !runtimeOnly || IncludesRuntimeAssets(dependency))
-            .ToList();
+        var tags = packageReader.NuspecReader.GetTags();
+        var hasPluginTag = tags?.Split(
+                [' ', '\t', '\r', '\n', ';', ','],
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Contains(NuGetPluginService.PluginTag, StringComparer.OrdinalIgnoreCase) == true;
+        return new(dependencies, hasPluginTag);
     }
 
     private static void ValidateHostPackageDependencies(
-        string packagePath,
+        PackageMetadata metadata,
         string packageId,
         NuGetVersion packageVersion,
         IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions,
         bool requirePluginPackage)
     {
-        var dependencies = ReadPackageDependencies(packagePath);
         if (requirePluginPackage)
         {
-            if (!HasPackageTag(packagePath, NuGetPluginService.PluginTag))
+            if (!metadata.HasPluginTag)
             {
                 throw new InvalidOperationException(
                     $"パッケージ {packageId} {packageVersion} はWindowTranslatorプラグインタグを持っていません。");
@@ -376,7 +371,7 @@ internal sealed class NuGetPackageInstaller(
                     $"実行中の{NuGetPluginService.AbstractionsPackageId}のバージョンを確認できません。");
             }
 
-            if (!dependencies.Any(dependency => dependency.Id.Equals(
+            if (!metadata.Dependencies.Any(dependency => dependency.Id.Equals(
                     NuGetPluginService.AbstractionsPackageId,
                     StringComparison.OrdinalIgnoreCase)))
             {
@@ -386,7 +381,7 @@ internal sealed class NuGetPackageInstaller(
             }
         }
 
-        foreach (var dependency in dependencies)
+        foreach (var dependency in metadata.Dependencies)
         {
             if (!hostPackageVersions.TryGetValue(dependency.Id, out var hostVersion)
                 || PluginCompatibility.IsVersionCompatible(dependency.VersionRange, hostVersion))
@@ -399,17 +394,6 @@ internal sealed class NuGetPackageInstaller(
                 + $"{dependency.Id} {dependency.VersionRange} を必要としますが、"
                 + $"実行中のWindowTranslatorが提供するバージョンは {hostVersion} です。");
         }
-    }
-
-    private static bool HasPackageTag(string packagePath, string requiredTag)
-    {
-        using var packageStream = File.OpenRead(packagePath);
-        using var packageReader = new PackageArchiveReader(packageStream);
-        var tags = packageReader.NuspecReader.GetTags();
-        return tags?.Split(
-                [' ', '\t', '\r', '\n', ';', ','],
-                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Contains(requiredTag, StringComparer.OrdinalIgnoreCase) == true;
     }
 
     private static bool IncludesRuntimeAssets(PackageDependency dependency)
@@ -587,17 +571,6 @@ internal sealed class NuGetPackageInstaller(
         return right.ReadByte() == -1;
     }
 
-    private static void ValidatePackageId(string packageId)
-    {
-        if (string.IsNullOrWhiteSpace(packageId)
-            || packageId.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
-            || packageId.Contains(Path.DirectorySeparatorChar)
-            || packageId.Contains(Path.AltDirectorySeparatorChar))
-        {
-            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
-        }
-    }
-
     private static void TryDeleteDirectory(string directory)
     {
         try
@@ -613,8 +586,12 @@ internal sealed class NuGetPackageInstaller(
         }
     }
 
-    private sealed record PackageArtifact(string Id, NuGetVersion Version, string PackagePath);
+    private sealed record PackageArtifact(string Id, string PackagePath);
 
     private sealed record DependencyConstraint(string Source, VersionRange Range);
+
+    private sealed record PackageMetadata(
+        IReadOnlyList<PackageDependency> Dependencies,
+        bool HasPluginTag);
 
 }

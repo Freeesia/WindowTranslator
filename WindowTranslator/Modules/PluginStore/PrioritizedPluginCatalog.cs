@@ -27,29 +27,15 @@ internal sealed class PrioritizedPluginCatalog(
     /// <inheritdoc/>
     public List<Plugin> GetPlugins()
     {
-        var selectedAssemblyNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        return SelectPluginsByAssembly(
-                this.preferredCatalog.GetPlugins(),
-                selectedAssemblyNames)
-            .Concat(SelectPluginsByAssembly(
-                this.fallbackCatalog.GetPlugins(),
-                selectedAssemblyNames))
+        var plugins = this.preferredCatalog.GetPlugins()
+            .Concat(this.fallbackCatalog.GetPlugins())
             .ToList();
-    }
-
-    private static List<Plugin> SelectPluginsByAssembly(
-        List<Plugin> plugins,
-        HashSet<string> selectedAssemblyNames)
-    {
+        var selectedAssemblyNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var selectedAssemblies = new HashSet<Assembly>(ReferenceEqualityComparer.Instance);
-        foreach (var plugin in plugins)
+        foreach (var assembly in plugins
+                     .Select(plugin => plugin.Type.Assembly)
+                     .Distinct<Assembly>(ReferenceEqualityComparer.Instance))
         {
-            var assembly = plugin.Type.Assembly;
-            if (selectedAssemblies.Contains(assembly))
-            {
-                continue;
-            }
-
             var assemblyName = assembly.GetName().Name;
             if (assemblyName is null || selectedAssemblyNames.Add(assemblyName))
             {

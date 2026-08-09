@@ -1,136 +1,168 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using NuGet.Packaging;
 
 namespace WindowTranslator.Modules.PluginStore;
 
-internal enum NuGetPluginOperationKind
-{
-    Install,
-    Uninstall,
-}
-
 internal sealed record NuGetPluginOperationState(
-    string OperationId,
-    string PackageId,
-    NuGetPluginOperationKind Kind,
-    bool ManifestExisted,
-    InstalledManifest OriginalManifest);
+    [property: JsonRequired] string PackageId,
+    InstalledManifest? OriginalManifest);
 
-internal sealed record NuGetPluginOperationPaths(
-    string OperationId,
-    string PackageId,
-    string JournalPath,
-    string CommittedPath,
-    string StagingPath,
-    string BackupPath,
-    string UninstallingPath);
-
-internal static class NuGetPluginOperation
+internal sealed class NuGetPluginOperation : IAsyncDisposable
 {
-    private const string JournalSuffix = ".operation.json";
-    private const string CommittedSuffix = ".committed";
+    internal const string OperationsDirectoryName = ".operations";
+    private const string PendingFileName = "pending.json";
+    private const string CommittedFileName = "committed.json";
 
-    internal static NuGetPluginOperationPaths CreatePaths(string nugetPluginsDir, string packageId)
-        => GetPaths(nugetPluginsDir, packageId, Guid.NewGuid().ToString("N"));
+    private readonly string rootDirectory;
+    private readonly string operationDirectory;
+    private readonly NuGetPluginOperationState state;
+    private bool committed;
 
-    internal static string GetPackageDirectory(string nugetPluginsDir, string packageId)
+    private NuGetPluginOperation(
+        string rootDirectory,
+        string operationDirectory,
+        NuGetPluginOperationState state)
     {
-        if (string.IsNullOrWhiteSpace(packageId)
-            || packageId is "." or ".."
-            || packageId.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
-            || packageId.Contains(Path.DirectorySeparatorChar)
-            || packageId.Contains(Path.AltDirectorySeparatorChar))
-        {
-            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
-        }
-
-        var root = Path.GetFullPath(nugetPluginsDir)
-            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            + Path.DirectorySeparatorChar;
-        var packageDirectory = Path.GetFullPath(Path.Combine(root, packageId));
-        if (!packageDirectory.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException($"不正なNuGetパッケージIDです: {packageId}");
-        }
-
-        return packageDirectory;
+        this.rootDirectory = Path.GetFullPath(rootDirectory);
+        this.operationDirectory = Path.GetFullPath(operationDirectory);
+        this.state = state;
+        _ = this.TargetPath;
     }
 
-    internal static Task WriteJournalAsync(
-        NuGetPluginOperationPaths paths,
-        NuGetPluginOperationState state,
+    internal string TargetPath => GetPackageDirectory(this.rootDirectory, this.state.PackageId);
+
+    internal string WorkingPath => Path.Combine(this.operationDirectory, "working");
+
+    internal string BackupPath => Path.Combine(this.operationDirectory, "backup");
+
+    internal string PendingPath => Path.Combine(this.operationDirectory, PendingFileName);
+
+    internal string CommittedPath => Path.Combine(this.operationDirectory, CommittedFileName);
+
+    internal static async Task<NuGetPluginOperation> BeginAsync(
+        string rootDirectory,
+        string packageId,
+        InstalledManifest? originalManifest,
         CancellationToken cancellationToken)
     {
-        if (!paths.OperationId.Equals(state.OperationId, StringComparison.Ordinal)
-            || !paths.PackageId.Equals(state.PackageId, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException("NuGetプラグイン操作とジャーナルの対象が一致しません。");
-        }
+        var operationDirectory = Path.Combine(
+            Path.GetFullPath(rootDirectory),
+            OperationsDirectoryName,
+            Guid.NewGuid().ToString("N"));
+        var operation = new NuGetPluginOperation(
+            rootDirectory,
+            operationDirectory,
+            new(packageId, originalManifest));
+        Directory.CreateDirectory(operationDirectory);
+        Directory.CreateDirectory(operation.WorkingPath);
 
-        return SaveJsonAsync(paths.JournalPath, state, cancellationToken);
+        try
+        {
+            await SaveJsonAsync(
+                operation.PendingPath,
+                operation.state,
+                cancellationToken).ConfigureAwait(false);
+            return operation;
+        }
+        catch
+        {
+            DeleteDirectoryIfExists(operationDirectory);
+            throw;
+        }
     }
 
-    internal static void MarkCommitted(NuGetPluginOperationPaths paths)
+    internal static string GetPackageDirectory(string rootDirectory, string packageId)
     {
-        using var stream = new FileStream(
-            paths.CommittedPath,
-            FileMode.CreateNew,
-            FileAccess.Write,
-            FileShare.None,
-            bufferSize: 1,
-            FileOptions.WriteThrough);
-        stream.Flush(flushToDisk: true);
+        PackageIdValidator.ValidatePackageId(packageId);
+        return Path.Combine(Path.GetFullPath(rootDirectory), packageId);
+    }
+
+    internal static Task SaveManifestAsync(
+        string manifestPath,
+        InstalledManifest manifest,
+        CancellationToken cancellationToken)
+        => SaveJsonAsync(manifestPath, manifest, cancellationToken);
+
+    internal void Commit()
+    {
+        File.Move(this.PendingPath, this.CommittedPath);
+        this.committed = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (this.committed)
+            {
+                CleanupCommitted();
+            }
+            else
+            {
+                await RollbackAsync(CancellationToken.None).ConfigureAwait(false);
+                CleanupRolledBack();
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning(
+                "NuGetプラグイン操作の後処理に失敗しました: {0} {1} ({2})",
+                this.state.PackageId,
+                Path.GetFileName(this.operationDirectory),
+                ex);
+        }
     }
 
     internal static async Task<IReadOnlySet<string>> RecoverInterruptedOperationsAsync(
-        string nugetPluginsDir,
+        string rootDirectory,
         CancellationToken cancellationToken = default)
     {
-        var operationsDir = Path.Combine(
-            Path.GetFullPath(nugetPluginsDir),
-            NuGetPluginService.OperationsDirectoryName);
-        if (!Directory.Exists(operationsDir))
+        var operationsDirectory = Path.Combine(
+            Path.GetFullPath(rootDirectory),
+            OperationsDirectoryName);
+        if (!Directory.Exists(operationsDirectory))
         {
             return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         var unresolvedPackageIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var journalPath in Directory.EnumerateFiles(
-                     operationsDir,
-                     $"*{JournalSuffix}",
-                     SearchOption.TopDirectoryOnly))
+        foreach (var operationDirectory in Directory.EnumerateDirectories(operationsDirectory))
         {
             cancellationToken.ThrowIfCancellationRequested();
             NuGetPluginOperationState? state = null;
             try
             {
-                await using (var stream = File.OpenRead(journalPath))
+                var committedPath = Path.Combine(operationDirectory, CommittedFileName);
+                var isCommitted = File.Exists(committedPath);
+                var statePath = isCommitted
+                    ? committedPath
+                    : Path.Combine(operationDirectory, PendingFileName);
+                if (!File.Exists(statePath))
                 {
-                    state = await JsonSerializer.DeserializeAsync<NuGetPluginOperationState>(
-                        stream,
-                        NuGetPluginService.ManifestJsonOptions,
-                        cancellationToken).ConfigureAwait(false)
-                        ?? throw new InvalidDataException("NuGetプラグイン操作ジャーナルが空です。");
-                }
-                var paths = GetPaths(nugetPluginsDir, state.PackageId, state.OperationId);
-                if (!paths.JournalPath.Equals(journalPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new InvalidDataException("NuGetプラグイン操作ジャーナルのIDが一致しません。");
-                }
-
-                if (File.Exists(paths.CommittedPath))
-                {
-                    CleanupCommitted(paths);
+                    DeleteDirectoryIfExists(operationDirectory);
                     continue;
                 }
 
-                await RollbackAsync(
-                    nugetPluginsDir,
-                    state,
-                    paths,
-                    cancellationToken).ConfigureAwait(false);
-                CleanupRolledBack(paths);
+                state = JsonSerializer.Deserialize<NuGetPluginOperationState>(
+                    await File.ReadAllTextAsync(statePath, cancellationToken).ConfigureAwait(false),
+                    NuGetPluginService.ManifestJsonOptions)
+                    ?? throw new InvalidDataException("NuGetプラグイン操作情報が空です。");
+                var operation = new NuGetPluginOperation(rootDirectory, operationDirectory, state)
+                {
+                    committed = isCommitted,
+                };
+                if (isCommitted)
+                {
+                    operation.CleanupCommitted();
+                }
+                else
+                {
+                    await operation.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                    operation.CleanupRolledBack();
+                }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
@@ -140,7 +172,7 @@ internal static class NuGetPluginOperation
                 }
                 Trace.TraceWarning(
                     "NuGetプラグイン操作の復旧に失敗しました: {0} ({1})",
-                    journalPath,
+                    operationDirectory,
                     ex);
             }
         }
@@ -148,41 +180,23 @@ internal static class NuGetPluginOperation
         return unresolvedPackageIds;
     }
 
-    internal static async Task RollbackAsync(
-        string nugetPluginsDir,
-        NuGetPluginOperationState state,
-        NuGetPluginOperationPaths paths,
-        CancellationToken cancellationToken)
+    private async Task RollbackAsync(CancellationToken cancellationToken)
     {
-        var targetDir = GetPackageDirectory(nugetPluginsDir, state.PackageId);
-        switch (state.Kind)
+        if (!Directory.Exists(this.WorkingPath) && Directory.Exists(this.TargetPath))
         {
-            case NuGetPluginOperationKind.Install:
-                if (!Directory.Exists(paths.StagingPath) && Directory.Exists(targetDir))
-                {
-                    Directory.Move(targetDir, paths.StagingPath);
-                }
-                if (Directory.Exists(paths.BackupPath))
-                {
-                    Directory.Move(paths.BackupPath, targetDir);
-                }
-                break;
-            case NuGetPluginOperationKind.Uninstall:
-                if (Directory.Exists(paths.UninstallingPath) && !Directory.Exists(targetDir))
-                {
-                    Directory.Move(paths.UninstallingPath, targetDir);
-                }
-                break;
-            default:
-                throw new InvalidDataException($"不明なNuGetプラグイン操作です: {state.Kind}");
+            Directory.Move(this.TargetPath, this.WorkingPath);
+        }
+        if (Directory.Exists(this.BackupPath))
+        {
+            Directory.Move(this.BackupPath, this.TargetPath);
         }
 
-        var manifestPath = Path.Combine(Path.GetFullPath(nugetPluginsDir), "nuget-manifest.json");
-        if (state.ManifestExisted)
+        var manifestPath = Path.Combine(this.rootDirectory, "nuget-manifest.json");
+        if (this.state.OriginalManifest is { } originalManifest)
         {
             await SaveManifestAsync(
                 manifestPath,
-                state.OriginalManifest,
+                originalManifest,
                 cancellationToken).ConfigureAwait(false);
         }
         else if (File.Exists(manifestPath))
@@ -191,52 +205,14 @@ internal static class NuGetPluginOperation
         }
     }
 
-    internal static void CleanupCommitted(NuGetPluginOperationPaths paths)
+    private void CleanupCommitted()
+        => DeleteDirectoryIfExists(this.operationDirectory);
+
+    private void CleanupRolledBack()
     {
-        DeleteDirectoryIfExists(paths.StagingPath);
-        DeleteDirectoryIfExists(paths.BackupPath);
-        DeleteDirectoryIfExists(paths.UninstallingPath);
-        File.Delete(paths.JournalPath);
-        File.Delete(paths.CommittedPath);
-    }
-
-    internal static void CleanupRolledBack(NuGetPluginOperationPaths paths)
-    {
-        File.Delete(paths.JournalPath);
-        DeleteDirectoryIfExists(paths.StagingPath);
-        DeleteDirectoryIfExists(paths.BackupPath);
-        DeleteDirectoryIfExists(paths.UninstallingPath);
-        File.Delete(paths.CommittedPath);
-    }
-
-    internal static Task SaveManifestAsync(
-        string manifestPath,
-        InstalledManifest manifest,
-        CancellationToken cancellationToken)
-        => SaveJsonAsync(manifestPath, manifest, cancellationToken);
-
-    private static NuGetPluginOperationPaths GetPaths(
-        string nugetPluginsDir,
-        string packageId,
-        string operationId)
-    {
-        if (!Guid.TryParseExact(operationId, "N", out _))
-        {
-            throw new InvalidOperationException($"不正なNuGetプラグイン操作IDです: {operationId}");
-        }
-        _ = GetPackageDirectory(nugetPluginsDir, packageId);
-
-        var operationsDir = Path.Combine(
-            Path.GetFullPath(nugetPluginsDir),
-            NuGetPluginService.OperationsDirectoryName);
-        return new(
-            operationId,
-            packageId,
-            Path.Combine(operationsDir, $"{operationId}{JournalSuffix}"),
-            Path.Combine(operationsDir, $"{operationId}{CommittedSuffix}"),
-            Path.Combine(operationsDir, $"{packageId}.installing-{operationId}"),
-            Path.Combine(operationsDir, $"{packageId}.backup-{operationId}"),
-            Path.Combine(operationsDir, $"{packageId}.uninstalling-{operationId}"));
+        // 復旧後に同じ操作を再実行しないよう、作業データより先に状態を消す。
+        File.Delete(this.PendingPath);
+        CleanupCommitted();
     }
 
     private static async Task SaveJsonAsync<T>(
@@ -248,30 +224,16 @@ internal static class NuGetPluginOperation
         var temporaryPath = $"{destinationPath}.tmp-{Guid.NewGuid():N}";
         try
         {
-            await using (var stream = new FileStream(
+            var json = JsonSerializer.Serialize(value, NuGetPluginService.ManifestJsonOptions);
+            await File.WriteAllTextAsync(
                 temporaryPath,
-                FileMode.CreateNew,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 4096,
-                useAsync: true))
-            {
-                await JsonSerializer.SerializeAsync(
-                    stream,
-                    value,
-                    NuGetPluginService.ManifestJsonOptions,
-                    cancellationToken).ConfigureAwait(false);
-                await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
-            }
-
+                json,
+                cancellationToken).ConfigureAwait(false);
             File.Move(temporaryPath, destinationPath, overwrite: true);
         }
         finally
         {
-            if (File.Exists(temporaryPath))
-            {
-                File.Delete(temporaryPath);
-            }
+            File.Delete(temporaryPath);
         }
     }
 
