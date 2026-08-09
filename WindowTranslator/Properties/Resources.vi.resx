@@ -522,4 +522,7 @@ Màn hình không được hỗ trợ.
   <data name="PluginStoreDisclaimer" xml:space="preserve">
     <value>Plugin là các gói của bên thứ ba được phân phối qua NuGet. Giấy phép của mỗi gói do chủ sở hữu cung cấp; WindowTranslator không đảm bảo nội dung, hoạt động hoặc độ an toàn của gói. Chỉ cài đặt các gói bạn tin cậy.</value>
   </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Plugin chính thức</value>
+  </data>
 </root>

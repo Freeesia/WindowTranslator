@@ -522,4 +522,7 @@ Ang monitor ay hindi suportado.
   <data name="PluginStoreDisclaimer" xml:space="preserve">
     <value>Ang mga plugin ay mga third-party package na ipinapamahagi sa NuGet. Ang lisensya ng bawat package ay ibinibigay ng may-ari nito; hindi ginagarantiya ng WindowTranslator ang nilalaman, paggana, o kaligtasan nito. Mag-install lamang ng mga package na pinagkakatiwalaan mo.</value>
   </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Opisyal na plugin</value>
+  </data>
 </root>

@@ -507,4 +507,7 @@
   <data name="PluginStoreDisclaimer" xml:space="preserve">
     <value>افزونه‌ها بسته‌های شخص ثالثی هستند که از طریق NuGet توزیع می‌شوند. مجوز هر بسته را مالک آن ارائه می‌کند و WindowTranslator محتوا، عملکرد یا امنیت آن را تضمین نمی‌کند. فقط بسته‌های مورد اعتماد را نصب کنید.</value>
   </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>افزونه رسمی</value>
+  </data>
 </root>

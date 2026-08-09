@@ -515,4 +515,7 @@
   <data name="PluginStoreDisclaimer" xml:space="preserve">
     <value>प्लगइन NuGet के माध्यम से वितरित तृतीय-पक्ष पैकेज हैं। प्रत्येक पैकेज का लाइसेंस उसके स्वामी द्वारा दिया जाता है; WindowTranslator उसकी सामग्री, व्यवहार या सुरक्षा की गारंटी नहीं देता। केवल विश्वसनीय पैकेज इंस्टॉल करें।</value>
   </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>आधिकारिक प्लगइन</value>
+  </data>
 </root>

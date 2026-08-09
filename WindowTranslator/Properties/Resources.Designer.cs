@@ -473,6 +473,11 @@ internal class Resources
     public static string PluginStoreDisclaimer => ResourceManager.GetString("PluginStoreDisclaimer", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "公式プラグイン" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginOfficial => ResourceManager.GetString("PluginOfficial", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "プレリリース" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Prerelease => ResourceManager.GetString("Prerelease", resourceCulture) ?? string.Empty;

@@ -513,4 +513,7 @@
   <data name="PluginStoreDisclaimer" xml:space="preserve">
     <value>المكونات الإضافية حزم تابعة لجهات خارجية موزعة عبر NuGet. يمنح مالك كل حزمة ترخيصها، ولا يضمن WindowTranslator محتواها أو سلوكها أو أمانها. ثبّت فقط الحزم التي تثق بها.</value>
   </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>مكوّن إضافي رسمي</value>
+  </data>
 </root>
