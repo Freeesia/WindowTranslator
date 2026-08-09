@@ -68,7 +68,7 @@
                     </ui:ListView.ItemContainerStyle>
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type local:PluginPackageViewModel}">
-                            <Grid Margin="4">
+                            <Grid Margin="4,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
@@ -78,59 +78,56 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Border
+                                <Grid
                                     Grid.RowSpan="2"
                                     Width="40"
                                     Height="40"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Top"
-                                    ClipToBounds="True"
-                                    CornerRadius="4">
-                                    <Grid>
-                                        <Image
-                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                            Source="/WindowTranslator;component/Assets/plugin-icon.png"
-                                            Stretch="UniformToFill" />
-                                        <Image
-                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                            Source="{Binding IconUrl}"
-                                            Stretch="UniformToFill" />
-                                        <ui:SymbolIcon
-                                            Width="24"
-                                            Height="24"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Bottom"
-                                            Filled="True"
-                                            Foreground="{ui:ThemeResource SystemFillColorSuccessBrush}"
-                                            Symbol="CheckmarkCircle24"
-                                            ToolTip="{x:Static properties:Resources.Installed}">
-                                            <ui:SymbolIcon.Style>
-                                                <Style TargetType="{x:Type ui:SymbolIcon}">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                    <Style.Triggers>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding IsInstalled}" Value="True" />
-                                                                <Condition Binding="{Binding IsUpdateAvailable}" Value="False" />
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Visibility" Value="Visible" />
-                                                        </MultiDataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </ui:SymbolIcon.Style>
-                                        </ui:SymbolIcon>
-                                        <ui:SymbolIcon
-                                            Width="24"
-                                            Height="24"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Bottom"
-                                            Filled="True"
-                                            Foreground="{ui:ThemeResource SystemFillColorCautionBrush}"
-                                            Symbol="Alert24"
-                                            ToolTip="{x:Static properties:Resources.UpdateAvailable}"
-                                            Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}" />
-                                    </Grid>
-                                </Border>
+                                    Margin="0,0,8,0">
+                                    <Image
+                                        Margin="2"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Source="{Binding IconUrl}"
+                                        Stretch="UniformToFill" />
+                                    <Border
+                                        Width="16"
+                                        Height="16"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Bottom"
+                                        Background="{ui:ThemeResource SystemFillColorSuccessBrush}"
+                                        BorderBrush="White"
+                                        BorderThickness="1"
+                                        CornerRadius="16"
+                                        ToolTip="{x:Static properties:Resources.Installed}">
+                                        <Border.Style>
+                                            <Style TargetType="{x:Type Border}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsInstalled}" Value="True" />
+                                                            <Condition Binding="{Binding IsUpdateAvailable}" Value="False" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <ui:SymbolIcon Filled="True" Symbol="Checkmark24" />
+                                    </Border>
+                                    <Border
+                                        Width="16"
+                                        Height="16"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Bottom"
+                                        Background="{ui:ThemeResource SystemFillColorCautionBrush}"
+                                        BorderBrush="White"
+                                        BorderThickness="1"
+                                        CornerRadius="16"
+                                        ToolTip="{x:Static properties:Resources.UpdateAvailable}"
+                                        Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}">
+                                        <ui:SymbolIcon Filled="True" Symbol="Alert24" />
+                                    </Border>
+                                </Grid>
 
                                 <!--  タイトルと状態  -->
                                 <DockPanel Grid.Column="1" LastChildFill="True">
@@ -159,10 +156,12 @@
                                 <ui:TextBlock
                                     Grid.Row="1"
                                     Grid.Column="1"
+                                    MaxHeight="48"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"
                                     FontSize="12"
                                     Text="{Binding Description}"
+                                    TextTrimming="CharacterEllipsis"
                                     TextWrapping="Wrap" />
                             </Grid>
                         </DataTemplate>
