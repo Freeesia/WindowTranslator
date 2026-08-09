@@ -832,7 +832,6 @@ public sealed class NuGetPluginServiceTests
         Assert.False(package.IsUpdateAvailable);
         Assert.True(package.RequiresReinstall);
         Assert.True(package.CanUpdate);
-        Assert.Equal(WindowTranslator.Properties.Resources.PluginIncompatible, package.StatusText);
 
         package.IsCompatible = true;
 
@@ -1346,6 +1345,50 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal("2.0.0", Assert.Single(retainedManifest!.Packages).Version);
             Assert.False(File.Exists(operation.PendingPath));
             Assert.False(File.Exists(operation.CommittedPath));
+            Assert.False(Directory.Exists(operation.BackupPath));
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task CompletedInstallRemainsLoadableWhenOperationCleanupFails()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        try
+        {
+            const string packageId = "Root.Plugin";
+            var manifest = new InstalledManifest(
+                [new InstalledPackageInfo(packageId, "2.0.0", HostMajorVersion: 1)]);
+            var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
+            var operation = await NuGetPluginOperation.BeginAsync(
+                sourceDirectory,
+                packageId,
+                originalManifest: null,
+                CancellationToken.None);
+            Directory.Move(operation.WorkingPath, operation.TargetPath);
+            File.WriteAllText(Path.Combine(operation.TargetPath, "plugin.txt"), "new");
+            await NuGetPluginOperation.SaveManifestAsync(
+                manifestPath,
+                manifest,
+                CancellationToken.None);
+            operation.Commit();
+
+            Directory.CreateDirectory(operation.BackupPath);
+            var lockedPath = Path.Combine(operation.BackupPath, "locked.txt");
+            await File.WriteAllTextAsync(lockedPath, "locked");
+            await using (File.Open(lockedPath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                var unresolved = await NuGetPluginOperation.RecoverInterruptedOperationsAsync(
+                    sourceDirectory);
+
+                Assert.Empty(unresolved);
+                Assert.Equal("new", File.ReadAllText(Path.Combine(operation.TargetPath, "plugin.txt")));
+            }
+
+            Assert.Empty(await NuGetPluginOperation.RecoverInterruptedOperationsAsync(sourceDirectory));
             Assert.False(Directory.Exists(operation.BackupPath));
         }
         finally

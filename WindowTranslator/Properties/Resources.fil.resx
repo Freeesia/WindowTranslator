@@ -483,12 +483,6 @@ Ang monitor ay hindi suportado.
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Available ang update</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Naka-install: {0} → Pinakabago: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Naka-install: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Naka-install na bersyon</value>
   </data>
@@ -503,9 +497,6 @@ Ang monitor ay hindi suportado.
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Nabigo ang pag-install</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Hindi tugma ang plugin na ito sa kasalukuyang pangunahing bersyon ng WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>I-restart ngayon</value>

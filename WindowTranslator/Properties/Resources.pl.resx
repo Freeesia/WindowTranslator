@@ -483,12 +483,6 @@ Monitory nie są obsługiwane.
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Dostępna aktualizacja</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Zainstalowano: {0} → Najnowszy: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Zainstalowano: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Zainstalowana wersja</value>
   </data>
@@ -503,9 +497,6 @@ Monitory nie są obsługiwane.
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Instalacja nie powiodła się</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Ta wtyczka nie jest zgodna z bieżącą główną wersją WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Uruchom ponownie teraz</value>

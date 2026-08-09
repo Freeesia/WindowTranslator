@@ -474,12 +474,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>يتوفر تحديث</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>مثبت: {0} → الأحدث: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>مثبت: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>الإصدار المثبت</value>
   </data>
@@ -494,9 +488,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>فشل التثبيت</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>هذا المكون الإضافي غير متوافق مع الإصدار الرئيسي الحالي من WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>إعادة التشغيل الآن</value>

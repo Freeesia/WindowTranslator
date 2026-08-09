@@ -483,12 +483,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>更新あり</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>インストール済み: {0} → 最新: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>インストール済み: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>インストール済みバージョン</value>
   </data>
@@ -503,9 +497,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>インストール失敗</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>現在のWindowTranslatorメジャーバージョンとは互換性がありません。</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>今すぐ再起動</value>

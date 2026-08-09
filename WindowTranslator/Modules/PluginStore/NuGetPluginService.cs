@@ -46,6 +46,7 @@ public sealed class NuGetPluginService : BackgroundService
     private readonly AsyncSemaphore refreshLock = new(1);
     private readonly object snapshotLock = new();
     private PluginStoreSnapshot packageSnapshot = PluginStoreSnapshot.Empty;
+    private int disposed;
 
     internal NuGetPluginService(
         ILogger<NuGetPluginService> logger,
@@ -144,7 +145,7 @@ public sealed class NuGetPluginService : BackgroundService
             .ToArray();
         this.logger.LogInformation("NuGetタグ検索完了: {Count}件の候補が見つかりました。", searchResults.Length);
 
-        var requestGate = new AsyncSemaphore(MaxConcurrentMetadataRequests);
+        using var requestGate = new AsyncSemaphore(MaxConcurrentMetadataRequests);
         var packageTasks = searchResults.Select(async data =>
         {
             using var request = await requestGate.EnterAsync(cancellationToken);
@@ -480,6 +481,18 @@ public sealed class NuGetPluginService : BackgroundService
             this.manifestPath,
             manifest,
             cancellationToken);
+
+    public override void Dispose()
+    {
+        if (Interlocked.Exchange(ref this.disposed, 1) != 0)
+        {
+            return;
+        }
+
+        base.Dispose();
+        this.operationLock.Dispose();
+        this.refreshLock.Dispose();
+    }
 
 }
 

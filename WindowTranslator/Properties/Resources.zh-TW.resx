@@ -483,12 +483,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>有更新</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>已安裝: {0} → 最新: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>已安裝: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>已安裝版本</value>
   </data>
@@ -503,9 +497,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>安裝失敗</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>此外掛程式與目前的 WindowTranslator 主要版本不相容。</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>立即重新啟動</value>

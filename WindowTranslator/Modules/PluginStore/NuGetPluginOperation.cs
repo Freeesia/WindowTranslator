@@ -133,10 +133,11 @@ internal sealed class NuGetPluginOperation : IAsyncDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             NuGetPluginOperationState? state = null;
+            var isCommitted = false;
             try
             {
                 var committedPath = Path.Combine(operationDirectory, CommittedFileName);
-                var isCommitted = File.Exists(committedPath);
+                isCommitted = File.Exists(committedPath);
                 var statePath = isCommitted
                     ? committedPath
                     : Path.Combine(operationDirectory, PendingFileName);
@@ -166,7 +167,7 @@ internal sealed class NuGetPluginOperation : IAsyncDisposable
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                if (!string.IsNullOrWhiteSpace(state?.PackageId))
+                if (!isCommitted && !string.IsNullOrWhiteSpace(state?.PackageId))
                 {
                     unresolvedPackageIds.Add(state.PackageId);
                 }

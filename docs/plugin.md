@@ -26,10 +26,11 @@ cd WindowTranslator.Plugin.YourPlugin
 
     <!-- NuGet パッケージ情報 -->
     <PackageId>WindowTranslator.Plugin.YourPlugin</PackageId>
-    <Title>WindowTranslator Your Plugin</Title>
+    <Title>Your Plugin</Title>
     <Version>1.0.0</Version>
     <Authors>YourName</Authors>
     <Description>プラグインストアに表示する具体的な説明文</Description>
+    <PackageProjectUrl>https://github.com/YourName/YourPlugin</PackageProjectUrl>
     <!-- この タグ が必須です（アプリ内一覧への表示条件） -->
     <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

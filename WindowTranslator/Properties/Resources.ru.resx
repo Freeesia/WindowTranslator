@@ -474,12 +474,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Доступно обновление</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Установлен: {0} → Последний: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Установлен: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Установленная версия</value>
   </data>
@@ -494,9 +488,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Ошибка установки</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Этот плагин несовместим с текущей основной версией WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Перезапустить сейчас</value>

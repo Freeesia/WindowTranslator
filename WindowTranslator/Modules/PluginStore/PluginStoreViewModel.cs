@@ -424,16 +424,13 @@ public partial class PluginPackageViewModel : ObservableObject
     public bool IsNotInstalled => !this.IsInstalled;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(StatusText))]
     private string? installedVersion;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool isUpdateAvailable;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(RequiresReinstall))]
     [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool isCompatible;
@@ -455,28 +452,11 @@ public partial class PluginPackageViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(LatestVersion))]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
-    [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(RequiresReinstall))]
     [NotifyPropertyChangedFor(nameof(CanUpdate))]
     private bool usePrerelease;
 
     public bool HasReadme => !string.IsNullOrWhiteSpace(this.ReadmeMarkdown);
-
-    public string StatusText
-    {
-        get
-        {
-            if (this.IsInstalled && !this.IsCompatible)
-                return Resources.PluginIncompatible;
-            if (this.IsUpdateAvailable
-                && this.InstalledVersion is not null
-                && this.LatestVersion is not null)
-                return string.Format(Properties.Resources.UpdateAvailableVersion, this.InstalledVersion, this.LatestVersion);
-            if (this.IsInstalled && this.InstalledVersion is not null)
-                return string.Format(Properties.Resources.InstalledVersion, this.InstalledVersion);
-            return string.Empty;
-        }
-    }
 
     public PluginPackageViewModel(
         NuGetPackageInfo info,

@@ -483,12 +483,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>มีการอัปเดต</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>ติดตั้งแล้ว: {0} → ล่าสุด: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>ติดตั้งแล้ว: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>เวอร์ชันที่ติดตั้ง</value>
   </data>
@@ -503,9 +497,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>การติดตั้งล้มเหลว</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>ปลั๊กอินนี้ไม่เข้ากันกับ WindowTranslator เวอร์ชันหลักปัจจุบัน</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>เริ่มใหม่ตอนนี้</value>

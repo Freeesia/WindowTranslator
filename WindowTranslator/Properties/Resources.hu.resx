@@ -364,12 +364,6 @@ A monitorok nem támogatottak.
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Frissítés érhető el</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Telepítve: {0} → Legújabb: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Telepítve: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Telepített verzió</value>
   </data>
@@ -384,9 +378,6 @@ A monitorok nem támogatottak.
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>A telepítés sikertelen</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Ez a bővítmény nem kompatibilis a WindowTranslator jelenlegi főverziójával.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Újraindítás most</value>

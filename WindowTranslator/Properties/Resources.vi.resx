@@ -483,12 +483,6 @@ Màn hình không được hỗ trợ.
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Có cập nhật</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Đã cài: {0} → Mới nhất: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Đã cài: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Phiên bản đã cài</value>
   </data>
@@ -503,9 +497,6 @@ Màn hình không được hỗ trợ.
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Cài đặt thất bại</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Plugin này không tương thích với phiên bản chính hiện tại của WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Khởi động lại ngay</value>

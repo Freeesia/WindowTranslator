@@ -482,12 +482,6 @@ Monitor tidak didukung.</value>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Pembaruan tersedia</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Terpasang: {0} → Terbaru: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Terpasang: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Versi terpasang</value>
   </data>
@@ -502,9 +496,6 @@ Monitor tidak didukung.</value>
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Instalasi gagal</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Plugin ini tidak kompatibel dengan versi mayor WindowTranslator saat ini.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Mulai ulang sekarang</value>

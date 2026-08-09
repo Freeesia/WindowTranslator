@@ -474,12 +474,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Actualización disponible</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Instalado: {0} → Último: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Instalado: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Versión instalada</value>
   </data>
@@ -494,9 +488,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Error de instalación</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Este plugin no es compatible con la versión principal actual de WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Reiniciar ahora</value>

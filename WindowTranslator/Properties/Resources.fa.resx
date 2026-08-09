@@ -468,12 +468,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>به‌روزرسانی موجود است</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>نصب شده: {0} → جدیدترین: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>نصب شده: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>نسخه نصب شده</value>
   </data>
@@ -488,9 +482,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>نصب ناموفق بود</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>این افزونه با نسخه اصلی فعلی WindowTranslator سازگار نیست.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>اکنون راه‌اندازی مجدد شود</value>

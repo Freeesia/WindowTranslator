@@ -364,12 +364,6 @@ Monitory nejsou podporovány.
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Dostupná aktualizace</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Nainstalováno: {0} → Nejnovější: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Nainstalováno: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Nainstalovaná verze</value>
   </data>
@@ -384,9 +378,6 @@ Monitory nejsou podporovány.
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Instalace se nezdařila</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Tento plugin není kompatibilní s aktuální hlavní verzí aplikace WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Restartovat nyní</value>

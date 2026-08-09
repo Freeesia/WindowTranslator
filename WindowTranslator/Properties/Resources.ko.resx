@@ -483,12 +483,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>업데이트 있음</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>설치됨: {0} → 최신: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>설치됨: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>설치된 버전</value>
   </data>
@@ -503,9 +497,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>설치 실패</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>이 플러그인은 현재 WindowTranslator 주 버전과 호환되지 않습니다.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>지금 다시 시작</value>

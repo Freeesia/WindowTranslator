@@ -482,12 +482,6 @@ Monitor tidak didukung.</value>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Atualização disponível</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Instalado: {0} → Mais recente: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Instalado: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Versão instalada</value>
   </data>
@@ -502,9 +496,6 @@ Monitor tidak didukung.</value>
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Falha na instalação</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>Este plugin não é compatível com a versão principal atual do WindowTranslator.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Reiniciar agora</value>

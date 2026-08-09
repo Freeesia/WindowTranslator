@@ -293,11 +293,6 @@ internal class Resources
     public static string Installed => ResourceManager.GetString("Installed", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "インストール済み: {0}" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string InstalledVersion => ResourceManager.GetString("InstalledVersion", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "インストール済みバージョン" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string InstalledVersionLabel => ResourceManager.GetString("InstalledVersionLabel", resourceCulture) ?? string.Empty;
@@ -456,11 +451,6 @@ internal class Resources
     /// "インストール完了" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PluginInstallSuccess => ResourceManager.GetString("PluginInstallSuccess", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "現在のWindowTranslatorメジャーバージョンとは互換性がありません。" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string PluginIncompatible => ResourceManager.GetString("PluginIncompatible", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "プラグイン" に類似しているローカライズされた文字列を検索します。
@@ -671,11 +661,6 @@ internal class Resources
     /// "更新あり" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string UpdateAvailable => ResourceManager.GetString("UpdateAvailable", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "インストール済み: {0} → 最新: {1}" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string UpdateAvailableVersion => ResourceManager.GetString("UpdateAvailableVersion", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "最新バージョンに更新" に類似しているローカライズされた文字列を検索します。

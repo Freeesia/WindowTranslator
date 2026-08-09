@@ -476,12 +476,6 @@
   <data name="UpdateAvailable" xml:space="preserve">
     <value>अपडेट उपलब्ध</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>इंस्टॉल: {0} → नवीनतम: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>इंस्टॉल: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>इंस्टॉल किया गया संस्करण</value>
   </data>
@@ -496,9 +490,6 @@
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>इंस्टॉलेशन विफल</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>यह प्लगइन WindowTranslator के वर्तमान प्रमुख संस्करण के साथ संगत नहीं है।</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>अभी पुनः आरंभ करें</value>

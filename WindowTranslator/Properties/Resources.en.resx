@@ -483,12 +483,6 @@ Monitors are not supported.
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Update available</value>
   </data>
-  <data name="UpdateAvailableVersion" xml:space="preserve">
-    <value>Installed: {0} → Latest: {1}</value>
-  </data>
-  <data name="InstalledVersion" xml:space="preserve">
-    <value>Installed: {0}</value>
-  </data>
   <data name="InstalledVersionLabel" xml:space="preserve">
     <value>Installed version</value>
   </data>
@@ -503,9 +497,6 @@ Monitors are not supported.
   </data>
   <data name="PluginInstallFailed" xml:space="preserve">
     <value>Installation failed</value>
-  </data>
-  <data name="PluginIncompatible" xml:space="preserve">
-    <value>This plugin is incompatible with the current WindowTranslator major version.</value>
   </data>
   <data name="RestartNow" xml:space="preserve">
     <value>Restart now</value>
