@@ -400,4 +400,7 @@ Monitory nejsou podporovány.
   <data name="LicenseUrl" xml:space="preserve">
     <value>Informace o licenci</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Pluginy jsou balíčky třetích stran distribuované prostřednictvím NuGet. Licenci ke každému balíčku uděluje jeho vlastník; WindowTranslator nezaručuje jeho obsah, chování ani bezpečnost. Instalujte pouze balíčky, kterým důvěřujete.</value>
+  </data>
 </root>

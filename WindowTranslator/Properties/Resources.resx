@@ -519,4 +519,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>ライセンス情報</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>プラグインはNuGet上の第三者パッケージです。各パッケージのライセンスは所有者から付与され、WindowTranslatorは内容・動作・安全性を保証しません。信頼できるパッケージだけをインストールしてください。</value>
+  </data>
 </root>

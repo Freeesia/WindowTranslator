@@ -33,6 +33,7 @@
   <ItemGroup>
     <SplashScreen Include="splash.gif" />
     <Resource Include="$(ApplicationIcon)" />
+    <Resource Include="..\Plugins\plugin-icon.png" Link="Assets\plugin-icon.png" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" ExcludeFromSingleFile="true" />
   </ItemGroup>
   <ItemGroup>

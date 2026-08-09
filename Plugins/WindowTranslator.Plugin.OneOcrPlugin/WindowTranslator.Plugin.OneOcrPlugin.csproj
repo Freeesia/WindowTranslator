@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
-    <Title>WindowTranslator OneOCR Plugin</Title>
+    <Title>OneOCR Plugin</Title>
     <Description>OCR for WindowTranslator using the Windows OneOCR engine.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>

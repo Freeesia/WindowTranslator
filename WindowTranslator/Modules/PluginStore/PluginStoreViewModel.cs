@@ -29,6 +29,9 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(HasError))]
     private string? errorMessage;
 
+    [ObservableProperty]
+    private bool hideDisclaimer;
+
     public bool HasError => this.ErrorMessage is not null;
 
     public PluginPackageViewModel? SelectedPackage
@@ -392,6 +395,8 @@ public partial class PluginPackageViewModel : ObservableObject
     public string Title { get; }
     public string Description { get; }
     public string Authors { get; }
+    public string? IconUrl { get; }
+    public bool IsOfficial { get; }
     public string? ReleaseVersion { get; }
     public string? PrereleaseVersion { get; }
     public string? LatestVersion => this.UsePrerelease
@@ -491,6 +496,10 @@ public partial class PluginPackageViewModel : ObservableObject
         this.Title = info.Title;
         this.Description = info.Description;
         this.Authors = info.Authors;
+        this.IconUrl = info.IconUrl;
+        this.IsOfficial = info.Authors
+            .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Contains("Freesia", StringComparer.OrdinalIgnoreCase);
         this.ReleaseVersion = versions
             .Where(version => !version.Parsed!.IsPrerelease)
             .OrderByDescending(version => version.Parsed)

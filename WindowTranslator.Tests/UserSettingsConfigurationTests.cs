@@ -14,6 +14,7 @@ public sealed class UserSettingsConfigurationTests
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Common:ViewMode"] = nameof(ViewMode.Capture),
+                ["Common:HidePluginStoreDisclaimer"] = "true",
                 ["Targets::Font"] = "Default Font",
                 ["Targets:game:Font"] = "Test Font",
                 ["Targets:game:SelectedPlugins:ITranslateModule"] = "MissingTranslator",
@@ -25,6 +26,7 @@ public sealed class UserSettingsConfigurationTests
         new global::ConfigureUserSettings(configuration).Configure(settings);
 
         Assert.Equal(ViewMode.Capture, settings.Common.ViewMode);
+        Assert.True(settings.Common.HidePluginStoreDisclaimer);
         Assert.Equal("Default Font", settings.Targets[string.Empty].Font);
         var target = settings.Targets["game"];
         Assert.Equal("Test Font", target.Font);

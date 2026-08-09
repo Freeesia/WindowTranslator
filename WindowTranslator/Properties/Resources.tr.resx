@@ -519,4 +519,7 @@ Monitör desteklenmiyor.
   <data name="LicenseUrl" xml:space="preserve">
     <value>Lisans bilgileri</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Eklentiler, NuGet üzerinden dağıtılan üçüncü taraf paketlerdir. Her paketin lisansı sahibi tarafından sağlanır; WindowTranslator içeriğini, davranışını veya güvenliğini garanti etmez. Yalnızca güvendiğiniz paketleri yükleyin.</value>
+  </data>
 </root>

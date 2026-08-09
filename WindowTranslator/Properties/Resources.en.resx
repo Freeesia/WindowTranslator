@@ -519,4 +519,7 @@ Monitors are not supported.
   <data name="LicenseUrl" xml:space="preserve">
     <value>License information</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugins are third-party packages distributed through NuGet. Each package is licensed by its owner; WindowTranslator does not guarantee its content, behavior, or safety. Install only packages you trust.</value>
+  </data>
 </root>

@@ -519,4 +519,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>授權資訊</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>外掛程式是透過 NuGet 發佈的第三方套件。每個套件的授權由其擁有者授予；WindowTranslator 不保證其內容、行為或安全性。請只安裝您信任的套件。</value>
+  </data>
 </root>

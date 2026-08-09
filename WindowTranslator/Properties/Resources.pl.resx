@@ -519,4 +519,7 @@ Monitory nie są obsługiwane.
   <data name="LicenseUrl" xml:space="preserve">
     <value>Informacje o licencji</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Wtyczki są pakietami innych firm rozpowszechnianymi przez NuGet. Licencję każdego pakietu zapewnia jego właściciel; WindowTranslator nie gwarantuje jego zawartości, działania ani bezpieczeństwa. Instaluj tylko zaufane pakiety.</value>
+  </data>
 </root>

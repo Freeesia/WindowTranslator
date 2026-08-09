@@ -510,4 +510,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>Informations de licence</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Les plugins sont des paquets tiers distribués via NuGet. La licence de chaque paquet est accordée par son propriétaire ; WindowTranslator ne garantit ni son contenu, ni son fonctionnement, ni sa sécurité. N’installez que des paquets de confiance.</value>
+  </data>
 </root>

@@ -518,4 +518,7 @@ Monitor tidak didukung.</value>
   <data name="LicenseUrl" xml:space="preserve">
     <value>Informações de licença</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Os plugins são pacotes de terceiros distribuídos pelo NuGet. A licença de cada pacote é concedida pelo proprietário; o WindowTranslator não garante seu conteúdo, funcionamento ou segurança. Instale apenas pacotes confiáveis.</value>
+  </data>
 </root>

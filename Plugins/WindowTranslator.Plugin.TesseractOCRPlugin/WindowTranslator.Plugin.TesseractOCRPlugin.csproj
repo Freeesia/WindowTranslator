@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
-    <Title>WindowTranslator Tesseract OCR Plugin</Title>
+    <Title>Tesseract OCR Plugin</Title>
     <Description>OCR for WindowTranslator using the Tesseract engine.</Description>
     <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
   </PropertyGroup>

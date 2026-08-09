@@ -660,7 +660,8 @@ public sealed class NuGetPluginServiceTests
                         "Test description",
                         "WindowTranslator.Tests",
                         null,
-                        null),
+                        null,
+                        iconUrl: "https://nuget.test/icons/test-plugin.png"),
                 ];
             handler.AddMetadataVersions(
                 "Test.Plugin",
@@ -678,6 +679,7 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal(
                 ["1.0.0", "1.1.0-beta.1", "1.1.0-beta.2"],
                 package.Versions);
+            Assert.Equal("https://nuget.test/icons/test-plugin.png", package.IconUrl);
             Assert.Equal([true], handler.RequestedPrereleaseOptions);
         }
         finally
@@ -787,6 +789,27 @@ public sealed class NuGetPluginServiceTests
 
         Assert.Equal("2.0.0-preview.1", prereleaseOnlyPackage.LatestVersion);
         Assert.True(prereleaseOnlyPackage.CanInstall);
+    }
+
+    [Fact]
+    public void PackagePresentationUsesMetadataAndMarksFreesiaAsOfficial()
+    {
+        var package = new PluginPackageViewModel(
+            new NuGetPackageInfo(
+                "Test.Plugin",
+                "Test Plugin",
+                "Description",
+                "Other; Freesia",
+                null,
+                null,
+                ["1.0.0"],
+                "https://nuget.test/icons/test-plugin.png"),
+            isInstalled: false,
+            installedVersion: null);
+
+        Assert.Equal("Test Plugin", package.Title);
+        Assert.True(package.IsOfficial);
+        Assert.Equal("https://nuget.test/icons/test-plugin.png", package.IconUrl);
     }
 
     [Fact]
@@ -1662,7 +1685,8 @@ public sealed class NuGetPluginServiceTests
         NuGetVersion? version = null,
         IEnumerable<PackageDependencyGroup>? dependencySets = null,
         bool isListed = true,
-        string? readmeFileUrl = null)
+        string? readmeFileUrl = null,
+        string? iconUrl = null)
         => new TestPackageSearchMetadata
         {
             Identity = new PackageIdentity(
@@ -1676,6 +1700,7 @@ public sealed class NuGetPluginServiceTests
             DependencySets = dependencySets ?? [],
             IsListed = isListed,
             ReadmeFileUrl = readmeFileUrl!,
+            IconUrl = iconUrl is null ? null! : new Uri(iconUrl),
         };
 
     private static async Task WaitForReadmeAsync(

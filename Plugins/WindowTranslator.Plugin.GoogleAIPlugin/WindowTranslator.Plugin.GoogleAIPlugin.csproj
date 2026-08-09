@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
-    <Title>WindowTranslator Google AI Plugin</Title>
+    <Title>Google AI Plugin</Title>
     <Description>Translation, OCR, and text correction for WindowTranslator using Google AI.</Description>
     <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
   </PropertyGroup>

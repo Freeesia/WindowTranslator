@@ -45,6 +45,11 @@ public class CommonSettings
     /// 自動的に翻訳を発動するか
     /// </summary>
     public bool IsEnableAutoTarget { get; set; }
+
+    /// <summary>
+    /// プラグインストアの免責事項を非表示にするか
+    /// </summary>
+    public bool HidePluginStoreDisclaimer { get; set; }
 }
 
 /// <summary>

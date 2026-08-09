@@ -5,12 +5,17 @@
   <PropertyGroup Condition="'$(IsTestProject)' != 'true' AND '$(IsPackable)' != 'false'">
     <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
     <PackageReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\README.md')">README.md</PackageReadmeFile>
+    <PackageIcon>plugin-icon.png</PackageIcon>
     <TargetsForTfmSpecificBuildOutput
       Condition="'$(IncludePluginRuntimeAssetsInPackage)' == 'true'">$(TargetsForTfmSpecificBuildOutput);AddPluginRuntimeAssetsToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\README.md')">
     <None Update="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' != 'true' AND '$(IsPackable)' != 'false'">
+    <None Include="$(MSBuildThisFileDirectory)plugin-icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!--

@@ -518,4 +518,7 @@ Monitor tidak disokong.</value>
   <data name="LicenseUrl" xml:space="preserve">
     <value>Maklumat lesen</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Pemalam ialah pakej pihak ketiga yang diedarkan melalui NuGet. Lesen setiap pakej diberikan oleh pemiliknya; WindowTranslator tidak menjamin kandungan, tingkah laku atau keselamatannya. Pasang hanya pakej yang anda percayai.</value>
+  </data>
 </root>

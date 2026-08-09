@@ -48,57 +48,136 @@
             </Grid.ColumnDefinitions>
 
             <!--  パッケージ一覧  -->
-            <ui:ListView
-                Grid.Column="0"
-                Margin="4"
-                ItemsSource="{Binding Packages}"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                SelectedItem="{Binding SelectedPackage}">
-                <ui:ListView.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    </Style>
-                </ui:ListView.ItemContainerStyle>
-                <ui:ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:PluginPackageViewModel}">
-                        <StackPanel Margin="4">
-                            <!--  タイトルと状態  -->
-                            <!--  バージョン情報  -->
-                            <DockPanel LastChildFill="True">
-                                <ui:InfoBadge
-                                    Margin="4"
-                                    CornerRadius="20"
-                                    DockPanel.Dock="Right"
-                                    Icon="{ui:SymbolIcon Checkmark16}"
-                                    Severity="Success"
-                                    Style="{DynamicResource IconInfoBadgeStyle}"
-                                    Visibility="{Binding IsInstalled, Converter={StaticResource b2vConv}}" />
-                                <ui:InfoBadge
-                                    Margin="4"
-                                    CornerRadius="20"
-                                    DockPanel.Dock="Right"
-                                    Icon="{ui:SymbolIcon Alert16}"
-                                    Severity="Caution"
-                                    Style="{DynamicResource IconInfoBadgeStyle}"
-                                    Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}" />
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ui:ListView
+                    Grid.Row="0"
+                    Margin="4"
+                    ItemsSource="{Binding Packages}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    SelectedItem="{Binding SelectedPackage}"
+                    VirtualizingPanel.ScrollUnit="Pixel">
+                    <ui:ListView.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource {x:Type ui:ListViewItem}}" TargetType="ui:ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ui:ListView.ItemContainerStyle>
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:PluginPackageViewModel}">
+                            <Grid Margin="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Border
+                                    Grid.RowSpan="2"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Top"
+                                    ClipToBounds="True"
+                                    CornerRadius="4">
+                                    <Grid>
+                                        <Image
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Source="/WindowTranslator;component/Assets/plugin-icon.png"
+                                            Stretch="UniformToFill" />
+                                        <Image
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Source="{Binding IconUrl}"
+                                            Stretch="UniformToFill" />
+                                    </Grid>
+                                </Border>
+
+                                <!--  タイトルと状態  -->
+                                <DockPanel Grid.Column="1" LastChildFill="True">
+                                    <ui:InfoBadge
+                                        Margin="2"
+                                        CornerRadius="20"
+                                        DockPanel.Dock="Right"
+                                        Icon="{ui:SymbolIcon Checkmark16}"
+                                        Severity="Success"
+                                        Style="{DynamicResource IconInfoBadgeStyle}"
+                                        Visibility="{Binding IsInstalled, Converter={StaticResource b2vConv}}" />
+                                    <ui:InfoBadge
+                                        Margin="2"
+                                        CornerRadius="20"
+                                        DockPanel.Dock="Right"
+                                        Icon="{ui:SymbolIcon Alert16}"
+                                        Severity="Caution"
+                                        Style="{DynamicResource IconInfoBadgeStyle}"
+                                        Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ui:TextBlock
+                                            VerticalAlignment="Center"
+                                            FontWeight="SemiBold"
+                                            Text="{Binding Title}"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextWrapping="NoWrap" />
+                                        <ui:SymbolIcon
+                                            Grid.Column="1"
+                                            Margin="4,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Filled="True"
+                                            Foreground="{ui:ThemeResource AccentTextFillColorSecondaryBrush}"
+                                            Symbol="CheckmarkCircle24"
+                                            ToolTip="{Binding Authors}"
+                                            Visibility="{Binding IsOfficial, Converter={StaticResource b2vConv}}" />
+                                    </Grid>
+                                </DockPanel>
                                 <ui:TextBlock
-                                    VerticalAlignment="Center"
-                                    FontWeight="SemiBold"
-                                    Text="{Binding Title}"
-                                    TextTrimming="CharacterEllipsis"
-                                    TextWrapping="NoWrap" />
-                            </DockPanel>
-                            <ui:TextBlock
-                                Grid.Row="1"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Top"
-                                FontSize="12"
-                                Text="{Binding Description}"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ui:ListView.ItemTemplate>
-            </ui:ListView>
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Top"
+                                    FontSize="12"
+                                    Text="{Binding Description}"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+
+                <Border
+                    Grid.Row="1"
+                    Margin="4"
+                    Padding="8"
+                    BorderBrush="{DynamicResource SeparatorBorderBrush}"
+                    BorderThickness="1,1,0,0">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HideDisclaimer}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <ui:TextBlock
+                            FontSize="12"
+                            Text="{x:Static properties:Resources.PluginStoreDisclaimer}"
+                            TextWrapping="Wrap" />
+                        <CheckBox
+                            Margin="0,8,0,0"
+                            Content="{x:Static properties:Resources.ReviewNeverShowAgain}"
+                            IsChecked="{Binding HideDisclaimer, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
 
             <GridSplitter
                 Grid.Column="1"
@@ -133,18 +212,54 @@
                     MaxHeight="300"
                     VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <ui:TextBlock
-                            Margin="0,0,0,4"
-                            FontSize="16"
-                            FontWeight="SemiBold"
-                            Text="{Binding Title}"
-                            TextWrapping="Wrap" />
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <ui:TextBlock
-                            Margin="0,0,0,8"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="{Binding Authors}"
-                            TextWrapping="Wrap" />
+                            <Border
+                                Width="48"
+                                Height="48"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Top"
+                                ClipToBounds="True"
+                                CornerRadius="4">
+                                <Grid>
+                                    <Image
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Source="/WindowTranslator;component/Assets/plugin-icon.png"
+                                        Stretch="UniformToFill" />
+                                    <Image
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Source="{Binding IconUrl}"
+                                        Stretch="UniformToFill" />
+                                </Grid>
+                            </Border>
+
+                            <StackPanel Grid.Column="1">
+                                <DockPanel LastChildFill="True">
+                                    <ui:SymbolIcon
+                                        Margin="4,0,0,0"
+                                        VerticalAlignment="Center"
+                                        DockPanel.Dock="Right"
+                                        Filled="True"
+                                        Foreground="{ui:ThemeResource AccentTextFillColorSecondaryBrush}"
+                                        Symbol="CheckmarkCircle24"
+                                        ToolTip="{Binding Authors}"
+                                        Visibility="{Binding IsOfficial, Converter={StaticResource b2vConv}}" />
+                                    <ui:TextBlock
+                                        FontSize="16"
+                                        FontWeight="SemiBold"
+                                        Text="{Binding Title}"
+                                        TextWrapping="Wrap" />
+                                </DockPanel>
+                                <ui:TextBlock
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="{Binding Authors}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
 
                         <Separator Margin="0,0,0,8" />
 

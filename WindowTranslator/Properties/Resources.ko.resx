@@ -519,4 +519,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>라이선스 정보</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>플러그인은 NuGet을 통해 배포되는 타사 패키지입니다. 각 패키지의 라이선스는 해당 소유자가 제공하며, WindowTranslator는 콘텐츠, 동작 또는 안전성을 보장하지 않습니다. 신뢰할 수 있는 패키지만 설치하세요.</value>
+  </data>
 </root>

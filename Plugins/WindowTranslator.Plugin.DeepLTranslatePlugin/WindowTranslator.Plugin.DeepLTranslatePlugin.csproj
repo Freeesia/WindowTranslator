@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>WindowTranslator DeepL Translator Plugin</Title>
+    <Title>DeepL Translator Plugin</Title>
     <Description>Translation for WindowTranslator using the DeepL API.</Description>
     <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
   </PropertyGroup>

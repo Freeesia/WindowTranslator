@@ -518,4 +518,7 @@ Monitor tidak didukung.</value>
   <data name="LicenseUrl" xml:space="preserve">
     <value>Informasi lisensi</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugin adalah paket pihak ketiga yang didistribusikan melalui NuGet. Lisensi setiap paket diberikan oleh pemiliknya; WindowTranslator tidak menjamin konten, perilaku, atau keamanannya. Instal hanya paket yang Anda percayai.</value>
+  </data>
 </root>

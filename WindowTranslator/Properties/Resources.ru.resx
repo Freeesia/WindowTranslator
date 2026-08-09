@@ -510,4 +510,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>Информация о лицензии</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Плагины — это сторонние пакеты, распространяемые через NuGet. Лицензию на каждый пакет предоставляет его владелец; WindowTranslator не гарантирует его содержимое, работу или безопасность. Устанавливайте только пакеты, которым доверяете.</value>
+  </data>
 </root>

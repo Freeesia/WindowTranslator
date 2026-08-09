@@ -163,6 +163,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
         this.PluginStore = pluginStoreViewModel;
+        this.PluginStore.HideDisclaimer = common.HidePluginStoreDisclaimer;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
@@ -248,6 +249,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 OverlaySwitch = this.OverlaySwitch,
                 IsOverlayPointSwap = this.IsOverlayPointSwap,
                 IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
+                HidePluginStoreDisclaimer = this.PluginStore.HideDisclaimer,
             },
             Targets = this.Targets.ToDictionary(t => t.Name, t => new TargetSettings()
             {

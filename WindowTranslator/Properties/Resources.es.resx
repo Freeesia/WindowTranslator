@@ -510,4 +510,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>Información de licencia</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Los complementos son paquetes de terceros distribuidos mediante NuGet. La licencia de cada paquete la concede su propietario; WindowTranslator no garantiza su contenido, funcionamiento ni seguridad. Instala solo paquetes de confianza.</value>
+  </data>
 </root>

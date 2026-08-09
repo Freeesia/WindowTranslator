@@ -519,4 +519,7 @@
   <data name="LicenseUrl" xml:space="preserve">
     <value>许可证信息</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>插件是通过 NuGet 分发的第三方包。每个包的许可证由其所有者授予；WindowTranslator 不保证其内容、行为或安全性。请仅安装你信任的包。</value>
+  </data>
 </root>

@@ -349,7 +349,8 @@ public sealed class NuGetPluginService : BackgroundService
             LicenseUrl: data.LicenseUrl?.AbsoluteUri,
             Versions: compatibleVersions
                 .Select(version => version.Identity.Version.ToNormalizedString())
-                .ToArray());
+                .ToArray(),
+            IconUrl: data.IconUrl?.AbsoluteUri);
     }
 
     private bool HasCompatibleAbstractionsDependency(
@@ -490,7 +491,8 @@ public record NuGetPackageInfo(
     string Authors,
     string? ProjectUrl,
     string? LicenseUrl,
-    IReadOnlyList<string> Versions
+    IReadOnlyList<string> Versions,
+    string? IconUrl = null
 );
 
 /// <summary>インストール済みパッケージ情報</summary>

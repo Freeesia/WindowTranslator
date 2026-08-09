@@ -400,4 +400,7 @@ A monitorok nem támogatottak.
   <data name="LicenseUrl" xml:space="preserve">
     <value>Licencinformációk</value>
   </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>A beépülő modulok a NuGeten keresztül terjesztett, harmadik féltől származó csomagok. Az egyes csomagok licencét a tulajdonosuk biztosítja; a WindowTranslator nem garantálja azok tartalmát, működését vagy biztonságát. Csak megbízható csomagokat telepítsen.</value>
+  </data>
 </root>
