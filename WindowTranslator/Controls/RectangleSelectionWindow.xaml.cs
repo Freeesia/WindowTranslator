@@ -157,7 +157,7 @@ public partial class RectangleSelectionWindow : Window
         if (rect.Width < MinimumRelativeSize || rect.Height < MinimumRelativeSize)
         {
             this.SelectionRect.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
-            this.InfoText.SetCurrentValue(TextBlock.TextProperty, PriorityRectResources.TooSmall);
+            this.InfoText.SetCurrentValue(TextBlock.TextProperty, Properties.Resources.PriorityRectTooSmall);
             return;
         }
 
@@ -177,6 +177,6 @@ public partial class RectangleSelectionWindow : Window
         Canvas.SetTop(this.SelectionRect, y);
         this.SelectionRect.SetCurrentValue(WidthProperty, width);
         this.SelectionRect.SetCurrentValue(HeightProperty, height);
-        this.InfoText.SetCurrentValue(TextBlock.TextProperty, $"{PriorityRectResources.Selecting}: ({x:F0}, {y:F0}) - ({width:F0} x {height:F0})");
+        this.InfoText.SetCurrentValue(TextBlock.TextProperty, $"{Properties.Resources.PriorityRectSelecting}: ({x:F0}, {y:F0}) - ({width:F0} x {height:F0})");
     }
 }

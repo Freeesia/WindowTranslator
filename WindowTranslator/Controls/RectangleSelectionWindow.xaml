@@ -2,8 +2,8 @@
     x:Class="WindowTranslator.Controls.RectangleSelectionWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:WindowTranslator.Controls"
-    Title="{x:Static local:PriorityRectResources.Selection}"
+    xmlns:properties="clr-namespace:WindowTranslator.Properties"
+    Title="{x:Static properties:Resources.PriorityRectSelection}"
     AllowsTransparency="True"
     Background="Transparent"
     ResizeMode="NoResize"
@@ -33,7 +33,7 @@
             <TextBlock
                 x:Name="InfoText"
                 Foreground="White"
-                Text="{x:Static local:PriorityRectResources.SelectionGuide}" />
+                Text="{x:Static properties:Resources.PriorityRectSelectionGuide}" />
         </Border>
     </Canvas>
 </Window>

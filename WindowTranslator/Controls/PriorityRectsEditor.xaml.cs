@@ -119,10 +119,8 @@ public partial class PriorityRectsEditor : UserControl
     {
         var index = this.RectList.SelectedIndex;
         this.AddButton.SetCurrentValue(IsEnabledProperty, TargetWindowHandle != IntPtr.Zero);
-        this.AddButton.SetCurrentValue(ToolTipProperty, TargetWindowHandle != IntPtr.Zero ? null : PriorityRectResources.TargetNotFound);
+        this.AddButton.SetCurrentValue(ToolTipProperty, TargetWindowHandle != IntPtr.Zero ? null : Properties.Resources.PriorityRectTargetNotFound);
         this.RemoveButton.SetCurrentValue(IsEnabledProperty, index >= 0);
-        this.MoveUpButton.SetCurrentValue(IsEnabledProperty, index > 0);
-        this.MoveDownButton.SetCurrentValue(IsEnabledProperty, index >= 0 && index < this.items.Count - 1);
     }
 
     private void RectList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -147,24 +145,6 @@ public partial class PriorityRectsEditor : UserControl
         }
         this.items.RemoveAt(index);
         this.RectList.SetCurrentValue(Selector.SelectedIndexProperty, Math.Min(index, this.items.Count - 1));
-    }
-
-    private void MoveUpButton_Click(object sender, RoutedEventArgs e)
-        => Move(-1);
-
-    private void MoveDownButton_Click(object sender, RoutedEventArgs e)
-        => Move(1);
-
-    private void Move(int offset)
-    {
-        var index = this.RectList.SelectedIndex;
-        var newIndex = index + offset;
-        if (index < 0 || newIndex < 0 || newIndex >= this.items.Count)
-        {
-            return;
-        }
-        this.items.Move(index, newIndex);
-        this.RectList.SetCurrentValue(Selector.SelectedIndexProperty, newIndex);
     }
 }
 
