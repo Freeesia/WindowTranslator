@@ -387,7 +387,11 @@ public sealed class NuGetPluginServiceTests
             await File.WriteAllTextAsync(
                 Path.Combine(testDirectory, "nuget-manifest.json"),
                 JsonSerializer.Serialize(new InstalledManifest(
-                    [new InstalledPackageInfo("Root.Plugin", "1.0.0", HostMajorVersion: 7)])));
+                    [new InstalledPackageInfo(
+                        "Root.Plugin",
+                        "1.0.0",
+                        HostMajorVersion: 7,
+                        AbstractionsVersionRange: "[1.0.0, 2.0.0)")])));
 
             using var handler = new InMemoryNuGetHandler();
             using var service = CreateService(
@@ -449,48 +453,6 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task ManifestWithoutAbstractionsVersionRangeIsRejected()
-    {
-        var testDirectory = CreateTestDirectory();
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(testDirectory, "Legacy.Plugin"));
-            await File.WriteAllTextAsync(
-                Path.Combine(testDirectory, "nuget-manifest.json"),
-                JsonSerializer.Serialize(new
-                {
-                    Packages = new[]
-                    {
-                        new
-                        {
-                            Id = "Legacy.Plugin",
-                            Version = "1.0.0",
-                            HostMajorVersion = 7,
-                        },
-                    },
-                }));
-            using var handler = new InMemoryNuGetHandler();
-            using var service = CreateService(
-                handler,
-                testDirectory,
-                hostMajorVersion: 7);
-
-            await service.RefreshPackageInformationAsync();
-
-            Assert.IsType<InvalidOperationException>(service.PackageSnapshot.Error);
-            Assert.Empty(service.PackageSnapshot.InstalledPackages);
-            Assert.Empty(NuGetPluginCatalog.GetLoadablePackageIds(
-                testDirectory,
-                hostMajorVersion: 7,
-                hostAbstractionsVersion: NuGetVersion.Parse("1.0.0")));
-        }
-        finally
-        {
-            DeleteTestDirectory(testDirectory);
-        }
-    }
-
-    [Fact]
     public async Task InstalledPackageCompatibilityFollowsValidationSetting()
     {
         var testDirectory = CreateTestDirectory();
@@ -499,7 +461,11 @@ public sealed class NuGetPluginServiceTests
             await File.WriteAllTextAsync(
                 Path.Combine(testDirectory, "nuget-manifest.json"),
                 JsonSerializer.Serialize(new InstalledManifest(
-                    [new InstalledPackageInfo("Old.Plugin", "1.0.0", HostMajorVersion: 6)])));
+                    [new InstalledPackageInfo(
+                        "Old.Plugin",
+                        "1.0.0",
+                        HostMajorVersion: 6,
+                        AbstractionsVersionRange: "[1.0.0, 2.0.0)")])));
             using var handler = new InMemoryNuGetHandler();
             using var service = CreateService(
                 handler,
@@ -622,7 +588,11 @@ public sealed class NuGetPluginServiceTests
             await File.WriteAllTextAsync(
                 Path.Combine(testDirectory, "nuget-manifest.json"),
                 JsonSerializer.Serialize(new InstalledManifest(
-                    [new InstalledPackageInfo("Installed.Plugin", "1.2.3", HostMajorVersion: 7)])),
+                    [new InstalledPackageInfo(
+                        "Installed.Plugin",
+                        "1.2.3",
+                        HostMajorVersion: 7,
+                        AbstractionsVersionRange: "(, )")])),
                 Encoding.UTF8);
             using var handler = new InMemoryNuGetHandler();
             handler.SearchException = new HttpRequestException("NuGet search failed.");
@@ -1107,7 +1077,11 @@ public sealed class NuGetPluginServiceTests
             File.WriteAllText(Path.Combine(targetDirectory, "plugin.txt"), "old");
             await NuGetPluginOperation.SaveManifestAsync(
                 Path.Combine(testDirectory, "nuget-manifest.json"),
-                new([new("Root.Plugin", "0.9.0", HostMajorVersion: 1)]),
+                new([new(
+                    "Root.Plugin",
+                    "0.9.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]),
                 CancellationToken.None);
             using var handler = new InMemoryNuGetHandler();
             handler.AddPackage(
@@ -1369,9 +1343,17 @@ public sealed class NuGetPluginServiceTests
         {
             const string packageId = "Root.Plugin";
             var originalManifest = new InstalledManifest(
-                [new InstalledPackageInfo(packageId, "1.0.0", HostMajorVersion: 1)]);
+                [new InstalledPackageInfo(
+                    packageId,
+                    "1.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]);
             var updatedManifest = new InstalledManifest(
-                [new InstalledPackageInfo(packageId, "2.0.0", HostMajorVersion: 1)]);
+                [new InstalledPackageInfo(
+                    packageId,
+                    "2.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]);
             var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
             await NuGetPluginOperation.SaveManifestAsync(
                 manifestPath,
@@ -1419,9 +1401,17 @@ public sealed class NuGetPluginServiceTests
         {
             const string packageId = "Root.Plugin";
             var originalManifest = new InstalledManifest(
-                [new InstalledPackageInfo(packageId, "1.0.0", HostMajorVersion: 1)]);
+                [new InstalledPackageInfo(
+                    packageId,
+                    "1.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]);
             var updatedManifest = new InstalledManifest(
-                [new InstalledPackageInfo(packageId, "2.0.0", HostMajorVersion: 1)]);
+                [new InstalledPackageInfo(
+                    packageId,
+                    "2.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]);
             var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
             await NuGetPluginOperation.SaveManifestAsync(
                 manifestPath,
@@ -1470,7 +1460,11 @@ public sealed class NuGetPluginServiceTests
         {
             const string packageId = "Root.Plugin";
             var manifest = new InstalledManifest(
-                [new InstalledPackageInfo(packageId, "2.0.0", HostMajorVersion: 1)]);
+                [new InstalledPackageInfo(
+                    packageId,
+                    "2.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]);
             var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
             var operation = await NuGetPluginOperation.BeginAsync(
                 sourceDirectory,
@@ -1530,8 +1524,16 @@ public sealed class NuGetPluginServiceTests
                 Path.Combine(sourceDirectory, "nuget-manifest.json"),
                 JsonSerializer.Serialize(new InstalledManifest(
                 [
-                    new InstalledPackageInfo("Compatible.Plugin", "1.0.0", HostMajorVersion: 7),
-                    new InstalledPackageInfo("Incompatible.Plugin", "1.0.0", HostMajorVersion: 6),
+                    new InstalledPackageInfo(
+                        "Compatible.Plugin",
+                        "1.0.0",
+                        HostMajorVersion: 7,
+                        AbstractionsVersionRange: "(, )"),
+                    new InstalledPackageInfo(
+                        "Incompatible.Plugin",
+                        "1.0.0",
+                        HostMajorVersion: 6,
+                        AbstractionsVersionRange: "(, )"),
                 ])));
 
             var loadablePackages = NuGetPluginCatalog.GetLoadablePackageIds(
@@ -1643,7 +1645,11 @@ public sealed class NuGetPluginServiceTests
                 SearchOption.AllDirectories));
             await NuGetPluginOperation.SaveManifestAsync(
                 Path.Combine(sourceDirectory, "nuget-manifest.json"),
-                new([new("Catalog.Probe", "1.0.0", HostMajorVersion: 1)]),
+                new([new(
+                    "Catalog.Probe",
+                    "1.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]),
                 CancellationToken.None);
 
             var options = new FolderPluginCatalogOptions();
@@ -1719,7 +1725,11 @@ public sealed class NuGetPluginServiceTests
             }
             await NuGetPluginOperation.SaveManifestAsync(
                 Path.Combine(sourceDirectory, "nuget-manifest.json"),
-                new([new("Catalog.Probe", "1.0.0", HostMajorVersion: 1)]),
+                new([new(
+                    "Catalog.Probe",
+                    "1.0.0",
+                    HostMajorVersion: 1,
+                    AbstractionsVersionRange: "(, )")]),
                 CancellationToken.None);
 
             var options = new FolderPluginCatalogOptions();

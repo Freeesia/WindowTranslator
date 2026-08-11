@@ -519,7 +519,7 @@ public record InstalledPackageInfo(
     string Id,
     string Version,
     [property: JsonRequired] int HostMajorVersion,
-    [property: JsonRequired] string AbstractionsVersionRange = "(, )")
+    [property: JsonRequired] string AbstractionsVersionRange)
 {
     [JsonIgnore]
     public bool IsCompatible { get; init; } = true;
