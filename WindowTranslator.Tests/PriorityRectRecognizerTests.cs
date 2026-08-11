@@ -35,18 +35,23 @@ public class PriorityRectRecognizerTests
     }
 
     [Fact]
-    public async Task 優先矩形があっても全体の認識を行う()
+    public async Task 優先矩形がある場合は指定範囲だけを認識する()
     {
         using var bitmap = CreateBitmap();
         // 画像の左上4分の1を優先矩形にする
         PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
+        var calls = 0;
 
-        // 優先矩形は左上、全体の結果は右下で重ならない
         var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
-            ValueTask.FromResult<IEnumerable<TextRect>>(
-                ReferenceEquals(target, source) ? [Text("full", 300, 250)] : [Text("priority", 10, 10)]));
+        {
+            calls++;
+            Assert.NotSame(bitmap, target);
+            Assert.Same(bitmap, source);
+            return ValueTask.FromResult<IEnumerable<TextRect>>([Text("priority", 10, 10)]);
+        });
 
-        Assert.Equal(["priority", "full"], results.Select(r => r.SourceText));
+        Assert.Equal(1, calls);
+        Assert.Equal("priority", Assert.Single(results).SourceText);
     }
 
     [Fact]
@@ -66,48 +71,22 @@ public class PriorityRectRecognizerTests
     }
 
     [Fact]
-    public async Task 優先矩形の結果と重なる全体の結果は破棄される()
+    public async Task 優先矩形で認識できなかった場合も全体の認識は行わない()
     {
         using var bitmap = CreateBitmap();
         PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
-
-        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
-            ValueTask.FromResult<IEnumerable<TextRect>>(ReferenceEquals(target, source)
-                // 全体の結果のうち、ひとつは優先矩形の結果と同じ位置で重なる
-                ? [Text("full-overlapped", 10, 10), Text("full", 300, 250)]
-                : [Text("priority", 10, 10)]));
-
-        Assert.Equal(["priority", "full"], results.Select(r => r.SourceText));
-    }
-
-    [Fact]
-    public async Task 優先矩形の内外の文字が結合された全体の結果は破棄される()
-    {
-        using var bitmap = CreateBitmap();
-        // 画像の左上4分の1（200x150）を優先矩形にする
-        PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
-
-        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
-            ValueTask.FromResult<IEnumerable<TextRect>>(ReferenceEquals(target, source)
-                // 全体の認識では優先矩形の中の文字と外の文字がひとつのブロックに結合されることがある
-                ? [Text("full-merged", 5, 5, 200, 100)]
-                : [Text("priority", 10, 10)]));
-
-        Assert.Equal("priority", Assert.Single(results).SourceText);
-    }
-
-    [Fact]
-    public async Task 優先矩形で認識できなかった場合は全体の結果を残す()
-    {
-        using var bitmap = CreateBitmap();
-        PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
+        var calls = 0;
 
         // 優先矩形の切り出し画像では何も認識できない状況
         var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
-            ValueTask.FromResult<IEnumerable<TextRect>>(
-                ReferenceEquals(target, source) ? [Text("full", 10, 10)] : []));
+        {
+            calls++;
+            Assert.NotSame(bitmap, target);
+            return ValueTask.FromResult<IEnumerable<TextRect>>([]);
+        });
 
-        Assert.Equal("full", Assert.Single(results).SourceText);
+        Assert.Equal(1, calls);
+        Assert.Empty(results);
     }
 
     [Fact]
@@ -168,8 +147,7 @@ public class PriorityRectRecognizerTests
             return ValueTask.FromResult<IEnumerable<TextRect>>([Text("full", 10, 10)]);
         });
 
-        // 全体の認識のみが行われる
-        Assert.Equal(1, calls);
-        Assert.Equal("full", Assert.Single(results).SourceText);
+        Assert.Equal(0, calls);
+        Assert.Empty(results);
     }
 }

@@ -9,16 +9,16 @@ namespace WindowTranslator;
 public static class PriorityRectRecognizer
 {
     /// <summary>
-    /// 優先矩形の結果を優先する重なりの割合
+    /// 優先度の高い矩形の結果を優先する重なりの割合
     /// </summary>
     private const double OverlapThreshold = 0.5;
 
     /// <summary>
-    /// 全体の認識結果と優先矩形の認識結果をマージする
+    /// 優先矩形が登録されている場合は、その矩形内だけを認識する
     /// </summary>
     /// <remarks>
     /// 優先矩形はリストの前方ほど優先度が高く、優先度の高い矩形で文字を認識できた領域と重なった結果は破棄する。
-    /// 文字を認識できなかった矩形はその領域の全体の認識結果を残すため、優先領域として扱わない
+    /// 優先矩形が登録されていない場合だけ、画像全体を認識する。
     /// </remarks>
     /// <param name="bitmap">認識対象の画像</param>
     /// <param name="priorityRects">優先矩形のリスト</param>
@@ -60,7 +60,7 @@ public static class PriorityRectRecognizer
                 .Where(r => !IsCoveredBy(r, recognized))
                 .ToArray();
 
-            // 何も認識できなかった矩形は、その領域の全体の認識結果を残すため優先領域として扱わない
+            // 何も認識できなかった矩形は、後続の優先矩形の結果を妨げない
             if (rectResults.Length == 0)
             {
                 continue;
@@ -70,10 +70,6 @@ public static class PriorityRectRecognizer
             recognized.Add(absRect);
         }
 
-        // 全体の認識結果のうち、優先矩形で認識済みの領域と重なるものは破棄する
-        var fullResults = await recognizeAsync(bitmap, bitmap).ConfigureAwait(false);
-        results.AddRange(fullResults.Where(r => !IsCoveredBy(r, recognized)));
-
         return results;
     }
 
@@ -81,8 +77,7 @@ public static class PriorityRectRecognizer
     /// 認識結果が優先領域に覆われているかどうかを判定する
     /// </summary>
     /// <remarks>
-    /// 全体の認識では優先矩形の内外の文字がひとつのブロックに結合されることがあるため、
-    /// 個々の文字ではなく矩形の領域を基準に判定する
+    /// 複数の優先矩形が重なる場合に、個々の文字ではなく矩形の領域を基準に判定する
     /// </remarks>
     private static bool IsCoveredBy(TextRect text, List<RectInfo> areas)
     {
