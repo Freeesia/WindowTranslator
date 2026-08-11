@@ -23,6 +23,7 @@ public sealed class NuGetPluginService : BackgroundService
     internal const string HttpClientName = "NuGetPluginReadme";
     internal const string PluginTag = "windowtranslator-plugin";
     internal const string AbstractionsPackageId = "WindowTranslator.Abstractions";
+    internal const string OfficialPackageOwner = "Freesia";
     private const int SearchResultLimit = 100;
     private const int MaxConcurrentMetadataRequests = 8;
     private static readonly TimeSpan PackageInformationRefreshInterval = TimeSpan.FromHours(1);
@@ -355,7 +356,10 @@ public sealed class NuGetPluginService : BackgroundService
             Versions: compatibleVersions
                 .Select(version => version.Identity.Version.ToNormalizedString())
                 .ToArray(),
-            IconUrl: data.IconUrl?.AbsoluteUri);
+            IconUrl: data.IconUrl?.AbsoluteUri,
+            IsOfficial: data.OwnersList.Contains(
+                OfficialPackageOwner,
+                StringComparer.OrdinalIgnoreCase));
     }
 
     private bool HasCompatibleAbstractionsDependency(
@@ -511,7 +515,8 @@ public record NuGetPackageInfo(
     string? ProjectUrl,
     string? LicenseUrl,
     IReadOnlyList<string> Versions,
-    string? IconUrl = null
+    string? IconUrl = null,
+    bool IsOfficial = false
 );
 
 /// <summary>インストール済みパッケージ情報</summary>

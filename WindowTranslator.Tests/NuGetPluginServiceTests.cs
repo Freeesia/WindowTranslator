@@ -747,6 +747,55 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task SearchUsesNuGetOwnersForOfficialPackageStatus()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults =
+                [
+                    CreatePackageSearchMetadata(
+                        "Official.Plugin",
+                        title: null,
+                        description: null,
+                        authors: "Other",
+                        projectUrl: null,
+                        licenseUrl: null,
+                        owners: [NuGetPluginService.OfficialPackageOwner]),
+                    CreatePackageSearchMetadata(
+                        "Spoofed.Plugin",
+                        title: null,
+                        description: null,
+                        authors: NuGetPluginService.OfficialPackageOwner,
+                        projectUrl: null,
+                        licenseUrl: null,
+                        owners: ["Other"]),
+                ];
+            handler.AddMetadataVersions(
+                "Official.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            handler.AddMetadataVersions(
+                "Spoofed.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            using var service = CreateService(handler, testDirectory);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.True(service.PackageSnapshot.Packages
+                .Single(package => package.Id == "Official.Plugin")
+                .IsOfficial);
+            Assert.False(service.PackageSnapshot.Packages
+                .Single(package => package.Id == "Spoofed.Plugin")
+                .IsOfficial);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task SearchKeepsOnlyVersionsWithCompatibleDirectAbstractionsDependency()
     {
         var testDirectory = CreateTestDirectory();
@@ -867,18 +916,19 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public void PackagePresentationUsesMetadataAndMarksFreesiaAsOfficial()
+    public void PackagePresentationUsesOfficialFlagFromMetadata()
     {
         var package = new PluginPackageViewModel(
             new NuGetPackageInfo(
                 "Test.Plugin",
                 "Test Plugin",
                 "Description",
-                "Other; Freesia",
+                "Other",
                 null,
                 null,
                 ["1.0.0"],
-                "https://nuget.test/icons/test-plugin.png"),
+                "https://nuget.test/icons/test-plugin.png",
+                IsOfficial: true),
             isInstalled: false,
             installedVersion: null);
 
@@ -1851,7 +1901,8 @@ public sealed class NuGetPluginServiceTests
         IEnumerable<PackageDependencyGroup>? dependencySets = null,
         bool isListed = true,
         string? readmeFileUrl = null,
-        string? iconUrl = null)
+        string? iconUrl = null,
+        IReadOnlyList<string>? owners = null)
         => new TestPackageSearchMetadata
         {
             Identity = new PackageIdentity(
@@ -1866,6 +1917,7 @@ public sealed class NuGetPluginServiceTests
             IsListed = isListed,
             ReadmeFileUrl = readmeFileUrl!,
             IconUrl = iconUrl is null ? null! : new Uri(iconUrl),
+            OwnersList = owners ?? [],
         };
 
     private static async Task WaitForReadmeAsync(

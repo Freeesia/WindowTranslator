@@ -477,9 +477,7 @@ public partial class PluginPackageViewModel : ObservableObject
         this.Description = info.Description;
         this.Authors = info.Authors;
         this.IconUrl = info.IconUrl;
-        this.IsOfficial = info.Authors
-            .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Contains("Freesia", StringComparer.OrdinalIgnoreCase);
+        this.IsOfficial = info.IsOfficial;
         this.ReleaseVersion = versions
             .Where(version => !version.Parsed!.IsPrerelease)
             .OrderByDescending(version => version.Parsed)
