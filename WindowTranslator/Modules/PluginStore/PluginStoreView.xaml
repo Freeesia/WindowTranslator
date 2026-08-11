@@ -298,8 +298,10 @@
                                 Visibility="{Binding HasPrereleaseVersion, Converter={StaticResource b2vConv}}" />
                             <!--  インストールプログレス  -->
                             <ui:ProgressRing
+                                Width="20"
                                 Height="20"
                                 Margin="4,0"
+                                HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
                                 DockPanel.Dock="Right"
                                 Progress="{Binding InstallProgress}"
