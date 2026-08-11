@@ -368,6 +368,16 @@ internal class Resources
     public static string Misc => ResourceManager.GetString("Misc", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "マウスポインター判定の余白" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding => ResourceManager.GetString("MousePointerHitTestPadding", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "マウスポインター周辺の判定領域に追加するピクセル数" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding_Desc => ResourceManager.GetString("MousePointerHitTestPadding_Desc", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "すでにWindowTranslatorが起動中です" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string MutexError => ResourceManager.GetString("MutexError", resourceCulture) ?? string.Empty;
@@ -453,19 +463,19 @@ internal class Resources
     public static string PluginInstallSuccess => ResourceManager.GetString("PluginInstallSuccess", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "公式プラグイン" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginOfficial => ResourceManager.GetString("PluginOfficial", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "プラグイン" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PluginStore => ResourceManager.GetString("PluginStore", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// プラグインストアの免責事項に類似しているローカライズされた文字列を検索します。
+    /// "プラグインはNuGet上の第三者パッケージです。各パッケージのライセンスは所有者から付与され、Win..." に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PluginStoreDisclaimer => ResourceManager.GetString("PluginStoreDisclaimer", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "公式プラグイン" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string PluginOfficial => ResourceManager.GetString("PluginOfficial", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "プレリリース" に類似しているローカライズされた文字列を検索します。

@@ -20,7 +20,6 @@
             BasedOn="{StaticResource {x:Type ui:Button}}"
             TargetType="ui:Button">
             <Setter Property="Margin" Value="4,2" />
-            <Setter Property="MinWidth" Value="90" />
         </Style>
     </UserControl.Resources>
 
@@ -78,12 +77,10 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Grid
-                                    Grid.RowSpan="2"
-                                    Width="40"
-                                    Height="40"
-                                    Margin="0,0,8,0">
+                                <Grid Grid.RowSpan="2" Margin="0,0,8,0">
                                     <Image
+                                        Width="40"
+                                        Height="40"
                                         Margin="2"
                                         RenderOptions.BitmapScalingMode="HighQuality"
                                         Source="{Binding IconUrl}"
@@ -112,7 +109,10 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Border.Style>
-                                        <ui:SymbolIcon Filled="True" Symbol="Checkmark24" />
+                                        <ui:SymbolIcon
+                                            Filled="True"
+                                            Foreground="White"
+                                            Symbol="Checkmark24" />
                                     </Border>
                                     <Border
                                         Width="16"
@@ -125,7 +125,10 @@
                                         CornerRadius="16"
                                         ToolTip="{x:Static properties:Resources.UpdateAvailable}"
                                         Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}">
-                                        <ui:SymbolIcon Filled="True" Symbol="Alert24" />
+                                        <ui:SymbolIcon
+                                            Filled="True"
+                                            Foreground="White"
+                                            Symbol="Alert24" />
                                     </Border>
                                 </Grid>
 
@@ -331,11 +334,11 @@
                                 Grid.Column="2"
                                 Command="{Binding DataContext.InstallCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                 CommandParameter="{Binding}"
-                                Content="{x:Static properties:Resources.Install}"
                                 DockPanel.Dock="Right"
                                 Icon="{ui:SymbolIcon ArrowDownload24}"
                                 IsEnabled="{Binding CanInstall}"
                                 Style="{StaticResource InstallButtonStyle}"
+                                ToolTip="{x:Static properties:Resources.Install}"
                                 Visibility="{Binding IsNotInstalled, Converter={StaticResource b2vConv}}" />
 
                             <!--  更新ボタン（更新あり）  -->
@@ -344,11 +347,11 @@
                                 Grid.Column="2"
                                 Command="{Binding DataContext.InstallCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                 CommandParameter="{Binding}"
-                                Content="{x:Static properties:Resources.Update}"
                                 DockPanel.Dock="Right"
                                 Icon="{ui:SymbolIcon ArrowSync24}"
                                 IsEnabled="{Binding CanInstall}"
                                 Style="{StaticResource InstallButtonStyle}"
+                                ToolTip="{x:Static properties:Resources.Update}"
                                 Visibility="{Binding CanUpdate, Converter={StaticResource b2vConv}}" />
 
                             <Label
@@ -369,11 +372,11 @@
                                 Grid.Column="2"
                                 Command="{Binding DataContext.UninstallCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                 CommandParameter="{Binding}"
-                                Content="{x:Static properties:Resources.Uninstall}"
                                 DockPanel.Dock="Right"
                                 Icon="{ui:SymbolIcon Delete24}"
                                 IsEnabled="{Binding IsInstalling, Converter={x:Static data:InverseBoolConverter.Default}}"
                                 Style="{StaticResource InstallButtonStyle}"
+                                ToolTip="{x:Static properties:Resources.Uninstall}"
                                 Visibility="{Binding IsInstalled, Converter={StaticResource b2vConv}}" />
 
                         </Grid>
