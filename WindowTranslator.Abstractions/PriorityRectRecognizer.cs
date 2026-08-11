@@ -4,7 +4,7 @@ using Windows.Graphics.Imaging;
 namespace WindowTranslator;
 
 /// <summary>
-/// 優先矩形を考慮したテキスト認識を行うユーティリティ
+/// 指定されたOCR対象範囲だけをテキスト認識するユーティリティ
 /// </summary>
 public static class PriorityRectRecognizer
 {
@@ -14,17 +14,17 @@ public static class PriorityRectRecognizer
     private const double OverlapThreshold = 0.5;
 
     /// <summary>
-    /// 優先矩形が登録されている場合は、その矩形内だけを認識する
+    /// OCR対象範囲が登録されている場合は、その矩形内だけを認識する
     /// </summary>
     /// <remarks>
-    /// 優先矩形はリストの前方ほど優先度が高く、優先度の高い矩形で文字を認識できた領域と重なった結果は破棄する。
-    /// 優先矩形が登録されていない場合だけ、画像全体を認識する。
+    /// OCR対象範囲はリストの前方ほど優先度が高く、優先度の高い矩形で文字を認識できた領域と重なった結果は破棄する。
+    /// OCR対象範囲が登録されていない場合だけ、画像全体を認識する。
     /// </remarks>
     /// <param name="bitmap">認識対象の画像</param>
-    /// <param name="priorityRects">優先矩形のリスト</param>
+    /// <param name="priorityRects">OCR対象範囲のリスト</param>
     /// <param name="recognizeAsync">
     /// 画像を認識する処理。
-    /// 第1引数に認識対象の画像（優先矩形の場合は切り出した画像）、第2引数に元の全体画像を渡す。
+    /// 第1引数に認識対象の画像（OCR対象範囲の場合は切り出した画像）、第2引数に元の全体画像を渡す。
     /// 画像全体のサイズを基準にした閾値は第2引数を使うことで、切り出した画像でも全体画像と同じ基準で判定できる。
     /// 結果は第1引数の画像の座標系で返す
     /// </param>
@@ -60,7 +60,7 @@ public static class PriorityRectRecognizer
                 .Where(r => !IsCoveredBy(r, recognized))
                 .ToArray();
 
-            // 何も認識できなかった矩形は、後続の優先矩形の結果を妨げない
+            // 何も認識できなかった矩形は、後続のOCR対象範囲の結果を妨げない
             if (rectResults.Length == 0)
             {
                 continue;
@@ -77,7 +77,7 @@ public static class PriorityRectRecognizer
     /// 認識結果が優先領域に覆われているかどうかを判定する
     /// </summary>
     /// <remarks>
-    /// 複数の優先矩形が重なる場合に、個々の文字ではなく矩形の領域を基準に判定する
+    /// 複数のOCR対象範囲が重なる場合に、個々の文字ではなく矩形の領域を基準に判定する
     /// </remarks>
     private static bool IsCoveredBy(TextRect text, List<RectInfo> areas)
     {

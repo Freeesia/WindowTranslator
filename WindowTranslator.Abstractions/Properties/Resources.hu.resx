@@ -67,13 +67,13 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Gyorsítótár modul</value>
   </data>  <data name="PriorityRect" xml:space="preserve">
-    <value>Elsőbbségi téglalap</value>
+    <value>OCR-terület</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Elsőbbséggel felismert téglalapok</value>
+    <value>OCR-területek</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>A beállított téglalapokat elsőbbséggel ismeri fel. Minél feljebb van egy elem a listában, annál nagyobb az elsőbbsége.</value>
+    <value>Ha területek vannak beállítva, csak a bennük lévő tartalom kerül felismerésre. Átfedés esetén a listában előrébb szereplő területek élveznek elsőbbséget.</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Hozzáadás</value>

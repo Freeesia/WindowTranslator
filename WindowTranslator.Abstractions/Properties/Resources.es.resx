@@ -110,13 +110,13 @@
   <data name="Misc" xml:space="preserve">
     <value>Otros</value>
   </data>  <data name="PriorityRect" xml:space="preserve">
-    <value>Rectángulo prioritario</value>
+    <value>Área de OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Rectángulos con OCR prioritario</value>
+    <value>Áreas de OCR</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Los rectángulos configurados se reconocen con prioridad. Cuanto más arriba esté un elemento en la lista, mayor será su prioridad.</value>
+    <value>Cuando hay áreas configuradas, solo se reconoce el contenido dentro de ellas. Las áreas situadas más arriba en la lista tienen prioridad cuando se superponen.</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Agregar</value>

@@ -122,13 +122,13 @@
   <data name="CacheModule" xml:space="preserve">
     <value>โมดูลแคช</value>
   </data>  <data name="PriorityRect" xml:space="preserve">
-    <value>สี่เหลี่ยมที่มีลำดับความสำคัญ</value>
+    <value>พื้นที่ OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>สี่เหลี่ยมที่ทำ OCR ก่อน</value>
+    <value>พื้นที่ OCR</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>สี่เหลี่ยมที่ตั้งค่าไว้จะถูกรู้จำก่อน ยิ่งอยู่ด้านบนของรายการยิ่งมีลำดับความสำคัญสูง</value>
+    <value>เมื่อกำหนดพื้นที่แล้ว ระบบจะรู้จำเฉพาะเนื้อหาภายในพื้นที่เหล่านั้น หากพื้นที่ทับซ้อนกัน พื้นที่ที่อยู่สูงกว่าในรายการจะมีลำดับความสำคัญสูงกว่า</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>เพิ่ม</value>

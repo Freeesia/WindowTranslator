@@ -95,10 +95,11 @@ public class BasicOcrParam : IPluginParam
     public bool IsAvoidMergeList { get; set; } = false;
 
     /// <summary>
-    /// 優先的にOCRを行う矩形のリスト
+    /// OCR対象範囲のリスト
     /// </summary>
     /// <remarks>
-    /// リストの順序が優先度を表す（前方が高優先度）
+    /// 1件以上設定されている場合は、画像全体ではなく指定範囲内だけをOCRする。
+    /// 範囲が重なる場合は、リストの順序が優先度を表す（前方が高優先度）。
     /// </remarks>
     [Category("PriorityRect")]
     public List<PriorityRect> PriorityRects { get; set; } = [];

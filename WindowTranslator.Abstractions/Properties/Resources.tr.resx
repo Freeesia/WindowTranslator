@@ -122,13 +122,13 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Önbellek Modülü</value>
   </data>  <data name="PriorityRect" xml:space="preserve">
-    <value>Öncelikli dikdörtgen</value>
+    <value>OCR Alanı</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Öncelikli OCR yapılacak dikdörtgenler</value>
+    <value>OCR Alanları</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Ayarlanan dikdörtgenler öncelikli olarak tanınır. Listede ne kadar yukarıdaysa önceliği o kadar yüksektir.</value>
+    <value>Alanlar yapılandırıldığında yalnızca içlerindeki içerik tanınır. Alanlar çakıştığında listede daha yukarıda olanlar önceliklidir.</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Ekle</value>

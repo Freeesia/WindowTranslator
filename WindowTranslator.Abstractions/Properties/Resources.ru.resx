@@ -122,13 +122,13 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Модуль кэша</value>
   </data>  <data name="PriorityRect" xml:space="preserve">
-    <value>Приоритетный прямоугольник</value>
+    <value>Область OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Прямоугольники с приоритетным распознаванием</value>
+    <value>Области OCR</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Заданные прямоугольники распознаются в первую очередь. Чем выше элемент в списке, тем выше его приоритет.</value>
+    <value>Если области настроены, распознаётся только содержимое внутри них. При перекрытии области, расположенные выше в списке, имеют приоритет.</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Добавить</value>

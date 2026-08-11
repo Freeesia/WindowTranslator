@@ -11,11 +11,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace WindowTranslator.Controls;
 
 /// <summary>
-/// 優先矩形のリストを編集するコントロール
+/// OCR対象範囲のリストを編集するコントロール
 /// </summary>
 public partial class PriorityRectsEditor : UserControl
 {
-    /// <summary>編集対象の優先矩形リスト</summary>
+    /// <summary>編集対象のOCR対象範囲リスト</summary>
     public IList<PriorityRect>? Rects
     {
         get => (IList<PriorityRect>?)GetValue(RectsProperty);
@@ -149,7 +149,7 @@ public partial class PriorityRectsEditor : UserControl
 }
 
 /// <summary>
-/// 編集中の優先矩形
+/// 編集中のOCR対象範囲
 /// </summary>
 public sealed partial class PriorityRectItem : ObservableObject
 {

@@ -38,7 +38,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Emoji.Wpf" />
-    <PackageReference Include="GongSolutions.WPF.DragDrop" />
+    <PackageReference Include="gong-wpf-dragdrop" />
     <PackageReference Include="MdXaml" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
       <PrivateAssets>all</PrivateAssets>

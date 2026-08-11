@@ -71,6 +71,43 @@ public class PriorityRectRecognizerTests
     }
 
     [Fact]
+    public async Task スケールを戻した回転結果へ切り出し位置をオフセットする()
+    {
+        using var bitmap = CreateBitmap();
+        PriorityRect[] rects = [new(0.25, 0.5, 0.5, 0.5, "context")];
+        const double scale = 2;
+
+        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+        {
+            Assert.Equal(Width / 2, target.PixelWidth);
+            Assert.Equal(Height / 2, target.PixelHeight);
+            Assert.Same(bitmap, source);
+
+            // OCRモジュールがスケール後の座標を元の切り出し画像の座標系へ戻した状態を再現する
+            var scaled = Text("scaled", 20, 40, 80, 40) with { Angle = 30 };
+            return ValueTask.FromResult<IEnumerable<TextRect>>
+            ([
+                scaled with
+                {
+                    X = scaled.X / scale,
+                    Y = scaled.Y / scale,
+                    Width = scaled.Width / scale,
+                    Height = scaled.Height / scale,
+                    FontSize = scaled.FontSize / scale,
+                }
+            ]);
+        });
+
+        var result = Assert.Single(results);
+        Assert.Equal((Width * 0.25) + 10, result.X);
+        Assert.Equal((Height * 0.5) + 20, result.Y);
+        Assert.Equal(40, result.Width);
+        Assert.Equal(20, result.Height);
+        Assert.Equal(30, result.Angle);
+        Assert.Equal("context", result.Context);
+    }
+
+    [Fact]
     public async Task 優先矩形で認識できなかった場合も全体の認識は行わない()
     {
         using var bitmap = CreateBitmap();

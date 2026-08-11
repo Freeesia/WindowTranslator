@@ -180,13 +180,13 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Moduł pamięci podręcznej</value>
   </data>  <data name="PriorityRect" xml:space="preserve">
-    <value>Prostokąt priorytetowy</value>
+    <value>Obszar OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Prostokąty rozpoznawane priorytetowo</value>
+    <value>Obszary OCR</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Skonfigurowane prostokąty są rozpoznawane w pierwszej kolejności. Im wyżej element znajduje się na liście, tym wyższy ma priorytet.</value>
+    <value>Gdy skonfigurowano obszary, rozpoznawana jest tylko ich zawartość. Przy nakładaniu się obszary wyżej na liście mają pierwszeństwo.</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Dodaj</value>

@@ -45,7 +45,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             fe.SetBinding(TextBox.TextProperty, property.CreateBinding());
         }
 
-        // 優先矩形は専用のエディタで編集する
+        // OCR対象範囲は専用のエディタで編集する
         if (property.Is(typeof(List<PriorityRect>)))
         {
             var editor = new PriorityRectsEditor();

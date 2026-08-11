@@ -101,8 +101,9 @@ public sealed class TesseractOcr(
         }
 
         // マージ処理
-        var xt = xPosThreshold * source.PixelWidth;
-        var yt = yPosThreshold * source.PixelHeight;
+        // 認識結果はスケール後画像の座標系なので、マージ閾値も同じ座標系に揃える
+        var xt = ToScaledThreshold(xPosThreshold, source.PixelWidth, this.scale);
+        var yt = ToScaledThreshold(yPosThreshold, source.PixelHeight, this.scale);
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));

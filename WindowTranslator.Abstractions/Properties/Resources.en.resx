@@ -169,13 +169,13 @@
     <value>Other</value>
   </data>
   <data name="PriorityRect" xml:space="preserve">
-    <value>Priority Rectangle</value>
+    <value>OCR Region</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Rectangles for priority OCR</value>
+    <value>OCR Regions</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>The configured rectangles are recognized with priority. Items higher in the list have higher priority.</value>
+    <value>When regions are configured, only content inside them is recognized. Regions higher in the list take priority when they overlap.</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Add</value>
