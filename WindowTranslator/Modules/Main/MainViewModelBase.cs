@@ -39,6 +39,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly double fontScale;
     private readonly double overlayOpacity;
     private readonly double mousePointerHitTestPadding;
+    private readonly bool isOneShotMode;
     private TextRect[]? lastRequested;
 
     [ObservableProperty]
@@ -64,6 +65,7 @@ public abstract partial class MainViewModelBase : IDisposable
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
     public string Font { get; }
     public double MousePointerHitTestPadding => this.mousePointerHitTestPadding;
+    public bool IsOneShotMode => this.isOneShotMode;
 
     public MainViewModelBase(
         IPresentationService presentationService,
@@ -85,6 +87,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.fontScale = options.Value.FontScale;
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
+        this.isOneShotMode = options.Value.IsOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
@@ -96,13 +99,24 @@ public abstract partial class MainViewModelBase : IDisposable
         this.filters = filters.ToArray();
         this.logger = logger;
         this.capture.StartCapture(processInfoStore.MainWindowHandle);
-        this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
+        this.timer = new(
+            _ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()),
+            null,
+            this.isOneShotMode ? Timeout.Infinite : 0,
+            500);
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
     }
 
     partial void OnOverlayVisibleChanged(bool value)
     {
+        // OneShotではホットキー押下時点の最新フレームが必要なため、表示状態にかかわらず
+        // キャプチャーを継続する。表示の切り替えも前回の結果を破棄する契機にはしない。
+        if (this.isOneShotMode)
+        {
+            return;
+        }
+
         if (value)
         {
             this.OcrTexts.Clear();
@@ -128,12 +142,30 @@ public abstract partial class MainViewModelBase : IDisposable
         var sbmp = Interlocked.Exchange(ref this.capturedBmp, newBmp);
         this.Width = newBmp.PixelWidth;
         this.Height = newBmp.PixelHeight;
-        CreateTextOverlayAsync().Forget();
+        if (!this.isOneShotMode)
+        {
+            CreateTextOverlayAsync().Forget();
+        }
         sbmp?.Dispose();
     }
 
-    private async Task CreateTextOverlayAsync()
+    public void RequestOneShot()
     {
+        if (!this.isOneShotMode)
+        {
+            return;
+        }
+
+        this.logger.LogDebug("OneShot OCR requested");
+        CreateTextOverlayAsync(true).Forget();
+    }
+
+    private async Task CreateTextOverlayAsync(bool oneShotRequested = false)
+    {
+        if (this.isOneShotMode && !oneShotRequested)
+        {
+            return;
+        }
         if (!await this.analyzing.WaitAsync(0))
         {
             return;
@@ -163,8 +195,12 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             try
             {
-                texts = await this.ocr.RecognizeAsync(sbmp);
-                texts = this.ocrTextTracker.Update(texts, new(sbmp.PixelWidth, sbmp.PixelHeight));
+                var observations = await this.ocr.RecognizeAsync(sbmp);
+                texts = OcrObservationSelector.Select(
+                    observations,
+                    new(sbmp.PixelWidth, sbmp.PixelHeight),
+                    this.ocrTextTracker,
+                    this.isOneShotMode);
             }
             catch (ObjectDisposedException)
             {
@@ -212,7 +248,15 @@ public abstract partial class MainViewModelBase : IDisposable
                 using var t = this.logger.LogDebugTime("PreTranslate");
                 texts = await tmp.ToArrayAsync();
             }
-            TranslateAsync(texts).Forget();
+            if (this.isOneShotMode)
+            {
+                // 周期処理がないため、この1回の処理内で翻訳完了まで待って表示へ反映する。
+                await TranslateAsync(texts);
+            }
+            else
+            {
+                TranslateAsync(texts).Forget();
+            }
             texts = texts.Select(t => t switch
             {
                 { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
@@ -230,6 +274,17 @@ public abstract partial class MainViewModelBase : IDisposable
 
             // 背景色に不透明度を設定
             texts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+        }
+
+        if (this.isOneShotMode)
+        {
+            // 前回の矩形との同一性や位置関係を一切引き継がない。
+            this.OcrTexts.Clear();
+            foreach (var text in texts)
+            {
+                this.OcrTexts.Add(text);
+            }
+            return;
         }
 
         var hash = texts.ToHashSet();

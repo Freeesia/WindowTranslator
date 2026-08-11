@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Windows;
+
+[assembly: InternalsVisibleTo("WindowTranslator.Tests")]
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located

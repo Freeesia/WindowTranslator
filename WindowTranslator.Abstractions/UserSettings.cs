@@ -83,6 +83,11 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
+    /// ホットキーが押されたときだけOCRと翻訳を行うか
+    /// </summary>
+    public bool IsOneShotMode { get; set; }
+
+    /// <summary>
     /// マウスポインター判定の余白（WPF上のピクセル値）
     /// </summary>
     public double MousePointerHitTestPadding { get; set; }

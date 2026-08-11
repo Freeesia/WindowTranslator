@@ -1705,7 +1705,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void RemovedFeaturesAreNotExposed()
+    public void RemovedBufferFeaturesAreNotExposedAndOneShotIsAvailable()
     {
         const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Static
             | System.Reflection.BindingFlags.Public
@@ -1713,7 +1713,8 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Type appResources = typeof(OcrTextTracker).Assembly.GetType("WindowTranslator.Properties.Resources", throwOnError: true)!;
         Type abstractionResources = typeof(TextRect).Assembly.GetType("WindowTranslator.Properties.Resources", throwOnError: true)!;
 
-        Assert.Null(appResources.GetProperty("IsOneShotMode", flags));
+        Assert.NotNull(appResources.GetProperty("IsOneShotMode", flags));
+        Assert.NotNull(typeof(TargetSettings).GetProperty(nameof(TargetSettings.IsOneShotMode)));
         Assert.Null(abstractionResources.GetProperty("Buffer", flags));
         Assert.Null(abstractionResources.GetProperty("BufferSize", flags));
         Assert.Null(abstractionResources.GetProperty("IsSuppressVibe", flags));
