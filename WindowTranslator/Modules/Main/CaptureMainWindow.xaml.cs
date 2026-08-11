@@ -70,7 +70,11 @@ public partial class CaptureMainWindow
 
     private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
     {
-        if (msg == WM_HOTKEY && this.DataContext is CaptureMainViewModel viewModel)
+        if (msg != WM_HOTKEY)
+        {
+            return 0;
+        }
+        if (this.DataContext is CaptureMainViewModel viewModel)
         {
             viewModel.RequestOneShot();
         }
