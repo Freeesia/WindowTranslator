@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Erweiterungsrate</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Helligkeit</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Schwelle verschmelzen</value>
   </data>
@@ -156,64 +162,53 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Vermeiden Sie das Zusammenführen von Listen</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Puffergröße</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Grundlegende OCR-Einstellungen</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Sonstiges</value>
   </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Pufferfunktion</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Erkennungsfehlerkorrektur</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Vibrationsunterdrückung</value>
-  </data>
   <data name="PriorityRect" xml:space="preserve">
     <value>Prioritätsrechteck</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
-    <value>Prioritäts-OCR-Rechtecke</value>
+    <value>Rechtecke für vorrangige OCR</value>
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
-    <value>OCR priorisiert die konfigurierten Rechtecke. Die Reihenfolge der Liste repräsentiert die Priorität.</value>
+    <value>Die konfigurierten Rechtecke werden vorrangig erkannt. Einträge weiter oben in der Liste haben eine höhere Priorität.</value>
   </data>
-  <data name="AddPriorityRect" xml:space="preserve">
-    <value>Rechteck hinzufügen</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Hinzufügen</value>
   </data>
-  <data name="RemovePriorityRect" xml:space="preserve">
-    <value>Rechteck entfernen</value>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Entfernen</value>
   </data>
-  <data name="MoveUp" xml:space="preserve">
+  <data name="PriorityRectMoveUp" xml:space="preserve">
     <value>Nach oben</value>
   </data>
-  <data name="MoveDown" xml:space="preserve">
+  <data name="PriorityRectMoveDown" xml:space="preserve">
     <value>Nach unten</value>
   </data>
-  <data name="EditKeyword" xml:space="preserve">
-    <value>Stichwort bearbeiten</value>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Stichwort</value>
   </data>
-  <data name="RectangleSelection" xml:space="preserve">
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Wird als Kontext für die Übersetzung verwendet</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
     <value>Rechteckauswahl</value>
   </data>
-  <data name="SelectRectangle" xml:space="preserve">
-    <value>Bitte wählen Sie ein Rechteck (Esc zum Abbrechen)</value>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Ziehen Sie, um ein Rechteck auszuwählen (Esc zum Abbrechen)
+Wählen Sie einen etwas größeren Bereich, damit der Text nicht abgeschnitten wird</value>
   </data>
-  <data name="Selecting" xml:space="preserve">
+  <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Auswählen</value>
   </data>
-  <data name="RectangleTooSmall" xml:space="preserve">
+  <data name="PriorityRectTooSmall" xml:space="preserve">
     <value>Das Rechteck ist zu klein. Bitte wählen Sie erneut.</value>
   </data>
-  <data name="EnterKeyword" xml:space="preserve">
-    <value>Stichwort eingeben (wird als Übersetzungskontext verwendet)</value>
-  </data>
-  <data name="KeywordEdit" xml:space="preserve">
-    <value>Stichwortbearbeitung</value>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Es wird kein Fenster übersetzt, daher kann kein Rechteck ausgewählt werden. Starten Sie die Übersetzung des Zielfensters, bevor Sie es konfigurieren.</value>
   </data>
 </root>

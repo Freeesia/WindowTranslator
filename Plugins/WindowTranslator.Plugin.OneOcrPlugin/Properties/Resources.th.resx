@@ -133,7 +133,7 @@
     <value>การตั้งค่าการโหลดล่าช้าของโมเดล OCR ล้มเหลว รหัสข้อผิดพลาด: {0}</value>
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
-    <value>การสร้าง OCR pipeline ล้มเหลว รหัสข้อผิดพลาด: {0} กรุณาลองอัปเดต Snipping Tool หรือ Microsoft Photos</value>
+    <value>การสร้าง OCR pipeline ล้มเหลว รหัสข้อผิดพลาด: {0} กรุณาลองอัปเดต Snipping Tool</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>การสร้างตัวเลือกการประมวลผล OCR ล้มเหลว รหัสข้อผิดพลาด: {0}</value>

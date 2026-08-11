@@ -10,6 +10,7 @@
     <ApplicationIcon>$(MSBuildThisFileDirectory)..\docs\images\wt.ico</ApplicationIcon>
     <AnalysisMode>Recommended</AnalysisMode>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -18,7 +19,9 @@
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <PublishDocumentationFile>false</PublishDocumentationFile>
     <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);NO_MUTEX</DefineConstants>
   </PropertyGroup>
   <!-- Configure Sentry -->
   <PropertyGroup Condition="'$(SENTRY_AUTH_TOKEN)' != ''">

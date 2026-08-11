@@ -77,6 +77,12 @@
   <data name="Scale" xml:space="preserve">
     <value>معامل التكبير</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>السطوع</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>التباين</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>عتبة الدمج</value>
   </data>
@@ -98,22 +104,52 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>تجنب دمج القائمة</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>حجم المخزن المؤقت</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>إعدادات OCR الأساسية</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>أخرى</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>مستطيل الأولوية</value>
   </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>وظيفة المخزن المؤقت</value>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>المستطيلات ذات أولوية التعرف الضوئي</value>
   </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>تصحيح أخطاء التعرف</value>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>يتم التعرف على المستطيلات المُعدّة أولاً. كلما كان العنصر أعلى في القائمة زادت أولويته.</value>
   </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>قمع الاهتزازات</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>لأعلى</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>لأسفل</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>كلمة مفتاحية</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>تُستخدم كسياق للترجمة</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>تحديد المستطيل</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>اسحب لتحديد مستطيل (اضغط Esc للإلغاء)
+حدد منطقة أوسع قليلاً حتى لا يُقتطع النص</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>جارٍ التحديد</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>المستطيل صغير جدًا. يرجى التحديد مرة أخرى.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>لا توجد نافذة قيد الترجمة، لذا لا يمكن تحديد مستطيل. ابدأ ترجمة النافذة الهدف قبل الإعداد.</value>
   </data>
 </root>

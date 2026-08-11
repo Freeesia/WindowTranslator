@@ -35,6 +35,20 @@ public class BasicOcrParam : IPluginParam
     public double Scale { get; set; } = 1.0;
 
     /// <summary>
+    /// 明るさ（-127 - 128）
+    /// </summary>
+    [Category("Recognize")]
+    [Slidable(-127, 128, 1, 10, true, 1)]
+    public int Brightness { get; set; } = 0;
+
+    /// <summary>
+    /// コントラスト（-99 - 100）
+    /// </summary>
+    [Category("Recognize")]
+    [Slidable(-99, 100, 1, 10, true, 1)]
+    public int Contrast { get; set; } = 0;
+
+    /// <summary>
     /// X位置のしきい値
     /// </summary>
     [Category("MergeThrethold")]
@@ -79,25 +93,6 @@ public class BasicOcrParam : IPluginParam
     /// </summary>
     [Category("MergeThrethold")]
     public bool IsAvoidMergeList { get; set; } = false;
-
-    /// <summary>
-    /// バッファサイズ
-    /// </summary>
-    [Category("Buffer")]
-    [Spinnable]
-    public int BufferSize { get; set; } = 3;
-
-    /// <summary>
-    /// フォントサイズの振動を抑制する
-    /// </summary>
-    [Category("Buffer")]
-    public bool IsSuppressVibe { get; set; } = true;
-
-    /// <summary>
-    /// 復元を有効にするかどうか
-    /// </summary>
-    [Category("Buffer")]
-    public bool IsEnableRecover { get; set; } = true;
 
     /// <summary>
     /// 優先的にOCRを行う矩形のリスト

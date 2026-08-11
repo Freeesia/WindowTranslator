@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Windows;
+using CommunityToolkit.Mvvm.Input;
 using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Modules.Validate;
@@ -15,6 +16,6 @@ internal partial class ValidateViewModel(IPresentationService presentationServic
     public async Task ValidateAsync()
     {
         this.Results = await this.validators.ValidateAsync(this.settings);
-        await this.presentationService.CloseDialogAsync(true);
+        _ = Application.Current.Dispatcher.Invoke(async () => await this.presentationService.CloseDialogAsync(true));
     }
 }

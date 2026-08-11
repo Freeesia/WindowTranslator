@@ -1,16 +1,11 @@
-@deployId = AKfycbxe_E9XjeWckgkkbe9mDoc5GyIQX1CaxFD5bBT6J7Y6JmMrG0U7JaQv-D2Nc0NaXI_APQ
+@deployId = AKfycbyyy3RHgU6oRiiBKcKbxi3dOQWvSOzanhUuK_S5uy37YHkXy-53i_T8cvPKtYfj9BECBw
 
 ###
-GET https://script.google.com/macros/s/{{deployId}}/exec HTTP/1.1
-Authorization: Bearer {{wt_oauth_token}}
-
-###
-POST https://script.google.com/macros/s/{{deployId}}/exec HTTP/1.1
+POST https://script.googleapis.com/v1/scripts/{{deployId}}:run HTTP/1.1
 Authorization: Bearer {{wt_oauth_token}}
 Content-Type: application/json
 
 {
-  "sourceLanguage": "en",
-  "targetLanguage": "ja",
-  "texts": ["Hello, World!"]
+    "function": "translate",
+    "parameters": ["en", "ja", ["Hello, World!"]]
 }

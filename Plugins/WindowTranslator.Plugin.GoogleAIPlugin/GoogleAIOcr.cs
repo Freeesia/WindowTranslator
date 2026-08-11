@@ -17,10 +17,12 @@ public sealed class GoogleAIOcr : IOcrModule
 {
     private readonly ILogger<GoogleAIOcr> logger;
     private readonly GenerativeModel client;
+    private readonly List<PriorityRect> priorityRects;
 
-    public GoogleAIOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<GoogleAIOcr> logger)
+    public GoogleAIOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, IOptionsSnapshot<BasicOcrParam> ocrParam, ILogger<GoogleAIOcr> logger)
     {
         var options = googleAiOptions.Value;
+        this.priorityRects = ocrParam.Value.PriorityRects ?? [];
         var system = $$"""
         あなたは{{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}}の専門家です。
         これから渡される画像内のテキストを認識して、テキストごとの位置情報と認識したテキストをJson形式で出力してください。
@@ -51,7 +53,10 @@ public sealed class GoogleAIOcr : IOcrModule
             systemInstruction: system);
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
         var base64 = await bitmap.EncodeToJpegBase64().ConfigureAwait(false);
         var req = new GenerateContentRequest();

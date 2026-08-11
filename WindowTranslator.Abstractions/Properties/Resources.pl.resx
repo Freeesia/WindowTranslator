@@ -135,6 +135,12 @@
   <data name="Scale" xml:space="preserve">
     <value>Współczynnik powiększenia</value>
   </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Jasność</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Kontrast</value>
+  </data>
   <data name="MergeThrethold" xml:space="preserve">
     <value>Próg scalania</value>
   </data>
@@ -156,23 +162,11 @@
   <data name="IsAvoidMergeList" xml:space="preserve">
     <value>Unikanie scalania list</value>
   </data>
-  <data name="BufferSize" xml:space="preserve">
-    <value>Rozmiar bufora</value>
-  </data>
   <data name="BasicOcrParam" xml:space="preserve">
     <value>Podstawowe ustawienia OCR</value>
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Inne</value>
-  </data>
-  <data name="Buffer" xml:space="preserve">
-    <value>Funkcja bufora</value>
-  </data>
-  <data name="IsEnableRecover" xml:space="preserve">
-    <value>Korekta błędów rozpoznawania</value>
-  </data>
-  <data name="IsSuppressVibe" xml:space="preserve">
-    <value>Tłumienie drgań</value>
   </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>Ustawienia języka</value>
@@ -185,5 +179,47 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Moduł pamięci podręcznej</value>
+  </data>  <data name="PriorityRect" xml:space="preserve">
+    <value>Prostokąt priorytetowy</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Prostokąty rozpoznawane priorytetowo</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>Skonfigurowane prostokąty są rozpoznawane w pierwszej kolejności. Im wyżej element znajduje się na liście, tym wyższy ma priorytet.</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="PriorityRectRemove" xml:space="preserve">
+    <value>Usuń</value>
+  </data>
+  <data name="PriorityRectMoveUp" xml:space="preserve">
+    <value>W górę</value>
+  </data>
+  <data name="PriorityRectMoveDown" xml:space="preserve">
+    <value>W dół</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Słowo kluczowe</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Używane jako kontekst tłumaczenia</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Wybór prostokąta</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Przeciągnij, aby wybrać prostokąt (Esc anuluje)
+Zaznacz nieco większy obszar, aby tekst nie został ucięty</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Wybieranie</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>Prostokąt jest za mały. Wybierz go ponownie.</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>Żadne okno nie jest tłumaczone, więc nie można wybrać prostokąta. Przed konfiguracją rozpocznij tłumaczenie okna docelowego.</value>
   </data>
 </root>

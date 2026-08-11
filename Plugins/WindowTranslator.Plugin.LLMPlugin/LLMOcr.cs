@@ -64,15 +64,17 @@ public sealed class LLMOcr : IOcrModule
     private readonly ILogger<LLMOcr> logger;
     private readonly SystemChatMessage system;
     private readonly ChatClient client;
+    private readonly List<PriorityRect> priorityRects;
 
-    public LLMOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<LLMOcr> logger)
+    public LLMOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnapshot<BasicOcrParam> ocrParam, ILogger<LLMOcr> logger)
     {
         var options = llmOptions.Value;
         this.logger = logger;
+        this.priorityRects = ocrParam.Value.PriorityRects ?? [];
 
         if (string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.Model))
         {
-            throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+            throw new AppUserException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         }
 
         this.system = ChatMessage.CreateSystemMessage($$"""
@@ -105,7 +107,10 @@ public sealed class LLMOcr : IOcrModule
             clientOptions);
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
         var bytes = await bitmap.EncodeToJpegBytes().ConfigureAwait(false);
         var image = BinaryData.FromBytes(bytes);

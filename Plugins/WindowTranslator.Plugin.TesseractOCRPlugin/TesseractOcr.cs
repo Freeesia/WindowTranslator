@@ -41,63 +41,54 @@ public sealed class TesseractOcr(
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
     private readonly List<PriorityRect> priorityRects = ocrParam.Value.PriorityRects ?? [];
+    private readonly int brightness = ocrParam.Value.Brightness;
+    private readonly int contrast = ocrParam.Value.Contrast;
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
-        // 優先矩形が指定されている場合は、それらのみを認識
-        if (this.priorityRects.Count > 0)
-        {
-            return await RecognizePriorityRectsAsync(bitmap);
-        }
-
-        // 優先矩形がない場合は通常の全体認識
-        return await RecognizeFullScreenAsync(bitmap);
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
-    {
-        var allResults = new List<TextRect>();
-
-        foreach (var priorityRect in this.priorityRects)
-        {
-            // 元の画像サイズで絶対座標を計算
-            var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight);
-
-            // 元の画像から矩形を切り出し
-            using var croppedBitmap = bitmap.Crop(absRect);
-            
-            // 切り出した画像をスケーリング
-            using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-            this.cts.Token.ThrowIfCancellationRequested();
-            
-            // スケーリングされた切り出し画像をOCR
-            var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
-
-            // 座標を元の画像座標系に変換（切り出し位置分オフセット）
-            allResults.AddRange(rectResults.Select(text => text.Offset(absRect.X, absRect.Y, priorityRect.Keyword)));
-        }
-
-        return allResults;
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
-    {
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
         this.cts.Token.ThrowIfCancellationRequested();
 
-        var results = await RecognizeRegionAsync(workingBitmap);
-
-        if (bitmap != workingBitmap)
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
         {
-            workingBitmap.Dispose();
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
         }
+        this.cts.Token.ThrowIfCancellationRequested();
 
-        return results;
+        try
+        {
+            return await RecognizeRegionAsync(workingBitmap, source);
+        }
+        finally
+        {
+            if (bitmap != workingBitmap)
+            {
+                workingBitmap.Dispose();
+            }
+        }
     }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="bitmap">認識対象の画像</param>
+    /// <param name="source">閾値の計算に使う元の全体画像</param>
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
+
         var sw = Stopwatch.StartNew();
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(async () => await Recognize(bitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
@@ -110,8 +101,8 @@ public sealed class TesseractOcr(
         }
 
         // マージ処理
-        var xt = xPosThreshold * bitmap.PixelWidth;
-        var yt = yPosThreshold * bitmap.PixelHeight;
+        var xt = xPosThreshold * source.PixelWidth;
+        var yt = yPosThreshold * source.PixelHeight;
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));

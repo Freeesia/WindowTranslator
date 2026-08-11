@@ -31,74 +31,63 @@ public sealed partial class WindowsMediaOcr(
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
     private readonly List<PriorityRect> priorityRects = ocrParam.Value.PriorityRects ?? [];
+    private readonly int brightness = ocrParam.Value.Brightness;
+    private readonly int contrast = ocrParam.Value.Contrast;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new AppUserException(string.Format(Properties.Resources.OcrLanguageNotAvailable, langOptions.Value.Source));
     private readonly ILogger<WindowsMediaOcr> logger = logger;
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
-    {
-        // 優先矩形が指定されている場合は、それらのみを認識
-        if (this.priorityRects.Count > 0)
-        {
-            return await RecognizePriorityRectsAsync(bitmap);
-        }
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-        // 優先矩形がない場合は通常の全体認識
-        return await RecognizeFullScreenAsync(bitmap);
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
-    {
-        var allResults = new List<TextRect>();
-
-        foreach (var priorityRect in this.priorityRects)
-        {
-            // 元の画像サイズで絶対座標を計算
-            var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight);
-
-            // 元の画像から矩形を切り出し
-            using var croppedBitmap = bitmap.Crop(absRect);
-            
-            // 切り出した画像をスケーリング
-            using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-            this.cts.Token.ThrowIfCancellationRequested();
-            
-            // スケーリングされた切り出し画像をOCR
-            var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
-
-            // 座標を元の画像座標系に変換（切り出し位置分オフセット）
-            allResults.AddRange(rectResults.Select(text => text.Offset(absRect.X, absRect.Y, priorityRect.Keyword)));
-        }
-
-        return allResults;
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
         if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
         {
-            throw new InvalidOperationException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
+            throw new AppUserException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
         }
 
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
         this.cts.Token.ThrowIfCancellationRequested();
 
-        var results = await RecognizeRegionAsync(workingBitmap);
-
-        if (bitmap != workingBitmap)
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
         {
-            workingBitmap.Dispose();
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
         }
+        this.cts.Token.ThrowIfCancellationRequested();
 
-        return results;
+        try
+        {
+            return await RecognizeRegionAsync(workingBitmap, source.PixelWidth * this.scale, source.PixelHeight * this.scale);
+        }
+        finally
+        {
+            if (bitmap != workingBitmap)
+            {
+                workingBitmap.Dispose();
+            }
+        }
     }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="baseWidth">画像全体を基準にした閾値の計算に使う幅</param>
+    /// <param name="baseHeight">画像全体を基準にした閾値の計算に使う高さ</param>
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, double baseWidth, double baseHeight)
     {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
@@ -131,7 +120,7 @@ public sealed partial class WindowsMediaOcr(
             .Lines
             .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < workingBitmap.PixelHeight * 0.1)
+            .Where(w => w.Height < baseHeight * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -139,8 +128,8 @@ public sealed partial class WindowsMediaOcr(
             return lineResults;
         }
 
-        var xt = xPosThrethold * workingBitmap.PixelWidth;
-        var yt = yPosThrethold * workingBitmap.PixelHeight;
+        var xt = xPosThrethold * baseWidth;
+        var yt = yPosThrethold * baseHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {

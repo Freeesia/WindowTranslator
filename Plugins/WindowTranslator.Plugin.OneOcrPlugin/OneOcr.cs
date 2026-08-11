@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Panlingo.LanguageIdentification.FastText;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Panlingo.LanguageIdentification.FastText;
 using Windows.Graphics.Imaging;
 using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
@@ -23,7 +23,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
 {
     const string apiKey = "kj)TGtrK>f]b[Piow.gU+nC@s\"\"\"\"\"\"4";
     const int maxLineCount = 1000;
-    private readonly FastTextDetector fastText;
+    private readonly FastTextDetector? fastText;
     private readonly ILogger<OneOcr> logger;
     private readonly string source;
     private readonly HashSet<string> targets;
@@ -38,6 +38,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
     private readonly bool isAvoidMergeList;
     private readonly double scale = 1.0; // スケールのデフォルト値
     private readonly List<PriorityRect> priorityRects;
+    private readonly int brightness; // 明るさ（-127 - 128）
+    private readonly int contrast; // コントラスト（-99 - 100）
 
     static OneOcr()
     {
@@ -61,8 +63,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
     public OneOcr(ILogger<OneOcr> logger, IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BasicOcrParam> ocrParam)
     {
         this.logger = logger;
-        this.fastText = new FastTextDetector();
-        this.fastText.LoadDefaultModel();
+        this.fastText = FastTextDetector.IsSupported() ? new() : null;
+        this.fastText?.LoadDefaultModel();
         this.source = langOptions.Value.Source;
         this.targets = [langOptions.Value.Target[..2]];
         if (this.targets.Overlaps(["ja", "zh"]) && this.source[..2] is not "ja" and not "zh")
@@ -79,6 +81,8 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
         this.scale = ocrParam.Value.Scale;
         this.priorityRects = ocrParam.Value.PriorityRects ?? [];
+        this.brightness = ocrParam.Value.Brightness;
+        this.contrast = ocrParam.Value.Contrast;
 
         // OCR初期化オプションの作成
         var res = CreateOcrInitOptions(out this.context);
@@ -123,82 +127,59 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
     public void Dispose()
     {
-        this.fastText.Dispose();
+        this.fastText?.Dispose();
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
+
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
     {
-        // 優先矩形が指定されている場合は、それらのみを認識
-        if (this.priorityRects.Count > 0)
-        {
-            return await RecognizePriorityRectsAsync(bitmap);
-        }
-
-        // 優先矩形がない場合は通常の全体認識
-        return await RecognizeFullScreenAsync(bitmap);
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizePriorityRectsAsync(SoftwareBitmap bitmap)
-    {
-        var allResults = new List<TextRect>();
-
-        foreach (var priorityRect in this.priorityRects)
-        {
-            // 元の画像サイズで絶対座標を計算
-            var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight);
-
-            // 元の画像から矩形を切り出し
-            using var croppedBitmap = bitmap.Crop(absRect);
-            
-            // 切り出した画像をスケーリング
-            using var scaledCroppedBitmap = await croppedBitmap.ResizeSoftwareBitmapAsync(this.scale);
-            
-            // スケーリングされた切り出し画像をOCR
-            var rectResults = await RecognizeRegionAsync(scaledCroppedBitmap);
-
-            // 座標をスケール変換して元の画像座標系に変換
-            // RecognizeRegionAsyncの結果はスケール済み画像の座標なので、スケールで割る
-            allResults.AddRange(rectResults.Select(text => 
-                new TextRect(
-                    text.SourceText,
-                    text.X / this.scale + absRect.X,
-                    text.Y / this.scale + absRect.Y,
-                    text.Width / this.scale,
-                    text.Height / this.scale,
-                    text.FontSize / this.scale,
-                    text.MultiLine,
-                    text.Foreground,
-                    text.Background
-                ) { Context = priorityRect.Keyword }));
-        }
-
-        return allResults;
-    }
-
-    private async ValueTask<IEnumerable<TextRect>> RecognizeFullScreenAsync(SoftwareBitmap bitmap)
-    {
-        // 拡大率に基づくリサイズ処理
+        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
 
-        var results = await RecognizeRegionAsync(workingBitmap);
-
-        if (workingBitmap != bitmap)
+        // 明るさ・コントラスト調整（インプレース）
+        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
+        if (this.brightness != 0 || this.contrast != 0)
         {
-            workingBitmap.Dispose();
+            if (workingBitmap == bitmap)
+            {
+                // 元のビットマップを変更しないようにコピーを作成
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+                workingBitmap = SoftwareBitmap.Copy(bitmap);
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+            }
+            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
         }
 
-        return results;
+        try
+        {
+            return await RecognizeRegionAsync(workingBitmap, source);
+        }
+        finally
+        {
+            if (workingBitmap != bitmap)
+            {
+                workingBitmap.Dispose();
+            }
+        }
     }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap)
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="source">閾値の計算に使う元の全体画像</param>
+    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, SoftwareBitmap source)
     {
+
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
-        textRects = ProcessTextRects(textRects, workingBitmap.PixelWidth, workingBitmap.PixelHeight);
+        textRects = ProcessTextRects(textRects, (int)(source.PixelWidth * this.scale), (int)(source.PixelHeight * this.scale));
 
-        var wFat = workingBitmap.PixelWidth * 0.004;
+        var wFat = source.PixelWidth * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い
@@ -214,7 +195,9 @@ public sealed class OneOcr : IOcrModule, IDisposable
     }
 
     private bool IsTargetLangText(string text)
-        => this.fastText.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..]));
+        => this.fastText?.Predict(text, 3, 0.7f).Any(p => this.targets.Contains(p.Label[(p.Label.LastIndexOf('_') + 1)..]))
+            // fastTextがサポートされていない場合は無条件で対象外
+            ?? false;
 
     private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap)
     {
@@ -312,7 +295,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         var rects = textRects.Where(r => !string.IsNullOrEmpty(r.SourceText)).ToArray();
         if (rects.Length == 0)
         {
-            return Array.Empty<TextRect>();
+            return [];
         }
 
         // 閾値の計算
