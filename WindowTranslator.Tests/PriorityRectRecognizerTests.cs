@@ -71,6 +71,26 @@ public class PriorityRectRecognizerTests
     }
 
     [Fact]
+    public async Task 小数座標の優先矩形は実際の切り出し位置から全体画像座標へ戻される()
+    {
+        using var bitmap = CreateBitmap();
+        PriorityRect[] rects = [new(0.253, 0.502, 0.251, 0.252)];
+
+        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+        {
+            // (101.2, 150.6) - (201.6, 226.2) と交差する全ピクセルを切り出す
+            Assert.Equal(101, target.PixelWidth);
+            Assert.Equal(77, target.PixelHeight);
+            Assert.Same(bitmap, source);
+            return ValueTask.FromResult<IEnumerable<TextRect>>([Text("fractional", 0, 0)]);
+        });
+
+        var result = Assert.Single(results);
+        Assert.Equal(101, result.X);
+        Assert.Equal(150, result.Y);
+    }
+
+    [Fact]
     public async Task スケールを戻した回転結果へ切り出し位置をオフセットする()
     {
         using var bitmap = CreateBitmap();
@@ -199,6 +219,25 @@ public class PriorityRectRecognizerTests
 
         Assert.Equal(0, calls);
         Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task 画像外にはみ出した優先矩形は画像内へ切り詰められる()
+    {
+        using var bitmap = CreateBitmap();
+        PriorityRect[] rects = [new(-0.1, -0.1, 0.2, 0.2)];
+
+        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+        {
+            Assert.Equal(40, target.PixelWidth);
+            Assert.Equal(30, target.PixelHeight);
+            Assert.Same(bitmap, source);
+            return ValueTask.FromResult<IEnumerable<TextRect>>([Text("clamped", 0, 0)]);
+        });
+
+        var result = Assert.Single(results);
+        Assert.Equal(0, result.X);
+        Assert.Equal(0, result.Y);
     }
 
 }

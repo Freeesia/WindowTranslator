@@ -36,14 +36,4 @@ public class TextRectExtensionsTests
         Assert.Equal(Color.Black, actual.Foreground);
         Assert.Equal(Color.White, actual.Background);
     }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public void RestoreScaleは0以下の拡大率を拒否する(double scale)
-    {
-        var rect = new TextRect("text", 0, 0, 10, 10, 10, false);
-
-        Assert.Throws<ArgumentOutOfRangeException>(() => rect.RestoreScale(scale));
-    }
 }

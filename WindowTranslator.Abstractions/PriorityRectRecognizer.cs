@@ -40,34 +40,30 @@ public static class PriorityRectRecognizer
         }
 
         var results = new List<TextRect>();
-        // 優先度の高い矩形で採用した認識結果
-        var recognized = new List<TextRect>();
 
         foreach (var priorityRect in priorityRects)
         {
             var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight)
-                .Clamp(bitmap.PixelWidth, bitmap.PixelHeight);
+                .ClampToImage(bitmap.PixelWidth, bitmap.PixelHeight);
             // 1ピクセル未満に潰れた矩形は切り出せないため無視する
             if (absRect.Width < 1 || absRect.Height < 1)
             {
                 continue;
             }
 
-            using var cropped = bitmap.Crop(absRect);
+            var cropRect = absRect.ToPixelRect();
+            using var cropped = bitmap.Crop(
+                (int)cropRect.X,
+                (int)cropRect.Y,
+                (int)cropRect.Width,
+                (int)cropRect.Height);
             var rectResults = (await recognizeAsync(cropped, bitmap).ConfigureAwait(false))
                 // 切り出し位置分オフセットして全体画像の座標系に変換し、キーワードを翻訳コンテキストとして設定する
-                .Select(r => r.Offset(absRect.X, absRect.Y, priorityRect.Keyword))
-                .Where(r => !IsCoveredBy(r, recognized))
+                .Select(r => r.Offset(cropRect.X, cropRect.Y, priorityRect.Keyword))
+                .Where(r => !IsCoveredBy(r, results))
                 .ToArray();
 
-            // 何も認識できなかった矩形は、後続のOCR対象範囲の結果を妨げない
-            if (rectResults.Length == 0)
-            {
-                continue;
-            }
-
             results.AddRange(rectResults);
-            recognized.AddRange(rectResults);
         }
 
         return results;
@@ -81,12 +77,42 @@ public static class PriorityRectRecognizer
     /// </remarks>
     private static bool IsCoveredBy(TextRect text, List<TextRect> recognized)
     {
-        if (recognized.Count == 0)
-        {
-            return false;
-        }
         var box = text.GetRotatedBoundingBox();
-        return recognized.Any(r => r.GetRotatedBoundingBox().IntersectionRatio(box) >= OverlapThreshold);
+        return recognized.Any(r => IntersectionRatio(r.GetRotatedBoundingBox(), box) >= OverlapThreshold);
+    }
+
+    /// <summary>
+    /// 指定した画像内に収まるように矩形を切り詰める
+    /// </summary>
+    private static RectInfo ClampToImage(this RectInfo rect, int imageWidth, int imageHeight)
+    {
+        var left = Math.Clamp(rect.Left, 0, imageWidth);
+        var top = Math.Clamp(rect.Top, 0, imageHeight);
+        var right = Math.Clamp(rect.Right, 0, imageWidth);
+        var bottom = Math.Clamp(rect.Bottom, 0, imageHeight);
+        return new(left, top, Math.Max(0, right - left), Math.Max(0, bottom - top));
+    }
+
+    /// <summary>
+    /// 矩形と交差するすべてのピクセルを含む整数座標へ変換する
+    /// </summary>
+    private static RectInfo ToPixelRect(this RectInfo rect)
+    {
+        var left = Math.Floor(rect.Left);
+        var top = Math.Floor(rect.Top);
+        var right = Math.Ceiling(rect.Right);
+        var bottom = Math.Ceiling(rect.Bottom);
+        return new(left, top, right - left, bottom - top);
+    }
+
+    /// <summary>
+    /// <paramref name="other"/>の面積に対する重なり部分の割合を計算する
+    /// </summary>
+    private static double IntersectionRatio(RectInfo area, RectInfo other)
+    {
+        var width = Math.Max(0, Math.Min(area.Right, other.Right) - Math.Max(area.Left, other.Left));
+        var height = Math.Max(0, Math.Min(area.Bottom, other.Bottom) - Math.Max(area.Top, other.Top));
+        return width * height / (other.Width * other.Height);
     }
 }
 #endif

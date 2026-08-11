@@ -7,6 +7,7 @@ namespace WindowTranslator;
 /// </summary>
 public static partial class OcrUtility
 {
+
     [GeneratedRegex(@"^[\s\p{S}\p{P}\d]+$")]
     public static partial Regex AllSymbolOrSpace();
 }

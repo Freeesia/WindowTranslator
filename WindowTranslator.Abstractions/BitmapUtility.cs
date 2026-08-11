@@ -229,20 +229,13 @@ public static class BitmapUtility
     /// 画像を切り出す
     /// </summary>
     /// <param name="source">元の画像</param>
-    /// <param name="rect">切り出す矩形（絶対座標）</param>
+    /// <param name="x">切り出し開始位置のX座標</param>
+    /// <param name="y">切り出し開始位置のY座標</param>
+    /// <param name="width">切り出す幅</param>
+    /// <param name="height">切り出す高さ</param>
     /// <returns>切り出された画像</returns>
-    internal static unsafe SoftwareBitmap Crop(this SoftwareBitmap source, RectInfo rect)
+    internal static unsafe SoftwareBitmap Crop(this SoftwareBitmap source, int x, int y, int width, int height)
     {
-        var x = (int)Math.Max(0, rect.X);
-        var y = (int)Math.Max(0, rect.Y);
-        var width = (int)Math.Min(rect.Width, source.PixelWidth - x);
-        var height = (int)Math.Min(rect.Height, source.PixelHeight - y);
-
-        if (width <= 0 || height <= 0)
-        {
-            throw new ArgumentException("Invalid rectangle dimensions");
-        }
-
         var cropped = new SoftwareBitmap(source.BitmapPixelFormat, width, height, source.BitmapAlphaMode);
 
         using var sourceBuffer = source.LockBuffer(BitmapBufferAccessMode.Read);
