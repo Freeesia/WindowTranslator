@@ -117,9 +117,11 @@ builder.Services.AddPluginFramework()
 
 var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 var nugetPluginsDir = Path.Combine(PathUtility.UserDir, "nuget-plugins");
+var hostPackageVersions = NuGetPluginService.CreateHostPackageVersions();
 IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
     nugetPluginsDir,
     AppInfo.Instance.Version.Major,
+    hostPackageVersions[NuGetPluginService.AbstractionsPackageId],
     new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
 var fallbackPluginCatalogs = new List<IPluginCatalog>();
 var appPluginDir = @".\plugins";
@@ -190,7 +192,7 @@ builder.Services.AddSingleton(sp => new NuGetPluginService(
         sp.GetRequiredService<IHttpClientFactory>(),
         sp.GetRequiredService<SourceRepository>(),
         nugetPluginsDir,
-        NuGetPluginService.CreateHostPackageVersions(),
+        hostPackageVersions,
         AppInfo.Instance.Version.Major))
     .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
 builder.Services.AddTransient<PluginStoreViewModel>();

@@ -2,6 +2,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
+using NuGet.Versioning;
 using Weikio.PluginFramework.Abstractions;
 using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.Context;
@@ -20,14 +21,21 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     private readonly string sourceDir;
     private readonly string tempDir;
     private readonly int hostMajorVersion;
+    private readonly NuGetVersion hostAbstractionsVersion;
     private readonly FolderPluginCatalogOptions options;
     private CompositePluginCatalog innerCatalog = new();
 
     public NuGetPluginCatalog(
         string sourceDir,
         int hostMajorVersion,
+        NuGetVersion hostAbstractionsVersion,
         FolderPluginCatalogOptions options)
-        : this(sourceDir, DefaultTempDir, hostMajorVersion, options)
+        : this(
+            sourceDir,
+            DefaultTempDir,
+            hostMajorVersion,
+            hostAbstractionsVersion,
+            options)
     {
     }
 
@@ -35,11 +43,13 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         string sourceDir,
         string tempDir,
         int hostMajorVersion,
+        NuGetVersion hostAbstractionsVersion,
         FolderPluginCatalogOptions options)
     {
         this.sourceDir = sourceDir;
         this.tempDir = tempDir;
         this.hostMajorVersion = hostMajorVersion;
+        this.hostAbstractionsVersion = hostAbstractionsVersion;
         this.options = options;
     }
 
@@ -54,7 +64,8 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
             .ConfigureAwait(false);
         var loadablePackages = GetLoadablePackageIds(
             this.sourceDir,
-            this.hostMajorVersion);
+            this.hostMajorVersion,
+            this.hostAbstractionsVersion);
         loadablePackages.ExceptWith(unresolvedOperations);
         SynchronizePluginFiles(this.sourceDir, this.tempDir, loadablePackages);
 
@@ -343,7 +354,8 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
 
     internal static HashSet<string> GetLoadablePackageIds(
         string sourceDirectory,
-        int hostMajorVersion)
+        int hostMajorVersion,
+        NuGetVersion hostAbstractionsVersion)
     {
         try
         {
@@ -355,9 +367,11 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
                 NuGetPluginService.ManifestJsonOptions)?.Packages
                 ?? throw new InvalidDataException("プラグインmanifestにパッケージ一覧がありません。");
             return packages
-                .Where(package => PluginCompatibility.IsHostMajorCompatible(
+                .Where(package => PluginCompatibility.IsInstalledPackageCompatible(
                     package.HostMajorVersion,
-                    hostMajorVersion))
+                    hostMajorVersion,
+                    package.AbstractionsVersionRange,
+                    hostAbstractionsVersion))
                 .Select(package => package.Id)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }

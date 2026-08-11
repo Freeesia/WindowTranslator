@@ -30,7 +30,7 @@ internal sealed class NuGetPackageInstaller(
     private readonly ILogger logger = logger;
     private readonly IReadOnlyDictionary<string, NuGetVersion> hostPackageVersions = hostPackageVersions;
 
-    public async Task InstallAsync(
+    public async Task<VersionRange> InstallAsync(
         string packageId,
         string version,
         string destinationDirectory,
@@ -63,6 +63,13 @@ internal sealed class NuGetPackageInstaller(
                     destinationDirectory,
                     requirePluginAssembly: artifact.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase));
             }
+
+            var rootPackage = artifacts.First(artifact =>
+                artifact.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase));
+            return rootPackage.Metadata.Dependencies.First(dependency =>
+                dependency.Id.Equals(
+                    NuGetPluginService.AbstractionsPackageId,
+                    StringComparison.OrdinalIgnoreCase)).VersionRange;
         }
         finally
         {
@@ -218,7 +225,7 @@ internal sealed class NuGetPackageInstaller(
                 this.hostPackageVersions,
                 requirePluginPackage: currentId.Equals(rootPackageId, StringComparison.OrdinalIgnoreCase));
 
-            artifacts[currentId] = new PackageArtifact(currentId, packagePath);
+            artifacts[currentId] = new PackageArtifact(currentId, packagePath, metadata);
             foreach (var dependency in metadata.Dependencies.Where(IncludesRuntimeAssets))
             {
                 if (this.hostPackageVersions.ContainsKey(dependency.Id))
@@ -586,7 +593,10 @@ internal sealed class NuGetPackageInstaller(
         }
     }
 
-    private sealed record PackageArtifact(string Id, string PackagePath);
+    private sealed record PackageArtifact(
+        string Id,
+        string PackagePath,
+        PackageMetadata Metadata);
 
     private sealed record DependencyConstraint(string Source, VersionRange Range);
 

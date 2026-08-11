@@ -258,7 +258,7 @@ public sealed class NuGetPluginService : BackgroundService
             packageResource,
             this.logger,
             this.hostPackageVersions);
-        await installer.InstallAsync(
+        var abstractionsVersionRange = await installer.InstallAsync(
             packageId,
             version,
             pluginOperation.WorkingPath,
@@ -275,7 +275,11 @@ public sealed class NuGetPluginService : BackgroundService
         [
             .. currentManifest.Packages.Where(package =>
                 !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)),
-            new(packageId, version, this.hostMajorVersion),
+            new(
+                packageId,
+                version,
+                this.hostMajorVersion,
+                abstractionsVersionRange.ToString()),
         ]);
         await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
         pluginOperation.Commit();
@@ -402,9 +406,11 @@ public sealed class NuGetPluginService : BackgroundService
         => packages
             .Select(package => package with
             {
-                IsCompatible = PluginCompatibility.IsHostMajorCompatible(
+                IsCompatible = PluginCompatibility.IsInstalledPackageCompatible(
                     package.HostMajorVersion,
-                    this.hostMajorVersion),
+                    this.hostMajorVersion,
+                    package.AbstractionsVersionRange,
+                    this.hostPackageVersions.GetValueOrDefault(AbstractionsPackageId)),
             })
             .ToArray();
 
@@ -512,7 +518,8 @@ public record NuGetPackageInfo(
 public record InstalledPackageInfo(
     string Id,
     string Version,
-    [property: JsonRequired] int HostMajorVersion)
+    [property: JsonRequired] int HostMajorVersion,
+    [property: JsonRequired] string AbstractionsVersionRange = "(, )")
 {
     [JsonIgnore]
     public bool IsCompatible { get; init; } = true;

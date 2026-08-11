@@ -400,7 +400,7 @@ public partial class PluginPackageViewModel : ObservableObject
     public string? ReleaseVersion { get; }
     public string? PrereleaseVersion { get; }
     public string? LatestVersion => this.UsePrerelease
-        ? this.PrereleaseVersion
+        ? GetLatestVersion(this.ReleaseVersion, this.PrereleaseVersion)
         : this.ReleaseVersion;
     public bool HasPrereleaseVersion => this.PrereleaseVersion is not null;
     public bool CanInstall => !this.IsInstalling && this.LatestVersion is not null;
@@ -520,6 +520,22 @@ public partial class PluginPackageViewModel : ObservableObject
 
     private static NuGetVersion? ParseVersion(string version)
         => NuGetVersion.TryParse(version, out var parsed) ? parsed : null;
+
+    private static string? GetLatestVersion(string? releaseVersion, string? prereleaseVersion)
+    {
+        if (releaseVersion is null)
+        {
+            return prereleaseVersion;
+        }
+        if (prereleaseVersion is null)
+        {
+            return releaseVersion;
+        }
+
+        return IsNewerVersion(prereleaseVersion, releaseVersion)
+            ? prereleaseVersion
+            : releaseVersion;
+    }
 
     private static bool IsNewerVersion(string latestVersion, string installedVersion)
     {

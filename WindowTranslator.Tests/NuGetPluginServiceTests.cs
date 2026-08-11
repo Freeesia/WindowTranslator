@@ -439,7 +439,50 @@ public sealed class NuGetPluginServiceTests
             Assert.Empty(service.PackageSnapshot.InstalledPackages);
             Assert.Empty(NuGetPluginCatalog.GetLoadablePackageIds(
                 testDirectory,
-                hostMajorVersion: 7));
+                hostMajorVersion: 7,
+                hostAbstractionsVersion: NuGetVersion.Parse("1.0.0")));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task ManifestWithoutAbstractionsVersionRangeIsRejected()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(testDirectory, "Legacy.Plugin"));
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new
+                {
+                    Packages = new[]
+                    {
+                        new
+                        {
+                            Id = "Legacy.Plugin",
+                            Version = "1.0.0",
+                            HostMajorVersion = 7,
+                        },
+                    },
+                }));
+            using var handler = new InMemoryNuGetHandler();
+            using var service = CreateService(
+                handler,
+                testDirectory,
+                hostMajorVersion: 7);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.IsType<InvalidOperationException>(service.PackageSnapshot.Error);
+            Assert.Empty(service.PackageSnapshot.InstalledPackages);
+            Assert.Empty(NuGetPluginCatalog.GetLoadablePackageIds(
+                testDirectory,
+                hostMajorVersion: 7,
+                hostAbstractionsVersion: NuGetVersion.Parse("1.0.0")));
         }
         finally
         {
@@ -468,6 +511,51 @@ public sealed class NuGetPluginServiceTests
 
             Assert.Equal(PluginCompatibility.ValidationDisabled, package.IsCompatible);
             Assert.Equal(6, package.HostMajorVersion);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task InstalledPackageCompatibilityChecksAbstractionsVersionRange()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(testDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(new InstalledManifest(
+                [
+                    new InstalledPackageInfo(
+                        "Range.Plugin",
+                        "1.0.0",
+                        HostMajorVersion: 7,
+                        AbstractionsVersionRange: "[2.0.0, 3.0.0)"),
+                ])));
+            using var handler = new InMemoryNuGetHandler();
+            var hostAbstractionsVersion = NuGetVersion.Parse("1.5.0");
+            using var service = CreateService(
+                handler,
+                testDirectory,
+                new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [NuGetPluginService.AbstractionsPackageId] = hostAbstractionsVersion,
+                },
+                hostMajorVersion: 7);
+
+            await service.RefreshPackageInformationAsync();
+            var package = Assert.Single(service.PackageSnapshot.InstalledPackages);
+            var loadablePackages = NuGetPluginCatalog.GetLoadablePackageIds(
+                testDirectory,
+                hostMajorVersion: 7,
+                hostAbstractionsVersion);
+
+            Assert.Equal(PluginCompatibility.ValidationDisabled, package.IsCompatible);
+            Assert.Equal(
+                PluginCompatibility.ValidationDisabled,
+                loadablePackages.Contains("Range.Plugin"));
         }
         finally
         {
@@ -789,6 +877,23 @@ public sealed class NuGetPluginServiceTests
 
         Assert.Equal("2.0.0-preview.1", prereleaseOnlyPackage.LatestVersion);
         Assert.True(prereleaseOnlyPackage.CanInstall);
+
+        var releaseNewerThanPrerelease = new PluginPackageViewModel(
+            new NuGetPackageInfo(
+                "Released.Plugin",
+                "Released Plugin",
+                string.Empty,
+                string.Empty,
+                null,
+                null,
+                ["1.9.0-preview.1", "2.0.0"]),
+            isInstalled: false,
+            installedVersion: null)
+        {
+            UsePrerelease = true,
+        };
+
+        Assert.Equal("2.0.0", releaseNewerThanPrerelease.LatestVersion);
     }
 
     [Fact]
@@ -940,6 +1045,10 @@ public sealed class NuGetPluginServiceTests
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
 
             Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.Equal(
+                "[1.0.0, 2.0.0)",
+                Assert.Single(service.PackageSnapshot.InstalledPackages)
+                    .AbstractionsVersionRange);
             Assert.DoesNotContain(
                 handler.RequestedPaths,
                 path => path.Contains(
@@ -1427,7 +1536,8 @@ public sealed class NuGetPluginServiceTests
 
             var loadablePackages = NuGetPluginCatalog.GetLoadablePackageIds(
                 sourceDirectory,
-                hostMajorVersion: 7);
+                hostMajorVersion: 7,
+                hostAbstractionsVersion: NuGetVersion.Parse("1.0.0"));
             NuGetPluginCatalog.SynchronizePluginFiles(
                 sourceDirectory,
                 destinationDirectory,
@@ -1560,6 +1670,7 @@ public sealed class NuGetPluginServiceTests
                 sourceDirectory,
                 tempDirectory,
                 hostMajorVersion: 1,
+                hostAbstractionsVersion: NuGetVersion.Parse("1.0.0"),
                 options);
 
             await catalog.Initialize();
@@ -1636,6 +1747,7 @@ public sealed class NuGetPluginServiceTests
                 sourceDirectory,
                 tempDirectory,
                 hostMajorVersion: 1,
+                hostAbstractionsVersion: NuGetVersion.Parse("1.0.0"),
                 options);
 
             await catalog.Initialize();
