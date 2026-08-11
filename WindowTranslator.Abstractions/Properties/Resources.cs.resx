@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -179,7 +179,8 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Modul mezipaměti</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>Oblast OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -187,39 +188,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Pokud jsou oblasti nastaveny, rozpoznává se pouze obsah uvnitř nich. Při překrytí mají přednost oblasti výše v seznamu.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Přidat</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Odebrat</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Nahoru</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Dolů</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Klíčové slovo</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Používá se jako kontext pro překlad</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Výběr obdélníku</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Tažením vyberte obdélník (Esc zruší výběr)
-Vyberte o něco větší oblast, aby text nebyl oříznutý</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Vybírání</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Obdélník je příliš malý. Vyberte jej prosím znovu.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Nepřekládá se žádné okno, takže nelze vybrat obdélník. Před nastavením spusťte překlad cílového okna.</value>
   </data>
 </root>

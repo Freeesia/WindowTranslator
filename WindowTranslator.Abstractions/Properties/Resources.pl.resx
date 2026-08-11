@@ -179,7 +179,8 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Moduł pamięci podręcznej</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>Obszar OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -187,39 +188,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Gdy skonfigurowano obszary, rozpoznawana jest tylko ich zawartość. Przy nakładaniu się obszary wyżej na liście mają pierwszeństwo.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Dodaj</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Usuń</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>W górę</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>W dół</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Słowo kluczowe</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Używane jako kontekst tłumaczenia</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Wybór prostokąta</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Przeciągnij, aby wybrać prostokąt (Esc anuluje)
-Zaznacz nieco większy obszar, aby tekst nie został ucięty</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Wybieranie</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Prostokąt jest za mały. Wybierz go ponownie.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Żadne okno nie jest tłumaczone, więc nie można wybrać prostokąta. Przed konfiguracją rozpocznij tłumaczenie okna docelowego.</value>
   </data>
 </root>

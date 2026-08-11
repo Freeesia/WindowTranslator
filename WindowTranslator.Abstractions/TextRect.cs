@@ -214,11 +214,30 @@ public static class TextRectExtensions
     /// <param name="offsetY">Y方向のオフセット</param>
     /// <param name="keyword">キーワード（コンテキスト）</param>
     /// <returns>オフセットされたTextRect</returns>
-    public static TextRect Offset(this TextRect rect, double offsetX, double offsetY, string keyword = "")
+    internal static TextRect Offset(this TextRect rect, double offsetX, double offsetY, string keyword = "")
         => rect with
         {
             X = rect.X + offsetX,
             Y = rect.Y + offsetY,
             Context = keyword
         };
+
+    /// <summary>
+    /// OCR用に拡大した画像の座標を、拡大前の画像座標へ戻す
+    /// </summary>
+    /// <param name="rect">スケール後画像の座標系にある認識結果</param>
+    /// <param name="scale">OCR前に適用した拡大率</param>
+    /// <returns>拡大前の画像座標へ戻した認識結果</returns>
+    public static TextRect RestoreScale(this TextRect rect, double scale)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(scale, 0);
+        return rect with
+        {
+            X = rect.X / scale,
+            Y = rect.Y / scale,
+            Width = rect.Width / scale,
+            Height = rect.Height / scale,
+            FontSize = rect.FontSize / scale,
+        };
+    }
 }

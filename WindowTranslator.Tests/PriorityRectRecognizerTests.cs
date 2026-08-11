@@ -83,19 +83,9 @@ public class PriorityRectRecognizerTests
             Assert.Equal(Height / 2, target.PixelHeight);
             Assert.Same(bitmap, source);
 
-            // OCRモジュールがスケール後の座標を元の切り出し画像の座標系へ戻した状態を再現する
+            // 実際のOCRモジュールと同じ共通変換で、スケール後の座標を切り出し画像の座標系へ戻す
             var scaled = Text("scaled", 20, 40, 80, 40) with { Angle = 30 };
-            return ValueTask.FromResult<IEnumerable<TextRect>>
-            ([
-                scaled with
-                {
-                    X = scaled.X / scale,
-                    Y = scaled.Y / scale,
-                    Width = scaled.Width / scale,
-                    Height = scaled.Height / scale,
-                    FontSize = scaled.FontSize / scale,
-                }
-            ]);
+            return ValueTask.FromResult<IEnumerable<TextRect>>([scaled.RestoreScale(scale)]);
         });
 
         var result = Assert.Single(results);
@@ -139,6 +129,29 @@ public class PriorityRectRecognizerTests
 
         // 優先度の低い矩形の結果は破棄され、キーワードは優先度の高い矩形のものになる
         Assert.Equal("high", Assert.Single(results).Context);
+    }
+
+    [Fact]
+    public async Task 矩形同士が重なっていても認識結果が重ならなければ両方を保持する()
+    {
+        using var bitmap = CreateBitmap();
+        PriorityRect[] rects =
+        [
+            new(0, 0, 0.5, 0.5, "high"),
+            new(0.25, 0, 0.5, 0.5, "low"),
+        ];
+        var calls = 0;
+
+        var results = (await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+        {
+            calls++;
+            return ValueTask.FromResult<IEnumerable<TextRect>>(calls == 1
+                ? [Text("high text", 10, 10)]
+                : [Text("low text", 80, 10)]);
+        })).ToArray();
+
+        Assert.Equal(["high text", "low text"], results.Select(r => r.SourceText));
+        Assert.Equal(["high", "low"], results.Select(r => r.Context));
     }
 
     [Fact]
@@ -186,5 +199,17 @@ public class PriorityRectRecognizerTests
 
         Assert.Equal(0, calls);
         Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task 指定範囲の切り出しは本体のキャプチャ形式であるBgra8だけを受け付ける()
+    {
+        using var bitmap = new SoftwareBitmap(BitmapPixelFormat.Gray8, Width, Height, BitmapAlphaMode.Ignore);
+        PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
+
+        await Assert.ThrowsAsync<ArgumentException>(() => PriorityRectRecognizer.RecognizeAsync(
+            bitmap,
+            rects,
+            (target, source) => ValueTask.FromResult<IEnumerable<TextRect>>([])).AsTask());
     }
 }

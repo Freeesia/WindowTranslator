@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -109,7 +109,8 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>متفرقه</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>ناحیه OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -117,39 +118,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>وقتی ناحیه‌هایی تنظیم شده‌اند، فقط محتوای داخل آن‌ها شناسایی می‌شود. هنگام هم‌پوشانی، ناحیه‌های بالاتر در فهرست اولویت دارند.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>افزودن</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>حذف</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>بالا</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>پایین</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>کلیدواژه</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>به عنوان زمینه ترجمه استفاده می‌شود</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>انتخاب مستطیل</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>برای انتخاب مستطیل بکشید (برای لغو Esc را بزنید)
-ناحیه‌ای کمی بزرگ‌تر انتخاب کنید تا متن بریده نشود</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>در حال انتخاب</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>مستطیل بسیار کوچک است. لطفاً دوباره انتخاب کنید.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>هیچ پنجره‌ای در حال ترجمه نیست، بنابراین نمی‌توان مستطیل انتخاب کرد. پیش از تنظیم، ترجمه پنجره هدف را آغاز کنید.</value>
   </data>
 </root>

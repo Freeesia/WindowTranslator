@@ -56,7 +56,7 @@ public sealed class GoogleAIOcr : IOcrModule
     public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
         => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap _)
     {
         var base64 = await bitmap.EncodeToJpegBase64().ConfigureAwait(false);
         var req = new GenerateContentRequest();

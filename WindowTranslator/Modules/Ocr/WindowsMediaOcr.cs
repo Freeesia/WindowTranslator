@@ -312,12 +312,6 @@ public sealed partial class WindowsMediaOcr(
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換
-        x /= scale;
-        y /= scale;
-        width /= scale;
-        height /= scale;
-        fontSize /= scale;
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         // または、
         // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
@@ -331,7 +325,8 @@ public sealed partial class WindowsMediaOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle }
+            .RestoreScale(scale);
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)

@@ -40,8 +40,8 @@ public static class PriorityRectRecognizer
         }
 
         var results = new List<TextRect>();
-        // 優先度の高い矩形のうち、文字を認識できた領域
-        var recognized = new List<RectInfo>();
+        // 優先度の高い矩形で採用した認識結果
+        var recognized = new List<TextRect>();
 
         foreach (var priorityRect in priorityRects)
         {
@@ -67,26 +67,26 @@ public static class PriorityRectRecognizer
             }
 
             results.AddRange(rectResults);
-            recognized.Add(absRect);
+            recognized.AddRange(rectResults);
         }
 
         return results;
     }
 
     /// <summary>
-    /// 認識結果が優先領域に覆われているかどうかを判定する
+    /// 認識結果が優先度の高い認識結果に覆われているかどうかを判定する
     /// </summary>
     /// <remarks>
-    /// 複数のOCR対象範囲が重なる場合に、個々の文字ではなく矩形の領域を基準に判定する
+    /// 複数のOCR対象範囲が重なる場合でも、実際の認識結果同士が重なる場合だけ低優先度側を破棄する
     /// </remarks>
-    private static bool IsCoveredBy(TextRect text, List<RectInfo> areas)
+    private static bool IsCoveredBy(TextRect text, List<TextRect> recognized)
     {
-        if (areas.Count == 0)
+        if (recognized.Count == 0)
         {
             return false;
         }
         var box = text.GetRotatedBoundingBox();
-        return areas.Any(a => a.IntersectionRatio(box) >= OverlapThreshold);
+        return recognized.Any(r => r.GetRotatedBoundingBox().IntersectionRatio(box) >= OverlapThreshold);
     }
 }
 #endif

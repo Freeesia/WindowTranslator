@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -109,7 +109,8 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Lainnya</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>Area OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -117,39 +118,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Jika area dikonfigurasi, hanya konten di dalamnya yang dikenali. Area yang lebih atas dalam daftar diprioritaskan saat saling tumpang tindih.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Tambah</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Hapus</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Naik</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Turun</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Kata kunci</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Digunakan sebagai konteks terjemahan</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Pemilihan persegi panjang</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Seret untuk memilih persegi panjang (tekan Esc untuk membatalkan)
-Pilih area yang sedikit lebih luas agar teks tidak terpotong</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Memilih</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Persegi panjang terlalu kecil. Silakan pilih lagi.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Tidak ada jendela yang sedang diterjemahkan sehingga persegi panjang tidak dapat dipilih. Mulai terjemahan jendela target sebelum mengatur.</value>
   </data>
 </root>

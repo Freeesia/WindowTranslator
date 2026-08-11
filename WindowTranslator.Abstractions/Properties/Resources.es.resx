@@ -109,7 +109,8 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Otros</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>Área de OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -117,39 +118,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Cuando hay áreas configuradas, solo se reconoce el contenido dentro de ellas. Las áreas situadas más arriba en la lista tienen prioridad cuando se superponen.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Agregar</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Eliminar</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Subir</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Bajar</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Palabra clave</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Se usa como contexto para la traducción</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Selección de rectángulo</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Arrastre para seleccionar un rectángulo (pulse Esc para cancelar)
-Seleccione un área un poco más amplia para que el texto no se corte</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Seleccionando</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>El rectángulo es demasiado pequeño. Selecciónelo de nuevo.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>No hay ninguna ventana en traducción, por lo que no se puede seleccionar un rectángulo. Inicie la traducción de la ventana de destino antes de configurarlo.</value>
   </data>
 </root>

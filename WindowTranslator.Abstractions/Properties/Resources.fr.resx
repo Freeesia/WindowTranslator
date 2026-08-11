@@ -109,7 +109,8 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>Autres</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>Zone d’OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -117,39 +118,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Lorsque des zones sont configurées, seul leur contenu est reconnu. Les zones placées plus haut dans la liste sont prioritaires en cas de chevauchement.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Ajouter</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Supprimer</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Monter</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Descendre</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Mot-clé</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Utilisé comme contexte pour la traduction</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Sélection du rectangle</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Faites glisser pour sélectionner un rectangle (Échap pour annuler)
-Sélectionnez une zone un peu plus large pour que le texte ne soit pas coupé</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Sélection en cours</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Le rectangle est trop petit. Veuillez le sélectionner à nouveau.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Aucune fenêtre n'est en cours de traduction, le rectangle ne peut donc pas être sélectionné. Démarrez la traduction de la fenêtre cible avant de configurer.</value>
   </data>
 </root>

@@ -177,38 +177,4 @@
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Khi đã cấu hình vùng, chỉ nội dung bên trong các vùng đó được nhận dạng. Khi các vùng chồng lấp, vùng nằm cao hơn trong danh sách được ưu tiên.</value>
   </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Thêm</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Xóa</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Lên</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Xuống</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Từ khóa</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Được sử dụng làm ngữ cảnh dịch</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Chọn hình chữ nhật</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Kéo để chọn hình chữ nhật (nhấn Esc để hủy)
-Hãy chọn vùng rộng hơn một chút để chữ không bị cắt</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Đang chọn</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Hình chữ nhật quá nhỏ. Vui lòng chọn lại.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Không có cửa sổ nào đang được dịch nên không thể chọn hình chữ nhật. Hãy bắt đầu dịch cửa sổ mục tiêu trước khi cấu hình.</value>
-  </data>
 </root>

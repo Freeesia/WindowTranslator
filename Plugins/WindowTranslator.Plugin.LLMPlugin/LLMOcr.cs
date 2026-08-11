@@ -110,7 +110,7 @@ public sealed class LLMOcr : IOcrModule
     public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
         => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
+    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap _)
     {
         var bytes = await bitmap.EncodeToJpegBytes().ConfigureAwait(false);
         var image = BinaryData.FromBytes(bytes);

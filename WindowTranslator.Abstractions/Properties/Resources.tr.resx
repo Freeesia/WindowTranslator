@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -121,7 +121,8 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Önbellek Modülü</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>OCR Alanı</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -129,39 +130,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Alanlar yapılandırıldığında yalnızca içlerindeki içerik tanınır. Alanlar çakıştığında listede daha yukarıda olanlar önceliklidir.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Ekle</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Kaldır</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Yukarı</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Aşağı</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Anahtar kelime</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Çeviri bağlamı olarak kullanılır</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Dikdörtgen seçimi</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Dikdörtgen seçmek için sürükleyin (iptal için Esc)
-Metnin kesilmemesi için biraz daha geniş bir alan seçin</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Seçiliyor</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Dikdörtgen çok küçük. Lütfen tekrar seçin.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Çevrilen bir pencere olmadığı için dikdörtgen seçilemiyor. Ayarlamadan önce hedef pencerenin çevirisini başlatın.</value>
   </data>
 </root>

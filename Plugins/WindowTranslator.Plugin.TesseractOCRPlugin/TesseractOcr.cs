@@ -102,8 +102,8 @@ public sealed class TesseractOcr(
 
         // マージ処理
         // 認識結果はスケール後画像の座標系なので、マージ閾値も同じ座標系に揃える
-        var xt = ToScaledThreshold(xPosThreshold, source.PixelWidth, this.scale);
-        var yt = ToScaledThreshold(yPosThreshold, source.PixelHeight, this.scale);
+        var xt = xPosThreshold * source.PixelWidth * this.scale;
+        var yt = yPosThreshold * source.PixelHeight * this.scale;
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));
@@ -323,13 +323,6 @@ public sealed class TesseractOcr(
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換
-        x /= scale;
-        y /= scale;
-        width /= scale;
-        height /= scale;
-        fontSize /= scale;
-
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         var lines = height / fontSize >= 2;
 
@@ -340,7 +333,7 @@ public sealed class TesseractOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines);
+        return new TextRect(text, x, y, width, height, fontSize, lines).RestoreScale(scale);
     }
 
     public void Dispose()

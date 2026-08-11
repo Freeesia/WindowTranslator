@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -121,7 +121,8 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Модуль кэша</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>Область OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -129,39 +130,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Если области настроены, распознаётся только содержимое внутри них. При перекрытии области, расположенные выше в списке, имеют приоритет.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Добавить</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Удалить</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Вверх</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Вниз</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Ключевое слово</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Используется как контекст для перевода</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Выбор прямоугольника</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Перетащите, чтобы выбрать прямоугольник (Esc — отмена)
-Выделите область немного шире, чтобы текст не обрезался</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Выбор</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Прямоугольник слишком мал. Выберите его снова.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Ни одно окно не переводится, поэтому выбрать прямоугольник нельзя. Перед настройкой начните перевод целевого окна.</value>
   </data>
 </root>

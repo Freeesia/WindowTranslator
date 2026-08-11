@@ -177,38 +177,4 @@
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>設定區域後，只會辨識區域內的內容。區域重疊時，清單中位置較上方的區域優先度較高。</value>
   </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>新增</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>刪除</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>上移</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>下移</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>關鍵字</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>用作翻譯的上下文</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>矩形選擇</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>拖曳以選擇矩形（按 Esc 取消）
-請稍微框選大一些，以免文字被截斷</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>選擇中</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>矩形太小。請重新選擇。</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>沒有正在翻譯的視窗，因此無法選擇矩形。請先開始翻譯目標視窗後再設定。</value>
-  </data>
 </root>

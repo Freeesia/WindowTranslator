@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -66,7 +66,8 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>Gyorsítótár modul</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>OCR-terület</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -74,39 +75,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Ha területek vannak beállítva, csak a bennük lévő tartalom kerül felismerésre. Átfedés esetén a listában előrébb szereplő területek élveznek elsőbbséget.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Hozzáadás</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Eltávolítás</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Fel</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Le</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Kulcsszó</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>A fordítás kontextusaként használatos</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Téglalap kijelölése</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Húzással jelöljön ki egy téglalapot (Esc a megszakításhoz)
-Válasszon kicsit nagyobb területet, hogy a szöveg ne vágódjon le</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Kijelölés</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>A téglalap túl kicsi. Kérjük, jelölje ki újra.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Nincs fordítás alatt álló ablak, ezért nem lehet téglalapot kijelölni. A beállítás előtt indítsa el a célablak fordítását.</value>
   </data>
 </root>

@@ -11,11 +11,6 @@
 public record PriorityRect(double X, double Y, double Width, double Height, string Keyword = "")
 {
     /// <summary>
-    /// 空のOCR対象範囲
-    /// </summary>
-    public static PriorityRect Empty { get; } = new PriorityRect(0, 0, 0, 0);
-
-    /// <summary>
     /// 絶対座標に変換する
     /// </summary>
     /// <param name="imageWidth">画像の幅</param>

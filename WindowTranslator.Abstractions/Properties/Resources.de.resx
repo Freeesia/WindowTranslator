@@ -177,38 +177,4 @@
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>Wenn Bereiche konfiguriert sind, wird nur deren Inhalt erkannt. Bei Überschneidungen haben weiter oben in der Liste stehende Bereiche Vorrang.</value>
   </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Hinzufügen</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Entfernen</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>Nach oben</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>Nach unten</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>Stichwort</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Wird als Kontext für die Übersetzung verwendet</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>Rechteckauswahl</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>Ziehen Sie, um ein Rechteck auszuwählen (Esc zum Abbrechen)
-Wählen Sie einen etwas größeren Bereich, damit der Text nicht abgeschnitten wird</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>Auswählen</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>Das Rechteck ist zu klein. Bitte wählen Sie erneut.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>Es wird kein Fenster übersetzt, daher kann kein Rechteck ausgewählt werden. Starten Sie die Übersetzung des Zielfensters, bevor Sie es konfigurieren.</value>
-  </data>
 </root>

@@ -412,23 +412,14 @@ public sealed class OneOcr : IOcrModule, IDisposable
     {
         var (x, y, width, height, fontSize, text) = mergedRect;
 
-        // スケールに応じた座標変換
-        if (this.scale != 1.0)
-        {
-            x /= scale;
-            y /= scale;
-            width /= scale;
-            height /= scale;
-            fontSize /= scale;
-        }
-
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         var lines = height / fontSize >= 2;
 
         // 結合された矩形の平均角度を計算
         var angle = mergedRect.Rects.Average(r => r.Angle);
 
-        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle }
+            .RestoreScale(this.scale);
     }
 
     /// <summary>

@@ -168,49 +168,6 @@
   <data name="Misc" xml:space="preserve">
     <value>その他</value>
   </data>
-  <data name="PriorityRect" xml:space="preserve">
-    <value>OCR範囲</value>
-  </data>
-  <data name="PriorityRects" xml:space="preserve">
-    <value>OCR対象範囲</value>
-  </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>矩形が設定されている場合、その範囲内だけをOCRします。リストの上にあるものほど、範囲が重なった場合の優先度が高くなります。</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>追加</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>削除</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>上へ</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>下へ</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>キーワード</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>翻訳のコンテキストとして使用されます</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>矩形選択</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
-文字が途中で切れないように少し広めに囲んでください</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>選択中</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>矩形が小さすぎます。もう一度選択してください。</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
-  </data>
   <data name="TranslateLanguage" xml:space="preserve">
     <value>言語設定</value>
   </data>
@@ -222,5 +179,14 @@
   </data>
   <data name="CacheModule" xml:space="preserve">
     <value>キャッシュモジュール</value>
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>OCR範囲</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>OCR対象範囲</value>
+  </data>
+  <data name="PriorityRectDescription" xml:space="preserve">
+    <value>矩形が設定されている場合、その範囲内だけをOCRします。リストの上にあるものほど、範囲が重なった場合の優先度が高くなります。</value>
   </data>
 </root>

@@ -231,8 +231,13 @@ public static class BitmapUtility
     /// <param name="source">元の画像</param>
     /// <param name="rect">切り出す矩形（絶対座標）</param>
     /// <returns>切り出された画像</returns>
-    public unsafe static SoftwareBitmap Crop(this SoftwareBitmap source, RectInfo rect)
+    internal static unsafe SoftwareBitmap Crop(this SoftwareBitmap source, RectInfo rect)
     {
+        if (source.BitmapPixelFormat != BitmapPixelFormat.Bgra8)
+        {
+            throw new ArgumentException("The source bitmap must use the BGRA8 pixel format.", nameof(source));
+        }
+
         var x = (int)Math.Max(0, rect.X);
         var y = (int)Math.Max(0, rect.Y);
         var width = (int)Math.Min(rect.Width, source.PixelWidth - x);
@@ -250,8 +255,8 @@ public static class BitmapUtility
         using var sourceReference = sourceBuffer.CreateReference();
         using var croppedReference = croppedBuffer.CreateReference();
 
-        sourceReference.As<IMemoryBufferByteAccess>().GetBuffer(out var sourceData, out var sourceCapacity);
-        croppedReference.As<IMemoryBufferByteAccess>().GetBuffer(out var croppedData, out var croppedCapacity);
+        sourceReference.As<IMemoryBufferByteAccess>().GetBuffer(out var sourceData, out _);
+        croppedReference.As<IMemoryBufferByteAccess>().GetBuffer(out var croppedData, out _);
 
         var bytesPerPixel = 4; // BGRA8
         var sourceStride = sourceBuffer.GetPlaneDescription(0).Stride;
@@ -262,10 +267,8 @@ public static class BitmapUtility
             var sourceOffset = ((y + row) * sourceStride) + (x * bytesPerPixel);
             var croppedOffset = row * croppedStride;
 
-            for (int col = 0; col < width * bytesPerPixel; col++)
-            {
-                croppedData[croppedOffset + col] = sourceData[sourceOffset + col];
-            }
+            new ReadOnlySpan<byte>(sourceData + sourceOffset, width * bytesPerPixel)
+                .CopyTo(new Span<byte>(croppedData + croppedOffset, width * bytesPerPixel));
         }
 
         return cropped;

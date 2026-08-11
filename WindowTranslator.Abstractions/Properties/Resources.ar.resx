@@ -109,7 +109,8 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>أخرى</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>منطقة OCR</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -117,39 +118,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>عند إعداد مناطق، يتم التعرف على المحتوى داخلها فقط. تكون للمناطق الأعلى في القائمة أولوية عند التداخل.</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>إضافة</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>حذف</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>لأعلى</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>لأسفل</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>كلمة مفتاحية</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>تُستخدم كسياق للترجمة</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>تحديد المستطيل</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>اسحب لتحديد مستطيل (اضغط Esc للإلغاء)
-حدد منطقة أوسع قليلاً حتى لا يُقتطع النص</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>جارٍ التحديد</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>المستطيل صغير جدًا. يرجى التحديد مرة أخرى.</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>لا توجد نافذة قيد الترجمة، لذا لا يمكن تحديد مستطيل. ابدأ ترجمة النافذة الهدف قبل الإعداد.</value>
   </data>
 </root>

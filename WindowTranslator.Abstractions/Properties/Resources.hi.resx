@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -109,7 +109,8 @@
   </data>
   <data name="Misc" xml:space="preserve">
     <value>अन्य</value>
-  </data>  <data name="PriorityRect" xml:space="preserve">
+  </data>
+  <data name="PriorityRect" xml:space="preserve">
     <value>OCR क्षेत्र</value>
   </data>
   <data name="PriorityRects" xml:space="preserve">
@@ -117,39 +118,5 @@
   </data>
   <data name="PriorityRectDescription" xml:space="preserve">
     <value>जब क्षेत्र कॉन्फ़िगर किए गए हों, तो केवल उनके अंदर की सामग्री पहचानी जाती है। ओवरलैप होने पर सूची में ऊपर के क्षेत्रों को प्राथमिकता मिलती है।</value>
-  </data>
-  <data name="PriorityRectAdd" xml:space="preserve">
-    <value>जोड़ें</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>हटाएं</value>
-  </data>
-  <data name="PriorityRectMoveUp" xml:space="preserve">
-    <value>ऊपर</value>
-  </data>
-  <data name="PriorityRectMoveDown" xml:space="preserve">
-    <value>नीचे</value>
-  </data>
-  <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>कीवर्ड</value>
-  </data>
-  <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>अनुवाद के संदर्भ के रूप में उपयोग किया जाता है</value>
-  </data>
-  <data name="PriorityRectSelection" xml:space="preserve">
-    <value>आयत चयन</value>
-  </data>
-  <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>आयत चुनने के लिए खींचें (रद्द करने के लिए Esc दबाएं)
-टेक्स्ट कटने से बचाने के लिए थोड़ा बड़ा क्षेत्र चुनें</value>
-  </data>
-  <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>चयन जारी है</value>
-  </data>
-  <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>आयत बहुत छोटा है। कृपया फिर से चुनें।</value>
-  </data>
-  <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>कोई विंडो अनुवादित नहीं हो रही है, इसलिए आयत नहीं चुना जा सकता। सेट करने से पहले लक्ष्य विंडो का अनुवाद प्रारंभ करें।</value>
   </data>
 </root>
