@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -62,6 +63,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         var unresolvedOperations = await NuGetPluginOperation
             .RecoverInterruptedOperationsAsync(this.sourceDir)
             .ConfigureAwait(false);
+        DeleteUninstalledPackageDirectories(this.sourceDir);
         var loadablePackages = GetLoadablePackageIds(
             this.sourceDir,
             this.hostMajorVersion,
@@ -356,31 +358,72 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         string sourceDirectory,
         int hostMajorVersion,
         NuGetVersion hostAbstractionsVersion)
+        => (TryLoadManifest(sourceDirectory)?.Packages ?? [])
+            .Where(package => PluginCompatibility.IsInstalledPackageCompatible(
+                package.HostMajorVersion,
+                hostMajorVersion,
+                package.AbstractionsVersionRange,
+                hostAbstractionsVersion))
+            .Select(package => package.Id)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    internal static void DeleteUninstalledPackageDirectories(string sourceDirectory)
+    {
+        var manifest = TryLoadManifest(sourceDirectory);
+        if (manifest is null || !Directory.Exists(sourceDirectory))
+        {
+            return;
+        }
+
+        var installedPackageIds = manifest.Packages
+            .Select(package => package.Id)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var packageDirectory in Directory.EnumerateDirectories(sourceDirectory))
+        {
+            var directoryName = Path.GetFileName(packageDirectory);
+            if (directoryName.Equals(
+                    NuGetPluginOperation.OperationsDirectoryName,
+                    StringComparison.OrdinalIgnoreCase)
+                || installedPackageIds.Contains(directoryName))
+            {
+                continue;
+            }
+
+            try
+            {
+                Directory.Delete(packageDirectory, recursive: true);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Trace.TraceWarning(
+                    "アンインストール済みNuGetプラグインの削除に失敗しました: {0} ({1})",
+                    packageDirectory,
+                    ex);
+            }
+        }
+    }
+
+    private static InstalledManifest? TryLoadManifest(string sourceDirectory)
     {
         try
         {
             using var stream = File.OpenRead(Path.Combine(
                 sourceDirectory,
                 "nuget-manifest.json"));
-            var packages = JsonSerializer.Deserialize<InstalledManifest>(
+            var manifest = JsonSerializer.Deserialize<InstalledManifest>(
                 stream,
-                NuGetPluginService.ManifestJsonOptions)?.Packages
-                ?? throw new InvalidDataException("プラグインmanifestにパッケージ一覧がありません。");
-            return packages
-                .Where(package => PluginCompatibility.IsInstalledPackageCompatible(
-                    package.HostMajorVersion,
-                    hostMajorVersion,
-                    package.AbstractionsVersionRange,
-                    hostAbstractionsVersion))
-                .Select(package => package.Id)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                NuGetPluginService.ManifestJsonOptions)
+                ?? throw new InvalidDataException("プラグインmanifestが空です。");
+            return manifest.Packages is null
+                ? throw new InvalidDataException("プラグインmanifestにパッケージ一覧がありません。")
+                : manifest;
         }
         catch (Exception ex) when (ex is IOException
             or UnauthorizedAccessException
             or InvalidDataException
             or JsonException)
         {
-            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            return null;
         }
     }
 

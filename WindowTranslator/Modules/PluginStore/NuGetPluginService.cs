@@ -294,8 +294,8 @@ public sealed class NuGetPluginService : BackgroundService
     }
 
     /// <summary>
-    /// 指定したパッケージを管理フォルダから削除します。
-    /// 実行中のプラグインは一時フォルダから読み込まれているため、反映には再起動が必要です。
+    /// 指定したパッケージをアンインストール対象としてmanifestから削除します。
+    /// 管理フォルダの実体は次回起動時に削除されます。
     /// </summary>
     public async Task UninstallPackageAsync(string packageId, CancellationToken cancellationToken = default)
     {
@@ -307,14 +307,8 @@ public sealed class NuGetPluginService : BackgroundService
         await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
         UpdateInstalledPackages(updatedManifest.Packages);
 
-        var targetPath = NuGetPluginOperation.GetPackageDirectory(this.nugetPluginsDir, packageId);
-        if (Directory.Exists(targetPath))
-        {
-            Directory.Delete(targetPath, recursive: true);
-        }
-
         this.logger.LogInformation(
-            "パッケージ {PackageId} を管理フォルダからアンインストールしました。再起動後に反映されます。",
+            "パッケージ {PackageId} をアンインストール対象として記録しました。管理フォルダは次回起動時に削除されます。",
             packageId);
     }
 

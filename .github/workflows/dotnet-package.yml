@@ -1,12 +1,16 @@
 name: .NET Core Package
 
 on:
+  pull_request:
   push:
     tags: [v*]
 
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -28,12 +32,17 @@ jobs:
       - id: package-version
         shell: pwsh
         run: |
-          $tag = '${{ github.ref_name }}'
-          if ($tag -notmatch '^v(?<version>[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?)$') {
-            Write-Error "NuGet package tag must be v-prefixed SemVer: $tag"
-            exit 1
+          if ('${{ github.event_name }}' -eq 'push') {
+            $tag = '${{ github.ref_name }}'
+            if ($tag -notmatch '^v(?<version>[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?)$') {
+              Write-Error "NuGet package tag must be v-prefixed SemVer: $tag"
+              exit 1
+            }
+            "version=$($Matches.version)" >> $env:GITHUB_OUTPUT
           }
-          "version=$($Matches.version)" >> $env:GITHUB_OUTPUT
+          else {
+            "version=0.0.0-pr.${{ github.run_number }}" >> $env:GITHUB_OUTPUT
+          }
       - uses: Jimver/cuda-toolkit@v0.2.30
         with:
           cuda: '12.9.0'
@@ -76,4 +85,12 @@ jobs:
               exit $LASTEXITCODE
             }
           }
-          dotnet nuget push pack\*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: NuGet login
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: Freesia
+      - name: NuGet push
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: dotnet nuget push pack\*.nupkg --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

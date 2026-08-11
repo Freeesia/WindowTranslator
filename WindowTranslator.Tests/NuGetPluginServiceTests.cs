@@ -188,7 +188,7 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public async Task UninstallRemovesManagedFilesImmediatelyAndAllowsManualReinstall()
+    public async Task UninstallDeletesManagedFilesAtNextStartupAndAllowsManualReinstall()
     {
         var testDirectory = CreateTestDirectory();
         try
@@ -221,8 +221,11 @@ public sealed class NuGetPluginServiceTests
             await service.InstallPackageAsync("Root.Plugin", "1.0.0");
             await service.UninstallPackageAsync("Root.Plugin");
 
-            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
+            Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
             Assert.Empty(service.PackageSnapshot.InstalledPackages);
+
+            NuGetPluginCatalog.DeleteUninstalledPackageDirectories(testDirectory);
+            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
 
             await service.InstallPackageAsync("Root.Plugin", "2.0.0");
             Assert.True(Directory.Exists(Path.Combine(testDirectory, "Root.Plugin")));
@@ -1243,6 +1246,57 @@ public sealed class NuGetPluginServiceTests
         finally
         {
             DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public void StartupCleanupDeletesOnlyPackagesMissingFromAReadableManifest()
+    {
+        var sourceDirectory = CreateTestDirectory();
+        try
+        {
+            var installedDirectory = Path.Combine(sourceDirectory, "Installed.Plugin");
+            var removedDirectory = Path.Combine(sourceDirectory, "Removed.Plugin");
+            var operationsDirectory = Path.Combine(
+                sourceDirectory,
+                NuGetPluginOperation.OperationsDirectoryName);
+            Directory.CreateDirectory(installedDirectory);
+            Directory.CreateDirectory(removedDirectory);
+            Directory.CreateDirectory(operationsDirectory);
+            File.WriteAllText(
+                Path.Combine(sourceDirectory, "nuget-manifest.json"),
+                JsonSerializer.Serialize(
+                    new InstalledManifest(
+                    [
+                        new(
+                            "Installed.Plugin",
+                            "1.0.0",
+                            HostMajorVersion: 1,
+                            AbstractionsVersionRange: "(, )"),
+                    ]),
+                    NuGetPluginService.ManifestJsonOptions));
+
+            NuGetPluginCatalog.DeleteUninstalledPackageDirectories(sourceDirectory);
+
+            Assert.True(Directory.Exists(installedDirectory));
+            Assert.False(Directory.Exists(removedDirectory));
+            Assert.True(Directory.Exists(operationsDirectory));
+
+            var directoryKeptForInvalidManifest = Path.Combine(
+                sourceDirectory,
+                "Kept.For.Invalid.Manifest");
+            Directory.CreateDirectory(directoryKeptForInvalidManifest);
+            File.WriteAllText(
+                Path.Combine(sourceDirectory, "nuget-manifest.json"),
+                "{ invalid json");
+
+            NuGetPluginCatalog.DeleteUninstalledPackageDirectories(sourceDirectory);
+
+            Assert.True(Directory.Exists(directoryKeptForInvalidManifest));
+        }
+        finally
+        {
+            DeleteTestDirectory(sourceDirectory);
         }
     }
 
