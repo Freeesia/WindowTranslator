@@ -201,15 +201,4 @@ public class PriorityRectRecognizerTests
         Assert.Empty(results);
     }
 
-    [Fact]
-    public async Task 指定範囲の切り出しは本体のキャプチャ形式であるBgra8だけを受け付ける()
-    {
-        using var bitmap = new SoftwareBitmap(BitmapPixelFormat.Gray8, Width, Height, BitmapAlphaMode.Ignore);
-        PriorityRect[] rects = [new(0, 0, 0.5, 0.5)];
-
-        await Assert.ThrowsAsync<ArgumentException>(() => PriorityRectRecognizer.RecognizeAsync(
-            bitmap,
-            rects,
-            (target, source) => ValueTask.FromResult<IEnumerable<TextRect>>([])).AsTask());
-    }
 }

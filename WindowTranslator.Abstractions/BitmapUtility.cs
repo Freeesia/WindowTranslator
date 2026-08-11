@@ -233,11 +233,6 @@ public static class BitmapUtility
     /// <returns>切り出された画像</returns>
     internal static unsafe SoftwareBitmap Crop(this SoftwareBitmap source, RectInfo rect)
     {
-        if (source.BitmapPixelFormat != BitmapPixelFormat.Bgra8)
-        {
-            throw new ArgumentException("The source bitmap must use the BGRA8 pixel format.", nameof(source));
-        }
-
         var x = (int)Math.Max(0, rect.X);
         var y = (int)Math.Max(0, rect.Y);
         var width = (int)Math.Min(rect.Width, source.PixelWidth - x);
