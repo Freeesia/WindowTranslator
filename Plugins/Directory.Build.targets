@@ -1,4 +1,12 @@
 <Project>
+  <PropertyGroup>
+    <IsPackable>$(PublishToNuGet)</IsPackable>
+    <IsPublishable
+      Condition="'$(AppBundleOutputPath)' != ''">$(IncludeInAppBundle)</IsPublishable>
+    <PublishDir
+      Condition="'$(AppBundleOutputPath)' != ''">$(AppBundleOutputPath)\$(MSBuildProjectName)\</PublishDir>
+  </PropertyGroup>
+
   <!-- 上位階層の Directory.Build.targets をインクルード -->
   <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.targets')" />
 
@@ -39,7 +47,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Condition="'$(IsTestProject)' != 'true' AND ('$(ExcludeFromAppBundle)' != 'true' OR '$(GITHUB_ACTIONS)' != 'true')" Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Condition="'$(IsTestProject)' != 'true' AND ('$(GITHUB_ACTIONS)' != 'true' OR '$(IncludeInAppBundle)' == 'true')" Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call $(ProjectDir)..\copy_plugins.bat $(OutDir) $(ProjectName) $(Configuration)" />
   </Target>
 </Project>

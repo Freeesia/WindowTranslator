@@ -60,15 +60,11 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     /// <inheritdoc/>
     public async Task Initialize()
     {
-        var unresolvedOperations = await NuGetPluginOperation
-            .RecoverInterruptedOperationsAsync(this.sourceDir)
-            .ConfigureAwait(false);
         DeleteUninstalledPackageDirectories(this.sourceDir);
         var loadablePackages = GetLoadablePackageIds(
             this.sourceDir,
             this.hostMajorVersion,
             this.hostAbstractionsVersion);
-        loadablePackages.ExceptWith(unresolvedOperations);
         SynchronizePluginFiles(this.sourceDir, this.tempDir, loadablePackages);
 
         this.innerCatalog = CreateCatalog(this.tempDir, this.options);
@@ -381,10 +377,7 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
         foreach (var packageDirectory in Directory.EnumerateDirectories(sourceDirectory))
         {
             var directoryName = Path.GetFileName(packageDirectory);
-            if (directoryName.Equals(
-                    NuGetPluginOperation.OperationsDirectoryName,
-                    StringComparison.OrdinalIgnoreCase)
-                || installedPackageIds.Contains(directoryName))
+            if (installedPackageIds.Contains(directoryName))
             {
                 continue;
             }

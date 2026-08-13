@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- テスト・デバッグ専用。アプリ内ストアへ公開しない。 -->
-    <IsPackable>false</IsPackable>
+    <PublishToNuGet>false</PublishToNuGet>
   </PropertyGroup>
 
 </Project>

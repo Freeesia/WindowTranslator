@@ -6,12 +6,12 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
-  <!-- NuGet パッケージとして公開する際の共通設定 -->
+  <!-- アプリへの同梱と NuGet 公開は、各プラグインから明示的に有効化する。 -->
   <PropertyGroup>
+    <IncludeInAppBundle Condition="'$(IncludeInAppBundle)' == ''">false</IncludeInAppBundle>
+    <PublishToNuGet Condition="'$(PublishToNuGet)' == ''">false</PublishToNuGet>
     <IncludePluginRuntimeAssetsInPackage
       Condition="'$(IncludePluginRuntimeAssetsInPackage)' == ''">false</IncludePluginRuntimeAssetsInPackage>
-    <!-- ExcludeFromAppBundle=true のプラグインはGitHub Actionsでのみアプリのpluginsフォルダへのコピーを省略します -->
-    <ExcludeFromAppBundle Condition="'$(ExcludeFromAppBundle)' == ''">false</ExcludeFromAppBundle>
   </PropertyGroup>
 
   <ItemGroup>

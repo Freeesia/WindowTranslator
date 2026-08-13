@@ -246,13 +246,8 @@ public sealed class NuGetPluginService : BackgroundService
     public async Task InstallPackageAsync(string packageId, string version, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
-        var manifestExisted = File.Exists(this.manifestPath);
         var currentManifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
-        await using var pluginOperation = await NuGetPluginOperation.BeginAsync(
-            this.nugetPluginsDir,
-            packageId,
-            manifestExisted ? currentManifest : null,
-            cancellationToken).ConfigureAwait(false);
+        using var pluginOperation = new NuGetPluginOperation(this.nugetPluginsDir, packageId);
 
         var packageResource = await this.repository
             .GetResourceAsync<FindPackageByIdResource>(cancellationToken)
@@ -483,10 +478,29 @@ public sealed class NuGetPluginService : BackgroundService
     }
 
     private Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
-        => NuGetPluginOperation.SaveManifestAsync(
-            this.manifestPath,
-            manifest,
-            cancellationToken);
+        => SaveManifestAsync(this.manifestPath, manifest, cancellationToken);
+
+    internal static async Task SaveManifestAsync(
+        string manifestPath,
+        InstalledManifest manifest,
+        CancellationToken cancellationToken)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(manifestPath)!);
+        var temporaryPath = $"{manifestPath}.tmp-{Guid.NewGuid():N}";
+        try
+        {
+            var json = JsonSerializer.Serialize(manifest, ManifestJsonOptions);
+            await File.WriteAllTextAsync(
+                temporaryPath,
+                json,
+                cancellationToken).ConfigureAwait(false);
+            File.Move(temporaryPath, manifestPath, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(temporaryPath);
+        }
+    }
 
     public override void Dispose()
     {

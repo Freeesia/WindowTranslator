@@ -25,6 +25,7 @@
     <File Path="Plugins/copy_plugins.bat" />
     <File Path="Plugins/Directory.Build.props" />
     <File Path="Plugins/Directory.Build.targets" />
+    <File Path="Plugins/WindowTranslator.Plugins.proj" />
     <Project Path="Plugins/WindowTranslator.Plugin.BergamotTranslatorPlugin/WindowTranslator.Plugin.BergamotTranslatorPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin.Tests/WindowTranslator.Plugin.ColorThiefPlugin.Tests.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin/WindowTranslator.Plugin.ColorThiefPlugin.csproj" />

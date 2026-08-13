@@ -134,27 +134,16 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - run: |
-          $projects = Get-ChildItem -Path "Plugins\WindowTranslator.Plugin.*\*.csproj" |
-            Where-Object { $_.Directory.Name -notmatch "Dummy" -and $_.Directory.Name -notmatch "Tests?" }
-          foreach ($project in $projects) {
-            $propertyOutput = dotnet msbuild $project.FullName -nologo -getProperty:ExcludeFromAppBundle
-            if ($LASTEXITCODE -ne 0) {
-              exit $LASTEXITCODE
-            }
-            $excludeFromAppBundle = ($propertyOutput | Select-Object -Last 1).Trim()
-            if ($excludeFromAppBundle -eq "true") {
-              Write-Host "Skip app bundle: $($project.Name)"
-              continue
-            }
-            dotnet publish $project.FullName -c Release -o "publish\plugins\$($project.Directory.Name)" `
-              -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-              -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-              -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-              -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
-              -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
-            if ($LASTEXITCODE -ne 0) {
-              exit $LASTEXITCODE
-            }
+          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:PublishAppBundle `
+            -p:Configuration=Release `
+            -p:AppBundleOutputPath="$((Resolve-Path publish).Path)\plugins" `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
+            -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
           }
       - uses: actions/download-artifact@v8
         if: ${{ needs.docs.result == 'success' }}

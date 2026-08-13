@@ -63,27 +63,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             exit $LASTEXITCODE
           }
-          $projects = Get-ChildItem Plugins\WindowTranslator.Plugin.*\*.csproj |
-            Where-Object { $_.Directory.Name -notlike '*.Tests' }
-          foreach ($project in $projects) {
-            $propertyOutput = dotnet msbuild $project.FullName -nologo -getProperty:IsPackable
-            if ($LASTEXITCODE -ne 0) {
-              exit $LASTEXITCODE
-            }
-            $isPackable = ($propertyOutput | Select-Object -Last 1).Trim()
-            if ($isPackable -ne "true") {
-              Write-Host "Skip NuGet package: $($project.Name)"
-              continue
-            }
-            dotnet pack $project.FullName -c Release -o pack `
-              -p:Version=${{ steps.package-version.outputs.version }} `
-              -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-              -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-              -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
-              -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
-            if ($LASTEXITCODE -ne 0) {
-              exit $LASTEXITCODE
-            }
+          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:PackPlugins `
+            -p:Configuration=Release `
+            -p:PackageOutputPath="$((Resolve-Path pack).Path)" `
+            -p:Version=${{ steps.package-version.outputs.version }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
+            -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
           }
       - name: NuGet login
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}

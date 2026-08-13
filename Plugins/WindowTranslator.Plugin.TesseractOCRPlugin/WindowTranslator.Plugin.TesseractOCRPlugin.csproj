@@ -4,7 +4,7 @@
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
     <Title>Tesseract OCR Plugin</Title>
     <Description>OCR for WindowTranslator using the Tesseract engine.</Description>
-    <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
+    <PublishToNuGet>true</PublishToNuGet>
   </PropertyGroup>
 
   <ItemGroup>

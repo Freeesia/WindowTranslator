@@ -3,6 +3,8 @@
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
     <Title>ColorThief Plugin</Title>
     <Description>Detects readable foreground and background colors for translated text.</Description>
+    <IncludeInAppBundle>true</IncludeInAppBundle>
+    <PublishToNuGet>true</PublishToNuGet>
   </PropertyGroup>
 
   <ItemGroup>

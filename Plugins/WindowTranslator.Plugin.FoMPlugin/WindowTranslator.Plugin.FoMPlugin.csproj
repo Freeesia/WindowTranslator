@@ -4,7 +4,7 @@
     <Title>Fields of Mistria Filter Plugin</Title>
     <Description>Context-aware translation filtering for Fields of Mistria.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
+    <PublishToNuGet>true</PublishToNuGet>
   </PropertyGroup>
 
   <ItemGroup>

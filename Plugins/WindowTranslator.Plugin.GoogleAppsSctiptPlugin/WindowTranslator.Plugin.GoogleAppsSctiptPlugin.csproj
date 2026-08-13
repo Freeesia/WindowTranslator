@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Title>Google Apps Script Translator Plugin</Title>
     <Description>Translation for WindowTranslator through Google Apps Script.</Description>
-    <ExcludeFromAppBundle>true</ExcludeFromAppBundle>
+    <PublishToNuGet>true</PublishToNuGet>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" />

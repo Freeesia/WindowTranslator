@@ -4,6 +4,8 @@
     <Title>OneOCR Plugin</Title>
     <Description>OCR for WindowTranslator using the Windows OneOCR engine.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IncludeInAppBundle>true</IncludeInAppBundle>
+    <PublishToNuGet>true</PublishToNuGet>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Panlingo.LanguageIdentification.FastText" />

@@ -1128,7 +1128,7 @@ public sealed class NuGetPluginServiceTests
             var targetDirectory = Path.Combine(testDirectory, "Root.Plugin");
             Directory.CreateDirectory(targetDirectory);
             File.WriteAllText(Path.Combine(targetDirectory, "plugin.txt"), "old");
-            await NuGetPluginOperation.SaveManifestAsync(
+            await NuGetPluginService.SaveManifestAsync(
                 Path.Combine(testDirectory, "nuget-manifest.json"),
                 new([new(
                     "Root.Plugin",
@@ -1299,19 +1299,19 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
-    public void StartupCleanupDeletesOnlyPackagesMissingFromAReadableManifest()
+    public void StartupCleanupDeletesDirectoriesMissingFromAReadableManifest()
     {
         var sourceDirectory = CreateTestDirectory();
         try
         {
             var installedDirectory = Path.Combine(sourceDirectory, "Installed.Plugin");
             var removedDirectory = Path.Combine(sourceDirectory, "Removed.Plugin");
-            var operationsDirectory = Path.Combine(
+            var interruptedInstallDirectory = Path.Combine(
                 sourceDirectory,
-                NuGetPluginOperation.OperationsDirectoryName);
+                "Installed.Plugin.installing-test");
             Directory.CreateDirectory(installedDirectory);
             Directory.CreateDirectory(removedDirectory);
-            Directory.CreateDirectory(operationsDirectory);
+            Directory.CreateDirectory(interruptedInstallDirectory);
             File.WriteAllText(
                 Path.Combine(sourceDirectory, "nuget-manifest.json"),
                 JsonSerializer.Serialize(
@@ -1329,7 +1329,7 @@ public sealed class NuGetPluginServiceTests
 
             Assert.True(Directory.Exists(installedDirectory));
             Assert.False(Directory.Exists(removedDirectory));
-            Assert.True(Directory.Exists(operationsDirectory));
+            Assert.False(Directory.Exists(interruptedInstallDirectory));
 
             var directoryKeptForInvalidManifest = Path.Combine(
                 sourceDirectory,
@@ -1367,11 +1367,6 @@ public sealed class NuGetPluginServiceTests
                 Path.Combine(sourceDirectory, "Root.Plugin", "Unchanged.dll");
             File.WriteAllText(unchangedSourcePath, "unchanged");
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Empty.Plugin"));
-            Directory.CreateDirectory(Path.Combine(sourceDirectory, ".operations"));
-            Directory.CreateDirectory(Path.Combine(sourceDirectory, ".operations", "backup-test"));
-            File.WriteAllText(
-                Path.Combine(sourceDirectory, ".operations", "backup-test", "old.dll"),
-                "old");
             Directory.CreateDirectory(Path.Combine(sourceDirectory, "Root.Plugin.backup-test"));
             File.WriteAllText(
                 Path.Combine(sourceDirectory, "Root.Plugin.backup-test", "old.dll"),
@@ -1446,8 +1441,6 @@ public sealed class NuGetPluginServiceTests
             Assert.False(File.Exists(
                 Path.Combine(destinationDirectory, "nuget-manifest.json.tmp-test")));
             Assert.False(Directory.Exists(
-                Path.Combine(destinationDirectory, ".operations")));
-            Assert.False(Directory.Exists(
                 Path.Combine(destinationDirectory, "Root.Plugin.backup-test")));
             Assert.False(Directory.Exists(
                 Path.Combine(destinationDirectory, "Root.Plugin.installing-test")));
@@ -1485,171 +1478,6 @@ public sealed class NuGetPluginServiceTests
         {
             DeleteTestDirectory(sourceDirectory);
             DeleteTestDirectory(destinationDirectory);
-        }
-    }
-
-    [Fact]
-    public async Task InterruptedInstallIsRolledBackBeforeItIsTreatedAsCompleted()
-    {
-        var sourceDirectory = CreateTestDirectory();
-        try
-        {
-            const string packageId = "Root.Plugin";
-            var originalManifest = new InstalledManifest(
-                [new InstalledPackageInfo(
-                    packageId,
-                    "1.0.0",
-                    HostMajorVersion: 1,
-                    AbstractionsVersionRange: "(, )")]);
-            var updatedManifest = new InstalledManifest(
-                [new InstalledPackageInfo(
-                    packageId,
-                    "2.0.0",
-                    HostMajorVersion: 1,
-                    AbstractionsVersionRange: "(, )")]);
-            var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
-            await NuGetPluginOperation.SaveManifestAsync(
-                manifestPath,
-                originalManifest,
-                CancellationToken.None);
-
-            var operation = await NuGetPluginOperation.BeginAsync(
-                sourceDirectory,
-                packageId,
-                originalManifest,
-                CancellationToken.None);
-            Directory.CreateDirectory(operation.BackupPath);
-            File.WriteAllText(Path.Combine(operation.BackupPath, "plugin.txt"), "old");
-            Directory.Move(operation.WorkingPath, operation.TargetPath);
-            File.WriteAllText(Path.Combine(operation.TargetPath, "plugin.txt"), "new");
-            await NuGetPluginOperation.SaveManifestAsync(
-                manifestPath,
-                updatedManifest,
-                CancellationToken.None);
-
-            var unresolved = await NuGetPluginOperation.RecoverInterruptedOperationsAsync(
-                sourceDirectory);
-
-            Assert.Empty(unresolved);
-            Assert.Equal("old", File.ReadAllText(Path.Combine(operation.TargetPath, "plugin.txt")));
-            var restoredManifest = JsonSerializer.Deserialize<InstalledManifest>(
-                File.ReadAllText(manifestPath),
-                NuGetPluginService.ManifestJsonOptions);
-            Assert.Equal("1.0.0", Assert.Single(restoredManifest!.Packages).Version);
-            Assert.False(File.Exists(operation.PendingPath));
-            Assert.False(Directory.Exists(operation.WorkingPath));
-            Assert.False(Directory.Exists(operation.BackupPath));
-        }
-        finally
-        {
-            DeleteTestDirectory(sourceDirectory);
-        }
-    }
-
-    [Fact]
-    public async Task CompletedInstallKeepsNewFilesAndOnlyCleansOperationData()
-    {
-        var sourceDirectory = CreateTestDirectory();
-        try
-        {
-            const string packageId = "Root.Plugin";
-            var originalManifest = new InstalledManifest(
-                [new InstalledPackageInfo(
-                    packageId,
-                    "1.0.0",
-                    HostMajorVersion: 1,
-                    AbstractionsVersionRange: "(, )")]);
-            var updatedManifest = new InstalledManifest(
-                [new InstalledPackageInfo(
-                    packageId,
-                    "2.0.0",
-                    HostMajorVersion: 1,
-                    AbstractionsVersionRange: "(, )")]);
-            var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
-            await NuGetPluginOperation.SaveManifestAsync(
-                manifestPath,
-                originalManifest,
-                CancellationToken.None);
-
-            var operation = await NuGetPluginOperation.BeginAsync(
-                sourceDirectory,
-                packageId,
-                originalManifest,
-                CancellationToken.None);
-            Directory.CreateDirectory(operation.BackupPath);
-            File.WriteAllText(Path.Combine(operation.BackupPath, "plugin.txt"), "old");
-            Directory.Move(operation.WorkingPath, operation.TargetPath);
-            File.WriteAllText(Path.Combine(operation.TargetPath, "plugin.txt"), "new");
-            await NuGetPluginOperation.SaveManifestAsync(
-                manifestPath,
-                updatedManifest,
-                CancellationToken.None);
-            operation.Commit();
-
-            var unresolved = await NuGetPluginOperation.RecoverInterruptedOperationsAsync(
-                sourceDirectory);
-
-            Assert.Empty(unresolved);
-            Assert.Equal("new", File.ReadAllText(Path.Combine(operation.TargetPath, "plugin.txt")));
-            var retainedManifest = JsonSerializer.Deserialize<InstalledManifest>(
-                File.ReadAllText(manifestPath),
-                NuGetPluginService.ManifestJsonOptions);
-            Assert.Equal("2.0.0", Assert.Single(retainedManifest!.Packages).Version);
-            Assert.False(File.Exists(operation.PendingPath));
-            Assert.False(File.Exists(operation.CommittedPath));
-            Assert.False(Directory.Exists(operation.BackupPath));
-        }
-        finally
-        {
-            DeleteTestDirectory(sourceDirectory);
-        }
-    }
-
-    [Fact]
-    public async Task CompletedInstallRemainsLoadableWhenOperationCleanupFails()
-    {
-        var sourceDirectory = CreateTestDirectory();
-        try
-        {
-            const string packageId = "Root.Plugin";
-            var manifest = new InstalledManifest(
-                [new InstalledPackageInfo(
-                    packageId,
-                    "2.0.0",
-                    HostMajorVersion: 1,
-                    AbstractionsVersionRange: "(, )")]);
-            var manifestPath = Path.Combine(sourceDirectory, "nuget-manifest.json");
-            var operation = await NuGetPluginOperation.BeginAsync(
-                sourceDirectory,
-                packageId,
-                originalManifest: null,
-                CancellationToken.None);
-            Directory.Move(operation.WorkingPath, operation.TargetPath);
-            File.WriteAllText(Path.Combine(operation.TargetPath, "plugin.txt"), "new");
-            await NuGetPluginOperation.SaveManifestAsync(
-                manifestPath,
-                manifest,
-                CancellationToken.None);
-            operation.Commit();
-
-            Directory.CreateDirectory(operation.BackupPath);
-            var lockedPath = Path.Combine(operation.BackupPath, "locked.txt");
-            await File.WriteAllTextAsync(lockedPath, "locked");
-            await using (File.Open(lockedPath, FileMode.Open, FileAccess.Read, FileShare.None))
-            {
-                var unresolved = await NuGetPluginOperation.RecoverInterruptedOperationsAsync(
-                    sourceDirectory);
-
-                Assert.Empty(unresolved);
-                Assert.Equal("new", File.ReadAllText(Path.Combine(operation.TargetPath, "plugin.txt")));
-            }
-
-            Assert.Empty(await NuGetPluginOperation.RecoverInterruptedOperationsAsync(sourceDirectory));
-            Assert.False(Directory.Exists(operation.BackupPath));
-        }
-        finally
-        {
-            DeleteTestDirectory(sourceDirectory);
         }
     }
 
@@ -1796,7 +1624,7 @@ public sealed class NuGetPluginServiceTests
                 packageDirectory,
                 "*.deps.json",
                 SearchOption.AllDirectories));
-            await NuGetPluginOperation.SaveManifestAsync(
+            await NuGetPluginService.SaveManifestAsync(
                 Path.Combine(sourceDirectory, "nuget-manifest.json"),
                 new([new(
                     "Catalog.Probe",
@@ -1876,7 +1704,7 @@ public sealed class NuGetPluginServiceTests
                         "WindowTranslator.Tests.resources.dll"),
                     Path.Combine(cultureDirectory, "WindowTranslator.Tests.resources.dll"));
             }
-            await NuGetPluginOperation.SaveManifestAsync(
+            await NuGetPluginService.SaveManifestAsync(
                 Path.Combine(sourceDirectory, "nuget-manifest.json"),
                 new([new(
                     "Catalog.Probe",
