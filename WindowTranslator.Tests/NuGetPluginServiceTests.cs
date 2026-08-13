@@ -1250,6 +1250,55 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task PackageReadmeUsesTheRequestedUiCulture()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Localized.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Localized.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Localized.Plugin.dll"] = "plugin"u8.ToArray(),
+                        ["README.md"] = """
+                            ## ja
+
+                            # 日本語
+
+                            ## en
+
+                            # English
+                            """u8.ToArray(),
+                    }));
+            handler.AddReadmeUrl(
+                "Localized.Plugin",
+                "1.0.0",
+                "https://nuget.test/readme/localized.plugin/1.0.0");
+            using var service = CreateService(handler, testDirectory);
+
+            var readme = await service.GetPackageReadmeAsync(
+                "Localized.Plugin",
+                "1.0.0",
+                CultureInfo.GetCultureInfo("en-US"));
+
+            Assert.Equal("# English", readme);
+            Assert.DoesNotContain(
+                handler.RequestedPaths,
+                path => path.EndsWith(".nupkg", StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public void StartupCleanupDeletesOnlyPackagesMissingFromAReadableManifest()
     {
         var sourceDirectory = CreateTestDirectory();

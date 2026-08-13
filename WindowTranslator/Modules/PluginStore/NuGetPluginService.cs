@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -198,10 +199,7 @@ public sealed class NuGetPluginService : BackgroundService
     /// <summary>
     /// 指定したパッケージバージョンのREADMEを取得します。
     /// </summary>
-    public async Task<string?> GetPackageReadmeAsync(
-        string packageId,
-        string version,
-        CancellationToken cancellationToken = default)
+    public async Task<string?> GetPackageReadmeAsync(string packageId, string version, CultureInfo culture, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(packageId))
         {
@@ -211,6 +209,7 @@ public sealed class NuGetPluginService : BackgroundService
         {
             throw new ArgumentException($"不正なNuGetパッケージバージョンです: {version}", nameof(version));
         }
+        ArgumentNullException.ThrowIfNull(culture);
 
         var metadataResource = await this.repository
             .GetResourceAsync<PackageMetadataResource>(cancellationToken)
@@ -235,7 +234,10 @@ public sealed class NuGetPluginService : BackgroundService
         }
 
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var markdown = await response.Content
+            .ReadAsStringAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return LocalizedReadmeSelector.Select(markdown, culture);
     }
 
     /// <summary>

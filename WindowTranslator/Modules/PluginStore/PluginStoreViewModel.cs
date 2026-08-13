@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -339,6 +340,7 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
             var readme = await this.nugetService.GetPackageReadmeAsync(
                 package.Id,
                 version,
+                CultureInfo.CurrentUICulture,
                 cancellationSource.Token).ConfigureAwait(true);
             if (!cancellationSource.IsCancellationRequested
                 && ReferenceEquals(package, this.SelectedPackage)

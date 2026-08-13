@@ -31,12 +31,15 @@ cd WindowTranslator.Plugin.YourPlugin
     <Authors>YourName</Authors>
     <Description>プラグインストアに表示する具体的な説明文</Description>
     <PackageProjectUrl>https://github.com/YourName/YourPlugin</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- この タグ が必須です（アプリ内一覧への表示条件） -->
     <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="README.md" Pack="true" PackagePath="\" />
+
     <!-- WindowTranslator.Abstractions を NuGet から参照 -->
     <PackageReference Include="WindowTranslator.Abstractions" Version="x.y.z" ExcludeAssets="runtime" />
 
@@ -57,6 +60,48 @@ cd WindowTranslator.Plugin.YourPlugin
 > `WindowTranslator.Abstractions` の依存バージョン範囲は、インストール先の
 > WindowTranslator との互換性判定に使用されます。サポートする最も古い
 > `WindowTranslator.Abstractions` のバージョンを指定してください。
+
+### README の多言語化
+
+プラグインストアは、README 内のカルチャー名だけで構成された第2レベル見出しを
+言語セクションとして認識します。README は1ファイルのまま、必要な言語だけを
+次のように記載してください。
+
+```markdown
+# Your Plugin
+
+## ja
+
+日本語の説明です。
+
+## 機能
+
+- 機能A
+
+## en
+
+English description.
+
+## Features
+
+- Feature A
+```
+
+アプリのUIカルチャーとの完全一致、親言語、英語、先頭セクションの順で表示する
+言語を選択します。`## 機能`や`## Features`など、カルチャー名ではない見出しは
+言語セクション内の通常の見出しとして扱われます。カルチャー名は`ja`、`pt-BR`、
+`zh-Hans`のように、.NETの正規表記と大文字・小文字まで一致させてください。
+正規形のカルチャー名を持つ第2レベル見出しはREADME全体で言語境界として扱うため、
+コード例など別の用途には使用しないでください。
+
+リポジトリ内の公式プラグインは、既存のUI翻訳に合わせて次の22言語を1つの
+READMEに収録しています。
+
+`ja`、`en`、`ar`、`cs`、`de`、`es`、`fa`、`fil`、`fr`、`hi`、`hu`、`id`、
+`ko`、`ms`、`pl`、`pt-BR`、`ru`、`th`、`tr`、`vi`、`zh-CN`、`zh-TW`
+
+外部プラグインで全言語を用意する必要はありません。収録していないUI言語には
+英語セクションが表示されます。
 
 ### 3. プラグインを実装
 
