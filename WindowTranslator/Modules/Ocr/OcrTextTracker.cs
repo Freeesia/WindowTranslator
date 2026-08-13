@@ -14,7 +14,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 {
     private const int MaxMissedFrames = 3;
     private const int StructureConfirmationFrames = 2;
-    private const int MicroGeometryConfirmationFrames = 4;
+    private const int NormalGeometryConfirmationFrames = 2;
+    private const int NoiseGeometrySampleCount = 5;
     private const int MaxStructureCandidates = 6;
     private const int MaxStructureSelectionStates = 1024;
     private const int MaxOneToOneCandidatesPerResource = 3;
@@ -1882,8 +1883,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         TimeSpan timestamp,
         long? coveringTrackId)
     {
-        private TextRect? geometryCandidate;
-        private int geometryCandidateCount;
+        private TextRect? normalGeometryCandidate;
+        private int normalGeometryCandidateCount;
+        private readonly List<TextRect> noiseGeometrySamples = [];
         private readonly List<TextVote> textVotes = [];
         private string normalizedConfirmedText = NormalizeText(observation.SourceText);
         private DormantGeometry? dormantGeometry;
@@ -2082,15 +2084,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
         private void UpdateGeometry(TextRect current)
         {
-            bool isNoise = IsGeometryNoise(this.Stabilized, current);
-            bool matchesStable = isNoise && GeometrySamplesMatch(this.Stabilized, current);
-            if (matchesStable && GeometryValuesEqual(this.Stabilized, current))
-            {
-                this.geometryCandidate = null;
-                this.geometryCandidateCount = 0;
-                return;
-            }
-
             double movement = CenterDistance(this.Stabilized, current);
             if (movement > Math.Max(this.Stabilized.Width, this.Stabilized.Height) * 0.75)
             {
@@ -2098,24 +2091,37 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 return;
             }
 
-            if (this.geometryCandidate is not null
-                && (isNoise
-                    ? GeometrySamplesMatch(this.geometryCandidate, current)
-                    : GeometryCandidateMatches(this.geometryCandidate, current)))
+            if (IsGeometryNoise(this.Stabilized, current))
             {
-                this.geometryCandidate = current;
-                this.geometryCandidateCount++;
+                this.normalGeometryCandidate = null;
+                this.normalGeometryCandidateCount = 0;
+                if (this.noiseGeometrySamples.Count == 0)
+                {
+                    this.noiseGeometrySamples.Add(this.Stabilized);
+                }
+
+                this.noiseGeometrySamples.Add(current);
+                if (this.noiseGeometrySamples.Count >= NoiseGeometrySampleCount)
+                {
+                    this.ApplyGeometry(RepresentativeGeometry(this.noiseGeometrySamples));
+                }
+                return;
+            }
+
+            this.noiseGeometrySamples.Clear();
+            if (this.normalGeometryCandidate is not null
+                && GeometryCandidateMatches(this.normalGeometryCandidate, current))
+            {
+                this.normalGeometryCandidate = current;
+                this.normalGeometryCandidateCount++;
             }
             else
             {
-                this.geometryCandidate = current;
-                this.geometryCandidateCount = 1;
+                this.normalGeometryCandidate = current;
+                this.normalGeometryCandidateCount = 1;
             }
 
-            int confirmationFrames = matchesStable
-                ? MicroGeometryConfirmationFrames
-                : StructureConfirmationFrames;
-            if (this.geometryCandidateCount >= confirmationFrames)
+            if (this.normalGeometryCandidateCount >= NormalGeometryConfirmationFrames)
             {
                 this.ApplyGeometry(current);
             }
@@ -2130,27 +2136,41 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 && Math.Abs(stable.Width - current.Width) <= Math.Max(3, stable.Width * 0.12)
                 && Math.Abs(stable.Height - current.Height) <= Math.Max(3, stable.Height * 0.12)
                 && Math.Abs(stable.FontSize - current.FontSize) <= Math.Max(1, stable.FontSize * 0.12)
-                && AngleDifference(stable.Angle, current.Angle) <= 2
-                && stable.MultiLine == current.MultiLine;
+                && AngleDifference(stable.Angle, current.Angle) <= 2;
         }
 
-        private static bool GeometrySamplesMatch(TextRect first, TextRect second)
-            => Math.Abs(first.X - second.X) <= 1
-                && Math.Abs(first.Y - second.Y) <= 1
-                && Math.Abs(first.Width - second.Width) <= 1
-                && Math.Abs(first.Height - second.Height) <= 1
-                && Math.Abs(first.FontSize - second.FontSize) <= 0.5
-                && AngleDifference(first.Angle, second.Angle) <= 2
-                && first.MultiLine == second.MultiLine;
+        private static TextRect RepresentativeGeometry(List<TextRect> samples)
+            => samples[0] with
+            {
+                X = Median(samples.Select(sample => sample.X)),
+                Y = Median(samples.Select(sample => sample.Y)),
+                Width = Median(samples.Select(sample => sample.Width)),
+                Height = Median(samples.Select(sample => sample.Height)),
+                FontSize = Median(samples.Select(sample => sample.FontSize)),
+                Angle = MedianAngle(samples),
+                MultiLine = samples.Count(sample => sample.MultiLine) > samples.Count / 2,
+            };
 
-        private static bool GeometryValuesEqual(TextRect first, TextRect second)
-            => first.X == second.X
-                && first.Y == second.Y
-                && first.Width == second.Width
-                && first.Height == second.Height
-                && first.FontSize == second.FontSize
-                && first.Angle == second.Angle
-                && first.MultiLine == second.MultiLine;
+        private static double Median(IEnumerable<double> values)
+        {
+            double[] ordered = values.Order().ToArray();
+            return ordered[ordered.Length / 2];
+        }
+
+        private static double MedianAngle(List<TextRect> samples)
+            => samples
+                .Select((sample, index) => new
+                {
+                    sample.Angle,
+                    Index = index,
+                    Distance = samples.Sum(other => AngleDifference(sample.Angle, other.Angle)),
+                    StableDistance = AngleDifference(samples[0].Angle, sample.Angle),
+                })
+                .OrderBy(candidate => candidate.Distance)
+                .ThenBy(candidate => candidate.StableDistance)
+                .ThenBy(candidate => candidate.Index)
+                .First()
+                .Angle;
 
         private static bool GeometryCandidateMatches(TextRect candidate, TextRect current)
             => CenterDistance(candidate, current) <= Math.Max(3, Math.Max(candidate.Width, candidate.Height) * 0.15)
@@ -2171,8 +2191,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 MultiLine = current.MultiLine,
                 Angle = current.Angle,
             };
-            this.geometryCandidate = null;
-            this.geometryCandidateCount = 0;
+            this.normalGeometryCandidate = null;
+            this.normalGeometryCandidateCount = 0;
+            this.noiseGeometrySamples.Clear();
         }
 
         public TextRect ProjectOutputGeometry(TextRect previousParent, TextRect currentParent)
