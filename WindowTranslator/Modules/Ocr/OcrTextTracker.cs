@@ -2176,6 +2176,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             => CenterDistance(candidate, current) <= Math.Max(3, Math.Max(candidate.Width, candidate.Height) * 0.15)
                 && RatioSimilarity(candidate.Width, current.Width) >= 0.85
                 && RatioSimilarity(candidate.Height, current.Height) >= 0.85
+                && RatioSimilarity(candidate.FontSize, current.FontSize) >= 0.85
                 && AngleDifference(candidate.Angle, current.Angle) <= 3
                 && candidate.MultiLine == current.MultiLine;
 

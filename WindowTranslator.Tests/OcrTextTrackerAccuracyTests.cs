@@ -639,6 +639,30 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         }
     }
 
+    [Theory]
+    [InlineData(40, 10)]
+    [InlineData(10, 40)]
+    public void PeriodicFontSizeChangesOutsideTheNoiseRangeDoNotConfirmEitherExtreme(
+        double first,
+        double second)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        for (int frame = 1; frame <= 12; frame++)
+        {
+            double fontSize = frame % 2 == 1 ? first : second;
+            TextRect result = Assert.Single(tracker.Update(
+                [stable with { FontSize = fontSize }],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+
+            Assert.Equal(24, result.FontSize);
+        }
+    }
+
     [Fact]
     public void SingleGeometryOutlierDoesNotMoveStableGeometry()
     {
