@@ -664,7 +664,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void SingleGeometryOutlierDoesNotMoveStableGeometry()
+    public void SingleNoiseRangeGeometryOutlierDoesNotMoveStableGeometry()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
