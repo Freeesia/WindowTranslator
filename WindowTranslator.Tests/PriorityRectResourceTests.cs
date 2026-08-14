@@ -28,7 +28,9 @@ public class PriorityRectResourceTests
                 "WindowTranslator.Properties.Resources",
                 typeof(OcrTextTracker).Assembly);
 
-            Assert.Equal(expected, resources.GetString(key, CultureInfo.CurrentUICulture));
+            Assert.Equal(
+                expected.ReplaceLineEndings("\n"),
+                resources.GetString(key, CultureInfo.CurrentUICulture)?.ReplaceLineEndings("\n"));
         }
         finally
         {
