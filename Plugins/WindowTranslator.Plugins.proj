@@ -8,8 +8,7 @@
   <Target Name="RestoreProjects">
     <MSBuild
       Projects="@(DistributionProject)"
-      Targets="Restore"
-      BuildInParallel="true" />
+      Targets="Restore" />
   </Target>
 
   <Target Name="Pack" DependsOnTargets="RestoreProjects">
