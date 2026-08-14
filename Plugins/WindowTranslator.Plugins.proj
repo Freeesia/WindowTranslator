@@ -1,8 +1,8 @@
 <Project>
   <ItemGroup>
-    <DistributionProject Include="$(MSBuildThisFileDirectory)WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
-    <DistributionProject Include="$(MSBuildThisFileDirectory)ColorThief\ColorThief\ColorThief.csproj" />
-    <DistributionProject Include="$(MSBuildThisFileDirectory)Plugins\WindowTranslator.Plugin.*\*.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)..\ColorThief\ColorThief\ColorThief.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.*\*.csproj" />
   </ItemGroup>
 
   <Target Name="RestoreProjects">

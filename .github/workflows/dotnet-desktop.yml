@@ -134,7 +134,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - run: |
-          dotnet msbuild WindowTranslator.Packages.proj -target:PublishAppBundle `
+          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:PublishAppBundle `
             -p:Configuration=Release `
             -p:AppBundleOutputPath="$PWD\publish\plugins" `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `

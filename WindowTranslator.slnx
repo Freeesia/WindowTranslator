@@ -10,7 +10,6 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="Directory.Packages.props" />
-    <File Path="WindowTranslator.Packages.proj" />
     <File Path="Resources.Designer.tt" />
   </Folder>
   <Folder Name="/ColorThief/">
@@ -26,6 +25,7 @@
     <File Path="Plugins/copy_plugins.bat" />
     <File Path="Plugins/Directory.Build.props" />
     <File Path="Plugins/Directory.Build.targets" />
+    <File Path="Plugins/WindowTranslator.Plugins.proj" />
     <Project Path="Plugins/WindowTranslator.Plugin.BergamotTranslatorPlugin/WindowTranslator.Plugin.BergamotTranslatorPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin/WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.DeepLTranslatePlugin/WindowTranslator.Plugin.DeepLTranslatePlugin.csproj" />

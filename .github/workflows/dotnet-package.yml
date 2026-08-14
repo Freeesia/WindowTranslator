@@ -33,7 +33,7 @@ jobs:
         with:
           cuda: '12.9.0'
       - run: |
-          dotnet msbuild WindowTranslator.Packages.proj -target:Pack `
+          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:Pack `
             -p:Configuration=Release `
             -p:PackageOutputPath="$PWD\pack" `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
