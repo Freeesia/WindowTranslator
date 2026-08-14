@@ -3,7 +3,8 @@
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
     <Title>GitHub Copilot Translator Plugin</Title>
     <Description>Translation for WindowTranslator using GitHub Copilot.</Description>
-    <PublishToNuGet>true</PublishToNuGet>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" />

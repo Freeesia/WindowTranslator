@@ -1,0 +1,30 @@
+<Project>
+  <ItemGroup>
+    <DistributionProject Include="$(MSBuildThisFileDirectory)WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)ColorThief\ColorThief\ColorThief.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)Plugins\WindowTranslator.Plugin.*\*.csproj" />
+  </ItemGroup>
+
+  <Target Name="RestoreProjects">
+    <MSBuild
+      Projects="@(DistributionProject)"
+      Targets="Restore"
+      BuildInParallel="true" />
+  </Target>
+
+  <Target Name="Pack" DependsOnTargets="RestoreProjects">
+    <MSBuild
+      Projects="@(DistributionProject)"
+      Targets="Pack"
+      BuildInParallel="true" />
+  </Target>
+
+  <Target Name="PublishAppBundle" DependsOnTargets="RestoreProjects">
+    <MSBuild
+      Projects="@(DistributionProject)"
+      Targets="Publish"
+      BuildInParallel="true"
+      RemoveProperties="AppBundleOutputPath"
+      Properties="PublishDir=$(AppBundleOutputPath)\%(DistributionProject.Filename)\" />
+  </Target>
+</Project>

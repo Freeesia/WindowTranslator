@@ -2,7 +2,8 @@
   <PropertyGroup>
     <Title>Google Apps Script Translator Plugin</Title>
     <Description>Translation for WindowTranslator through Google Apps Script.</Description>
-    <PublishToNuGet>true</PublishToNuGet>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" />

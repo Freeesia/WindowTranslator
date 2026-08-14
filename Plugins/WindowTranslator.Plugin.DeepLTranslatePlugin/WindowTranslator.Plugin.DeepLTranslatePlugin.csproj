@@ -3,7 +3,8 @@
   <PropertyGroup>
     <Title>DeepL Translator Plugin</Title>
     <Description>Translation for WindowTranslator using the DeepL API.</Description>
-    <PublishToNuGet>true</PublishToNuGet>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>

@@ -134,17 +134,14 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - run: |
-          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:PublishAppBundle `
+          dotnet msbuild WindowTranslator.Packages.proj -target:PublishAppBundle `
             -p:Configuration=Release `
-            -p:AppBundleOutputPath="$((Resolve-Path publish).Path)\plugins" `
+            -p:AppBundleOutputPath="$PWD\publish\plugins" `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
             -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
-          if ($LASTEXITCODE -ne 0) {
-            exit $LASTEXITCODE
-          }
       - uses: actions/download-artifact@v8
         if: ${{ needs.docs.result == 'success' }}
         with:

@@ -4,7 +4,8 @@
     <Title>Fields of Mistria Filter Plugin</Title>
     <Description>Context-aware translation filtering for Fields of Mistria.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PublishToNuGet>true</PublishToNuGet>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>

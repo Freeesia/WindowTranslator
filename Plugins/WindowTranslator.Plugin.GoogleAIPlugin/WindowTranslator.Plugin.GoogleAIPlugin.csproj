@@ -4,7 +4,8 @@
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
     <Title>Google AI Plugin</Title>
     <Description>Translation, OCR, and text correction for WindowTranslator using Google AI.</Description>
-    <PublishToNuGet>true</PublishToNuGet>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" />

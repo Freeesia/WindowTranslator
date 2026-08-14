@@ -4,15 +4,18 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
+    <PackageReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\README.md')">README.md</PackageReadmeFile>
+    <PackageIcon>plugin-icon.png</PackageIcon>
   </PropertyGroup>
 
-  <!-- アプリへの同梱と NuGet 公開は、各プラグインから明示的に有効化する。 -->
-  <PropertyGroup>
-    <IncludeInAppBundle Condition="'$(IncludeInAppBundle)' == ''">false</IncludeInAppBundle>
-    <PublishToNuGet Condition="'$(PublishToNuGet)' == ''">false</PublishToNuGet>
-    <IncludePluginRuntimeAssetsInPackage
-      Condition="'$(IncludePluginRuntimeAssetsInPackage)' == ''">false</IncludePluginRuntimeAssetsInPackage>
-  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\README.md')">
+    <Content Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)plugin-icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" ExcludeAssets="runtime" />

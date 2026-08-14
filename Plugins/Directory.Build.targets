@@ -1,30 +1,11 @@
 <Project>
-  <PropertyGroup>
-    <IsPackable>$(PublishToNuGet)</IsPackable>
-    <IsPublishable
-      Condition="'$(AppBundleOutputPath)' != ''">$(IncludeInAppBundle)</IsPublishable>
-    <PublishDir
-      Condition="'$(AppBundleOutputPath)' != ''">$(AppBundleOutputPath)\$(MSBuildProjectName)\</PublishDir>
-  </PropertyGroup>
-
   <!-- 上位階層の Directory.Build.targets をインクルード -->
   <Import Project="$(MSBuildProjectDirectory)\..\..\Directory.Build.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\Directory.Build.targets')" />
 
-  <PropertyGroup Condition="'$(IsTestProject)' != 'true' AND '$(IsPackable)' != 'false'">
-    <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
-    <PackageReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\README.md')">README.md</PackageReadmeFile>
-    <PackageIcon>plugin-icon.png</PackageIcon>
+  <PropertyGroup>
     <TargetsForTfmSpecificBuildOutput
       Condition="'$(IncludePluginRuntimeAssetsInPackage)' == 'true'">$(TargetsForTfmSpecificBuildOutput);AddPluginRuntimeAssetsToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
-
-  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\README.md')">
-    <None Update="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(IsTestProject)' != 'true' AND '$(IsPackable)' != 'false'">
-    <None Include="$(MSBuildThisFileDirectory)plugin-icon.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
 
   <!--
     PackageReference の build/buildTransitive ターゲットによって出力されるネイティブ資産は、
@@ -32,7 +13,7 @@
     必要なプラグインだけ IncludePluginRuntimeAssetsInPackage=true で実際のビルド出力を同梱する。
   -->
   <Target
-    Condition="'$(IsPackable)' != 'false' AND '$(IncludePluginRuntimeAssetsInPackage)' == 'true'"
+    Condition="'$(IncludePluginRuntimeAssetsInPackage)' == 'true'"
     Name="AddPluginRuntimeAssetsToPackage">
     <ItemGroup>
       <_PluginWinX64RuntimeAsset Include="$(TargetDir)runtimes\win-x64\**\*" />
@@ -47,7 +28,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Condition="'$(IsTestProject)' != 'true' AND ('$(GITHUB_ACTIONS)' != 'true' OR '$(IncludeInAppBundle)' == 'true')" Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Condition="'$(GITHUB_ACTIONS)' != 'true' OR '$(IsPublishable)' == 'true'" Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call $(ProjectDir)..\copy_plugins.bat $(OutDir) $(ProjectName) $(Configuration)" />
   </Target>
 </Project>

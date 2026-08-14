@@ -6,6 +6,8 @@
     <Title>WindowTranslator ColorThief Support Library</Title>
     <Description>Color extraction support library for the WindowTranslator ColorThief plugin.</Description>
     <PackageTags>$(PackageTags);ColorThief</PackageTags>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>StudioFreesia.ColorThief</RootNamespace>

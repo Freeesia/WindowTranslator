@@ -4,8 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Title>Bergamot Translator Plugin</Title>
     <Description>Offline neural machine translation for WindowTranslator using Bergamot.</Description>
-    <IncludeInAppBundle>true</IncludeInAppBundle>
-    <PublishToNuGet>true</PublishToNuGet>
+    <IsPublishable>true</IsPublishable>
+    <IsPackable>true</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

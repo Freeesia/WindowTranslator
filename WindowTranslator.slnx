@@ -10,6 +10,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="Directory.Packages.props" />
+    <File Path="WindowTranslator.Packages.proj" />
     <File Path="Resources.Designer.tt" />
   </Folder>
   <Folder Name="/ColorThief/">
@@ -25,9 +26,7 @@
     <File Path="Plugins/copy_plugins.bat" />
     <File Path="Plugins/Directory.Build.props" />
     <File Path="Plugins/Directory.Build.targets" />
-    <File Path="Plugins/WindowTranslator.Plugins.proj" />
     <Project Path="Plugins/WindowTranslator.Plugin.BergamotTranslatorPlugin/WindowTranslator.Plugin.BergamotTranslatorPlugin.csproj" />
-    <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin.Tests/WindowTranslator.Plugin.ColorThiefPlugin.Tests.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin/WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.DeepLTranslatePlugin/WindowTranslator.Plugin.DeepLTranslatePlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.DummyPlugin/WindowTranslator.Plugin.DummyPlugin.csproj" />
@@ -42,6 +41,7 @@
     </Project>
     <Project Path="Plugins/WindowTranslator.Plugin.TesseractOCRPlugin/WindowTranslator.Plugin.TesseractOCRPlugin.csproj" />
   </Folder>
+  <Project Path="WindowTranslator.Plugin.ColorThiefPlugin.Tests/WindowTranslator.Plugin.ColorThiefPlugin.Tests.csproj" />
   <Project Path="Composition.WindowsRuntimeHelpers/Composition.WindowsRuntimeHelpers.csproj" />
   <Project Path="Sandbox/Sandbox.csproj">
     <Build Solution="*|ARM64" Project="false" />
