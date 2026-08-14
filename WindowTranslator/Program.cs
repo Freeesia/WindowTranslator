@@ -196,7 +196,7 @@ builder.Services.AddSingleton(sp => new NuGetPluginService(
         AppInfo.Instance.Version.Major))
     .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
 builder.Services.AddTransient<PluginStoreViewModel>();
-builder.Services.AddTransient<IConfigureOptions<UserSettings>, ConfigureUserSettings>();
+builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
@@ -264,23 +264,11 @@ static string GetPluginName(PluginNameOptions options, Type type)
     }
 }
 
-class ConfigureUserSettings(IConfiguration configuration) : IConfigureOptions<UserSettings>
-{
-    private readonly IConfiguration configuration = configuration;
-
-    public void Configure(UserSettings options)
-        => PluginParameterIgnoringConfigurationBinder.Bind(this.configuration, options);
-}
-
-class ConfigurePluginParam<TOptions>(
-    IConfiguration configuration,
-    IProcessInfoStore store,
-    ILogger<ConfigurePluginParam<TOptions>> logger) : IConfigureNamedOptions<TOptions>
+class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
     where TOptions : class, IPluginParam
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
-    private readonly ILogger<ConfigurePluginParam<TOptions>> logger = logger;
 
     public void Configure(TOptions options)
     {
@@ -289,7 +277,7 @@ class ConfigurePluginParam<TOptions>(
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        this.BindParameter(section, options);
+        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
     }
 
     public void Configure(string? name, TOptions options)
@@ -300,46 +288,7 @@ class ConfigurePluginParam<TOptions>(
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        this.BindParameter(section, options);
-    }
-
-    private void BindParameter(IConfigurationSection targetSection, TOptions options)
-    {
-        var parameterSection = GetTargetSection(targetSection, typeof(TOptions).Name);
-        if (!parameterSection.Exists())
-        {
-            return;
-        }
-
-        try
-        {
-            var configured = parameterSection.Get<TOptions>();
-            if (configured is null)
-            {
-                return;
-            }
-
-            foreach (var property in typeof(TOptions).GetProperties(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (property.CanRead
-                    && property.CanWrite
-                    && property.GetIndexParameters().Length == 0)
-                {
-                    property.SetValue(options, property.GetValue(configured));
-                }
-            }
-        }
-        catch (Exception ex) when (ex is InvalidOperationException
-                                   or FormatException
-                                   or NotSupportedException
-                                   or MissingMethodException
-                                   or ArgumentException
-                                   or TargetInvocationException)
-        {
-            this.logger.LogWarning(
-                "プラグインパラメータ {ParameterType} を読み込めないため無視します。",
-                typeof(TOptions).Name);
-        }
+        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
     }
 
     private static IConfigurationSection GetTargetSection(IConfigurationSection section, string name)
@@ -367,7 +316,7 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        PluginParameterIgnoringConfigurationBinder.Bind(section, options);
+        section.Bind(options);
     }
 
     public void Configure(string? name, TargetSettings options)
@@ -378,25 +327,7 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        PluginParameterIgnoringConfigurationBinder.Bind(section, options);
-    }
-}
-
-static class PluginParameterIgnoringConfigurationBinder
-{
-    public static void Bind(IConfiguration configuration, object options)
-    {
-        var values = configuration
-            .AsEnumerable(makePathsRelative: true)
-            .Where(value => !value.Key
-                .Split(ConfigurationPath.KeyDelimiter, StringSplitOptions.None)
-                .Contains(
-                    nameof(TargetSettings.PluginParams),
-                    StringComparer.OrdinalIgnoreCase));
-        var filteredConfiguration = new ConfigurationBuilder()
-            .AddInMemoryCollection(values)
-            .Build();
-        filteredConfiguration.Bind(options);
+        section.Bind(options);
     }
 }
 
