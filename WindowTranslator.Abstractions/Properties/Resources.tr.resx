@@ -128,7 +128,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR Alanları</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Alanlar yapılandırıldığında yalnızca içlerindeki içerik tanınır. Alanlar çakıştığında listede daha yukarıda olanlar önceliklidir.</value>
-  </data>
 </root>

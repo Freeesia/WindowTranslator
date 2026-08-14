@@ -174,7 +174,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Các vùng OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Khi đã cấu hình vùng, chỉ nội dung bên trong các vùng đó được nhận dạng. Khi các vùng chồng lấp, vùng nằm cao hơn trong danh sách được ưu tiên.</value>
-  </data>
 </root>

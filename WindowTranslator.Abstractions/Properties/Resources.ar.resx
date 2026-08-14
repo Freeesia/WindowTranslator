@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>مناطق OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>عند إعداد مناطق، يتم التعرف على المحتوى داخلها فقط. تكون للمناطق الأعلى في القائمة أولوية عند التداخل.</value>
-  </data>
 </root>

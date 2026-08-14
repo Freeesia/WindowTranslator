@@ -128,7 +128,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>พื้นที่ OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>เมื่อกำหนดพื้นที่แล้ว ระบบจะรู้จำเฉพาะเนื้อหาภายในพื้นที่เหล่านั้น หากพื้นที่ทับซ้อนกัน พื้นที่ที่อยู่สูงกว่าในรายการจะมีลำดับความสำคัญสูงกว่า</value>
-  </data>
 </root>

@@ -17,7 +17,8 @@ public static class PriorityRectRecognizer
     /// OCR対象範囲が登録されている場合は、その矩形内だけを認識する
     /// </summary>
     /// <remarks>
-    /// OCR対象範囲はリストの前方ほど優先度が高く、優先度の高い矩形で文字を認識できた領域と重なった結果は破棄する。
+    /// OCR対象範囲はリストの前方ほど優先度が高い。
+    /// 低優先度側の認識結果の面積に対する重なりが50%以上の場合、その結果を破棄する。
     /// OCR対象範囲が登録されていない場合だけ、画像全体を認識する。
     /// </remarks>
     /// <param name="bitmap">認識対象の画像</param>
@@ -73,7 +74,7 @@ public static class PriorityRectRecognizer
     /// 認識結果が優先度の高い認識結果に覆われているかどうかを判定する
     /// </summary>
     /// <remarks>
-    /// 複数のOCR対象範囲が重なる場合でも、実際の認識結果同士が重なる場合だけ低優先度側を破棄する
+    /// 複数のOCR対象範囲が重なる場合でも、低優先度側の認識結果の面積の50%以上が重なる場合だけ破棄する
     /// </remarks>
     private static bool IsCoveredBy(TextRect text, List<TextRect> recognized)
     {

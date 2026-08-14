@@ -186,7 +186,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Oblasti OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Pokud jsou oblasti nastaveny, rozpoznává se pouze obsah uvnitř nich. Při překrytí mají přednost oblasti výše v seznamu.</value>
-  </data>
 </root>

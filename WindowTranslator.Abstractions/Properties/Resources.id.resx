@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Area OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Jika area dikonfigurasi, hanya konten di dalamnya yang dikenali. Area yang lebih atas dalam daftar diprioritaskan saat saling tumpang tindih.</value>
-  </data>
 </root>

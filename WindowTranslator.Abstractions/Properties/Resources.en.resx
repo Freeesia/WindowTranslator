@@ -174,7 +174,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR Regions</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>When regions are configured, only content inside them is recognized. Regions higher in the list take priority when they overlap.</value>
-  </data>
 </root>

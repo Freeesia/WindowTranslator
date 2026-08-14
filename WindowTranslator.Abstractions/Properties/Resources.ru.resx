@@ -128,7 +128,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Области OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Если области настроены, распознаётся только содержимое внутри них. При перекрытии области, расположенные выше в списке, имеют приоритет.</value>
-  </data>
 </root>

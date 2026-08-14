@@ -150,8 +150,8 @@ public partial class RectangleSelectionWindow : Window
             Canvas.GetTop(this.SelectionRect),
             this.SelectionRect.Width,
             this.SelectionRect.Height,
-            (int)canvasWidth,
-            (int)canvasHeight);
+            canvasWidth,
+            canvasHeight);
 
         // 誤クリックによる極端に小さい矩形は選択し直してもらう
         if (rect.Width < MinimumRelativeSize || rect.Height < MinimumRelativeSize)

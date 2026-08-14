@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>ناحیه‌های OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>وقتی ناحیه‌هایی تنظیم شده‌اند، فقط محتوای داخل آن‌ها شناسایی می‌شود. هنگام هم‌پوشانی، ناحیه‌های بالاتر در فهرست اولویت دارند.</value>
-  </data>
 </root>

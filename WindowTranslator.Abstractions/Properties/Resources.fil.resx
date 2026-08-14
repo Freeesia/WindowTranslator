@@ -128,7 +128,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Mga Saklaw ng OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Kapag may mga saklaw na itinakda, ang nilalaman sa loob lamang ng mga ito ang kinikilala. Mas mataas ang priyoridad ng mga saklaw na nasa itaas ng listahan kapag nagkakapatong.</value>
-  </data>
 </root>

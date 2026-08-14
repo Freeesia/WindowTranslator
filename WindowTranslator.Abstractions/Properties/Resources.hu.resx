@@ -73,7 +73,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR-területek</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Ha területek vannak beállítva, csak a bennük lévő tartalom kerül felismerésre. Átfedés esetén a listában előrébb szereplő területek élveznek elsőbbséget.</value>
-  </data>
 </root>

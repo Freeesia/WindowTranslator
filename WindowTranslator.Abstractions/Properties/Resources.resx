@@ -186,7 +186,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR対象範囲</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>矩形が設定されている場合、その範囲内だけをOCRします。リストの上にあるものほど、範囲が重なった場合の優先度が高くなります。</value>
-  </data>
 </root>

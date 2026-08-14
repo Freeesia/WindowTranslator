@@ -174,7 +174,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR 영역</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>영역이 설정되어 있으면 해당 영역 안의 내용만 인식합니다. 영역이 겹칠 때는 목록에서 위에 있는 영역의 우선순위가 더 높습니다.</value>
-  </data>
 </root>

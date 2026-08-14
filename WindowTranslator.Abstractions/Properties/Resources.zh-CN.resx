@@ -174,7 +174,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR 区域</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>设置区域后，仅识别区域内的内容。区域重叠时，列表中位置靠上的区域优先级更高。</value>
-  </data>
 </root>

@@ -152,6 +152,42 @@ public class PriorityRectRecognizerTests
     }
 
     [Fact]
+    public async Task 低優先度側の認識結果との重なりが50パーセント未満なら両方を保持する()
+    {
+        using var bitmap = CreateBitmap();
+        PriorityRect[] rects = [new(0, 0, 0.5, 0.5, "high"), new(0, 0, 0.5, 0.5, "low")];
+        var calls = 0;
+
+        var results = (await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+        {
+            calls++;
+            return ValueTask.FromResult<IEnumerable<TextRect>>(calls == 1
+                ? [Text("high text", 10, 10)]
+                : [Text("low text", 40, 10)]);
+        })).ToArray();
+
+        Assert.Equal(["high text", "low text"], results.Select(r => r.SourceText));
+    }
+
+    [Fact]
+    public async Task 低優先度側の認識結果との重なりが50パーセントなら破棄する()
+    {
+        using var bitmap = CreateBitmap();
+        PriorityRect[] rects = [new(0, 0, 0.5, 0.5, "high"), new(0, 0, 0.5, 0.5, "low")];
+        var calls = 0;
+
+        var results = await PriorityRectRecognizer.RecognizeAsync(bitmap, rects, (target, source) =>
+        {
+            calls++;
+            return ValueTask.FromResult<IEnumerable<TextRect>>(calls == 1
+                ? [Text("high text", 10, 10)]
+                : [Text("low text", 30, 10)]);
+        });
+
+        Assert.Equal("high text", Assert.Single(results).SourceText);
+    }
+
+    [Fact]
     public async Task 矩形同士が重なっていても認識結果が重ならなければ両方を保持する()
     {
         using var bitmap = CreateBitmap();

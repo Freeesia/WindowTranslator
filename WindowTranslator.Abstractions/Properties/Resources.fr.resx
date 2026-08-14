@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Zones d’OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Lorsque des zones sont configurées, seul leur contenu est reconnu. Les zones placées plus haut dans la liste sont prioritaires en cas de chevauchement.</value>
-  </data>
 </root>

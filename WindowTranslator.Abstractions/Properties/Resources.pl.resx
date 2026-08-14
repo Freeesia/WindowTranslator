@@ -186,7 +186,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Obszary OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Gdy skonfigurowano obszary, rozpoznawana jest tylko ich zawartość. Przy nakładaniu się obszary wyżej na liście mają pierwszeństwo.</value>
-  </data>
 </root>

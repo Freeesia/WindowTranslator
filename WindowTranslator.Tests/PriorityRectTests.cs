@@ -30,4 +30,15 @@ public class PriorityRectTests
         Assert.Equal("keyword", rect.Keyword);
     }
 
+    [Fact]
+    public void FromAbsoluteRectは小数の基準サイズを保持して相対座標に変換する()
+    {
+        var rect = PriorityRect.FromAbsoluteRect(400.4, 300.4, 200.2, 150.2, 800.8, 600.8);
+
+        Assert.Equal(0.5, rect.X);
+        Assert.Equal(0.5, rect.Y);
+        Assert.Equal(0.25, rect.Width);
+        Assert.Equal(0.25, rect.Height);
+    }
+
 }

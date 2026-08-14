@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Áreas de OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Cuando hay áreas configuradas, solo se reconoce el contenido dentro de ellas. Las áreas situadas más arriba en la lista tienen prioridad cuando se superponen.</value>
-  </data>
 </root>

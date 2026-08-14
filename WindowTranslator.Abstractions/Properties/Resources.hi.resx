@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR क्षेत्र</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>जब क्षेत्र कॉन्फ़िगर किए गए हों, तो केवल उनके अंदर की सामग्री पहचानी जाती है। ओवरलैप होने पर सूची में ऊपर के क्षेत्रों को प्राथमिकता मिलती है।</value>
-  </data>
 </root>

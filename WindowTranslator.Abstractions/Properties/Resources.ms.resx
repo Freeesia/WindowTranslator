@@ -116,7 +116,4 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Kawasan OCR</value>
   </data>
-  <data name="PriorityRectDescription" xml:space="preserve">
-    <value>Apabila kawasan dikonfigurasikan, hanya kandungan di dalamnya akan dikenali. Kawasan yang lebih atas dalam senarai diberi keutamaan apabila bertindih.</value>
-  </data>
 </root>

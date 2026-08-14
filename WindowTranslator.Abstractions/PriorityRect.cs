@@ -30,6 +30,6 @@ public record PriorityRect(double X, double Y, double Width, double Height, stri
     /// <param name="imageHeight">画像の高さ</param>
     /// <param name="keyword">キーワード</param>
     /// <returns>相対座標のOCR対象範囲</returns>
-    public static PriorityRect FromAbsoluteRect(double x, double y, double width, double height, int imageWidth, int imageHeight, string keyword = "")
+    public static PriorityRect FromAbsoluteRect(double x, double y, double width, double height, double imageWidth, double imageHeight, string keyword = "")
         => new(x / imageWidth, y / imageHeight, width / imageWidth, height / imageHeight, keyword);
 }
