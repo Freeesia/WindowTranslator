@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>翻译结果显示模式</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>自动翻译目标</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一旦一个进程被选中进行翻译，它将在启动时自动进行翻译</value>
+    <value>应用启动时自动翻译</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>总体设置</value>

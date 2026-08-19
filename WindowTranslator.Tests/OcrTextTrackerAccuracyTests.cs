@@ -134,6 +134,371 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void TextXAndWidthChangeStaysSingleAndConverges()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Menu", 300, 100, 70, 30, 24, false);
+        TextRect changed = new("Settings Menu", 250, 100, 170, 30, 24, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(("Menu", 300, 70), (pending.SourceText, pending.X, pending.Width));
+        Assert.Equal(
+            ("Settings Menu", 250, 170),
+            (confirmed.SourceText, confirmed.X, confirmed.Width));
+    }
+
+    [Theory]
+    [InlineData(100, 100, 170, 60)]
+    [InlineData(110, 100, 170, 60)]
+    [InlineData(100, 100, 150, 60)]
+    [InlineData(100, 100, 120, 90)]
+    public void TextAndMultilineLayoutChangeWithMajorityOverlapStaysSingleAndConverges(
+        double changedX,
+        double changedY,
+        double changedWidth,
+        double changedHeight)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Configure Menu", 100, 100, 170, 30, 24, false);
+        TextRect changed = new(
+            "Open Settings And Configure",
+            changedX,
+            changedY,
+            changedWidth,
+            changedHeight,
+            24,
+            true);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(("Configure Menu", 30, false), (pending.SourceText, pending.Height, pending.MultiLine));
+        Assert.Equal(
+            ("Open Settings And Configure", changedX, changedY, changedWidth, changedHeight, true),
+            (confirmed.SourceText, confirmed.X, confirmed.Y, confirmed.Width, confirmed.Height, confirmed.MultiLine));
+
+        Assert.Single(tracker.Update(
+            [initial], imageSize, TimeSpan.FromMilliseconds(1500)));
+        TextRect restored = Assert.Single(tracker.Update(
+            [initial], imageSize, TimeSpan.FromMilliseconds(2000)));
+        Assert.Equal(
+            ("Configure Menu", 30, false),
+            (restored.SourceText, restored.Height, restored.MultiLine));
+    }
+
+    [Fact]
+    public void SlightlyOverlappingCurrentRegionsRemainSeparate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect menu = new("Menu", 100, 100, 70, 30, 24, false);
+        TextRect neighboring = new("Unrelated Panel", 160, 124, 170, 30, 24, false);
+        tracker.Update([menu], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [menu, neighboring], imageSize, TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Menu", "Unrelated Panel"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void SameRegionFontSizeChangeStaysSingleAndConverges()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Logo", 100, 100, 120, 58, 48, false);
+        TextRect changed = new("Long Caption", 95, 114, 130, 30, 24, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changed], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(("Logo", 48), (pending.SourceText, pending.FontSize));
+        Assert.Equal(("Long Caption", 24), (confirmed.SourceText, confirmed.FontSize));
+    }
+
+    [Fact]
+    public void DistinctSmallOverlayRemainsSeparateFromLargeRegion()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect logo = new("Logo", 100, 100, 120, 58, 48, false);
+        TextRect caption = new("Caption", 135, 120, 90, 24, 20, false);
+
+        Assert.Equal(2, tracker.Update(
+            [logo, caption], imageSize, TimeSpan.Zero).Count);
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [logo, caption], imageSize, TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Logo", "Caption"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void MinorityOverlapDoesNotCreateCompositeStructureReplacement()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Menu", 100, 100, 70, 30, 24, false);
+        TextRect[] neighboring =
+        [
+            new("Unrelated", 160, 124, 110, 30, 24, false),
+            new("Panel", 270, 124, 65, 30, 24, false),
+        ];
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [initial, .. neighboring], imageSize, TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Menu", "Unrelated", "Panel"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void DistinctSmallOverlayFragmentsDoNotReplaceLargeRegion()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect logo = new("Logo", 100, 100, 120, 58, 48, false);
+        TextRect[] overlay =
+        [
+            new("Small", 120, 120, 55, 24, 20, false),
+            new("Caption", 175, 120, 75, 24, 20, false),
+        ];
+        tracker.Update([logo], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+            [logo, .. overlay], imageSize, TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Logo", "Small", "Caption"], result.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void TemporaryTextChangeAndMergeKeepsTheStableFragments()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] fragments =
+        [
+            new("Open Options", 100, 100, 145, 30, 24, false),
+            new("And Configure", 245, 100, 155, 30, 24, false),
+        ];
+        TextRect changedMerged = new("Open Settings And Configure", 100, 100, 300, 30, 24, false);
+        tracker.Update(fragments, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> pending = tracker.Update(
+            [changedMerged], imageSize, TimeSpan.FromMilliseconds(500));
+        IReadOnlyList<TextRect> recovered = tracker.Update(
+            fragments, imageSize, TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal(["Open Options", "And Configure"], pending.Select(rect => rect.SourceText));
+        Assert.Equal(["Open Options", "And Configure"], recovered.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void TemporaryTextChangeAndSplitKeepsTheStableWholeRegion()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect whole = new("Open Options And Configure", 100, 100, 300, 30, 24, false);
+        TextRect[] changedSplit =
+        [
+            new("Open Settings", 100, 100, 150, 30, 24, false),
+            new("And Configure", 250, 100, 150, 30, 24, false),
+        ];
+        tracker.Update([whole], imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> pending = tracker.Update(
+            changedSplit, imageSize, TimeSpan.FromMilliseconds(500));
+        IReadOnlyList<TextRect> recovered = tracker.Update(
+            [whole], imageSize, TimeSpan.FromMilliseconds(1000));
+
+        Assert.Equal("Open Options And Configure", Assert.Single(pending).SourceText);
+        Assert.Equal("Open Options And Configure", Assert.Single(recovered).SourceText);
+    }
+
+    [Fact]
+    public void PersistentTextAndLayoutChangeAndSplitConvergesWithoutDuplicate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect whole = new("Open Options And Configure", 100, 100, 300, 30, 24, false);
+        TextRect[] changedSplit =
+        [
+            new("Open Settings", 100, 100, 150, 30, 24, false),
+            new("And Configure", 250, 100, 150, 30, 24, false),
+        ];
+        tracker.Update([whole], imageSize, TimeSpan.Zero);
+
+        TextRect pending = Assert.Single(tracker.Update(
+            changedSplit, imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            changedSplit, imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal("Open Options And Configure", pending.SourceText);
+        Assert.Equal("Open Settings And Configure", confirmed.SourceText);
+    }
+
+    [Fact]
+    public void ConfirmedCompositeSplitRestoresWithoutStaleTracks()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect whole = new("Open Options And Configure", 100, 100, 300, 30, 24, false);
+        TextRect[] changedSplit =
+        [
+            new("Open Settings", 100, 100, 150, 30, 24, false),
+            new("And Configure", 250, 100, 150, 30, 24, false),
+        ];
+        tracker.Update([whole], imageSize, TimeSpan.Zero);
+        tracker.Update(changedSplit, imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Single(tracker.Update(
+            changedSplit, imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Single(tracker.Update(
+            [whole], imageSize, TimeSpan.FromMilliseconds(1500)));
+        TextRect restored = Assert.Single(tracker.Update(
+            [whole], imageSize, TimeSpan.FromMilliseconds(2000)));
+
+        Assert.Equal("Open Options And Configure", restored.SourceText);
+    }
+
+    [Fact]
+    public void PersistentTextChangeAndMergeConvergesWithoutDuplicate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] fragments =
+        [
+            new("Open Options", 100, 100, 145, 30, 24, false),
+            new("And Configure", 245, 100, 155, 30, 24, false),
+        ];
+        TextRect changedMerged = new("Open Settings And Configure", 100, 100, 300, 30, 24, false);
+        tracker.Update(fragments, imageSize, TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> pending = tracker.Update(
+            [changedMerged], imageSize, TimeSpan.FromMilliseconds(500));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            [changedMerged], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Equal(["Open Options", "And Configure"], pending.Select(rect => rect.SourceText));
+        Assert.Equal("Open Settings And Configure", confirmed.SourceText);
+    }
+
+    [Fact]
+    public void ConfirmedCompositeMergeRestoresWithoutStaleTracks()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] fragments =
+        [
+            new("Open Options", 100, 100, 145, 30, 24, false),
+            new("And Configure", 245, 100, 155, 30, 24, false),
+        ];
+        TextRect changedMerged = new("Open Settings And Configure", 100, 100, 300, 30, 24, false);
+        tracker.Update(fragments, imageSize, TimeSpan.Zero);
+        tracker.Update([changedMerged], imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Single(tracker.Update(
+            [changedMerged], imageSize, TimeSpan.FromMilliseconds(1000)));
+
+        Assert.Single(tracker.Update(
+            fragments, imageSize, TimeSpan.FromMilliseconds(1500)));
+        IReadOnlyList<TextRect> restored = tracker.Update(
+            fragments, imageSize, TimeSpan.FromMilliseconds(2000));
+
+        Assert.Equal(["Open Options", "And Configure"], restored.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
+    public void ShiftedSplitWithNewRegionUsesCurrentNonOverlappingGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+            [new("Open Menu", 40, 100, 100, 30, 24, false)],
+            imageSize,
+            TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("Open", 0, 100, 40, 30, 24, false),
+            new("Menu", 45, 100, 45, 30, 24, false),
+            new("Settings", 100, 100, 80, 30, 24, false),
+        ],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Open Menu", "Settings"], result.Select(rect => rect.SourceText));
+        Assert.Equal((0, 90), (result[0].X, result[0].Width));
+        Assert.Equal((100, 80), (result[1].X, result[1].Width));
+        Assert.True(result[0].X + result[0].Width <= result[1].X);
+    }
+
+    [Fact]
+    public void ShiftedSplitWithFontSizeChangeAndNewRegionUsesCurrentNonOverlappingGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+            [new("Open Menu", 40, 100, 100, 30, 24, false)],
+            imageSize,
+            TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("Open", 0, 100, 30, 20, 16, false),
+            new("Menu", 35, 100, 35, 20, 16, false),
+            new("Settings", 80, 100, 80, 20, 16, false),
+        ],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Open Menu", "Settings"], result.Select(rect => rect.SourceText));
+        Assert.Equal((0, 70, 20, 16), (result[0].X, result[0].Width, result[0].Height, result[0].FontSize));
+        Assert.Equal((80, 80), (result[1].X, result[1].Width));
+        Assert.True(result[0].X + result[0].Width <= result[1].X);
+    }
+
+    [Fact]
+    public void ShiftedMergeWithNewRegionUsesCurrentNonOverlappingGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        tracker.Update(
+        [
+            new("Open", 40, 100, 40, 30, 24, false),
+            new("Menu", 85, 100, 55, 30, 24, false),
+        ],
+            imageSize,
+            TimeSpan.Zero);
+
+        IReadOnlyList<TextRect> result = tracker.Update(
+        [
+            new("Open Menu", 0, 100, 90, 30, 24, false),
+            new("Settings", 100, 100, 80, 30, 24, false),
+        ],
+            imageSize,
+            TimeSpan.FromMilliseconds(500));
+
+        Assert.Equal(["Open", "Menu", "Settings"], result.Select(rect => rect.SourceText));
+        Assert.Equal((0, 36), (result[0].X, result[0].Width));
+        Assert.Equal(40.5, result[1].X, 5);
+        Assert.Equal(49.5, result[1].Width, 5);
+        Assert.Equal((100, 80), (result[2].X, result[2].Width));
+        Assert.True(result[1].X + result[1].Width <= result[2].X);
+    }
+
+    [Fact]
     public void ContinuouslyChangingTextEventuallyAdvancesToTheLatestObservation()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -251,6 +616,120 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
 
         Assert.Equal(101, result.X);
         Assert.Equal(1, result.Angle);
+    }
+
+    [Fact]
+    public void PeriodicPositionAndFontSizeNoiseDoesNotOscillate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect jittered = stable with { X = 102, FontSize = 25 };
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        for (int frame = 1; frame <= 12; frame++)
+        {
+            TextRect observation = frame % 2 == 1 ? jittered : stable;
+            TextRect result = Assert.Single(tracker.Update(
+                [observation],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+
+            Assert.Equal((100, 24), (result.X, result.FontSize));
+        }
+    }
+
+    [Theory]
+    [InlineData(40, 10)]
+    [InlineData(10, 40)]
+    public void PeriodicFontSizeChangesOutsideTheNoiseRangeDoNotConfirmEitherExtreme(
+        double first,
+        double second)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        for (int frame = 1; frame <= 12; frame++)
+        {
+            double fontSize = frame % 2 == 1 ? first : second;
+            TextRect result = Assert.Single(tracker.Update(
+                [stable with { FontSize = fontSize }],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+
+            Assert.Equal(24, result.FontSize);
+        }
+    }
+
+    [Fact]
+    public void SingleNoiseRangeGeometryOutlierDoesNotMoveStableGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        double[] observations = [100, 100, 115, 100];
+        for (int frame = 0; frame < observations.Length; frame++)
+        {
+            TextRect result = Assert.Single(tracker.Update(
+                [stable with { X = observations[frame] }],
+                imageSize,
+                TimeSpan.FromMilliseconds((frame + 1) * 500)));
+
+            Assert.Equal(100, result.X);
+        }
+    }
+
+    [Fact]
+    public void PersistentNoiseGeometryConvergesForEveryGeometryValue()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false) { Angle = 359 };
+        TextRect changed = initial with
+        {
+            X = 102,
+            Y = 102,
+            Width = 102,
+            Height = 32,
+            FontSize = 25,
+            MultiLine = true,
+            Angle = 1,
+        };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect result = initial;
+        for (int frame = 1; frame <= 4; frame++)
+        {
+            result = Assert.Single(tracker.Update(
+                [changed],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+        }
+
+        Assert.Equal(
+            (changed.X, changed.Y, changed.Width, changed.Height, changed.FontSize, changed.MultiLine, changed.Angle),
+            (result.X, result.Y, result.Width, result.Height, result.FontSize, result.MultiLine, result.Angle));
+    }
+
+    [Fact]
+    public void LargeGeometryMovementIsStillAppliedImmediately()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect moved = initial with { X = 180 };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect result = Assert.Single(tracker.Update(
+            [moved],
+            imageSize,
+            TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal(180, result.X);
     }
 
     [Fact]
@@ -1003,16 +1482,19 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TextRect changed = initial with { X = 110, Width = 110 };
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
-        TextRect first = Assert.Single(tracker.Update(
-            [changed],
-            imageSize,
-            TimeSpan.FromMilliseconds(500)));
-        TextRect confirmed = Assert.Single(tracker.Update(
-            [changed],
-            imageSize,
-            TimeSpan.FromMilliseconds(1000)));
+        TextRect confirmed = initial;
+        for (int frame = 1; frame <= 4; frame++)
+        {
+            confirmed = Assert.Single(tracker.Update(
+                [changed],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+            if (frame < 4)
+            {
+                Assert.Equal((100, 100), (confirmed.X, confirmed.Width));
+            }
+        }
 
-        Assert.Equal((100, 100), (first.X, first.Width));
         Assert.Equal((110, 110), (confirmed.X, confirmed.Width));
     }
 

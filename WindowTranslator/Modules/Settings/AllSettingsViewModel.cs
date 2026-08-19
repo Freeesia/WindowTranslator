@@ -21,7 +21,6 @@ using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Properties;
-using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
@@ -46,7 +45,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IReviewRequestService reviewRequestService;
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
-    private readonly IAutoTargetStore autoTargetStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
     private readonly ILogger<AllSettingsViewModel> logger;
@@ -81,9 +79,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private bool isOverlayPointSwap;
 
     [ObservableProperty]
-    private bool isEnableAutoTarget;
-
-    [ObservableProperty]
     private TargetSettingsViewModel selectedTarget;
 
     public IReadOnlyList<EnumItem<ViewMode>> ViewModes { get; } = Enum.GetValues<ViewMode>().Select(v => new EnumItem<ViewMode>(v)).ToArray();
@@ -91,8 +86,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public IReadOnlyList<EnumItem<OverlaySwitch>> OverlaySwitches { get; } = Enum.GetValues<OverlaySwitch>().Select(v => new EnumItem<OverlaySwitch>(v)).ToArray();
 
     public bool IsCheckableCapture => this.ViewMode == ViewMode.Overlay;
-
-    public ObservableCollection<string> AutoTargets { get; }
 
     public ObservableCollection<TargetSettingsViewModel> Targets { get; }
 
@@ -114,7 +107,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IReviewRequestService reviewRequestService,
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
-        [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
@@ -133,9 +125,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.IsEnableCaptureOverlay = common.IsEnableCaptureOverlay;
         this.OverlaySwitch = common.OverlaySwitch;
         this.IsOverlayPointSwap = common.IsOverlayPointSwap;
-        this.IsEnableAutoTarget = common.IsEnableAutoTarget;
-        this.AutoTargets = [.. autoTargetStore.AutoTargets];
-
         this.Targets = [.. options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
             .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
@@ -156,7 +145,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.reviewRequestService = reviewRequestService;
         this.dialogService = dialogService;
         this.presentationService = presentationService;
-        this.autoTargetStore = autoTargetStore;
         this.validators = validators;
         this.mainWindowModule = mainWindowModule;
         this.logger = logger;
@@ -225,10 +213,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public Task OpenReviewAsync()
         => this.reviewRequestService.OpenReviewPageAsync();
 
-    [RelayCommand]
-    public void DeleteAutoTarget(string item)
-        => this.AutoTargets.Remove(item);
-
     [RelayCommand(CanExecute = nameof(CanDeleteTargetSetting))]
     public void DeleteTargetSetting(TargetSettingsViewModel item)
         => this.Targets.Remove(item);
@@ -245,7 +229,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             Common = new()
             {
                 ViewMode = this.ViewMode,
-                IsEnableAutoTarget = this.IsEnableAutoTarget,
                 OverlaySwitch = this.OverlaySwitch,
                 IsOverlayPointSwap = this.IsOverlayPointSwap,
                 IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
@@ -253,6 +236,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             },
             Targets = this.Targets.ToDictionary(t => t.Name, t => new TargetSettings()
             {
+                IsEnableAutoTarget = t.IsEnableAutoTarget,
                 Language = new()
                 {
                     Source = t.Source,
@@ -305,10 +289,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         Directory.CreateDirectory(PathUtility.UserDir);
         using (var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None))
             await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
-        this.autoTargetStore.AutoTargets.Clear();
-        this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
-        this.autoTargetStore.Save();
-
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -465,20 +445,25 @@ public partial class TargetSettingsViewModel(
 
     [property: Category("SettingsViewModel|Misc")]
     [property: SortIndex(7)]
+    [ObservableProperty]
+    private bool isEnableAutoTarget = settings.IsEnableAutoTarget;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(8)]
     [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
     [property: FormatString("P1")]
     [ObservableProperty]
     private double overlayOpacity = settings.OverlayOpacity;
 
     [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(8)]
+    [property: SortIndex(9)]
     [ObservableProperty]
     private bool displayBusy = settings.DisplayBusy;
 
     [property: Category("SettingsViewModel|Misc")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
     [property: Slidable(0, 100, 1, 10, true, 1)]
-    [property: SortIndex(9)]
+    [property: SortIndex(10)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 

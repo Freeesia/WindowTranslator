@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>अनुवाद परिणाम प्रदर्शन मोड</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>स्वचालित अनुवाद लक्ष्य</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>अनुवाद के लिए चुने जाने पर एक बार प्रक्रिया लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
+    <value>ऐप लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>समग्र सेटिंग</value>

@@ -148,7 +148,6 @@ builder.Configuration
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
-builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
 builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
 builder.Services.AddScoped<IOcrTextTracker, OcrTextTracker>();
 builder.Services.AddHostedService<WindowMonitor>();

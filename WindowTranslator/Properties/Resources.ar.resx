@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>وضع عرض النتائج</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>أهداف الترجمة التلقائية</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>الترجمة تلقائياً عند بدء عملية محددة</value>
+    <value>ترجمة تلقائية عند تشغيل التطبيق</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>الإعدادات العامة</value>

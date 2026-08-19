@@ -282,31 +282,6 @@
                                     IsEnabled="{Binding IsCheckableCapture}" />
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="{x:Static properties:Resources.AutoTargets}">
-                            <DockPanel>
-                                <CheckBox
-                                    Content="{x:Static properties:Resources.IsEnableAutoTarget}"
-                                    DockPanel.Dock="Top"
-                                    IsChecked="{Binding IsEnableAutoTarget}" />
-                                <ui:ListView ItemsSource="{Binding AutoTargets}">
-                                    <ui:ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <DockPanel>
-                                                <ui:Button
-                                                    Command="{Binding DataContext.DeleteAutoTargetCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
-                                                    CommandParameter="{Binding}"
-                                                    Content="{ui:SymbolIcon Delete24}"
-                                                    DockPanel.Dock="Right" />
-                                                <TextBlock
-                                                    Margin="8,4"
-                                                    VerticalAlignment="Center"
-                                                    Text="{Binding}" />
-                                            </DockPanel>
-                                        </DataTemplate>
-                                    </ui:ListView.ItemTemplate>
-                                </ui:ListView>
-                            </DockPanel>
-                        </GroupBox>
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.TargetSpecificSettings}">

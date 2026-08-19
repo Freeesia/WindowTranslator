@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Chế độ hiển thị kết quả dịch</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Mục tiêu dịch tự động</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Dịch tự động khi quá trình đã chọn được bắt đầu sau khi nó được chọn để dịch.</value>
+    <value>Tự động dịch khi ứng dụng khởi động</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Cài đặt tổng thể</value>

@@ -58,6 +58,11 @@ public class CommonSettings
 public class TargetSettings
 {
     /// <summary>
+    /// 対象のウィンドウを検出したときに自動的に翻訳を開始するか
+    /// </summary>
+    public bool IsEnableAutoTarget { get; set; }
+
+    /// <summary>
     /// 翻訳言語のオプション
     /// </summary>
     public LanguageOptions Language { get; init; } = new();
