@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Translation result display mode</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Automatic translation target</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Translate automatically when a process is launched once selected for translation</value>
+    <value>Automatically translate when the app launches</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Overall setting</value>

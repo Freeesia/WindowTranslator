@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Modo ng pagpapakita ng resulta ng pagsasalin</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Mga awtomatikong target ng pagsasalin</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Awtomatikong magsalin kapag nagsimula ang prosesong dating napili bilang translation target</value>
+    <value>Awtomatikong isalin kapag nagboot ang app</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Pangkalahatang mga setting</value>
