@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Çeviri sonucu görüntüleme modu</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Otomatik çeviri hedefleri</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Daha önce çeviri hedefi olarak seçilen bir işlem başlatıldığında otomatik olarak çevir</value>
+    <value>Uygulama başlatıldığında otomatik olarak çevir</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Genel ayarlar</value>

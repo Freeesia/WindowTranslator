@@ -108,11 +108,6 @@ internal class Resources
     public static string AutoStartWithPC => ResourceManager.GetString("AutoStartWithPC", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "自動翻訳対象" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string AutoTargets => ResourceManager.GetString("AutoTargets", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "ビルド日時" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string BuildDate => ResourceManager.GetString("BuildDate", resourceCulture) ?? string.Empty;
@@ -298,7 +293,7 @@ internal class Resources
     public static string InvalidSettingsContent => ResourceManager.GetString("InvalidSettingsContent", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
+    /// "アプリが起動したら自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsEnableAutoTarget => ResourceManager.GetString("IsEnableAutoTarget", resourceCulture) ?? string.Empty;
 
@@ -341,6 +336,16 @@ internal class Resources
     /// "その他" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Misc => ResourceManager.GetString("Misc", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "マウスポインター判定の余白" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding => ResourceManager.GetString("MousePointerHitTestPadding", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "マウスポインター周辺の判定領域に追加するピクセル数" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding_Desc => ResourceManager.GetString("MousePointerHitTestPadding_Desc", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "すでにWindowTranslatorが起動中です" に類似しているローカライズされた文字列を検索します。

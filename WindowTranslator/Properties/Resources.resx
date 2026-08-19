@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>翻訳結果表示モード</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>自動翻訳対象</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する</value>
+    <value>アプリが起動したら自動的に翻訳する</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>全体設定</value>
