@@ -94,10 +94,14 @@ public partial class OverlayMainWindow : Window
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
-        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+        // ディスプレイの場合は仮想デスクトップチェックをスキップ
+        if (!this.processInfo.IsMonitor)
         {
-            var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.MainWindowHandle);
-            this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
+            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+            {
+                var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.MainWindowHandle);
+                this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
+            }
         }
 
         var extendedStyle = (WINDOW_EX_STYLE)GetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE) | WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
@@ -146,6 +150,14 @@ public partial class OverlayMainWindow : Window
     private unsafe void UpdateWindowPositionAndSize()
     {
         var sw = Stopwatch.StartNew();
+        
+        // ディスプレイの場合は専用の処理
+        if (this.processInfo.IsMonitor)
+        {
+            UpdateDisplayPositionAndSize();
+            return;
+        }
+        
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
         if (!GetWindowInfo(new(this.processInfo.MainWindowHandle), ref windowInfo))
         {
@@ -206,6 +218,63 @@ public partial class OverlayMainWindow : Window
         {
             return;
         }
+        this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
+        this.SetCurrentValue(LeftProperty, left / eDpiScale);
+        this.SetCurrentValue(TopProperty, top / eDpiScale);
+        this.SetCurrentValue(WidthProperty, width / eDpiScale);
+        this.SetCurrentValue(HeightProperty, height / eDpiScale);
+    }
+
+    private unsafe void UpdateDisplayPositionAndSize()
+    {
+        // モニターハンドルを取得（IntPtrとして既に持っている）
+        var monitorHandle = this.processInfo.MainWindowHandle;
+        var monitorInfo = default(MONITORINFOEXW);
+        monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+        
+        if (!GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo))
+        {
+            this.logger.LogWarning("Failed to get monitor info");
+            return;
+        }
+        
+        var left = monitorInfo.monitorInfo.rcMonitor.left;
+        var top = monitorInfo.monitorInfo.rcMonitor.top;
+        var width = monitorInfo.monitorInfo.rcMonitor.right - left;
+        var height = monitorInfo.monitorInfo.rcMonitor.bottom - top;
+        
+        // モニター座標の検証
+        if (width <= 0 || height <= 0)
+        {
+            this.logger.LogWarning($"Invalid monitor dimensions: {width}x{height}");
+            return;
+        }
+        
+        // モニターの解像度情報を取得
+        var mode = default(DEVMODEW);
+        var eDpiScale = GetDpiForSystem() / 96.0;
+        var rDpiScale = eDpiScale;
+        
+        if (EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode))
+        {
+            // EnumDisplaySettings が成功した場合のみ rDpiScale を計算
+            if (mode.dmPelsWidth > 0)
+            {
+                rDpiScale = eDpiScale * mode.dmPelsWidth / width;
+            }
+        }
+        else
+        {
+            this.logger.LogWarning("Failed to get display settings, using default DPI scale");
+        }
+        
+        GetCursorPos(out var nativePos);
+        var x = (nativePos.X - left) / eDpiScale;
+        var y = (nativePos.Y - top) / eDpiScale;
+        
+        this.logger.LogDebug($"Display: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2})");
+        this.SetCurrentValue(MousePosProperty, new Point(x, y));
+        this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
         this.SetCurrentValue(LeftProperty, left / eDpiScale);
         this.SetCurrentValue(TopProperty, top / eDpiScale);
