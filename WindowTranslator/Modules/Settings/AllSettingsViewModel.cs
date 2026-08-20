@@ -246,6 +246,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
+                IsOneShotMode = t.IsOneShotMode,
                 OverlayOpacity = t.OverlayOpacity,
                 MousePointerHitTestPadding = t.MousePointerHitTestPadding,
             }),
@@ -451,6 +452,11 @@ public partial class TargetSettingsViewModel(
     [property: SortIndex(9)]
     [ObservableProperty]
     private bool displayBusy = settings.DisplayBusy;
+
+    [property: Category("SettingsViewModel|Misc")]
+    [property: SortIndex(9)]
+    [ObservableProperty]
+    private bool isOneShotMode = settings.IsOneShotMode;
 
     [property: Category("SettingsViewModel|Misc")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]

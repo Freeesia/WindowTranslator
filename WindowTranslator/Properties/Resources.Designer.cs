@@ -303,6 +303,11 @@ internal class Resources
     public static string IsEnableCaptureOverlay => ResourceManager.GetString("IsEnableCaptureOverlay", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "ホットキーを押したときだけOCR・翻訳する" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string IsOneShotMode => ResourceManager.GetString("IsOneShotMode", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "最新バージョンをご利用中です。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsLatest => ResourceManager.GetString("IsLatest", resourceCulture) ?? string.Empty;
