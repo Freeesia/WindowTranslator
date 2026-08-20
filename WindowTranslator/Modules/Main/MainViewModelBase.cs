@@ -150,7 +150,14 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         else
         {
-            this.analyzingBmp?.Dispose();
+            if (this.analyzingBmp is { } previousBmp)
+            {
+                if (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight)
+                {
+                    this.ocrTextTracker.Reset();
+                }
+                previousBmp.Dispose();
+            }
             this.analyzingBmp = sbmp;
         }
         if (sbmp is null)
