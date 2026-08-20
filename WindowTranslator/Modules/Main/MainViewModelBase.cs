@@ -40,7 +40,6 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly double overlayOpacity;
     private readonly double mousePointerHitTestPadding;
     private TextRect[]? lastRequested;
-    private System.Drawing.Size? lastOcrImageSize;
 
     [ObservableProperty]
     private string title;
@@ -107,7 +106,7 @@ public abstract partial class MainViewModelBase : IDisposable
         if (value)
         {
             this.OcrTexts.Clear();
-            this.ResetOcrTextTracker();
+            this.ocrTextTracker.Reset();
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
         }
@@ -151,7 +150,14 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         else
         {
-            this.analyzingBmp?.Dispose();
+            if (this.analyzingBmp is { } previousBmp)
+            {
+                if (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight)
+                {
+                    this.ocrTextTracker.Reset();
+                }
+                previousBmp.Dispose();
+            }
             this.analyzingBmp = sbmp;
         }
         if (sbmp is null)
@@ -165,20 +171,7 @@ public abstract partial class MainViewModelBase : IDisposable
             try
             {
                 texts = await this.ocr.RecognizeAsync(sbmp);
-                System.Drawing.Size imageSize = new(sbmp.PixelWidth, sbmp.PixelHeight);
-                System.Drawing.Size? previousSize = this.lastOcrImageSize;
-                if (ResetOcrTextTrackerIfImageSizeChanged(this.ocrTextTracker, previousSize, imageSize)
-                    && previousSize is { } size)
-                {
-                    this.logger.LogDebug(
-                        "Capture size changed from {PreviousWidth}x{PreviousHeight} to {Width}x{Height}; resetting OCR tracker",
-                        size.Width,
-                        size.Height,
-                        imageSize.Width,
-                        imageSize.Height);
-                }
-                this.lastOcrImageSize = imageSize;
-                texts = this.ocrTextTracker.Update(texts, imageSize);
+                texts = this.ocrTextTracker.Update(texts, new(sbmp.PixelWidth, sbmp.PixelHeight));
             }
             catch (ObjectDisposedException)
             {
@@ -256,26 +249,6 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.OcrTexts.Add(text);
         }
-    }
-
-    private void ResetOcrTextTracker()
-    {
-        this.ocrTextTracker.Reset();
-        this.lastOcrImageSize = null;
-    }
-
-    internal static bool ResetOcrTextTrackerIfImageSizeChanged(
-        IOcrTextTracker ocrTextTracker,
-        System.Drawing.Size? previousSize,
-        System.Drawing.Size imageSize)
-    {
-        ArgumentNullException.ThrowIfNull(ocrTextTracker);
-        if (previousSize is null || previousSize == imageSize)
-        {
-            return false;
-        }
-        ocrTextTracker.Reset();
-        return true;
     }
 
     private async Task TranslateAsync(IEnumerable<TextRect> texts)
