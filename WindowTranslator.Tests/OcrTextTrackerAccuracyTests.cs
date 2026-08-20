@@ -75,24 +75,6 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.InRange(averageTrackingAccuracy, 0.70, 0.995);
     }
 
-    [Theory]
-    [InlineData(1200, 600)]
-    [InlineData(1000, 700)]
-    public void ImageSizeChangeResetsExistingTracks(int width, int height)
-    {
-        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
-        TextRect initial = new("Before resize", 100, 100, 160, 30, 24, false);
-        TextRect resized = new("After resize", 300, 200, 150, 30, 24, false);
-        tracker.Update([initial], new(1000, 600), TimeSpan.Zero);
-
-        IReadOnlyList<TextRect> result = tracker.Update(
-            [resized],
-            new(width, height),
-            TimeSpan.FromMilliseconds(500));
-
-        Assert.Equal(resized, Assert.Single(result));
-    }
-
     [Fact]
     public void RandomizedTraceDoesNotLeaveSplitFragmentsAfterTheWholeRegionReturns()
     {

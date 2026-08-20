@@ -45,7 +45,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private readonly List<TextTrack> tracks = [];
     private Dictionary<string, int> mergeCandidates = [];
     private Dictionary<long, int> dormantRestoreCandidates = [];
-    private Size? lastImageSize;
     private long nextTrackId;
 
     public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize)
@@ -59,17 +58,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         ArgumentNullException.ThrowIfNull(observations);
         lock (this.syncRoot)
         {
-            if (this.lastImageSize is { } previousSize && previousSize != imageSize)
-            {
-                this.logger.LogDebug(
-                    "OCR image size changed from {PreviousWidth}x{PreviousHeight} to {Width}x{Height}; resetting tracks",
-                    previousSize.Width,
-                    previousSize.Height,
-                    imageSize.Width,
-                    imageSize.Height);
-                this.ResetCore();
-            }
-            this.lastImageSize = imageSize;
             return this.UpdateCore(observations, imageSize, timestamp);
         }
     }
@@ -78,17 +66,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     {
         lock (this.syncRoot)
         {
-            this.ResetCore();
+            this.tracks.Clear();
+            this.mergeCandidates.Clear();
+            this.dormantRestoreCandidates.Clear();
+            this.nextTrackId = 0;
         }
-    }
-
-    private void ResetCore()
-    {
-        this.tracks.Clear();
-        this.mergeCandidates.Clear();
-        this.dormantRestoreCandidates.Clear();
-        this.lastImageSize = null;
-        this.nextTrackId = 0;
     }
 
     private TextRect[] UpdateCore(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
