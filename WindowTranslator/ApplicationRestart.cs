@@ -7,7 +7,6 @@ namespace WindowTranslator;
 internal static class ApplicationRestart
 {
     internal const string RestartProcessIdArgument = "--windowtranslator-restart-pid";
-    private static readonly TimeSpan PreviousProcessWaitTimeout = TimeSpan.FromSeconds(30);
 
     public static void Restart()
     {
@@ -38,7 +37,7 @@ internal static class ApplicationRestart
             try
             {
                 using var process = Process.GetProcessById(processId.Value);
-                _ = process.WaitForExit(PreviousProcessWaitTimeout);
+                process.WaitForExit();
             }
             catch (ArgumentException)
             {

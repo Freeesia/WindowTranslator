@@ -204,6 +204,11 @@
                         </Style>
                     </ui:Button.Style>
                 </ui:Button>
+                <ui:Button
+                    Command="{Binding PluginStore.RestartCommand}"
+                    Content="{x:Static properties:Resources.LoadPlugins}"
+                    DockPanel.Dock="Right"
+                    Visibility="{Binding PluginStore.RequiresRestart, Converter={StaticResource b2vConv}}" />
                 <ui:ToggleSwitch
                     Margin="4"
                     Content="{x:Static properties:Resources.AutoStartWithPC}"

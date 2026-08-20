@@ -501,6 +501,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>プラグインの変更を適用するには、WindowTranslatorを再起動してください。</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>プラグイン読み込み</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>プロジェクトページ</value>
   </data>

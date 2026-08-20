@@ -48,6 +48,8 @@ public sealed class NuGetPluginService : BackgroundService
     private readonly AsyncSemaphore refreshLock = new(1);
     private readonly object snapshotLock = new();
     private PluginStoreSnapshot packageSnapshot = PluginStoreSnapshot.Empty;
+    private bool hideDisclaimer;
+    private int restartRequired;
     private int disposed;
 
     internal NuGetPluginService(
@@ -65,9 +67,14 @@ public sealed class NuGetPluginService : BackgroundService
         this.manifestPath = Path.Combine(this.nugetPluginsDir, "nuget-manifest.json");
         this.hostPackageVersions = hostPackageVersions;
         this.hostMajorVersion = hostMajorVersion;
+        this.hideDisclaimer = TryLoadHideDisclaimer(this.manifestPath, this.logger);
     }
 
     internal event EventHandler? PackageInformationUpdated;
+
+    internal bool HideDisclaimer => Volatile.Read(ref this.hideDisclaimer);
+
+    internal bool IsRestartRequired => Volatile.Read(ref this.restartRequired) != 0;
 
     internal PluginStoreSnapshot PackageSnapshot
     {
@@ -268,20 +275,27 @@ public sealed class NuGetPluginService : BackgroundService
             Directory.Move(pluginOperation.TargetPath, pluginOperation.BackupPath);
         }
         Directory.Move(pluginOperation.WorkingPath, pluginOperation.TargetPath);
+        progress?.Report(95);
 
-        var updatedManifest = new InstalledManifest(
-        [
-            .. currentManifest.Packages.Where(package =>
-                !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)),
-            new(
-                packageId,
-                version,
-                this.hostMajorVersion,
-                abstractionsVersionRange.ToString()),
-        ]);
+        var updatedManifest = currentManifest with
+        {
+            Packages =
+            [
+                .. currentManifest.Packages.Where(package =>
+                    !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)),
+                new(
+                    packageId,
+                    version,
+                    this.hostMajorVersion,
+                    abstractionsVersionRange.ToString()),
+            ],
+            HideDisclaimer = this.HideDisclaimer,
+        };
         await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
         pluginOperation.Commit();
         UpdateInstalledPackages(updatedManifest.Packages);
+        Volatile.Write(ref this.restartRequired, 1);
+        progress?.Report(100);
 
         this.logger.LogInformation(
             "パッケージのインストール完了: {PackageId} {Version} -> {TargetDir}",
@@ -299,14 +313,37 @@ public sealed class NuGetPluginService : BackgroundService
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
         this.logger.LogInformation("パッケージをアンインストール: {PackageId}", packageId);
         var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
-        var updatedManifest = new InstalledManifest([.. manifest.Packages.Where(package =>
-            !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase))]);
+        var updatedManifest = manifest with
+        {
+            Packages = [.. manifest.Packages.Where(package =>
+                !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase))],
+            HideDisclaimer = this.HideDisclaimer,
+        };
         await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
         UpdateInstalledPackages(updatedManifest.Packages);
+        Volatile.Write(ref this.restartRequired, 1);
 
         this.logger.LogInformation(
             "パッケージ {PackageId} をアンインストール対象として記録しました。管理フォルダは次回起動時に削除されます。",
             packageId);
+    }
+
+    internal async Task SetHideDisclaimerAsync(
+        bool value,
+        CancellationToken cancellationToken = default)
+    {
+        Volatile.Write(ref this.hideDisclaimer, value);
+        using var operation = await this.operationLock.EnterAsync(cancellationToken);
+        var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
+        var currentValue = this.HideDisclaimer;
+        if (manifest.HideDisclaimer == currentValue)
+        {
+            return;
+        }
+
+        await SaveManifestAsync(
+            manifest with { HideDisclaimer = currentValue },
+            cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<NuGetPackageInfo?> CreateCompatiblePackageInfoAsync(
@@ -480,6 +517,28 @@ public sealed class NuGetPluginService : BackgroundService
     private Task SaveManifestAsync(InstalledManifest manifest, CancellationToken cancellationToken)
         => SaveManifestAsync(this.manifestPath, manifest, cancellationToken);
 
+    private static bool TryLoadHideDisclaimer(
+        string manifestPath,
+        ILogger<NuGetPluginService> logger)
+    {
+        if (!File.Exists(manifestPath))
+        {
+            return false;
+        }
+
+        try
+        {
+            using var stream = File.OpenRead(manifestPath);
+            return JsonSerializer.Deserialize<InstalledManifest>(stream, ManifestJsonOptions)
+                ?.HideDisclaimer ?? false;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            logger.LogWarning(ex, "プラグインマニフェストから免責事項の表示設定を読み込めませんでした。");
+            return false;
+        }
+    }
+
     internal static async Task SaveManifestAsync(
         string manifestPath,
         InstalledManifest manifest,
@@ -541,7 +600,9 @@ public record InstalledPackageInfo(
 }
 
 /// <summary>NuGetプラグインの管理マニフェスト</summary>
-public record InstalledManifest(List<InstalledPackageInfo> Packages);
+public record InstalledManifest(
+    List<InstalledPackageInfo> Packages,
+    bool HideDisclaimer = false);
 
 internal sealed record PluginStoreSnapshot(
     IReadOnlyList<InstalledPackageInfo> InstalledPackages,

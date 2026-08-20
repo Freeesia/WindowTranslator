@@ -492,6 +492,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>Перезапустите WindowTranslator для применения изменений плагина.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>Загрузить плагины</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Страница проекта</value>
   </data>

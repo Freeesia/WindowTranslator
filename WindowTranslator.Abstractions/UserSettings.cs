@@ -40,11 +40,6 @@ public class CommonSettings
     /// オーバレイのポインター挙動を逆にするか
     /// </summary>
     public bool IsOverlayPointSwap { get; set; }
-
-    /// <summary>
-    /// プラグインストアの免責事項を非表示にするか
-    /// </summary>
-    public bool HidePluginStoreDisclaimer { get; set; }
 }
 
 /// <summary>

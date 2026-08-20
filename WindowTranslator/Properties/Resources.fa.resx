@@ -486,6 +486,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>لطفاً WindowTranslator را مجدداً راه‌اندازی کنید تا تغییرات افزونه اعمال شود.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>بارگذاری افزونه‌ها</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>صفحه پروژه</value>
   </data>

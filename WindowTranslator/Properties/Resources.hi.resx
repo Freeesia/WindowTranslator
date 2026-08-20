@@ -494,6 +494,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>प्लगइन परिवर्तन लागू करने के लिए कृपया WindowTranslator को पुनः आरंभ करें।</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>प्लगइन लोड करें</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>प्रोजेक्ट पेज</value>
   </data>

@@ -501,6 +501,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>플러그인 변경 사항을 적용하려면 WindowTranslator를 다시 시작하세요.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>플러그인 불러오기</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>프로젝트 페이지</value>
   </data>

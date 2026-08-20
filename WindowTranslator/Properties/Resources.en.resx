@@ -501,6 +501,9 @@ Monitors are not supported.
   <data name="RestartRequired" xml:space="preserve">
     <value>Please restart WindowTranslator to apply plugin changes.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>Load plugins</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Project page</value>
   </data>

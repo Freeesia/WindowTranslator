@@ -501,6 +501,9 @@ Màn hình không được hỗ trợ.
   <data name="RestartRequired" xml:space="preserve">
     <value>Vui lòng khởi động lại WindowTranslator để áp dụng thay đổi plugin.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>Tải plugin</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Trang dự án</value>
   </data>

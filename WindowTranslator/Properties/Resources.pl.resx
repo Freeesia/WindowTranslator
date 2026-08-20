@@ -501,6 +501,9 @@ Monitory nie są obsługiwane.
   <data name="RestartRequired" xml:space="preserve">
     <value>Uruchom ponownie WindowTranslator, aby zastosować zmiany wtyczki.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>Wczytaj wtyczki</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Strona projektu</value>
   </data>

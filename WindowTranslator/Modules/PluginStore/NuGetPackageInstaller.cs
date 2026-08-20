@@ -44,6 +44,7 @@ internal sealed class NuGetPackageInstaller(
             "WindowTranslatorPlugins",
             Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workDirectory);
+        progress?.Report(0);
 
         try
         {
@@ -53,15 +54,19 @@ internal sealed class NuGetPackageInstaller(
                 workDirectory,
                 progress,
                 cancellationToken).ConfigureAwait(false);
+            progress?.Report(60);
 
             Directory.CreateDirectory(destinationDirectory);
-            foreach (var artifact in artifacts.OrderByDescending(a =>
-                         a.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)))
+            var orderedArtifacts = artifacts.OrderByDescending(a =>
+                a.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)).ToArray();
+            for (var index = 0; index < orderedArtifacts.Length; index++)
             {
+                var artifact = orderedArtifacts[index];
                 ExtractPackageAssets(
                     artifact.PackagePath,
                     destinationDirectory,
                     requirePluginAssembly: artifact.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase));
+                progress?.Report(60 + (30d * (index + 1) / orderedArtifacts.Length));
             }
 
             var rootPackage = artifacts.First(artifact =>
@@ -310,7 +315,7 @@ internal sealed class NuGetPackageInstaller(
         CancellationToken cancellationToken)
     {
         this.logger.LogInformation("NuGetパッケージをダウンロード中: {PackageId} {Version}", packageId, version);
-        progress?.Report(0);
+        progress?.Report(10);
         await using var destination = File.Create(destinationPath);
         var copied = await this.packageResource.CopyNupkgToStreamAsync(
             packageId,
@@ -323,7 +328,7 @@ internal sealed class NuGetPackageInstaller(
         {
             throw new InvalidOperationException($"NuGetパッケージを取得できませんでした: {packageId} {version}");
         }
-        progress?.Report(1);
+        progress?.Report(50);
     }
 
     private static PackageMetadata ReadPackageMetadata(string packagePath)

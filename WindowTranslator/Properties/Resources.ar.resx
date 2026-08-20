@@ -492,6 +492,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>يرجى إعادة تشغيل WindowTranslator لتطبيق تغييرات المكون الإضافي.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>تحميل المكونات الإضافية</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>صفحة المشروع</value>
   </data>

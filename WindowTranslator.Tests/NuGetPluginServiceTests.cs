@@ -80,8 +80,9 @@ public sealed class NuGetPluginServiceTests
                     }));
 
             using var service = CreateService(handler, testDirectory, hostMajorVersion: 7);
+            var progress = new RecordingProgress();
 
-            await service.InstallPackageAsync("Root.Plugin", "1.0.0");
+            await service.InstallPackageAsync("Root.Plugin", "1.0.0", progress);
 
             var pluginDirectory = Path.Combine(testDirectory, "Root.Plugin");
             Assert.Equal("root", await File.ReadAllTextAsync(Path.Combine(pluginDirectory, "Root.Plugin.dll")));
@@ -120,6 +121,11 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal("1.0.0", package.Version);
             Assert.Equal(7, package.HostMajorVersion);
             Assert.True(package.IsCompatible);
+            Assert.Equal(0, progress.Values.First());
+            Assert.Equal(100, progress.Values.Last());
+            Assert.All(progress.Values, value => Assert.InRange(value, 0, 100));
+            Assert.True(progress.Values.SequenceEqual(progress.Values.OrderBy(value => value)));
+            Assert.Contains(progress.Values, value => value is > 0 and < 100);
         }
         finally
         {
@@ -742,6 +748,47 @@ public sealed class NuGetPluginServiceTests
                 package.Versions);
             Assert.Equal("https://nuget.test/icons/test-plugin.png", package.IconUrl);
             Assert.Equal([true], handler.RequestedPrereleaseOptions);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task DisclaimerPreferenceIsStoredInThePluginManifestAndPreservedByPluginOperations()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
+                    }));
+
+            using (var service = CreateService(handler, testDirectory))
+            {
+                await service.SetHideDisclaimerAsync(true);
+                await service.InstallPackageAsync("Root.Plugin", "1.0.0");
+                await service.UninstallPackageAsync("Root.Plugin");
+            }
+
+            using (var service = CreateService(handler, testDirectory))
+            {
+                Assert.True(service.HideDisclaimer);
+                await service.SetHideDisclaimerAsync(false);
+            }
+
+            using var reloadedService = CreateService(handler, testDirectory);
+            Assert.False(reloadedService.HideDisclaimer);
         }
         finally
         {
@@ -1799,6 +1846,13 @@ public sealed class NuGetPluginServiceTests
             pluginDirectory,
             hostPackageVersions ?? NuGetPluginService.CreateHostPackageVersions(),
             hostMajorVersion ?? AppInfo.Instance.Version.Major);
+
+    private sealed class RecordingProgress : IProgress<double>
+    {
+        public List<double> Values { get; } = [];
+
+        public void Report(double value) => this.Values.Add(value);
+    }
 
     private static TestPackageVersion CreatePluginVersionMetadata(
         string version,

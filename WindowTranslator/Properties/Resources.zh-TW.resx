@@ -501,6 +501,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>請重新啟動 WindowTranslator 以套用外掛程式變更。</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>載入外掛程式</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>專案頁面</value>
   </data>

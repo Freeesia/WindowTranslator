@@ -501,6 +501,9 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>请重启 WindowTranslator 以应用插件更改。</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>加载插件</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>项目页面</value>
   </data>

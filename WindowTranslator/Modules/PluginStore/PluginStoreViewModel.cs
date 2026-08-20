@@ -33,6 +33,9 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool hideDisclaimer;
 
+    [ObservableProperty]
+    private bool requiresRestart;
+
     public bool HasError => this.ErrorMessage is not null;
 
     public PluginPackageViewModel? SelectedPackage
@@ -74,8 +77,25 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
         this.nugetService = nugetService;
         this.logger = logger;
         this.dialogService = dialogService;
+        this.hideDisclaimer = this.nugetService.HideDisclaimer;
+        this.requiresRestart = this.nugetService.IsRestartRequired;
         this.nugetService.PackageInformationUpdated += OnPackageInformationUpdated;
         ApplyPackageSnapshot(this.nugetService.PackageSnapshot);
+    }
+
+    partial void OnHideDisclaimerChanged(bool value)
+        => _ = SaveHideDisclaimerAsync(value);
+
+    private async Task SaveHideDisclaimerAsync(bool value)
+    {
+        try
+        {
+            await this.nugetService.SetHideDisclaimerAsync(value).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "プラグインストアの免責事項の表示設定を保存できませんでした。");
+        }
     }
 
     private void OnPackageInformationUpdated(object? sender, EventArgs e)
@@ -200,6 +220,7 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
             return;
         }
 
+        package.InstallProgress = 0;
         package.IsInstalling = true;
         try
         {
@@ -214,7 +235,7 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
             package.IsInstalled = true;
             package.InstalledVersion = version;
             package.IsCompatible = true;
-            package.InstallProgress = 0;
+            this.RequiresRestart = this.nugetService.IsRestartRequired;
 
             this.logger.LogInformation("プラグインのインストール完了: {PackageId}", package.Id);
 
@@ -266,6 +287,7 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
             package.IsInstalled = false;
             package.InstalledVersion = null;
             package.IsCompatible = true;
+            this.RequiresRestart = this.nugetService.IsRestartRequired;
 
             await ShowRestartDialogAsync(Resources.Uninstall).ConfigureAwait(true);
         }
@@ -297,8 +319,16 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
         }, cancellationToken).ConfigureAwait(true);
         if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
         {
+            await SaveHideDisclaimerAsync(this.HideDisclaimer).ConfigureAwait(true);
             ApplicationRestart.Restart();
         }
+    }
+
+    [RelayCommand]
+    private async Task RestartAsync()
+    {
+        await SaveHideDisclaimerAsync(this.HideDisclaimer).ConfigureAwait(true);
+        ApplicationRestart.Restart();
     }
 
     private void OnSelectedPackagePropertyChanged(object? sender, PropertyChangedEventArgs e)

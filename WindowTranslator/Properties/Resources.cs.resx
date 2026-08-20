@@ -382,6 +382,9 @@ Monitory nejsou podporovány.
   <data name="RestartRequired" xml:space="preserve">
     <value>Restartujte WindowTranslator, aby se změny pluginu projevily.</value>
   </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>Načíst pluginy</value>
+  </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Stránka projektu</value>
   </data>
