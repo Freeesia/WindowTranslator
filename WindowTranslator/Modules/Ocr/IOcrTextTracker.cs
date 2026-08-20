@@ -8,7 +8,7 @@ namespace WindowTranslator.Modules.Ocr;
 public interface IOcrTextTracker
 {
     /// <summary>
-    /// 現在フレームのOCR観測でトラックを更新する。
+    /// 現在フレームのOCR観測でトラックを更新する。画像サイズが変わった場合は既存のトラックを破棄する。
     /// </summary>
     IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize);
 
