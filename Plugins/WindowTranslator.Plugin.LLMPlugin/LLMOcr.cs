@@ -64,14 +64,11 @@ public sealed class LLMOcr : IOcrModule
     private readonly ILogger<LLMOcr> logger;
     private readonly SystemChatMessage system;
     private readonly ChatClient client;
-    private readonly List<PriorityRect> priorityRects;
 
-    public LLMOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnapshot<BasicOcrParam> ocrParam, ILogger<LLMOcr> logger)
+    public LLMOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<LLMOcr> logger)
     {
         var options = llmOptions.Value;
         this.logger = logger;
-        this.priorityRects = ocrParam.Value.PriorityRects ?? [];
-
         if (string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.Model))
         {
             throw new AppUserException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
@@ -107,10 +104,10 @@ public sealed class LLMOcr : IOcrModule
             clientOptions);
     }
 
-    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
-        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
+    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+        => OcrUtility.RecognizeRegionsAsync(input, RecognizeRegionAsync);
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap _)
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
     {
         var bytes = await bitmap.EncodeToJpegBytes().ConfigureAwait(false);
         var image = BinaryData.FromBytes(bytes);
@@ -152,7 +149,8 @@ public sealed class LLMOcr : IOcrModule
                     var widthPx = xMaxPx - xMinPx;
                     var heightPx = yMaxPx - yMinPx;
                     return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
-                });
+                })
+                .ToArray();
         }
         catch (Exception ex)
         {

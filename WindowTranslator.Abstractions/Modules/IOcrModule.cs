@@ -15,11 +15,28 @@ public interface IOcrModule
 
 #if WINDOWS
     /// <summary>
-    /// 画像からテキストを認識する
+    /// 1回のキャプチャーに含まれるOCR対象画像からテキストを認識する
     /// </summary>
-    ValueTask<IEnumerable<TextRect>> RecognizeAsync(Windows.Graphics.Imaging.SoftwareBitmap bitmap);
+    ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input);
 #endif
 }
+
+#if WINDOWS
+/// <summary>
+/// 1回のキャプチャーに対するOCR入力
+/// </summary>
+/// <param name="Source">全体のコンテキストを把握するための元画像</param>
+/// <param name="Regions">実際にOCRする範囲の一覧</param>
+public sealed record OcrCaptureInput(
+    Windows.Graphics.Imaging.SoftwareBitmap Source,
+    IReadOnlyList<OcrRegionInput> Regions);
+
+/// <summary>
+/// 1つのOCR対象範囲
+/// </summary>
+/// <param name="Bounds">全体画像上の切り出し範囲</param>
+public sealed record OcrRegionInput(RectInfo Bounds);
+#endif
 
 /// <summary>
 /// 基本的なOCRパラメータ

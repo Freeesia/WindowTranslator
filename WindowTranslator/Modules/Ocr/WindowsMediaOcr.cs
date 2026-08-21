@@ -30,7 +30,6 @@ public sealed partial class WindowsMediaOcr(
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
-    private readonly List<PriorityRect> priorityRects = ocrParam.Value.PriorityRects ?? [];
     private readonly int brightness = ocrParam.Value.Brightness;
     private readonly int contrast = ocrParam.Value.Contrast;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
@@ -39,10 +38,16 @@ public sealed partial class WindowsMediaOcr(
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
 
-    public ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
-        => PriorityRectRecognizer.RecognizeAsync(bitmap, this.priorityRects, RecognizeCoreAsync);
+    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    {
+        var baseWidth = input.Source.PixelWidth * this.scale;
+        var baseHeight = input.Source.PixelHeight * this.scale;
+        return OcrUtility.RecognizeRegionsAsync(
+            input,
+            bitmap => RecognizeRegionInputAsync(bitmap, baseWidth, baseHeight));
+    }
 
-    private async ValueTask<IEnumerable<TextRect>> RecognizeCoreAsync(SoftwareBitmap bitmap, SoftwareBitmap source)
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionInputAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
     {
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
@@ -70,7 +75,7 @@ public sealed partial class WindowsMediaOcr(
 
         try
         {
-            return await RecognizeRegionAsync(workingBitmap, source.PixelWidth * this.scale, source.PixelHeight * this.scale);
+            return await RecognizeRegionAsync(workingBitmap, baseWidth, baseHeight);
         }
         finally
         {
@@ -87,7 +92,7 @@ public sealed partial class WindowsMediaOcr(
     /// <param name="workingBitmap">認識対象の画像</param>
     /// <param name="baseWidth">画像全体を基準にした閾値の計算に使う幅</param>
     /// <param name="baseHeight">画像全体を基準にした閾値の計算に使う高さ</param>
-    private async ValueTask<IEnumerable<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, double baseWidth, double baseHeight)
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, double baseWidth, double baseHeight)
     {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);

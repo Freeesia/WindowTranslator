@@ -1,5 +1,6 @@
 ﻿#if WINDOWS
 using Windows.Graphics.Imaging;
+using WindowTranslator.Modules;
 
 namespace WindowTranslator;
 
@@ -23,25 +24,23 @@ public static class PriorityRectRecognizer
     /// </remarks>
     /// <param name="bitmap">認識対象の画像</param>
     /// <param name="priorityRects">OCR対象範囲のリスト</param>
-    /// <param name="recognizeAsync">
-    /// 画像を認識する処理。
-    /// 第1引数に認識対象の画像（OCR対象範囲の場合は切り出した画像）、第2引数に元の全体画像を渡す。
-    /// 画像全体のサイズを基準にした閾値は第2引数を使うことで、切り出した画像でも全体画像と同じ基準で判定できる。
-    /// 結果は第1引数の画像の座標系で返す
-    /// </param>
+    /// <param name="recognizeAsync">1回のキャプチャーに含まれるOCR対象画像をまとめて認識する処理</param>
     /// <returns>認識結果</returns>
-    public static async ValueTask<IEnumerable<TextRect>> RecognizeAsync(
+    public static async ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(
         SoftwareBitmap bitmap,
         IReadOnlyList<PriorityRect> priorityRects,
-        Func<SoftwareBitmap, SoftwareBitmap, ValueTask<IEnumerable<TextRect>>> recognizeAsync)
+        Func<OcrCaptureInput, ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>>> recognizeAsync)
     {
         if (priorityRects.Count == 0)
         {
-            return await recognizeAsync(bitmap, bitmap).ConfigureAwait(false);
+            var fullResults = await recognizeAsync(
+                new(bitmap, [new(new(0, 0, bitmap.PixelWidth, bitmap.PixelHeight))]))
+                .ConfigureAwait(false);
+            return fullResults.SelectMany(r => r).ToArray();
         }
 
-        var results = new List<TextRect>();
-
+        var regions = new List<OcrRegionInput>();
+        var rects = new List<(RectInfo CropRect, string Keyword)>();
         foreach (var priorityRect in priorityRects)
         {
             var absRect = priorityRect.ToAbsoluteRect(bitmap.PixelWidth, bitmap.PixelHeight)
@@ -53,18 +52,28 @@ public static class PriorityRectRecognizer
             }
 
             var cropRect = absRect.ToPixelRect();
-            using var cropped = bitmap.Crop(
-                (int)cropRect.X,
-                (int)cropRect.Y,
-                (int)cropRect.Width,
-                (int)cropRect.Height);
-            var rectResults = (await recognizeAsync(cropped, bitmap).ConfigureAwait(false))
+            regions.Add(new(cropRect));
+            rects.Add((cropRect, priorityRect.Keyword));
+        }
+
+        if (regions.Count == 0)
+        {
+            return [];
+        }
+
+        var captureResults = await recognizeAsync(new(bitmap, regions)).ConfigureAwait(false);
+        var results = new List<TextRect>();
+
+        foreach (var (regionResults, rect) in captureResults.Zip(rects))
+        {
+            var (cropRect, keyword) = rect;
+            var offsetResults = regionResults
                 // 切り出し位置分オフセットして全体画像の座標系に変換し、キーワードを翻訳コンテキストとして設定する
-                .Select(r => r.Offset(cropRect.X, cropRect.Y, priorityRect.Keyword))
+                .Select(r => r.Offset(cropRect.X, cropRect.Y, keyword))
                 .Where(r => !IsCoveredBy(r, results))
                 .ToArray();
 
-            results.AddRange(rectResults);
+            results.AddRange(offsetResults);
         }
 
         return results;
