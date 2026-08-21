@@ -38,7 +38,16 @@ public sealed partial class WindowsMediaOcr(
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    {
+        var baseWidth = input.Source.PixelWidth * this.scale;
+        var baseHeight = input.Source.PixelHeight * this.scale;
+        return OcrUtility.RecognizeRegionsAsync(
+            input,
+            bitmap => RecognizeRegionInputAsync(bitmap, baseWidth, baseHeight));
+    }
+
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionInputAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
     {
         var newWidth = (uint)(bitmap.PixelWidth * scale);
         var newHeight = (uint)(bitmap.PixelHeight * scale);
@@ -64,6 +73,27 @@ public sealed partial class WindowsMediaOcr(
         }
         this.cts.Token.ThrowIfCancellationRequested();
 
+        try
+        {
+            return await RecognizeRegionAsync(workingBitmap, baseWidth, baseHeight);
+        }
+        finally
+        {
+            if (bitmap != workingBitmap)
+            {
+                workingBitmap.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="baseWidth">画像全体を基準にした閾値の計算に使う幅</param>
+    /// <param name="baseHeight">画像全体を基準にした閾値の計算に使う高さ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, double baseWidth, double baseHeight)
+    {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
         this.cts.Token.ThrowIfCancellationRequested();
@@ -95,7 +125,7 @@ public sealed partial class WindowsMediaOcr(
             .Lines
             .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < workingBitmap.PixelHeight * 0.1)
+            .Where(w => w.Height < baseHeight * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -103,8 +133,8 @@ public sealed partial class WindowsMediaOcr(
             return lineResults;
         }
 
-        var xt = xPosThrethold * workingBitmap.PixelWidth;
-        var yt = yPosThrethold * workingBitmap.PixelHeight;
+        var xt = xPosThrethold * baseWidth;
+        var yt = yPosThrethold * baseHeight;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
@@ -138,11 +168,6 @@ public sealed partial class WindowsMediaOcr(
                 } while (merged);
                 results.Add(temp);
             }
-        }
-
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
         }
 
         return results.Select(r => ToTextRect(r, this.scale, angle))
@@ -292,12 +317,6 @@ public sealed partial class WindowsMediaOcr(
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換
-        x /= scale;
-        y /= scale;
-        width /= scale;
-        height /= scale;
-        fontSize /= scale;
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         // または、
         // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
@@ -311,7 +330,8 @@ public sealed partial class WindowsMediaOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle }
+            .RestoreScale(scale);
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)

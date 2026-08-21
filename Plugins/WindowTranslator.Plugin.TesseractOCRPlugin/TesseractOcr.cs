@@ -43,7 +43,16 @@ public sealed class TesseractOcr(
     private readonly int brightness = ocrParam.Value.Brightness;
     private readonly int contrast = ocrParam.Value.Contrast;
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    {
+        var baseWidth = input.Source.PixelWidth * this.scale;
+        var baseHeight = input.Source.PixelHeight * this.scale;
+        return OcrUtility.RecognizeRegionsAsync(
+            input,
+            bitmap => RecognizeRegionInputAsync(bitmap, baseWidth, baseHeight));
+    }
+
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionInputAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
     {
         // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
         var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
@@ -64,9 +73,31 @@ public sealed class TesseractOcr(
         }
         this.cts.Token.ThrowIfCancellationRequested();
 
+        try
+        {
+            return await RecognizeRegionAsync(workingBitmap, baseWidth, baseHeight);
+        }
+        finally
+        {
+            if (bitmap != workingBitmap)
+            {
+                workingBitmap.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="bitmap">認識対象の画像</param>
+    /// <param name="baseWidth">全体画像を基準にした閾値の計算に使う幅</param>
+    /// <param name="baseHeight">全体画像を基準にした閾値の計算に使う高さ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
+    {
+
         var sw = Stopwatch.StartNew();
         // テキスト認識処理をバックグラウンドで実行
-        var textRects = await Task.Run(async () => await Recognize(workingBitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
+        var textRects = await Task.Run(async () => await Recognize(bitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
         this.cts.Token.ThrowIfCancellationRequested();
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
 
@@ -76,8 +107,9 @@ public sealed class TesseractOcr(
         }
 
         // マージ処理
-        var xt = xPosThreshold * bitmap.PixelWidth;
-        var yt = yPosThreshold * bitmap.PixelHeight;
+        // 認識結果はスケール後画像の座標系なので、マージ閾値も同じ座標系に揃える
+        var xt = xPosThreshold * baseWidth;
+        var yt = yPosThreshold * baseHeight;
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));
@@ -114,18 +146,14 @@ public sealed class TesseractOcr(
             results.Add(temp);
         }
 
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
-        }
-
         return results
             .Select(r => ToTextRect(r, this.scale))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
             // 全部数字・記号なら対象外
-            .Where(w => !AllSymbolOrSpace().IsMatch(w.SourceText));
+            .Where(w => !AllSymbolOrSpace().IsMatch(w.SourceText))
+            .ToArray();
     }
 
     private async ValueTask<TextRect[]> Recognize(SoftwareBitmap bitmap)
@@ -302,13 +330,6 @@ public sealed class TesseractOcr(
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換
-        x /= scale;
-        y /= scale;
-        width /= scale;
-        height /= scale;
-        fontSize /= scale;
-
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         var lines = height / fontSize >= 2;
 
@@ -319,7 +340,7 @@ public sealed class TesseractOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines);
+        return new TextRect(text, x, y, width, height, fontSize, lines).RestoreScale(scale);
     }
 
     public void Dispose()

@@ -150,6 +150,7 @@ public readonly record struct RectInfo(double X, double Y, double Width, double 
     /// <returns>重なっている場合はtrue、そうでなければfalse</returns>
     public bool OverlapsWith(RectInfo other) =>
         !(Right <= other.Left || other.Right <= Left || Bottom <= other.Top || other.Bottom <= Top);
+
 }
 
 /// <summary>
@@ -164,3 +165,41 @@ public record TextInfo(string SourceText, string? TranslatedText)
     /// </summary>
     public string Context { get; init; } = string.Empty;
 };
+
+/// <summary>
+/// TextRectの拡張メソッド
+/// </summary>
+public static class TextRectExtensions
+{
+    /// <summary>
+    /// TextRectの座標をオフセット分移動する
+    /// </summary>
+    /// <param name="rect">元のTextRect</param>
+    /// <param name="offsetX">X方向のオフセット</param>
+    /// <param name="offsetY">Y方向のオフセット</param>
+    /// <param name="keyword">キーワード（コンテキスト）</param>
+    /// <returns>オフセットされたTextRect</returns>
+    internal static TextRect Offset(this TextRect rect, double offsetX, double offsetY, string keyword = "")
+        => rect with
+        {
+            X = rect.X + offsetX,
+            Y = rect.Y + offsetY,
+            Context = keyword
+        };
+
+    /// <summary>
+    /// OCR用に拡大した画像の座標を、拡大前の画像座標へ戻す
+    /// </summary>
+    /// <param name="rect">スケール後画像の座標系にある認識結果</param>
+    /// <param name="scale">OCR前に適用した拡大率</param>
+    /// <returns>拡大前の画像座標へ戻した認識結果</returns>
+    public static TextRect RestoreScale(this TextRect rect, double scale)
+        => rect with
+        {
+            X = rect.X / scale,
+            Y = rect.Y / scale,
+            Width = rect.Width / scale,
+            Height = rect.Height / scale,
+            FontSize = rect.FontSize / scale,
+        };
+}

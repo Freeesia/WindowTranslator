@@ -69,7 +69,6 @@ public sealed class LLMOcr : IOcrModule
     {
         var options = llmOptions.Value;
         this.logger = logger;
-
         if (string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.Model))
         {
             throw new AppUserException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
@@ -105,7 +104,10 @@ public sealed class LLMOcr : IOcrModule
             clientOptions);
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+        => OcrUtility.RecognizeRegionsAsync(input, RecognizeRegionAsync);
+
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
     {
         var bytes = await bitmap.EncodeToJpegBytes().ConfigureAwait(false);
         var image = BinaryData.FromBytes(bytes);
@@ -147,7 +149,8 @@ public sealed class LLMOcr : IOcrModule
                     var widthPx = xMaxPx - xMinPx;
                     var heightPx = yMaxPx - yMinPx;
                     return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
-                });
+                })
+                .ToArray();
         }
         catch (Exception ex)
         {
