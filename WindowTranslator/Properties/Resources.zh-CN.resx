@@ -456,4 +456,64 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>预发行版</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>安装</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>卸载</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>确定要卸载 {0} 吗？</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>有更新</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>已安装版本</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>最新版本</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>无法从 NuGet 获取插件列表。请检查您的网络连接。</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>立即重启</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>请重启 WindowTranslator 以应用插件更改。</value>
+  </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>加载插件</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>项目页面</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>许可证信息</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>插件是通过 NuGet 分发的第三方包。每个包的许可证由其所有者授予；WindowTranslator 不保证其内容、行为或安全性。请仅安装你信任的包。</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>官方插件</value>
+  </data>
 </root>

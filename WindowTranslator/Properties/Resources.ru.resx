@@ -447,4 +447,64 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Предварительная версия</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Установить</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Установлен</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Вы уверены, что хотите удалить {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Установленная версия</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Последняя версия</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Не удалось получить список плагинов из NuGet. Проверьте подключение к сети.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Установка завершена</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Ошибка установки</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Перезапустить сейчас</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Перезапустите WindowTranslator для применения изменений плагина.</value>
+  </data>
+  <data name="LoadPlugins" xml:space="preserve">
+    <value>Загрузить плагины</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Страница проекта</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Информация о лицензии</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Плагины — это сторонние пакеты, распространяемые через NuGet. Лицензию на каждый пакет предоставляет его владелец; WindowTranslator не гарантирует его содержимое, работу или безопасность. Устанавливайте только пакеты, которым доверяете.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Официальный плагин</value>
+  </data>
 </root>
