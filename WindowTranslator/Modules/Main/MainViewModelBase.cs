@@ -219,10 +219,19 @@ public abstract partial class MainViewModelBase : IDisposable
                 using var t = this.logger.LogDebugTime("PreTranslate");
                 texts = await tmp.ToArrayAsync();
             }
-            TranslateAsync(texts).Forget();
+            TranslateAsync(texts.Where(t => !t.IsBusy)).Forget();
             texts = texts.Select(t => t switch
             {
-                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+                { IsBusy: true } => t with { TranslatedText = null },
+                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with
+                {
+                    TranslatedText = this.cache.Get(t.SourceText),
+                    BusyReasons = t.BusyReasons & ~TextRegionBusyReason.Translation,
+                },
+                { TranslatedText: null } => t with
+                {
+                    BusyReasons = t.BusyReasons | TextRegionBusyReason.Translation,
+                },
                 _ => t,
             }).ToArray();
             {
@@ -267,6 +276,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 return;
             }
             requests = requests
+                .Where(t => !t.IsBusy)
                 .Where(t => t.TranslatedText is null)
                 .Where(t => !this.cache.Contains(t.SourceText))
                 .ToArray();
