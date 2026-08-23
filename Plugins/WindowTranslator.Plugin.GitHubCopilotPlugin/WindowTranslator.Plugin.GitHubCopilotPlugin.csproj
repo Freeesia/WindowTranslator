@@ -5,6 +5,7 @@
     <Description>Translation for WindowTranslator using GitHub Copilot.</Description>
     <IsPackable>true</IsPackable>
     <IsPublishable>false</IsPublishable>
+    <IncludePluginRuntimeAssetsInPackage>true</IncludePluginRuntimeAssetsInPackage>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" />
