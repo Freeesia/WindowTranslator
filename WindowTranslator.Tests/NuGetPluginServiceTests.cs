@@ -33,7 +33,7 @@ public sealed class NuGetPluginServiceTests
     private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
 
     [Fact]
-    public async Task InstallResolvesRuntimeDependenciesAndPreservesAssetDirectories()
+    public async Task InstallResolvesDependenciesUsingNuGetRuntimeAssetLayout()
     {
         var testDirectory = CreateTestDirectory();
         try
@@ -53,7 +53,7 @@ public sealed class NuGetPluginServiceTests
                     {
                         ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
                         ["lib/net10.0/fr/Root.Plugin.resources.dll"] = "fr"u8.ToArray(),
-                        [$"runtimes/{RuntimeIdentifier}/native/root-native.dll"] = "native"u8.ToArray(),
+                        [$"runtimes/{RuntimeIdentifier}/native/subdirectory/root-native.dll"] = "native"u8.ToArray(),
                         [$"lib/net10.0/runtimes/{RuntimeIdentifier}/native/custom-native.dll"] = "custom"u8.ToArray(),
                     }));
             handler.AddPackage(
@@ -65,7 +65,9 @@ public sealed class NuGetPluginServiceTests
                     [new("Transitive.Package", "[2.0.0]")],
                     new Dictionary<string, byte[]>
                     {
-                        ["lib/net8.0/Dependency.Package.dll"] = "dependency"u8.ToArray(),
+                        ["lib/net8.0/Dependency.Package.dll"] = "fallback"u8.ToArray(),
+                        [$"runtimes/{RuntimeIdentifier}/lib/net8.0/Dependency.Package.dll"] =
+                            "dependency"u8.ToArray(),
                     }));
             handler.AddPackage(
                 "Transitive.Package",
@@ -92,17 +94,26 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal(
                 "dependency",
                 await File.ReadAllTextAsync(Path.Combine(pluginDirectory, "Dependency.Package.dll")));
+            Assert.False(File.Exists(Path.Combine(
+                pluginDirectory,
+                "runtimes",
+                RuntimeIdentifier,
+                "lib",
+                "net8.0",
+                "Dependency.Package.dll")));
             Assert.Equal(
                 "transitive",
                 await File.ReadAllTextAsync(Path.Combine(pluginDirectory, "Transitive.Package.dll")));
             Assert.Equal(
                 "native",
-                await File.ReadAllTextAsync(Path.Combine(
-                    pluginDirectory,
-                    "runtimes",
-                    RuntimeIdentifier,
-                    "native",
-                    "root-native.dll")));
+                await File.ReadAllTextAsync(Path.Combine(pluginDirectory, "root-native.dll")));
+            Assert.False(File.Exists(Path.Combine(
+                pluginDirectory,
+                "runtimes",
+                RuntimeIdentifier,
+                "native",
+                "subdirectory",
+                "root-native.dll")));
             Assert.Equal(
                 "custom",
                 await File.ReadAllTextAsync(Path.Combine(

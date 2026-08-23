@@ -436,9 +436,9 @@ internal sealed class NuGetPackageInstaller(
             .Where(e => e.FullName.Split('/').Length >= 3)
             .GroupBy(e => e.FullName.Split('/')[1])
             .ToArray();
-        var hasPluginAssembly = false;
+        var hasPluginAssembly = ExtractRuntimeAssets(archive, destinationDirectory);
 
-        if (libGroups.Length > 0)
+        if (!hasPluginAssembly && libGroups.Length > 0)
         {
             var selectedFramework = SelectBestTfm(libGroups.Select(g => g.Key));
             if (selectedFramework is not null)
@@ -456,7 +456,6 @@ internal sealed class NuGetPackageInstaller(
             }
         }
 
-        hasPluginAssembly |= ExtractRuntimeAssets(archive, destinationDirectory);
         if (requirePluginAssembly && !hasPluginAssembly)
         {
             throw new InvalidOperationException("プラグインパッケージに互換性のあるアセンブリが見つかりませんでした。");
@@ -490,7 +489,7 @@ internal sealed class NuGetPackageInstaller(
                     e.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase));
                 ExtractEntries(
                     selectedEntries,
-                    string.Empty,
+                    $"{runtimeLibPrefix}{selectedFramework}/",
                     destinationDirectory);
             }
         }
@@ -508,19 +507,21 @@ internal sealed class NuGetPackageInstaller(
         ExtractEntries(
             archive.Entries.Where(e => e.FullName.StartsWith(nativePrefix, StringComparison.OrdinalIgnoreCase)
                 && !string.IsNullOrEmpty(e.Name)),
-            string.Empty,
-            destinationDirectory);
+            nativePrefix,
+            destinationDirectory,
+            flatten: true);
         return hasManagedAssembly;
     }
 
     private static void ExtractEntries(
         IEnumerable<ZipArchiveEntry> entries,
         string prefix,
-        string destinationDirectory)
+        string destinationDirectory,
+        bool flatten = false)
     {
         foreach (var entry in entries)
         {
-            var relativePath = entry.FullName[prefix.Length..];
+            var relativePath = flatten ? entry.Name : entry.FullName[prefix.Length..];
             if (string.IsNullOrWhiteSpace(relativePath))
             {
                 continue;
