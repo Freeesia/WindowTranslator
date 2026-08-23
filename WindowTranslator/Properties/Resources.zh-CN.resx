@@ -459,4 +459,10 @@
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>添加范围</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>由支持上下文的翻译模块使用</value>
+  </data>
 </root>

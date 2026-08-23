@@ -450,4 +450,10 @@
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Добавить область</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Используется модулями перевода, поддерживающими контекст</value>
+  </data>
 </root>

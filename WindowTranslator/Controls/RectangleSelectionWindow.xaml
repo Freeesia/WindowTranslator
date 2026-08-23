@@ -25,6 +25,7 @@
             StrokeThickness="2"
             Visibility="Collapsed" />
         <Border
+            x:Name="InfoBorder"
             Canvas.Left="10"
             Canvas.Top="10"
             Padding="8,4"

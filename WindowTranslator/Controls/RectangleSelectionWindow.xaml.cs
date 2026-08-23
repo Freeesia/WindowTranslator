@@ -2,9 +2,12 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
+using WindowTranslator.Extensions;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Controls;
@@ -20,6 +23,7 @@ public partial class RectangleSelectionWindow : Window
     private const double MinimumRelativeSize = 0.005;
 
     private readonly nint targetHandle;
+    private readonly PriorityRect? previewRect;
     private Point startPoint;
     private bool isSelecting;
 
@@ -34,13 +38,41 @@ public partial class RectangleSelectionWindow : Window
         InitializeComponent();
     }
 
+    /// <summary>
+    /// 対象ウィンドウ上に指定したOCR対象範囲を表示する
+    /// </summary>
+    public RectangleSelectionWindow(nint targetHandle, PriorityRect previewRect)
+        : this(targetHandle)
+    {
+        this.previewRect = previewRect;
+        this.ShowActivated = false;
+        this.SelectionCanvas.SetCurrentValue(Panel.BackgroundProperty, Brushes.Transparent);
+        this.SelectionCanvas.SetCurrentValue(FrameworkElement.CursorProperty, Cursors.Arrow);
+        this.SelectionCanvas.SetCurrentValue(IsHitTestVisibleProperty, false);
+        this.InfoBorder.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+    }
+
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
         if (!TryFitToCaptureArea())
         {
-            DialogResult = false;
+            if (this.previewRect is null)
+            {
+                DialogResult = false;
+            }
             Close();
+            return;
+        }
+
+        if (this.previewRect is not null)
+        {
+            var windowHandle = new HWND(new WindowInteropHelper(this).Handle);
+            var extendedStyle = (WINDOW_EX_STYLE)GetWindowLong(windowHandle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE)
+                | WINDOW_EX_STYLE.WS_EX_NOACTIVATE
+                | WINDOW_EX_STYLE.WS_EX_TOOLWINDOW
+                | WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
+            windowHandle.SetExtendedStyle(extendedStyle);
             return;
         }
 
@@ -48,6 +80,21 @@ public partial class RectangleSelectionWindow : Window
         SetWindowPos(new(this.targetHandle), HWND.Null, 0, 0, 0, 0,
             SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
         Activate();
+    }
+
+    protected override void OnContentRendered(EventArgs e)
+    {
+        base.OnContentRendered(e);
+        if (this.previewRect is not { } rect)
+        {
+            return;
+        }
+
+        Canvas.SetLeft(this.SelectionRect, rect.X * this.SelectionCanvas.ActualWidth);
+        Canvas.SetTop(this.SelectionRect, rect.Y * this.SelectionCanvas.ActualHeight);
+        this.SelectionRect.SetCurrentValue(WidthProperty, rect.Width * this.SelectionCanvas.ActualWidth);
+        this.SelectionRect.SetCurrentValue(HeightProperty, rect.Height * this.SelectionCanvas.ActualHeight);
+        this.SelectionRect.SetCurrentValue(VisibilityProperty, Visibility.Visible);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

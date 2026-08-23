@@ -459,4 +459,10 @@ Màn hình không được hỗ trợ.
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Thêm vùng</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Được sử dụng bởi các mô-đun dịch hỗ trợ ngữ cảnh</value>
+  </data>
 </root>

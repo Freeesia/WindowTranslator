@@ -459,4 +459,10 @@ Monitory nie są obsługiwane.
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Dodaj obszar</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Używane przez moduły tłumaczeniowe obsługujące kontekst</value>
+  </data>
 </root>

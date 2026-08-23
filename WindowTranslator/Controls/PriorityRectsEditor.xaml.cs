@@ -38,6 +38,7 @@ public partial class PriorityRectsEditor : UserControl
         DependencyProperty.Register(nameof(TargetWindowHandle), typeof(nint), typeof(PriorityRectsEditor), new PropertyMetadata(IntPtr.Zero, OnTargetWindowHandleChanged));
 
     private readonly ObservableCollection<PriorityRectItem> items = [];
+    private RectangleSelectionWindow? previewWindow;
     private bool isSyncing;
 
     public PriorityRectsEditor()
@@ -45,6 +46,7 @@ public partial class PriorityRectsEditor : UserControl
         InitializeComponent();
         this.RectList.SetCurrentValue(ItemsControl.ItemsSourceProperty, this.items);
         this.items.CollectionChanged += OnItemsChanged;
+        this.Unloaded += (_, _) => ClosePreview();
         UpdateButtonState();
     }
 
@@ -52,7 +54,11 @@ public partial class PriorityRectsEditor : UserControl
         => ((PriorityRectsEditor)d).LoadRects(e.NewValue as IList<PriorityRect>);
 
     private static void OnTargetWindowHandleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        => ((PriorityRectsEditor)d).UpdateButtonState();
+    {
+        var editor = (PriorityRectsEditor)d;
+        editor.UpdateButtonState();
+        editor.ShowSelectedRect();
+    }
 
     private void LoadRects(IList<PriorityRect>? rects)
     {
@@ -76,6 +82,7 @@ public partial class PriorityRectsEditor : UserControl
             this.isSyncing = false;
         }
         UpdateButtonState();
+        ShowSelectedRect();
     }
 
     private void OnItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -122,15 +129,23 @@ public partial class PriorityRectsEditor : UserControl
     }
 
     private void RectList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        => UpdateButtonState();
+    {
+        UpdateButtonState();
+        ShowSelectedRect();
+    }
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
+        ClosePreview();
         var window = new RectangleSelectionWindow(TargetWindowHandle) { Owner = Window.GetWindow(this) };
         if (window.ShowDialog() == true && window.SelectedRect is { } rect)
         {
             this.items.Add(PriorityRectItem.From(rect));
             this.RectList.SetCurrentValue(Selector.SelectedIndexProperty, this.items.Count - 1);
+        }
+        else
+        {
+            ShowSelectedRect();
         }
     }
 
@@ -140,6 +155,40 @@ public partial class PriorityRectsEditor : UserControl
         var index = this.items.IndexOf((PriorityRectItem)item.DataContext);
         this.items.RemoveAt(index);
         this.RectList.SetCurrentValue(Selector.SelectedIndexProperty, Math.Min(index, this.items.Count - 1));
+    }
+
+    private void ShowSelectedRect()
+    {
+        ClosePreview();
+        if (TargetWindowHandle == IntPtr.Zero || this.RectList.SelectedItem is not PriorityRectItem item)
+        {
+            return;
+        }
+
+        var window = new RectangleSelectionWindow(TargetWindowHandle, item.ToPriorityRect());
+        this.previewWindow = window;
+        window.Closed += PreviewWindow_Closed;
+        window.Show();
+    }
+
+    private void ClosePreview()
+    {
+        if (this.previewWindow is not { } window)
+        {
+            return;
+        }
+
+        this.previewWindow = null;
+        window.Closed -= PreviewWindow_Closed;
+        window.Close();
+    }
+
+    private void PreviewWindow_Closed(object? sender, EventArgs e)
+    {
+        if (ReferenceEquals(sender, this.previewWindow))
+        {
+            this.previewWindow = null;
+        }
     }
 }
 

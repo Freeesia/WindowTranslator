@@ -458,4 +458,10 @@ Monitor tidak disokong.</value>
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tambah kawasan</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Digunakan oleh modul terjemahan yang menyokong konteks</value>
+  </data>
 </root>

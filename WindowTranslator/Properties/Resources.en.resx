@@ -460,16 +460,13 @@ Monitors are not supported.
 </value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
-    <value>Add</value>
+    <value>Add range</value>
   </data>
   <data name="PriorityRectKeyword" xml:space="preserve">
     <value>Keyword</value>
   </data>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>Used as context for translation</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Used by translation modules that support context</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>Selecting</value>
