@@ -117,10 +117,8 @@ public partial class PriorityRectsEditor : UserControl
 
     private void UpdateButtonState()
     {
-        var index = this.RectList.SelectedIndex;
         this.AddButton.SetCurrentValue(IsEnabledProperty, TargetWindowHandle != IntPtr.Zero);
         this.AddButton.SetCurrentValue(ToolTipProperty, TargetWindowHandle != IntPtr.Zero ? null : Properties.Resources.PriorityRectTargetNotFound);
-        this.RemoveButton.SetCurrentValue(IsEnabledProperty, index >= 0);
     }
 
     private void RectList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -138,11 +136,8 @@ public partial class PriorityRectsEditor : UserControl
 
     private void RemoveButton_Click(object sender, RoutedEventArgs e)
     {
-        var index = this.RectList.SelectedIndex;
-        if (index < 0)
-        {
-            return;
-        }
+        var item = (FrameworkElement)sender;
+        var index = this.items.IndexOf((PriorityRectItem)item.DataContext);
         this.items.RemoveAt(index);
         this.RectList.SetCurrentValue(Selector.SelectedIndexProperty, Math.Min(index, this.items.Count - 1));
     }

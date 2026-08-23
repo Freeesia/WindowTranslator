@@ -343,6 +343,16 @@ internal class Resources
     public static string Misc => ResourceManager.GetString("Misc", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "マウスポインター判定の余白" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding => ResourceManager.GetString("MousePointerHitTestPadding", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "マウスポインター周辺の判定領域に追加するピクセル数" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding_Desc => ResourceManager.GetString("MousePointerHitTestPadding_Desc", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "すでにWindowTranslatorが起動中です" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string MutexError => ResourceManager.GetString("MutexError", resourceCulture) ?? string.Empty;
@@ -413,7 +423,7 @@ internal class Resources
     public static string Plugin => ResourceManager.GetString("Plugin", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "追加" に類似しているローカライズされた文字列を検索します。
+    /// "範囲追加" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PriorityRectAdd => ResourceManager.GetString("PriorityRectAdd", resourceCulture) ?? string.Empty;
 
@@ -423,14 +433,9 @@ internal class Resources
     public static string PriorityRectKeyword => ResourceManager.GetString("PriorityRectKeyword", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "翻訳のコンテキストとして使用されます" に類似しているローカライズされた文字列を検索します。
+    /// "コンテキストが有効な翻訳モジュールで使用されます" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PriorityRectKeywordDescription => ResourceManager.GetString("PriorityRectKeywordDescription", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "削除" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string PriorityRectRemove => ResourceManager.GetString("PriorityRectRemove", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "選択中" に類似しているローカライズされた文字列を検索します。
@@ -443,12 +448,12 @@ internal class Resources
     public static string PriorityRectSelection => ResourceManager.GetString("PriorityRectSelection", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "ドラッグして矩形を選択してください..." に類似しているローカライズされた文字列を検索します。
+    /// "ドラッグして矩形を選択してください（Escキーでキャンセル）&amp;#13;&amp;#10;文字..." に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PriorityRectSelectionGuide => ResourceManager.GetString("PriorityRectSelectionGuide", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "翻訳中のウィンドウがないため矩形を選択できません..." に類似しているローカライズされた文字列を検索します。
+    /// "翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください..." に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PriorityRectTargetNotFound => ResourceManager.GetString("PriorityRectTargetNotFound", resourceCulture) ?? string.Empty;
 

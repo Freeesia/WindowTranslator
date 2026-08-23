@@ -148,16 +148,13 @@
     <value>プラグイン設定</value>
   </data>
   <data name="PriorityRectAdd" xml:space="preserve">
-    <value>追加</value>
+    <value>範囲追加</value>
   </data>
   <data name="PriorityRectKeyword" xml:space="preserve">
     <value>キーワード</value>
   </data>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
-    <value>翻訳のコンテキストとして使用されます</value>
-  </data>
-  <data name="PriorityRectRemove" xml:space="preserve">
-    <value>削除</value>
+    <value>コンテキストが有効な翻訳モジュールで使用されます</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
     <value>選択中</value>
