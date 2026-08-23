@@ -501,8 +501,8 @@ Ang monitor ay hindi suportado.
   <data name="RestartRequired" xml:space="preserve">
     <value>Mangyaring i-restart ang WindowTranslator upang mailapat ang mga pagbabago sa plugin.</value>
   </data>
-  <data name="LoadPlugins" xml:space="preserve">
-    <value>I-load ang mga plugin</value>
+  <data name="Restart" xml:space="preserve">
+    <value>I-restart</value>
   </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Pahina ng proyekto</value>

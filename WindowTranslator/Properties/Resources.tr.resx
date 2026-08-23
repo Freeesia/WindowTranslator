@@ -501,8 +501,8 @@ Monitör desteklenmiyor.
   <data name="RestartRequired" xml:space="preserve">
     <value>Eklenti değişikliklerini uygulamak için lütfen WindowTranslator'ı yeniden başlatın.</value>
   </data>
-  <data name="LoadPlugins" xml:space="preserve">
-    <value>Eklentileri yükle</value>
+  <data name="Restart" xml:space="preserve">
+    <value>Yeniden başlat</value>
   </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Proje sayfası</value>

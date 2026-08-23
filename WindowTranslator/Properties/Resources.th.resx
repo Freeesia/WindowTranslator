@@ -501,8 +501,8 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>กรุณาเริ่ม WindowTranslator ใหม่เพื่อนำการเปลี่ยนแปลงปลั๊กอินไปใช้</value>
   </data>
-  <data name="LoadPlugins" xml:space="preserve">
-    <value>โหลดปลั๊กอิน</value>
+  <data name="Restart" xml:space="preserve">
+    <value>เริ่มใหม่</value>
   </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>หน้าโครงการ</value>

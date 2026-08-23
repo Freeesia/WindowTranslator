@@ -382,8 +382,8 @@ A monitorok nem támogatottak.
   <data name="RestartRequired" xml:space="preserve">
     <value>A bővítménymódosítások alkalmazásához indítsa újra a WindowTranslator alkalmazást.</value>
   </data>
-  <data name="LoadPlugins" xml:space="preserve">
-    <value>Bővítmények betöltése</value>
+  <data name="Restart" xml:space="preserve">
+    <value>Újraindítás</value>
   </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Projektoldal</value>

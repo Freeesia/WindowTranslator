@@ -19,6 +19,20 @@ public sealed class NuGetPluginCatalog : IPluginCatalog
     private static readonly string DefaultTempDir =
         Path.Combine(Path.GetTempPath(), "WindowTranslator", "nuget-plugins");
 
+    static NuGetPluginCatalog()
+    {
+#if DISABLE_PLUGIN_COMPATIBILITY_VALIDATION
+        var hostAbstractions = typeof(UserSettings).Assembly;
+        AssemblyLoadContext.Default.Resolving += (_, assemblyName) =>
+            string.Equals(
+                assemblyName.Name,
+                hostAbstractions.GetName().Name,
+                StringComparison.OrdinalIgnoreCase)
+                ? hostAbstractions
+                : null;
+#endif
+    }
+
     private readonly string sourceDir;
     private readonly string tempDir;
     private readonly int hostMajorVersion;

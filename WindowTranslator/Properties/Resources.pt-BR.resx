@@ -500,8 +500,8 @@ Monitor tidak didukung.</value>
   <data name="RestartRequired" xml:space="preserve">
     <value>Reinicie o WindowTranslator para aplicar as alterações de plugin.</value>
   </data>
-  <data name="LoadPlugins" xml:space="preserve">
-    <value>Carregar plugins</value>
+  <data name="Restart" xml:space="preserve">
+    <value>Reiniciar</value>
   </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Página do projeto</value>

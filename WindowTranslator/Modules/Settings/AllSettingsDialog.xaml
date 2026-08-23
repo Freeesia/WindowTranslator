@@ -206,7 +206,7 @@
                 </ui:Button>
                 <ui:Button
                     Command="{Binding PluginStore.RestartCommand}"
-                    Content="{x:Static properties:Resources.LoadPlugins}"
+                    Content="{x:Static properties:Resources.Restart}"
                     DockPanel.Dock="Right"
                     Visibility="{Binding PluginStore.RequiresRestart, Converter={StaticResource b2vConv}}" />
                 <ui:ToggleSwitch

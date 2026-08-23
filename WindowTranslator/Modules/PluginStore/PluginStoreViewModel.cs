@@ -315,7 +315,7 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
             Title = title,
             Content = Resources.RestartRequired,
             PrimaryButtonText = Resources.RestartNow,
-            CloseButtonText = Resources.Close,
+            CloseButtonText = Resources.ReviewLater,
         }, cancellationToken).ConfigureAwait(true);
         if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
         {

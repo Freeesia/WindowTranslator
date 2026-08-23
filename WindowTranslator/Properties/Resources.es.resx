@@ -492,8 +492,8 @@
   <data name="RestartRequired" xml:space="preserve">
     <value>Reinicie WindowTranslator para aplicar los cambios del plugin.</value>
   </data>
-  <data name="LoadPlugins" xml:space="preserve">
-    <value>Cargar plugins</value>
+  <data name="Restart" xml:space="preserve">
+    <value>Reiniciar</value>
   </data>
   <data name="ProjectUrl" xml:space="preserve">
     <value>Página del proyecto</value>

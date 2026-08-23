@@ -503,9 +503,9 @@ internal class Resources
     public static string RestartRequired => ResourceManager.GetString("RestartRequired", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "プラグイン読み込み" に類似しているローカライズされた文字列を検索します。
+    /// "再起動" に類似しているローカライズされた文字列を検索します。
     /// </summary>
-    public static string LoadPlugins => ResourceManager.GetString("LoadPlugins", resourceCulture) ?? string.Empty;
+    public static string Restart => ResourceManager.GetString("Restart", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "後で" に類似しているローカライズされた文字列を検索します。
