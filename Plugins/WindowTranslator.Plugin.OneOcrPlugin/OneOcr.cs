@@ -128,7 +128,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.fastText?.Dispose();
     }
 
-    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
     {
         var imageWidth = (int)(input.Source.PixelWidth * this.scale);
         var imageHeight = (int)(input.Source.PixelHeight * this.scale);

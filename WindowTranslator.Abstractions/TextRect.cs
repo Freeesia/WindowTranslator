@@ -177,14 +177,14 @@ public static class TextRectExtensions
     /// <param name="rect">元のTextRect</param>
     /// <param name="offsetX">X方向のオフセット</param>
     /// <param name="offsetY">Y方向のオフセット</param>
-    /// <param name="keyword">キーワード（コンテキスト）</param>
+    /// <param name="keyword">キーワード（コンテキスト）。未指定の場合は元のコンテキストを維持する</param>
     /// <returns>オフセットされたTextRect</returns>
-    internal static TextRect Offset(this TextRect rect, double offsetX, double offsetY, string keyword = "")
+    internal static TextRect Offset(this TextRect rect, double offsetX, double offsetY, string? keyword = null)
         => rect with
         {
             X = rect.X + offsetX,
             Y = rect.Y + offsetY,
-            Context = keyword
+            Context = keyword ?? rect.Context
         };
 
     /// <summary>

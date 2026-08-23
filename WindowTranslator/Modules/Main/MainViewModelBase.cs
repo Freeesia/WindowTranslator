@@ -24,7 +24,7 @@ public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Timer timer;
     private readonly IOcrModule ocr;
-    private readonly IReadOnlyList<PriorityRect> priorityRects;
+    private readonly List<PriorityRect> priorityRects;
     private readonly IOcrTextTracker ocrTextTracker;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
@@ -173,7 +173,36 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             try
             {
-                texts = await PriorityRectRecognizer.RecognizeAsync(sbmp, this.priorityRects, this.ocr.RecognizeAsync);
+                var regions = new List<OcrRegionInput>();
+                if (this.priorityRects.Count == 0)
+                {
+                    regions.Add(new(new(0, 0, sbmp.PixelWidth, sbmp.PixelHeight)));
+                }
+                else
+                {
+                    foreach (var priorityRect in this.priorityRects)
+                    {
+                        var rect = priorityRect.ToAbsoluteRect(sbmp.PixelWidth, sbmp.PixelHeight);
+                        var left = Math.Clamp(rect.Left, 0, sbmp.PixelWidth);
+                        var top = Math.Clamp(rect.Top, 0, sbmp.PixelHeight);
+                        var right = Math.Clamp(rect.Right, 0, sbmp.PixelWidth);
+                        var bottom = Math.Clamp(rect.Bottom, 0, sbmp.PixelHeight);
+                        if (right - left < 1 || bottom - top < 1)
+                        {
+                            continue;
+                        }
+
+                        var pixelLeft = Math.Floor(left);
+                        var pixelTop = Math.Floor(top);
+                        var pixelRight = Math.Ceiling(right);
+                        var pixelBottom = Math.Ceiling(bottom);
+                        regions.Add(new(
+                            new(pixelLeft, pixelTop, pixelRight - pixelLeft, pixelBottom - pixelTop),
+                            priorityRect.Keyword));
+                    }
+                }
+
+                texts = await this.ocr.RecognizeAsync(new(sbmp, regions));
                 texts = this.ocrTextTracker.Update(texts, new(sbmp.PixelWidth, sbmp.PixelHeight));
             }
             catch (ObjectDisposedException)

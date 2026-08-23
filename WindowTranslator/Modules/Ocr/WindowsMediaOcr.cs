@@ -38,7 +38,7 @@ public sealed partial class WindowsMediaOcr(
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
 
-    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
     {
         var baseWidth = input.Source.PixelWidth * this.scale;
         var baseHeight = input.Source.PixelHeight * this.scale;

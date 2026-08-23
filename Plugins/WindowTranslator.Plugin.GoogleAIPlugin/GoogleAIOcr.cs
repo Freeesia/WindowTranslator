@@ -51,7 +51,7 @@ public sealed class GoogleAIOcr : IOcrModule
             systemInstruction: system);
     }
 
-    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
         => OcrUtility.RecognizeRegionsAsync(input, RecognizeRegionAsync);
 
     private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)

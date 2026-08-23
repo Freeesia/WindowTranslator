@@ -17,7 +17,7 @@ public interface IOcrModule
     /// <summary>
     /// 1回のキャプチャーに含まれるOCR対象画像からテキストを認識する
     /// </summary>
-    ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input);
+    ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input);
 #endif
 }
 
@@ -35,7 +35,8 @@ public sealed record OcrCaptureInput(
 /// 1つのOCR対象範囲
 /// </summary>
 /// <param name="Bounds">全体画像上の切り出し範囲</param>
-public sealed record OcrRegionInput(RectInfo Bounds);
+/// <param name="Keyword">翻訳コンテキストに設定するキーワード。未指定の場合は認識結果のコンテキストを維持する</param>
+public sealed record OcrRegionInput(RectInfo Bounds, string? Keyword = null);
 #endif
 
 /// <summary>

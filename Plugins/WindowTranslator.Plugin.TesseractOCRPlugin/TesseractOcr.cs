@@ -43,7 +43,7 @@ public sealed class TesseractOcr(
     private readonly int brightness = ocrParam.Value.Brightness;
     private readonly int contrast = ocrParam.Value.Contrast;
 
-    public ValueTask<IReadOnlyList<IReadOnlyList<TextRect>>> RecognizeAsync(OcrCaptureInput input)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
     {
         var baseWidth = input.Source.PixelWidth * this.scale;
         var baseHeight = input.Source.PixelHeight * this.scale;
