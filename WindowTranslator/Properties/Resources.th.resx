@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>โหมดการแสดงผลการแปล</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>เป้าหมายการแปลอัตโนมัติ</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>แปลอัตโนมัติเมื่อเริ่มกระบวนการที่เคยถูกเลือกเป็นเป้าหมายการแปลก่อนหน้านี้</value>
+    <value>แปลอัตโนมัติเมื่อแอปเปิดขึ้น</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>การตั้งค่าทั่วไป</value>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -19,11 +19,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Fordítási eredmény megjelenítési módja</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Automatikus fordítási cél</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Automatikus fordítás, amikor egy egyszer fordításra kiválasztott folyamat elindul</value>
+    <value>Automatikus fordítás az alkalmazás indításakor</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Általános beállítások</value>

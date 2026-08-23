@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Mode tampilan hasil terjemahan</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Target terjemahan otomatis</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Terjemahkan secara otomatis saat proses diluncurkan setelah dipilih untuk terjemahan</value>
+    <value>Traduzir automaticamente quando o aplicativo for iniciado</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Pengaturan keseluruhan</value>

@@ -108,11 +108,6 @@ internal class Resources
     public static string AutoStartWithPC => ResourceManager.GetString("AutoStartWithPC", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "自動翻訳対象" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string AutoTargets => ResourceManager.GetString("AutoTargets", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "ビルド日時" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string BuildDate => ResourceManager.GetString("BuildDate", resourceCulture) ?? string.Empty;
@@ -298,7 +293,7 @@ internal class Resources
     public static string InvalidSettingsContent => ResourceManager.GetString("InvalidSettingsContent", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
+    /// "アプリが起動したら自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsEnableAutoTarget => ResourceManager.GetString("IsEnableAutoTarget", resourceCulture) ?? string.Empty;
 
