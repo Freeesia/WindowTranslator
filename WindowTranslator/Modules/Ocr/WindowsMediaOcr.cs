@@ -42,48 +42,23 @@ public sealed partial class WindowsMediaOcr(
     {
         var baseWidth = input.Source.PixelWidth * this.scale;
         var baseHeight = input.Source.PixelHeight * this.scale;
+        foreach (var region in input.Regions)
+        {
+            var width = (uint)(region.Bounds.Width * this.scale);
+            var height = (uint)(region.Bounds.Height * this.scale);
+            if (width > OcrEngine.MaxImageDimension || height > OcrEngine.MaxImageDimension)
+            {
+                throw new AppUserException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({width},{height}), max:{OcrEngine.MaxImageDimension}");
+            }
+        }
+
         return OcrUtility.RecognizeRegionsAsync(
             input,
-            bitmap => RecognizeRegionInputAsync(bitmap, baseWidth, baseHeight));
-    }
-
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionInputAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
-    {
-        var newWidth = (uint)(bitmap.PixelWidth * scale);
-        var newHeight = (uint)(bitmap.PixelHeight * scale);
-        if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
-        {
-            throw new AppUserException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
-        }
-
-        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-        this.cts.Token.ThrowIfCancellationRequested();
-
-        // 明るさ・コントラスト調整（インプレース）
-        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
-        if (this.brightness != 0 || this.contrast != 0)
-        {
-            if (workingBitmap == bitmap)
-            {
-                // 元のビットマップを変更しないようにコピーを作成
-                workingBitmap = SoftwareBitmap.Copy(bitmap);
-            }
-            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
-        }
-        this.cts.Token.ThrowIfCancellationRequested();
-
-        try
-        {
-            return await RecognizeRegionAsync(workingBitmap, baseWidth, baseHeight);
-        }
-        finally
-        {
-            if (bitmap != workingBitmap)
-            {
-                workingBitmap.Dispose();
-            }
-        }
+            bitmap => RecognizeRegionAsync(bitmap, baseWidth, baseHeight),
+            this.scale,
+            this.brightness,
+            this.contrast,
+            this.cts.Token);
     }
 
     /// <summary>
@@ -170,7 +145,7 @@ public sealed partial class WindowsMediaOcr(
             }
         }
 
-        return results.Select(r => ToTextRect(r, this.scale, angle))
+        return results.Select(r => ToTextRect(r, angle))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
@@ -313,7 +288,7 @@ public sealed partial class WindowsMediaOcr(
         }
     }
 
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale, double angle)
+    private static TextRect ToTextRect(TempMergeRect combinedRect, double angle)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
@@ -330,8 +305,7 @@ public sealed partial class WindowsMediaOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle }
-            .RestoreScale(scale);
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)

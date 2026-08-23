@@ -55,6 +55,50 @@ public class OcrUtilityTests
     }
 
     [Fact]
+    public async Task 拡大画像の認識結果を元画像座標へ戻す()
+    {
+        using var bitmap = CreateBitmap();
+        var input = new OcrCaptureInput(bitmap, [new(new(100, 150, 100, 75), "context")]);
+
+        var results = await OcrUtility.RecognizeRegionsAsync(
+            input,
+            target =>
+            {
+                Assert.Equal(200, target.PixelWidth);
+                Assert.Equal(150, target.PixelHeight);
+                return ValueTask.FromResult<IReadOnlyList<TextRect>>([
+                    Text("scaled", 20, 40, 80, 40) with { Angle = 30 },
+                ]);
+            },
+            scale: 2);
+
+        var result = Assert.Single(results);
+        Assert.Equal(110, result.X);
+        Assert.Equal(170, result.Y);
+        Assert.Equal(40, result.Width);
+        Assert.Equal(20, result.Height);
+        Assert.Equal(20, result.FontSize);
+        Assert.Equal(30, result.Angle);
+        Assert.Equal("context", result.Context);
+    }
+
+    [Fact]
+    public async Task 画像補正時は元画像を変更しない()
+    {
+        using var bitmap = CreateBitmap();
+        var input = new OcrCaptureInput(bitmap, [new(new(0, 0, Width, Height))]);
+
+        await OcrUtility.RecognizeRegionsAsync(
+            input,
+            target =>
+            {
+                Assert.NotSame(bitmap, target);
+                return ValueTask.FromResult<IReadOnlyList<TextRect>>([]);
+            },
+            brightness: 1);
+    }
+
+    [Fact]
     public async Task 対象範囲が空の場合は認識しない()
     {
         using var bitmap = CreateBitmap();

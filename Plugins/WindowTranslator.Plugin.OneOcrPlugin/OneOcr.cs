@@ -132,46 +132,13 @@ public sealed class OneOcr : IOcrModule, IDisposable
     {
         var imageWidth = (int)(input.Source.PixelWidth * this.scale);
         var imageHeight = (int)(input.Source.PixelHeight * this.scale);
-        var wFat = input.Source.PixelWidth * 0.004;
+        var wFat = input.Source.PixelWidth * this.scale * 0.004;
         return OcrUtility.RecognizeRegionsAsync(
             input,
-            bitmap => RecognizeRegionInputAsync(bitmap, imageWidth, imageHeight, wFat));
-    }
-
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionInputAsync(
-        SoftwareBitmap bitmap,
-        int imageWidth,
-        int imageHeight,
-        double wFat)
-    {
-        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
-
-        // 明るさ・コントラスト調整（インプレース）
-        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
-        if (this.brightness != 0 || this.contrast != 0)
-        {
-            if (workingBitmap == bitmap)
-            {
-                // 元のビットマップを変更しないようにコピーを作成
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-                workingBitmap = SoftwareBitmap.Copy(bitmap);
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
-            }
-            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
-        }
-
-        try
-        {
-            return await RecognizeRegionAsync(workingBitmap, imageWidth, imageHeight, wFat);
-        }
-        finally
-        {
-            if (workingBitmap != bitmap)
-            {
-                workingBitmap.Dispose();
-            }
-        }
+            bitmap => RecognizeRegionAsync(bitmap, imageWidth, imageHeight, wFat),
+            this.scale,
+            this.brightness,
+            this.contrast);
     }
 
     /// <summary>
@@ -431,8 +398,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         // 結合された矩形の平均角度を計算
         var angle = mergedRect.Rects.Average(r => r.Angle);
 
-        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle }
-            .RestoreScale(this.scale);
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     /// <summary>

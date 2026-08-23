@@ -49,41 +49,11 @@ public sealed class TesseractOcr(
         var baseHeight = input.Source.PixelHeight * this.scale;
         return OcrUtility.RecognizeRegionsAsync(
             input,
-            bitmap => RecognizeRegionInputAsync(bitmap, baseWidth, baseHeight));
-    }
-
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionInputAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
-    {
-        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-        this.cts.Token.ThrowIfCancellationRequested();
-
-        // 明るさ・コントラスト調整（インプレース）
-        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
-        if (this.brightness != 0 || this.contrast != 0)
-        {
-            if (workingBitmap == bitmap)
-            {
-                // 元のビットマップを変更しないようにコピーを作成
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-                workingBitmap = SoftwareBitmap.Copy(bitmap);
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
-            }
-            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
-        }
-        this.cts.Token.ThrowIfCancellationRequested();
-
-        try
-        {
-            return await RecognizeRegionAsync(workingBitmap, baseWidth, baseHeight);
-        }
-        finally
-        {
-            if (bitmap != workingBitmap)
-            {
-                workingBitmap.Dispose();
-            }
-        }
+            bitmap => RecognizeRegionAsync(bitmap, baseWidth, baseHeight),
+            this.scale,
+            this.brightness,
+            this.contrast,
+            this.cts.Token);
     }
 
     /// <summary>
@@ -147,7 +117,7 @@ public sealed class TesseractOcr(
         }
 
         return results
-            .Select(r => ToTextRect(r, this.scale))
+            .Select(ToTextRect)
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
@@ -326,7 +296,7 @@ public sealed class TesseractOcr(
         }
     }
 
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale)
+    private static TextRect ToTextRect(TempMergeRect combinedRect)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
@@ -340,7 +310,7 @@ public sealed class TesseractOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new TextRect(text, x, y, width, height, fontSize, lines).RestoreScale(scale);
+        return new TextRect(text, x, y, width, height, fontSize, lines);
     }
 
     public void Dispose()
