@@ -44,25 +44,20 @@ public sealed class TesseractOcr(
     private readonly int contrast = ocrParam.Value.Contrast;
 
     public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
-    {
-        var baseWidth = input.Source.PixelWidth * this.scale;
-        var baseHeight = input.Source.PixelHeight * this.scale;
-        return OcrUtility.RecognizeRegionsAsync(
+        => OcrUtility.RecognizeRegionsAsync(
             input,
-            bitmap => RecognizeRegionAsync(bitmap, baseWidth, baseHeight),
+            RecognizeRegionAsync,
             this.scale,
             this.brightness,
             this.contrast,
             this.cts.Token);
-    }
 
     /// <summary>
     /// 指定した画像のテキストを認識する
     /// </summary>
     /// <param name="bitmap">認識対象の画像</param>
-    /// <param name="baseWidth">全体画像を基準にした閾値の計算に使う幅</param>
-    /// <param name="baseHeight">全体画像を基準にした閾値の計算に使う高さ</param>
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, double baseWidth, double baseHeight)
+    /// <param name="sourceSize">拡大後の全体画像サイズ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, System.Drawing.Size sourceSize)
     {
 
         var sw = Stopwatch.StartNew();
@@ -78,8 +73,8 @@ public sealed class TesseractOcr(
 
         // マージ処理
         // 認識結果はスケール後画像の座標系なので、マージ閾値も同じ座標系に揃える
-        var xt = xPosThreshold * baseWidth;
-        var yt = yPosThreshold * baseHeight;
+        var xt = xPosThreshold * sourceSize.Width;
+        var yt = yPosThreshold * sourceSize.Height;
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));

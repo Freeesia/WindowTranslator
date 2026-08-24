@@ -40,8 +40,6 @@ public sealed partial class WindowsMediaOcr(
 
     public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
     {
-        var baseWidth = input.Source.PixelWidth * this.scale;
-        var baseHeight = input.Source.PixelHeight * this.scale;
         foreach (var region in input.Regions)
         {
             var width = (uint)(region.Bounds.Width * this.scale);
@@ -54,7 +52,7 @@ public sealed partial class WindowsMediaOcr(
 
         return OcrUtility.RecognizeRegionsAsync(
             input,
-            bitmap => RecognizeRegionAsync(bitmap, baseWidth, baseHeight),
+            RecognizeRegionAsync,
             this.scale,
             this.brightness,
             this.contrast,
@@ -65,9 +63,8 @@ public sealed partial class WindowsMediaOcr(
     /// 指定した画像のテキストを認識する
     /// </summary>
     /// <param name="workingBitmap">認識対象の画像</param>
-    /// <param name="baseWidth">画像全体を基準にした閾値の計算に使う幅</param>
-    /// <param name="baseHeight">画像全体を基準にした閾値の計算に使う高さ</param>
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, double baseWidth, double baseHeight)
+    /// <param name="sourceSize">拡大後の全体画像サイズ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, System.Drawing.Size sourceSize)
     {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
@@ -100,7 +97,7 @@ public sealed partial class WindowsMediaOcr(
             .Lines
             .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < baseHeight * 0.1)
+            .Where(w => w.Height < sourceSize.Height * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -108,8 +105,8 @@ public sealed partial class WindowsMediaOcr(
             return lineResults;
         }
 
-        var xt = xPosThrethold * baseWidth;
-        var yt = yPosThrethold * baseHeight;
+        var xt = xPosThrethold * sourceSize.Width;
+        var yt = yPosThrethold * sourceSize.Height;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {

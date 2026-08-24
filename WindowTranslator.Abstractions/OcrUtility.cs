@@ -20,15 +20,43 @@ public static partial class OcrUtility
     /// <param name="contrast">OCR前に適用するコントラスト</param>
     /// <param name="cancellationToken">キャンセルトークン</param>
     /// <returns>全体画像の座標系へ変換し、優先度の重複を除外した認識結果</returns>
-    public static async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionsAsync(
+    public static ValueTask<IReadOnlyList<TextRect>> RecognizeRegionsAsync(
         Modules.OcrCaptureInput input,
         Func<Windows.Graphics.Imaging.SoftwareBitmap, ValueTask<IReadOnlyList<TextRect>>> recognizeAsync,
         double scale = 1,
         int brightness = 0,
         int contrast = 0,
         CancellationToken cancellationToken = default)
+        => RecognizeRegionsAsync(
+            input,
+            (bitmap, _) => recognizeAsync(bitmap),
+            scale,
+            brightness,
+            contrast,
+            cancellationToken);
+
+    /// <summary>
+    /// 1回のキャプチャーに含まれるOCR対象範囲を順番に切り出して認識する
+    /// </summary>
+    /// <param name="input">全体画像とOCR対象範囲</param>
+    /// <param name="recognizeAsync">切り出した画像と拡大後の全体画像サイズを認識する処理</param>
+    /// <param name="scale">OCR前に画像へ適用する拡大率</param>
+    /// <param name="brightness">OCR前に適用する明るさ</param>
+    /// <param name="contrast">OCR前に適用するコントラスト</param>
+    /// <param name="cancellationToken">キャンセルトークン</param>
+    /// <returns>全体画像の座標系へ変換し、優先度の重複を除外した認識結果</returns>
+    public static async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionsAsync(
+        Modules.OcrCaptureInput input,
+        Func<Windows.Graphics.Imaging.SoftwareBitmap, System.Drawing.Size, ValueTask<IReadOnlyList<TextRect>>> recognizeAsync,
+        double scale = 1,
+        int brightness = 0,
+        int contrast = 0,
+        CancellationToken cancellationToken = default)
     {
         var results = new List<TextRect>();
+        var scaledSourceSize = new System.Drawing.Size(
+            (int)(input.Source.PixelWidth * scale),
+            (int)(input.Source.PixelHeight * scale));
 
         foreach (var region in input.Regions)
         {
@@ -55,7 +83,7 @@ public static partial class OcrUtility
                     workingBitmap.AdjustBrightnessContrastInPlace(brightness, contrast);
                 }
 
-                var regionResults = await recognizeAsync(workingBitmap).ConfigureAwait(false);
+                var regionResults = await recognizeAsync(workingBitmap, scaledSourceSize).ConfigureAwait(false);
                 var offsetResults = regionResults
                     .Select(r => r with
                     {

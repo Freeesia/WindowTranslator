@@ -129,37 +129,30 @@ public sealed class OneOcr : IOcrModule, IDisposable
     }
 
     public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
-    {
-        var imageWidth = (int)(input.Source.PixelWidth * this.scale);
-        var imageHeight = (int)(input.Source.PixelHeight * this.scale);
-        var wFat = input.Source.PixelWidth * this.scale * 0.004;
-        return OcrUtility.RecognizeRegionsAsync(
+        => OcrUtility.RecognizeRegionsAsync(
             input,
-            bitmap => RecognizeRegionAsync(bitmap, imageWidth, imageHeight, wFat),
+            RecognizeRegionAsync,
             this.scale,
             this.brightness,
             this.contrast);
-    }
 
     /// <summary>
     /// 指定した画像のテキストを認識する
     /// </summary>
     /// <param name="workingBitmap">認識対象の画像</param>
-    /// <param name="imageWidth">閾値の計算に使う全体画像の幅</param>
-    /// <param name="imageHeight">閾値の計算に使う全体画像の高さ</param>
-    /// <param name="wFat">矩形を左右に広げる幅</param>
+    /// <param name="sourceSize">拡大後の全体画像サイズ</param>
     private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(
         SoftwareBitmap workingBitmap,
-        int imageWidth,
-        int imageHeight,
-        double wFat)
+        System.Drawing.Size sourceSize)
     {
 
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
-        textRects = ProcessTextRects(textRects, imageWidth, imageHeight);
+        textRects = ProcessTextRects(textRects, sourceSize.Width, sourceSize.Height);
+
+        var wFat = sourceSize.Width * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い

@@ -62,10 +62,11 @@ public class OcrUtilityTests
 
         var results = await OcrUtility.RecognizeRegionsAsync(
             input,
-            target =>
+            (target, sourceSize) =>
             {
                 Assert.Equal(200, target.PixelWidth);
                 Assert.Equal(150, target.PixelHeight);
+                Assert.Equal(new System.Drawing.Size(800, 600), sourceSize);
                 return ValueTask.FromResult<IReadOnlyList<TextRect>>([
                     Text("scaled", 20, 40, 80, 40) with { Angle = 30 },
                 ]);
