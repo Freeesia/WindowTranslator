@@ -60,8 +60,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private SoftwareBitmap? capturedBmp;
     private SoftwareBitmap? analyzingBmp;
-    private int oneShotRequestId;
-    private int oneShotCapturedRequestId;
+    private bool isFirstCapture;
     private bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -110,7 +109,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     partial void OnOverlayVisibleChanged(bool value)
     {
-        // OneShotのキャプチャーはRequestOneShotで開始し、翻訳完了後に停止する。
+        // OneShotのキャプチャーはRequestOneShotで開始する。
         if (this.isOneShotMode)
         {
             return;
@@ -135,25 +134,12 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         if (this.isOneShotMode)
         {
-            int requestId = Volatile.Read(ref this.oneShotRequestId);
-            if (requestId == 0 || requestId == Volatile.Read(ref this.oneShotCapturedRequestId))
+            if (!this.isFirstCapture)
             {
                 return;
             }
-
-            var bitmap = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
-            if (!this.IsOneShotRequestCurrent(requestId)
-                || Interlocked.Exchange(ref this.oneShotCapturedRequestId, requestId) == requestId)
-            {
-                bitmap.Dispose();
-                return;
-            }
-
-            this.Width = bitmap.PixelWidth;
-            this.Height = bitmap.PixelHeight;
+            this.isFirstCapture = false;
             this.capture.StopCapture();
-            CreateTextOverlayAsync(bitmap, requestId).Forget();
-            return;
         }
 
         if (this.analyzing.CurrentCount == 0)
@@ -176,39 +162,29 @@ public abstract partial class MainViewModelBase : IDisposable
         }
 
         this.logger.LogDebug("OneShot OCR requested");
-        Interlocked.Increment(ref this.oneShotRequestId);
         this.OcrTexts.Clear();
-        this.capture.StopCapture();
+        this.isFirstCapture = true;
         this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
     }
 
-    private async Task CreateTextOverlayAsync(SoftwareBitmap? oneShotBitmap = null, int requestId = 0)
+    private async Task CreateTextOverlayAsync()
     {
-        bool isOneShotRequest = oneShotBitmap is not null;
-        if (isOneShotRequest)
-        {
-            await this.analyzing.WaitAsync();
-        }
-        else if (!await this.analyzing.WaitAsync(0))
+        if (!await this.analyzing.WaitAsync(0))
         {
             return;
         }
 
         using var to = this.logger.LogDebugTime("TextOverlay");
         using var rel = new DisposeAction(() => this.analyzing.Release());
-        using var ownedOneShotBitmap = oneShotBitmap;
-        var sbmp = oneShotBitmap ?? Interlocked.Exchange(ref this.capturedBmp, null);
-        if (!isOneShotRequest)
+        var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
+        if (sbmp is null)
         {
-            if (sbmp is null)
-            {
-                sbmp = this.analyzingBmp;
-            }
-            else
-            {
-                this.analyzingBmp?.Dispose();
-                this.analyzingBmp = sbmp;
-            }
+            sbmp = this.analyzingBmp;
+        }
+        else
+        {
+            this.analyzingBmp?.Dispose();
+            this.analyzingBmp = sbmp;
         }
         if (sbmp is null)
         {
@@ -221,40 +197,26 @@ public abstract partial class MainViewModelBase : IDisposable
             try
             {
                 var observations = await this.ocr.RecognizeAsync(sbmp);
-                texts = isOneShotRequest
-                    ? observations.ToArray()
+                texts = this.isOneShotMode
+                    ? observations
                     : this.ocrTextTracker.Update(observations, new(sbmp.PixelWidth, sbmp.PixelHeight));
             }
             catch (ObjectDisposedException)
             {
-                if (!isOneShotRequest)
-                {
-                    await DisposeTimerAsync();
-                    this.capture.StopCapture();
-                }
+                await DisposeTimerAsync();
+                this.capture.StopCapture();
                 return;
             }
             catch (OperationCanceledException)
             {
-                if (!isOneShotRequest)
-                {
-                    await DisposeTimerAsync();
-                    this.capture.StopCapture();
-                }
+                await DisposeTimerAsync();
+                this.capture.StopCapture();
                 return;
             }
             catch (Exception e)
             {
-                if (isOneShotRequest && !this.IsOneShotRequestCurrent(requestId))
-                {
-                    this.logger.LogDebug(e, "置き換えられたOneShot要求のOCRエラーを無視");
-                    return;
-                }
-                if (!isOneShotRequest)
-                {
-                    await DisposeTimerAsync();
-                    this.capture.StopCapture();
-                }
+                await DisposeTimerAsync();
+                this.capture.StopCapture();
                 var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                 await sbmp.TrySaveImage(path);
                 await this.presentationService.OpenErrorDialogAsync(Resources.FaildOcr, e, this.name, path);
@@ -262,11 +224,6 @@ public abstract partial class MainViewModelBase : IDisposable
                 return;
             }
             texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
-        }
-
-        if (isOneShotRequest && !this.IsOneShotRequestCurrent(requestId))
-        {
-            return;
         }
 
         FilterContext context;
@@ -286,35 +243,26 @@ public abstract partial class MainViewModelBase : IDisposable
             }
             using var t = this.logger.LogDebugTime("PreTranslate");
             texts = await tmp.ToArrayAsync();
-            if (!isOneShotRequest)
+            if (!this.isOneShotMode)
             {
                 TranslateAsync(texts).Forget();
             }
             displayedTexts = await CreateDisplayedTextsAsync(texts, context);
         }
 
-        if (isOneShotRequest && !this.IsOneShotRequestCurrent(requestId))
+        UpdateOcrTexts(displayedTexts);
+        if (!this.isOneShotMode)
         {
             return;
         }
 
-        UpdateOcrTexts(displayedTexts, requestId);
-        if (!isOneShotRequest)
-        {
-            return;
-        }
-
-        if (!await TranslateOneShotAsync(texts, requestId)
-            || !this.IsOneShotRequestCurrent(requestId))
-        {
-            return;
-        }
+        await TranslateAsync(texts);
 
         using (this.Filtering.EnterBusy())
         {
             displayedTexts = await CreateDisplayedTextsAsync(texts, context);
         }
-        UpdateOcrTexts(displayedTexts, requestId);
+        UpdateOcrTexts(displayedTexts);
     }
 
     private async Task<TextRect[]> CreateDisplayedTextsAsync(IEnumerable<TextRect> texts, FilterContext context)
@@ -334,12 +282,8 @@ public abstract partial class MainViewModelBase : IDisposable
         return texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
     }
 
-    private void UpdateOcrTexts(IEnumerable<TextRect> texts, int requestId = 0)
+    private void UpdateOcrTexts(IEnumerable<TextRect> texts)
     {
-        if (requestId != 0 && !this.IsOneShotRequestCurrent(requestId))
-        {
-            return;
-        }
         var hash = texts.ToHashSet();
         foreach (var text in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
         {
@@ -400,51 +344,6 @@ public abstract partial class MainViewModelBase : IDisposable
             this.translating.Release();
         }
     }
-
-    private async Task<bool> TranslateOneShotAsync(IEnumerable<TextRect> texts, int requestId)
-    {
-        await this.translating.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (!this.IsOneShotRequestCurrent(requestId) || this.disposedValue)
-            {
-                return false;
-            }
-
-            var requests = texts
-                .Where(t => t.TranslatedText is null)
-                .Where(t => !this.cache.Contains(t.SourceText))
-                .ToArray();
-            if (!requests.Any())
-            {
-                return true;
-            }
-
-            this.logger.LogDebug("Translate OneShot");
-            var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
-            this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
-            return true;
-        }
-        catch (Exception e) when (e is not OperationCanceledException)
-        {
-            this.logger.LogError(e, "OneShot翻訳中にエラーが発生");
-            if (!this.IsOneShotRequestCurrent(requestId))
-            {
-                return false;
-            }
-
-            await this.presentationService.OpenErrorDialogAsync(Resources.FaildOverlay, e, this.name, string.Empty);
-            StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-            return false;
-        }
-        finally
-        {
-            this.translating.Release();
-        }
-    }
-
-    private bool IsOneShotRequestCurrent(int requestId)
-        => requestId == Volatile.Read(ref this.oneShotRequestId);
 
     private async ValueTask DisposeTimerAsync()
     {
