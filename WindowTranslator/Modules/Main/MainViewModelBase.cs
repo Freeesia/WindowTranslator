@@ -173,9 +173,11 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
-
         using var to = this.logger.LogDebugTime("TextOverlay");
-        using var rel = new DisposeAction(() => this.analyzing.Release());
+        using var rel = new DisposeAction(() =>
+        {
+            this.analyzing.Release();
+        });
         var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
         if (sbmp is null)
         {
@@ -203,12 +205,14 @@ public abstract partial class MainViewModelBase : IDisposable
             }
             catch (ObjectDisposedException)
             {
+                // すでに破棄されている場合は何もしない
                 await DisposeTimerAsync();
                 this.capture.StopCapture();
                 return;
             }
             catch (OperationCanceledException)
             {
+                // キャンセルされた場合は何もしない
                 await DisposeTimerAsync();
                 this.capture.StopCapture();
                 return;
@@ -223,9 +227,10 @@ public abstract partial class MainViewModelBase : IDisposable
                 StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
                 return;
             }
-            texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
         }
+        texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
 
+        // フィルター&翻訳処理は必ず通す
         FilterContext context;
         TextRect[] displayedTexts;
         using (this.Filtering.EnterBusy())
@@ -236,13 +241,15 @@ public abstract partial class MainViewModelBase : IDisposable
                 SoftwareBitmap = sbmp,
                 ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
             };
-            var tmp = texts.ToAsyncEnumerable();
-            foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
             {
-                tmp = filter.ExecutePreTranslate(tmp, context);
+                var tmp = texts.ToAsyncEnumerable();
+                foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
+                {
+                    tmp = filter.ExecutePreTranslate(tmp, context);
+                }
+                using var t = this.logger.LogDebugTime("PreTranslate");
+                texts = await tmp.ToArrayAsync();
             }
-            using var t = this.logger.LogDebugTime("PreTranslate");
-            texts = await tmp.ToArrayAsync();
             if (!this.isOneShotMode)
             {
                 TranslateAsync(texts).Forget();
