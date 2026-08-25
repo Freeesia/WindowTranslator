@@ -105,7 +105,7 @@ public sealed class LLMOcr : IOcrModule
     }
 
     public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
-        => OcrUtility.RecognizeRegionsAsync(input, RecognizeRegionAsync);
+        => OcrUtility.RecognizeRegionsAsync(input, (bitmap, _) => RecognizeRegionAsync(bitmap));
 
     private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
     {

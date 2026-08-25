@@ -23,7 +23,7 @@ public class OcrUtilityTests
         using var bitmap = CreateBitmap();
         var input = new OcrCaptureInput(bitmap, [new(new(0, 0, Width, Height))]);
 
-        var results = await OcrUtility.RecognizeRegionsAsync(input, target =>
+        var results = await OcrUtility.RecognizeRegionsAsync(input, (target, _) =>
         {
             Assert.Same(bitmap, target);
             return ValueTask.FromResult<IReadOnlyList<TextRect>>([
@@ -40,7 +40,7 @@ public class OcrUtilityTests
         using var bitmap = CreateBitmap();
         var input = new OcrCaptureInput(bitmap, [new(new(101, 150, 101, 77), "context")]);
 
-        var results = await OcrUtility.RecognizeRegionsAsync(input, target =>
+        var results = await OcrUtility.RecognizeRegionsAsync(input, (target, _) =>
         {
             Assert.NotSame(bitmap, target);
             Assert.Equal(101, target.PixelWidth);
@@ -91,7 +91,7 @@ public class OcrUtilityTests
 
         await OcrUtility.RecognizeRegionsAsync(
             input,
-            target =>
+            (target, _) =>
             {
                 Assert.NotSame(bitmap, target);
                 return ValueTask.FromResult<IReadOnlyList<TextRect>>([]);
@@ -107,7 +107,7 @@ public class OcrUtilityTests
 
         var results = await OcrUtility.RecognizeRegionsAsync(
             new(bitmap, []),
-            _ =>
+            (_, _) =>
             {
                 calls++;
                 return ValueTask.FromResult<IReadOnlyList<TextRect>>([]);
@@ -132,7 +132,7 @@ public class OcrUtilityTests
 
         var results = await OcrUtility.RecognizeRegionsAsync(
             input,
-            _ => ValueTask.FromResult(regionResults.Dequeue()));
+            (_, _) => ValueTask.FromResult(regionResults.Dequeue()));
 
         var result = Assert.Single(results);
         Assert.Equal("high text", result.SourceText);
@@ -147,7 +147,7 @@ public class OcrUtilityTests
 
         var results = await OcrUtility.RecognizeRegionsAsync(
             input,
-            _ => ValueTask.FromResult<IReadOnlyList<TextRect>>([
+            (_, _) => ValueTask.FromResult<IReadOnlyList<TextRect>>([
                 Text("first", 10, 10),
                 Text("second", 20, 10),
             ]));
@@ -170,7 +170,7 @@ public class OcrUtilityTests
 
         var results = await OcrUtility.RecognizeRegionsAsync(
             input,
-            _ => ValueTask.FromResult(regionResults.Dequeue()));
+            (_, _) => ValueTask.FromResult(regionResults.Dequeue()));
 
         Assert.Equal(["high text", "low text"], results.Select(r => r.SourceText));
         Assert.Equal(["high", "low"], results.Select(r => r.Context));
@@ -191,7 +191,7 @@ public class OcrUtilityTests
 
         var results = await OcrUtility.RecognizeRegionsAsync(
             input,
-            _ => ValueTask.FromResult(regionResults.Dequeue()));
+            (_, _) => ValueTask.FromResult(regionResults.Dequeue()));
 
         Assert.Equal(["high text", "low text"], results.Select(r => r.SourceText));
     }

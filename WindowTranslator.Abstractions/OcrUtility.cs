@@ -14,31 +14,6 @@ public static partial class OcrUtility
     /// 1回のキャプチャーに含まれるOCR対象範囲を順番に切り出して認識する
     /// </summary>
     /// <param name="input">全体画像とOCR対象範囲</param>
-    /// <param name="recognizeAsync">切り出した画像を認識する処理</param>
-    /// <param name="scale">OCR前に画像へ適用する拡大率</param>
-    /// <param name="brightness">OCR前に適用する明るさ</param>
-    /// <param name="contrast">OCR前に適用するコントラスト</param>
-    /// <param name="cancellationToken">キャンセルトークン</param>
-    /// <returns>全体画像の座標系へ変換し、優先度の重複を除外した認識結果</returns>
-    public static ValueTask<IReadOnlyList<TextRect>> RecognizeRegionsAsync(
-        Modules.OcrCaptureInput input,
-        Func<Windows.Graphics.Imaging.SoftwareBitmap, ValueTask<IReadOnlyList<TextRect>>> recognizeAsync,
-        double scale = 1,
-        int brightness = 0,
-        int contrast = 0,
-        CancellationToken cancellationToken = default)
-        => RecognizeRegionsAsync(
-            input,
-            (bitmap, _) => recognizeAsync(bitmap),
-            scale,
-            brightness,
-            contrast,
-            cancellationToken);
-
-    /// <summary>
-    /// 1回のキャプチャーに含まれるOCR対象範囲を順番に切り出して認識する
-    /// </summary>
-    /// <param name="input">全体画像とOCR対象範囲</param>
     /// <param name="recognizeAsync">切り出した画像と拡大後の全体画像サイズを認識する処理</param>
     /// <param name="scale">OCR前に画像へ適用する拡大率</param>
     /// <param name="brightness">OCR前に適用する明るさ</param>
