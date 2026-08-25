@@ -219,10 +219,6 @@ public partial class OverlayMainWindow : Window
         {
             return 0;
         }
-        if (this.DataContext is OverlayMainViewModel viewModel)
-        {
-            viewModel.RequestOneShot();
-        }
         if (this.overlaySwitch == OverlaySwitch.Hold)
         {
             HoldHideOverlay();

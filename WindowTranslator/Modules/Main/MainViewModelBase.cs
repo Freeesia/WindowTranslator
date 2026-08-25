@@ -88,6 +88,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
         this.isOneShotMode = options.Value.IsOneShotMode;
+        this.overlayVisible = !this.isOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
@@ -109,16 +110,17 @@ public abstract partial class MainViewModelBase : IDisposable
 
     partial void OnOverlayVisibleChanged(bool value)
     {
-        // OneShotのキャプチャーはRequestOneShotで開始する。
-        if (this.isOneShotMode)
-        {
-            return;
-        }
-
         if (value)
         {
             this.OcrTexts.Clear();
-            this.ocrTextTracker.Reset();
+            if (this.isOneShotMode)
+            {
+                this.isFirstCapture = true;
+            }
+            else
+            {
+                this.ocrTextTracker.Reset();
+            }
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
         }
@@ -152,19 +154,6 @@ public abstract partial class MainViewModelBase : IDisposable
         this.Height = newBmp.PixelHeight;
         CreateTextOverlayAsync().Forget();
         sbmp?.Dispose();
-    }
-
-    public void RequestOneShot()
-    {
-        if (!this.isOneShotMode)
-        {
-            return;
-        }
-
-        this.logger.LogDebug("OneShot OCR requested");
-        this.OcrTexts.Clear();
-        this.isFirstCapture = true;
-        this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
     }
 
     private async Task CreateTextOverlayAsync()
