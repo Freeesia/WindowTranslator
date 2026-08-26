@@ -6,6 +6,7 @@
     <Description>OCR for WindowTranslator using the Tesseract engine.</Description>
     <IsPackable>true</IsPackable>
     <IsPublishable>false</IsPublishable>
+    <IncludePluginRuntimeAssetsInPackage>true</IncludePluginRuntimeAssetsInPackage>
   </PropertyGroup>
 
   <ItemGroup>

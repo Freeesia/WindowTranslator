@@ -19,12 +19,18 @@
       <_PluginWinX64RuntimeAsset Include="$(TargetDir)runtimes\win-x64\**\*" />
       <_PluginWinRuntimeAsset Include="$(TargetDir)runtimes\win\**\*" />
       <_PluginAnyRuntimeAsset Include="$(TargetDir)runtimes\any\**\*" />
+      <_PluginX64RuntimeAsset Include="$(TargetDir)x64\**\*" />
+      <_PluginX86RuntimeAsset Include="$(TargetDir)x86\**\*" />
       <BuildOutputInPackage Include="@(_PluginWinX64RuntimeAsset)"
                             TargetPath="runtimes\win-x64\%(RecursiveDir)%(Filename)%(Extension)" />
       <BuildOutputInPackage Include="@(_PluginWinRuntimeAsset)"
                             TargetPath="runtimes\win\%(RecursiveDir)%(Filename)%(Extension)" />
       <BuildOutputInPackage Include="@(_PluginAnyRuntimeAsset)"
                             TargetPath="runtimes\any\%(RecursiveDir)%(Filename)%(Extension)" />
+      <BuildOutputInPackage Include="@(_PluginX64RuntimeAsset)"
+                            TargetPath="x64\%(RecursiveDir)%(Filename)%(Extension)" />
+      <BuildOutputInPackage Include="@(_PluginX86RuntimeAsset)"
+                            TargetPath="x86\%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
   </Target>
 
