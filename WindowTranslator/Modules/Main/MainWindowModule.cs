@@ -22,6 +22,9 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
     public Task OpenTargetAsync(IntPtr targetWindowHandle, string name)
         => this.app.Dispatcher.Invoke(() => OpenTargetWindowCoreAsync(targetWindowHandle, name));
 
+    public bool IsTargetOpened(IntPtr targetWindowHandle)
+        => this.app.Dispatcher.Invoke(() => this.OpenedWindows.Any(w => w.Target == targetWindowHandle));
+
     private async ValueTask<TargetSettings?> GetSettingsAsync(string name)
     {
         using var scope = provider.CreateScope();
@@ -116,6 +119,8 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
 public interface IMainWindowModule
 {
     ObservableCollection<WindowInfo> OpenedWindows { get; }
+
+    bool IsTargetOpened(IntPtr targetWindowHandle);
 
     Task OpenTargetAsync(IntPtr targetWindowHandle, string name);
 }

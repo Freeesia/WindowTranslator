@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Modo de visualización de resultados</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Objetivos de traducción automática</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Traducir automáticamente cuando se inicie un proceso seleccionado</value>
+    <value>Traducir automáticamente al iniciar la aplicación</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Configuración general</value>
@@ -449,5 +446,11 @@
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Añadir área</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Se utiliza en los módulos de traducción compatibles con el contexto</value>
   </data>
 </root>

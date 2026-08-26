@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Mode tampilan hasil terjemahan</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Target terjemahan otomatis</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Terjemahkan secara otomatis saat proses diluncurkan setelah dipilih untuk terjemahan</value>
+    <value>Terjemahkan secara otomatis saat aplikasi diluncurkan</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Pengaturan keseluruhan</value>
@@ -457,5 +454,11 @@ Monitor tidak didukung.</value>
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tambahkan area</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Digunakan oleh modul terjemahan yang mendukung konteks</value>
   </data>
 </root>

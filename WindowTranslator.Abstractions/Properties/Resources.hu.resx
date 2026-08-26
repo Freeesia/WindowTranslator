@@ -67,4 +67,10 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Gyorsítótár modul</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>OCR-terület</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>OCR-területek</value>
+  </data>
 </root>

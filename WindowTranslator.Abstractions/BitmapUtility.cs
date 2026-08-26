@@ -224,6 +224,43 @@ public static class BitmapUtility
             // ここで何かログを残すことも可能ですが、今回は省略します
         }
     }
+
+    /// <summary>
+    /// 画像を切り出す
+    /// </summary>
+    /// <param name="source">元の画像</param>
+    /// <param name="x">切り出し開始位置のX座標</param>
+    /// <param name="y">切り出し開始位置のY座標</param>
+    /// <param name="width">切り出す幅</param>
+    /// <param name="height">切り出す高さ</param>
+    /// <returns>切り出された画像</returns>
+    internal static unsafe SoftwareBitmap Crop(this SoftwareBitmap source, int x, int y, int width, int height)
+    {
+        var cropped = new SoftwareBitmap(source.BitmapPixelFormat, width, height, source.BitmapAlphaMode);
+
+        using var sourceBuffer = source.LockBuffer(BitmapBufferAccessMode.Read);
+        using var croppedBuffer = cropped.LockBuffer(BitmapBufferAccessMode.Write);
+        using var sourceReference = sourceBuffer.CreateReference();
+        using var croppedReference = croppedBuffer.CreateReference();
+
+        sourceReference.As<IMemoryBufferByteAccess>().GetBuffer(out var sourceData, out _);
+        croppedReference.As<IMemoryBufferByteAccess>().GetBuffer(out var croppedData, out _);
+
+        var bytesPerPixel = 4; // BGRA8
+        var sourceStride = sourceBuffer.GetPlaneDescription(0).Stride;
+        var croppedStride = croppedBuffer.GetPlaneDescription(0).Stride;
+
+        for (int row = 0; row < height; row++)
+        {
+            var sourceOffset = ((y + row) * sourceStride) + (x * bytesPerPixel);
+            var croppedOffset = row * croppedStride;
+
+            new ReadOnlySpan<byte>(sourceData + sourceOffset, width * bytesPerPixel)
+                .CopyTo(new Span<byte>(croppedData + croppedOffset, width * bytesPerPixel));
+        }
+
+        return cropped;
+    }
 }
 
 [ComImport]

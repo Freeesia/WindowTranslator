@@ -180,4 +180,10 @@
   <data name="CacheModule" xml:space="preserve">
     <value>キャッシュモジュール</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>OCR範囲</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>OCR対象範囲</value>
+  </data>
 </root>

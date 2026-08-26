@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: baileyjm02/markdown-to-pdf@v1
+      - uses: baileyjm02/markdown-to-pdf@v2
         with:
           input_path: docs
           output_dir: pdfs
@@ -125,7 +125,7 @@ jobs:
           versionSpec: "6.x"
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v4.7.0
-      - uses: Jimver/cuda-toolkit@v0.2.30
+      - uses: Jimver/cuda-toolkit@v0.2.36
         with:
           cuda: '12.9.0'
       - run: |

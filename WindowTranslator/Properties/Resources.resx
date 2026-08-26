@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>翻訳結果表示モード</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>自動翻訳対象</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する</value>
+    <value>アプリが起動したら自動的に翻訳する</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>全体設定</value>
@@ -146,6 +143,31 @@
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>プラグイン設定</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>範囲追加</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>キーワード</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>コンテキストが有効な翻訳モジュールで使用されます</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>選択中</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>矩形選択</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
+文字が途中で切れないように少し広めに囲んでください</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>矩形が小さすぎます。もう一度選択してください。</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>言語設定</value>
