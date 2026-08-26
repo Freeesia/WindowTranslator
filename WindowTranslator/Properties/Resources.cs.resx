@@ -337,4 +337,10 @@ Monitory nejsou podporovány.
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Přidat oblast</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Používají jej překladové moduly podporující kontext</value>
+  </data>
 </root>

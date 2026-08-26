@@ -337,4 +337,10 @@ A monitorok nem támogatottak.
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tartomány hozzáadása</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>A kontextust támogató fordítási modulok használják</value>
+  </data>
 </root>

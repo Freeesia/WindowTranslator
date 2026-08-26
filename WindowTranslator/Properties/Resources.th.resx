@@ -456,4 +456,10 @@
 
 </value>
   </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>เพิ่มพื้นที่</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>ใช้โดยโมดูลการแปลที่รองรับบริบท</value>
+  </data>
 </root>

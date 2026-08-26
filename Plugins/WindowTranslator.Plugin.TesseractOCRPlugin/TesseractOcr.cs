@@ -43,30 +43,26 @@ public sealed class TesseractOcr(
     private readonly int brightness = ocrParam.Value.Brightness;
     private readonly int contrast = ocrParam.Value.Contrast;
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
-    {
-        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-        this.cts.Token.ThrowIfCancellationRequested();
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
+        => OcrUtility.RecognizeRegionsAsync(
+            input,
+            RecognizeRegionAsync,
+            this.scale,
+            this.brightness,
+            this.contrast,
+            this.cts.Token);
 
-        // 明るさ・コントラスト調整（インプレース）
-        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
-        if (this.brightness != 0 || this.contrast != 0)
-        {
-            if (workingBitmap == bitmap)
-            {
-                // 元のビットマップを変更しないようにコピーを作成
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-                workingBitmap = SoftwareBitmap.Copy(bitmap);
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
-            }
-            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
-        }
-        this.cts.Token.ThrowIfCancellationRequested();
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="bitmap">認識対象の画像</param>
+    /// <param name="sourceSize">拡大後の全体画像サイズ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, System.Drawing.Size sourceSize)
+    {
 
         var sw = Stopwatch.StartNew();
         // テキスト認識処理をバックグラウンドで実行
-        var textRects = await Task.Run(async () => await Recognize(workingBitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
+        var textRects = await Task.Run(async () => await Recognize(bitmap).ConfigureAwait(false), this.cts.Token).ConfigureAwait(false);
         this.cts.Token.ThrowIfCancellationRequested();
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
 
@@ -76,8 +72,9 @@ public sealed class TesseractOcr(
         }
 
         // マージ処理
-        var xt = xPosThreshold * bitmap.PixelWidth;
-        var yt = yPosThreshold * bitmap.PixelHeight;
+        // 認識結果はスケール後画像の座標系なので、マージ閾値も同じ座標系に揃える
+        var xt = xPosThreshold * sourceSize.Width;
+        var yt = yPosThreshold * sourceSize.Height;
 
         var results = new List<TempMergeRect>(textRects.Length);
         var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));
@@ -114,18 +111,14 @@ public sealed class TesseractOcr(
             results.Add(temp);
         }
 
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
-        }
-
         return results
-            .Select(r => ToTextRect(r, this.scale))
+            .Select(ToTextRect)
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
             // 全部数字・記号なら対象外
-            .Where(w => !AllSymbolOrSpace().IsMatch(w.SourceText));
+            .Where(w => !AllSymbolOrSpace().IsMatch(w.SourceText))
+            .ToArray();
     }
 
     private async ValueTask<TextRect[]> Recognize(SoftwareBitmap bitmap)
@@ -298,17 +291,10 @@ public sealed class TesseractOcr(
         }
     }
 
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale)
+    private static TextRect ToTextRect(TempMergeRect combinedRect)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換
-        x /= scale;
-        y /= scale;
-        width /= scale;
-        height /= scale;
-        fontSize /= scale;
-
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         var lines = height / fontSize >= 2;
 
@@ -319,7 +305,7 @@ public sealed class TesseractOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines);
+        return new TextRect(text, x, y, width, height, fontSize, lines);
     }
 
     public void Dispose()
