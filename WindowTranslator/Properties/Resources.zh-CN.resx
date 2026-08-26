@@ -133,7 +133,7 @@
     <value>翻译结果显示模式</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>应用启动时自动翻译</value>
+    <value>一旦一个进程被选中进行翻译，它将在启动时自动进行翻译</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>总体设置</value>
@@ -143,6 +143,31 @@
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>插件设置</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>添加范围</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>キーワード</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>由支持上下文的翻译模块使用</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>選択中</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>矩形選択</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
+文字が途中で切れないように少し広めに囲んでください</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>矩形が小さすぎます。もう一度選択してください。</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>语言设置</value>
