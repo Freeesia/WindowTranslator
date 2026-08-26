@@ -133,7 +133,7 @@
     <value>Translation result display mode</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Automatically translate when the app launches</value>
+    <value>Translate automatically when a process is launched once selected for translation</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Overall setting</value>
@@ -143,6 +143,31 @@
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>Plug-in Settings</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Add range</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Keyword</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Used by translation modules that support context</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Selecting</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Rectangle Selection</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Drag to select a rectangle (press Esc to cancel)
+Select a slightly wider area so that text is not cut off</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>No window is being translated, so a rectangle cannot be selected. Start translating the target window before configuring.</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>The rectangle is too small. Please select again.</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language Settings</value>
