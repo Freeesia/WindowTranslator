@@ -219,25 +219,29 @@ public partial class OverlayMainWindow : Window
         {
             return 0;
         }
+        if (this.DataContext is not OverlayMainViewModel viewModel)
+        {
+            return 0;
+        }
         if (this.overlaySwitch == OverlaySwitch.Hold)
         {
-            HoldHideOverlay();
+            HoldHideOverlay(viewModel);
         }
         else
         {
-            this.overlay.SetCurrentValue(VisibilityProperty, this.overlay.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
+            viewModel.OverlayVisible = !viewModel.OverlayVisible;
         }
         return 0;
     }
 
-    private async void HoldHideOverlay()
+    private async void HoldHideOverlay(OverlayMainViewModel viewModel)
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
-        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        viewModel.OverlayVisible = false;
         await Task.Delay(500);
         if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
         {
-            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            viewModel.OverlayVisible = true;
         }
     }
 }
