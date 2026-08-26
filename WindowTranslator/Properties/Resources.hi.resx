@@ -133,7 +133,7 @@
     <value>अनुवाद परिणाम प्रदर्शन मोड</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>ऐप लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
+    <value>अनुवाद के लिए चुने जाने पर एक बार प्रक्रिया लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>समग्र सेटिंग</value>
@@ -143,6 +143,31 @@
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>प्लग-इन सेटिंग्स</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>क्षेत्र जोड़ें</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>キーワード</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>संदर्भ का समर्थन करने वाले अनुवाद मॉड्यूल द्वारा उपयोग किया जाता है</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>選択中</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>矩形選択</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
+文字が途中で切れないように少し広めに囲んでください</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>矩形が小さすぎます。もう一度選択してください。</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>भाषा सेटिंग्स</value>
