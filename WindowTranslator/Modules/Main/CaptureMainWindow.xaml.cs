@@ -33,6 +33,10 @@ public partial class CaptureMainWindow
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
+        if (targetSettings.Value.IsOneShotMode)
+        {
+            this.overlay.Visibility = Visibility.Hidden;
+        }
         this.processInfo = processInfo;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => CheckTargetWindow();
@@ -72,29 +76,25 @@ public partial class CaptureMainWindow
         {
             return 0;
         }
-        if (this.DataContext is not CaptureMainViewModel viewModel)
-        {
-            return 0;
-        }
         if (this.overlaySwitch == OverlaySwitch.Hold)
         {
-            HoldHideOverlay(viewModel);
+            HoldHideOverlay();
         }
         else
         {
-            viewModel.OverlayVisible = !viewModel.OverlayVisible;
+            this.overlay.SetCurrentValue(VisibilityProperty, this.overlay.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
         }
         return 0;
     }
 
-    private async void HoldHideOverlay(CaptureMainViewModel viewModel)
+    private async void HoldHideOverlay()
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
-        viewModel.OverlayVisible = false;
+        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
         await Task.Delay(500);
         if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
         {
-            viewModel.OverlayVisible = true;
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         }
     }
 

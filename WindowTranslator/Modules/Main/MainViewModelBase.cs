@@ -88,7 +88,6 @@ public abstract partial class MainViewModelBase : IDisposable
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
         this.isOneShotMode = options.Value.IsOneShotMode;
-        this.overlayVisible = !this.isOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
