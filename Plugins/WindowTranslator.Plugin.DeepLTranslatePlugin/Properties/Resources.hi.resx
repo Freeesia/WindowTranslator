@@ -118,27 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AuthKey" xml:space="preserve">
-    <value>APIキー</value>
+    <value>API कुंजी</value>
   </data>
   <data name="GlossaryPath" xml:space="preserve">
-    <value>用語集パス</value>
+    <value>शब्दावली पथ</value>
   </data>
   <data name="NeedApiKey" xml:space="preserve">
-    <value>DeepLのAPIキーが設定されていません。設定ダイアログからDeepLのAPIキーを設定してください。</value>
+    <value>DeepL API कुंजी सेट नहीं है। कृपया सेटिंग्स डायलॉग से DeepL API कुंजी सेट करें।</value>
   </data>
   <data name="AuthError" xml:space="preserve">
-    <value>DeepLの認可エラーです。利用できないAPIキーが設定されています。APIキーの再作成などお試しください。</value>
+    <value>DeepL प्राधिकरण त्रुटि। एक अमान्य API कुंजी कॉन्फ़िगर की गई है। कृपया API कुंजी को पुनः बनाने का प्रयास करें।</value>
   </data>
   <data name="QuotaExceeded" xml:space="preserve">
-    <value>DeepLの使用量が上限に達しました。現在の使用量: {0} / {1} 文字</value>
+    <value>DeepL उपयोग सीमा तक पहुंच गई है। वर्तमान उपयोग: {0} / {1} वर्ण</value>
   </data>
   <data name="CheckUsageCommand" xml:space="preserve">
-    <value>使用量をチェック</value>
+    <value>उपयोग जांचें</value>
   </data>
   <data name="Usage" xml:space="preserve">
-    <value>使用量</value>
+    <value>उपयोग</value>
   </data>
   <data name="UnknownUsage" xml:space="preserve">
-    <value>不明</value>
+    <value>अज्ञात</value>
   </data>
 </root>
