@@ -133,7 +133,7 @@
     <value>Chế độ hiển thị kết quả dịch</value>
   </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Tự động dịch khi ứng dụng khởi động</value>
+    <value>Dịch tự động khi quá trình đã chọn được bắt đầu sau khi nó được chọn để dịch.</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Cài đặt tổng thể</value>
@@ -143,6 +143,31 @@
   </data>
   <data name="Plugin" xml:space="preserve">
     <value>Cài đặt plugin</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Thêm vùng</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>キーワード</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Được sử dụng bởi các mô-đun dịch hỗ trợ ngữ cảnh</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>選択中</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>矩形選択</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
+文字が途中で切れないように少し広めに囲んでください</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>矩形が小さすぎます。もう一度選択してください。</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Cài đặt ngôn ngữ</value>
