@@ -74,7 +74,7 @@ public partial class OverlayMainWindow : Window
         this.overlaySwitch = settings.Value.OverlaySwitch;
         if (targetSettings.Value.IsOneShotMode)
         {
-            this.overlay.Visibility = Visibility.Hidden;
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
         }
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.IsSwapVisibility = settings.Value.IsOverlayPointSwap;
