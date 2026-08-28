@@ -123,6 +123,16 @@ internal class Resources
     public static string Overlay => ResourceManager.GetString("Overlay", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "OCR範囲" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRect => ResourceManager.GetString("PriorityRect", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "OCR対象範囲" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRects => ResourceManager.GetString("PriorityRects", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "認識設定" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Recognize => ResourceManager.GetString("Recognize", resourceCulture) ?? string.Empty;

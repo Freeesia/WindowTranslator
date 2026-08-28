@@ -40,11 +40,6 @@ public class CommonSettings
     /// オーバレイのポインター挙動を逆にするか
     /// </summary>
     public bool IsOverlayPointSwap { get; set; }
-
-    /// <summary>
-    /// 自動的に翻訳を発動するか
-    /// </summary>
-    public bool IsEnableAutoTarget { get; set; }
 }
 
 /// <summary>
@@ -52,6 +47,11 @@ public class CommonSettings
 /// </summary>
 public class TargetSettings
 {
+    /// <summary>
+    /// 対象のウィンドウを検出したときに自動的に翻訳を開始するか
+    /// </summary>
+    public bool IsEnableAutoTarget { get; set; }
+
     /// <summary>
     /// 翻訳言語のオプション
     /// </summary>

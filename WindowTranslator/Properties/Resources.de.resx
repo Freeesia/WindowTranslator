@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Anzeigemodus für das Übersetzungsergebnis</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Ziel der automatischen Übersetzung</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Sobald ein Prozess zur Übersetzung ausgewählt wurde, wird er automatisch übersetzt, wenn er gestartet wird</value>
+    <value>Automatisch übersetzen, wenn die App gestartet wird</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Allgemeine Einstellung</value>
@@ -458,5 +455,11 @@ Monitore werden nicht unterstützt.
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Bereich hinzufügen</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Wird von Übersetzungsmodulen verwendet, die Kontext unterstützen</value>
   </data>
 </root>

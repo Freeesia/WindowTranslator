@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>번역 결과 표시 모드</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>자동 번역 대상</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>일단 번역 대상으로 선택한 프로세스가 시작되면 자동으로 번역하는 것</value>
+    <value>앱이 시작되면 자동으로 번역</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>전체 설정</value>
@@ -458,5 +455,11 @@
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>범위 추가</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
 </root>

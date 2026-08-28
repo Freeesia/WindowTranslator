@@ -108,11 +108,6 @@ internal class Resources
     public static string AutoStartWithPC => ResourceManager.GetString("AutoStartWithPC", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "自動翻訳対象" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string AutoTargets => ResourceManager.GetString("AutoTargets", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "ビルド日時" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string BuildDate => ResourceManager.GetString("BuildDate", resourceCulture) ?? string.Empty;
@@ -298,7 +293,7 @@ internal class Resources
     public static string InvalidSettingsContent => ResourceManager.GetString("InvalidSettingsContent", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "一度翻訳対象に選択したプロセスが起動したときに自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
+    /// "アプリが起動したら自動的に翻訳する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsEnableAutoTarget => ResourceManager.GetString("IsEnableAutoTarget", resourceCulture) ?? string.Empty;
 
@@ -308,14 +303,14 @@ internal class Resources
     public static string IsEnableCaptureOverlay => ResourceManager.GetString("IsEnableCaptureOverlay", resourceCulture) ?? string.Empty;
 
     /// <summary>
-    /// "ホットキーを押したときだけOCR・翻訳する" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string IsOneShotMode => ResourceManager.GetString("IsOneShotMode", resourceCulture) ?? string.Empty;
-
-    /// <summary>
     /// "最新バージョンをご利用中です。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string IsLatest => ResourceManager.GetString("IsLatest", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "ホットキーを押したときだけOCR・翻訳する" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string IsOneShotMode => ResourceManager.GetString("IsOneShotMode", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "マウスポインター位置のテキストのみオーバレイ翻訳を表示する" に類似しているローカライズされた文字列を検索します。
@@ -346,6 +341,16 @@ internal class Resources
     /// "その他" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Misc => ResourceManager.GetString("Misc", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "マウスポインター判定の余白" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding => ResourceManager.GetString("MousePointerHitTestPadding", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "マウスポインター周辺の判定領域に追加するピクセル数" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string MousePointerHitTestPadding_Desc => ResourceManager.GetString("MousePointerHitTestPadding_Desc", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "すでにWindowTranslatorが起動中です" に類似しているローカライズされた文字列を検索します。
@@ -416,6 +421,46 @@ internal class Resources
     /// "プラグイン設定" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string Plugin => ResourceManager.GetString("Plugin", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "範囲追加" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectAdd => ResourceManager.GetString("PriorityRectAdd", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "キーワード" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectKeyword => ResourceManager.GetString("PriorityRectKeyword", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "コンテキストが有効な翻訳モジュールで使用されます" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectKeywordDescription => ResourceManager.GetString("PriorityRectKeywordDescription", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "選択中" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectSelecting => ResourceManager.GetString("PriorityRectSelecting", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "矩形選択" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectSelection => ResourceManager.GetString("PriorityRectSelection", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "ドラッグして矩形を選択してください（Escキーでキャンセル）&amp;#13;&amp;#10;文字..." に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectSelectionGuide => ResourceManager.GetString("PriorityRectSelectionGuide", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください..." に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectTargetNotFound => ResourceManager.GetString("PriorityRectTargetNotFound", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "矩形が小さすぎます。もう一度選択してください。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PriorityRectTooSmall => ResourceManager.GetString("PriorityRectTooSmall", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "公開ページ" に類似しているローカライズされた文字列を検索します。

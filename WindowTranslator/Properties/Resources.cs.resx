@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -19,11 +19,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Režim zobrazení výsledku překladu</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Cíl automatického překladu</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Automaticky překládat, když se spustí proces, který byl jednou vybrán k překladu</value>
+    <value>Automaticky přeložit při spuštění aplikace</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Celkové nastavení</value>
@@ -339,5 +336,11 @@ Monitory nejsou podporovány.
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Přidat oblast</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Používají jej překladové moduly podporující kontext</value>
   </data>
 </root>

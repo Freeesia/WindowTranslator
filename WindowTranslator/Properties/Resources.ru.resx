@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Режим отображения результата перевода</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Цели автоматического перевода</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Автоматически переводить при запуске процесса, ранее выбранного в качестве цели перевода</value>
+    <value>Автоматически переводить при запуске приложения</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Общие настройки</value>
@@ -449,5 +446,11 @@
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Добавить область</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Используется модулями перевода, поддерживающими контекст</value>
   </data>
 </root>

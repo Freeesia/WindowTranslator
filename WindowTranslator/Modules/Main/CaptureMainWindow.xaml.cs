@@ -33,6 +33,10 @@ public partial class CaptureMainWindow
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
+        if (targetSettings.Value.IsOneShotMode)
+        {
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        }
         this.processInfo = processInfo;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => CheckTargetWindow();

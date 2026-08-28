@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>حالت نمایش نتایج</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>اهداف ترجمه خودکار</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>ترجمه خودکار هنگام راه‌اندازی فرآیند انتخاب‌شده</value>
+    <value>ترجمه خودکار هنگام اجرای برنامه</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>تنظیمات کلی</value>
@@ -443,5 +440,11 @@
 ***
 
 </value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>افزودن محدوده</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>توسط ماژول‌های ترجمه‌ای که از زمینه پشتیبانی می‌کنند استفاده می‌شود</value>
   </data>
 </root>

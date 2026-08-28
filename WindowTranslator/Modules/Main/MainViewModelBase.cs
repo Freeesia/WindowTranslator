@@ -24,6 +24,7 @@ public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Timer? timer;
     private readonly IOcrModule ocr;
+    private readonly List<PriorityRect> priorityRects;
     private readonly IOcrTextTracker ocrTextTracker;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
@@ -73,6 +74,7 @@ public abstract partial class MainViewModelBase : IDisposable
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
+        IOptionsSnapshot<BasicOcrParam> ocrParam,
         IOcrTextTracker ocrTextTracker,
         ITranslateModule translator,
         ICacheModule cache,
@@ -88,11 +90,11 @@ public abstract partial class MainViewModelBase : IDisposable
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
         this.isOneShotMode = options.Value.IsOneShotMode;
-        this.overlayVisible = !this.isOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
+        this.priorityRects = ocrParam.Value.PriorityRects ?? [];
         this.ocrTextTracker = ocrTextTracker ?? throw new ArgumentNullException(nameof(ocrTextTracker));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -174,7 +176,15 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         else
         {
-            this.analyzingBmp?.Dispose();
+            if (this.analyzingBmp is { } previousBmp)
+            {
+                if (!this.isOneShotMode
+                    && (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight))
+                {
+                    this.ocrTextTracker.Reset();
+                }
+                previousBmp.Dispose();
+            }
             this.analyzingBmp = sbmp;
         }
         if (sbmp is null)
@@ -187,7 +197,36 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             try
             {
-                var observations = await this.ocr.RecognizeAsync(sbmp);
+                var regions = new List<OcrRegionInput>();
+                if (this.priorityRects.Count == 0)
+                {
+                    regions.Add(new(new(0, 0, sbmp.PixelWidth, sbmp.PixelHeight)));
+                }
+                else
+                {
+                    foreach (var priorityRect in this.priorityRects)
+                    {
+                        var rect = priorityRect.ToAbsoluteRect(sbmp.PixelWidth, sbmp.PixelHeight);
+                        var left = Math.Clamp(rect.Left, 0, sbmp.PixelWidth);
+                        var top = Math.Clamp(rect.Top, 0, sbmp.PixelHeight);
+                        var right = Math.Clamp(rect.Right, 0, sbmp.PixelWidth);
+                        var bottom = Math.Clamp(rect.Bottom, 0, sbmp.PixelHeight);
+                        if (right - left < 1 || bottom - top < 1)
+                        {
+                            continue;
+                        }
+
+                        var pixelLeft = Math.Floor(left);
+                        var pixelTop = Math.Floor(top);
+                        var pixelRight = Math.Ceiling(right);
+                        var pixelBottom = Math.Ceiling(bottom);
+                        regions.Add(new(
+                            new(pixelLeft, pixelTop, pixelRight - pixelLeft, pixelBottom - pixelTop),
+                            priorityRect.Keyword));
+                    }
+                }
+
+                var observations = await this.ocr.RecognizeAsync(new(sbmp, regions));
                 texts = this.isOneShotMode
                     ? observations
                     : this.ocrTextTracker.Update(observations, new(sbmp.PixelWidth, sbmp.PixelHeight));
@@ -381,13 +420,14 @@ public sealed class CaptureMainViewModel(
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
+    [Inject] IOptionsSnapshot<BasicOcrParam> ocrParam,
     [Inject] IOcrTextTracker ocrTextTracker,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrTextTracker, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
@@ -399,12 +439,13 @@ public sealed class OverlayMainViewModel(
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
+    [Inject] IOptionsSnapshot<BasicOcrParam> ocrParam,
     [Inject] IOcrTextTracker ocrTextTracker,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrTextTracker, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, translator, cache, color, filters, logger)
 {
 }

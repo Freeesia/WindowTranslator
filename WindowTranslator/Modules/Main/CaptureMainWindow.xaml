@@ -54,7 +54,7 @@
                                 RectHeight="{Binding Height}"
                                 RectWidth="{Binding Width}"
                                 Texts="{Binding OcrTexts}"
-                                Visibility="{Binding OverlayVisible, Mode=TwoWay, Converter={StaticResource b2vConv}}" />
+                                Visibility="{Binding OverlayVisible, Mode=OneWayToSource, Converter={StaticResource b2vConv}}" />
                         </Viewbox>
                     </ctl:WindowCaptureCompositionHost.Adornment>
                 </ctl:WindowCaptureCompositionHost>

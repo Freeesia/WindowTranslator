@@ -619,6 +619,120 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void PeriodicPositionAndFontSizeNoiseDoesNotOscillate()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect jittered = stable with { X = 102, FontSize = 25 };
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        for (int frame = 1; frame <= 12; frame++)
+        {
+            TextRect observation = frame % 2 == 1 ? jittered : stable;
+            TextRect result = Assert.Single(tracker.Update(
+                [observation],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+
+            Assert.Equal((100, 24), (result.X, result.FontSize));
+        }
+    }
+
+    [Theory]
+    [InlineData(40, 10)]
+    [InlineData(10, 40)]
+    public void PeriodicFontSizeChangesOutsideTheNoiseRangeDoNotConfirmEitherExtreme(
+        double first,
+        double second)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        for (int frame = 1; frame <= 12; frame++)
+        {
+            double fontSize = frame % 2 == 1 ? first : second;
+            TextRect result = Assert.Single(tracker.Update(
+                [stable with { FontSize = fontSize }],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+
+            Assert.Equal(24, result.FontSize);
+        }
+    }
+
+    [Fact]
+    public void SingleNoiseRangeGeometryOutlierDoesNotMoveStableGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        double[] observations = [100, 100, 115, 100];
+        for (int frame = 0; frame < observations.Length; frame++)
+        {
+            TextRect result = Assert.Single(tracker.Update(
+                [stable with { X = observations[frame] }],
+                imageSize,
+                TimeSpan.FromMilliseconds((frame + 1) * 500)));
+
+            Assert.Equal(100, result.X);
+        }
+    }
+
+    [Fact]
+    public void PersistentNoiseGeometryConvergesForEveryGeometryValue()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false) { Angle = 359 };
+        TextRect changed = initial with
+        {
+            X = 102,
+            Y = 102,
+            Width = 102,
+            Height = 32,
+            FontSize = 25,
+            MultiLine = true,
+            Angle = 1,
+        };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect result = initial;
+        for (int frame = 1; frame <= 4; frame++)
+        {
+            result = Assert.Single(tracker.Update(
+                [changed],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+        }
+
+        Assert.Equal(
+            (changed.X, changed.Y, changed.Width, changed.Height, changed.FontSize, changed.MultiLine, changed.Angle),
+            (result.X, result.Y, result.Width, result.Height, result.FontSize, result.MultiLine, result.Angle));
+    }
+
+    [Fact]
+    public void LargeGeometryMovementIsStillAppliedImmediately()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect moved = initial with { X = 180 };
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect result = Assert.Single(tracker.Update(
+            [moved],
+            imageSize,
+            TimeSpan.FromMilliseconds(500)));
+
+        Assert.Equal(180, result.X);
+    }
+
+    [Fact]
     public void NonFiniteGeometryIsRejected()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -1368,16 +1482,19 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TextRect changed = initial with { X = 110, Width = 110 };
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
-        TextRect first = Assert.Single(tracker.Update(
-            [changed],
-            imageSize,
-            TimeSpan.FromMilliseconds(500)));
-        TextRect confirmed = Assert.Single(tracker.Update(
-            [changed],
-            imageSize,
-            TimeSpan.FromMilliseconds(1000)));
+        TextRect confirmed = initial;
+        for (int frame = 1; frame <= 4; frame++)
+        {
+            confirmed = Assert.Single(tracker.Update(
+                [changed],
+                imageSize,
+                TimeSpan.FromMilliseconds(frame * 500)));
+            if (frame < 4)
+            {
+                Assert.Equal((100, 100), (confirmed.X, confirmed.Width));
+            }
+        }
 
-        Assert.Equal((100, 100), (first.X, first.Width));
         Assert.Equal((110, 110), (confirmed.X, confirmed.Width));
     }
 
