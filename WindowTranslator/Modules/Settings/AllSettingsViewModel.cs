@@ -452,33 +452,27 @@ public partial class TargetSettingsViewModel(
     [ObservableProperty]
     private double fontScale = settings.FontScale;
 
-    [property: Category("SettingsViewModel|Shortcut")]
-    [ObservableProperty]
-    private string overlayShortcut = settings.OverlayShortcut;
+    [Category("SettingsViewModel|Overlay")]
+    public string OverlayShortcut { get; set; } = settings.OverlayShortcut;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(7)]
+    [property: Category("SettingsViewModel|Overlay")]
     [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
     [property: FormatString("P1")]
     [ObservableProperty]
     private double overlayOpacity = settings.OverlayOpacity;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(8)]
-    [ObservableProperty]
-    private bool displayBusy = settings.DisplayBusy;
+    [Category("SettingsViewModel|Overlay")]
+    public bool IsOneShotMode { get; set; } = settings.IsOneShotMode;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(9)]
-    [ObservableProperty]
-    private bool isOneShotMode = settings.IsOneShotMode;
-
-    [property: Category("SettingsViewModel|Misc")]
+    [property: Category("SettingsViewModel|Overlay")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
     [property: Slidable(0, 100, 1, 10, true, 1)]
-    [property: SortIndex(10)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
+
+    [Category("SettingsViewModel|Misc")]
+    [SortIndex(8)]
+    public bool DisplayBusy { get; set; } = settings.DisplayBusy;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {
