@@ -515,5 +515,10 @@
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>공식 플러그인</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>범위 추가</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
 </root>

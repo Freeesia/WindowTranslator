@@ -110,4 +110,10 @@
   <data name="Misc" xml:space="preserve">
     <value>Lain-lain</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>Kawasan OCR</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Kawasan OCR</value>
+  </data>
 </root>

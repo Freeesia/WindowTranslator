@@ -515,5 +515,10 @@ Monitore werden nicht unterstützt.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Offizielles Plugin</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Bereich hinzufügen</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Wird von Übersetzungsmodulen verwendet, die Kontext unterstützen</value>
   </data>
 </root>

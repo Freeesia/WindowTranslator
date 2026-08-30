@@ -396,5 +396,10 @@ Monitory nejsou podporovány.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Oficiální plugin</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Přidat oblast</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Používají jej překladové moduly podporující kontext</value>
   </data>
 </root>

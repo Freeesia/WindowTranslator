@@ -514,5 +514,10 @@ Monitor tidak didukung.</value>
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Plugin oficial</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Adicionar área</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Usado por módulos de tradução compatíveis com contexto</value>
   </data>
 </root>

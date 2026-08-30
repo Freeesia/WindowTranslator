@@ -506,5 +506,10 @@
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Plugin officiel</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Ajouter une zone</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Utilisé par les modules de traduction prenant en charge le contexte</value>
   </data>
 </root>

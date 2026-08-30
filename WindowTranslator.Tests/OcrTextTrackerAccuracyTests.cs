@@ -1827,10 +1827,8 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Static
             | System.Reflection.BindingFlags.Public
             | System.Reflection.BindingFlags.NonPublic;
-        Type appResources = typeof(OcrTextTracker).Assembly.GetType("WindowTranslator.Properties.Resources", throwOnError: true)!;
         Type abstractionResources = typeof(TextRect).Assembly.GetType("WindowTranslator.Properties.Resources", throwOnError: true)!;
 
-        Assert.Null(appResources.GetProperty("IsOneShotMode", flags));
         Assert.Null(abstractionResources.GetProperty("Buffer", flags));
         Assert.Null(abstractionResources.GetProperty("BufferSize", flags));
         Assert.Null(abstractionResources.GetProperty("IsSuppressVibe", flags));

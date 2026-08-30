@@ -168,4 +168,10 @@
   <data name="Misc" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>OCR Region</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>OCR Regions</value>
+  </data>
 </root>

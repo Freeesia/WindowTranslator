@@ -506,5 +506,10 @@
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>مكوّن إضافي رسمي</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>إضافة نطاق</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>تستخدمه وحدات الترجمة التي تدعم السياق</value>
   </data>
 </root>
