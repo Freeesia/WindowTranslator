@@ -518,6 +518,7 @@ Monitors are not supported.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Official plugin</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Add range</value>
   </data>

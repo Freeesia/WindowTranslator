@@ -515,6 +515,7 @@ Màn hình không được hỗ trợ.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Plugin chính thức</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Thêm vùng</value>
   </data>

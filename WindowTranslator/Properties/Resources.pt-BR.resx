@@ -514,6 +514,7 @@ Monitor tidak didukung.</value>
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Plugin oficial</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Adicionar área</value>
   </data>

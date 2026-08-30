@@ -396,6 +396,7 @@ A monitorok nem támogatottak.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Hivatalos beépülő modul</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Tartomány hozzáadása</value>
   </data>
