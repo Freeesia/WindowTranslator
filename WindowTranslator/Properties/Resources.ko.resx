@@ -148,26 +148,26 @@
     <value>범위 추가</value>
   </data>
   <data name="PriorityRectKeyword" xml:space="preserve">
-    <value>キーワード</value>
+    <value>키워드</value>
   </data>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
   <data name="PriorityRectSelecting" xml:space="preserve">
-    <value>選択中</value>
+    <value>선택중</value>
   </data>
   <data name="PriorityRectSelection" xml:space="preserve">
-    <value>矩形選択</value>
+    <value>직사각형 선택</value>
   </data>
   <data name="PriorityRectSelectionGuide" xml:space="preserve">
-    <value>ドラッグして矩形を選択してください（Escキーでキャンセル）
-文字が途中で切れないように少し広めに囲んでください</value>
+    <value>드래그해서 직사각형을 선택해 주십시오 (ESC 키로 취소)
+문자가 도중에 끊기지 않게끔 조금 넓게 둘러 주십시오</value>
   </data>
   <data name="PriorityRectTargetNotFound" xml:space="preserve">
-    <value>翻訳中のウィンドウがないため矩形を選択できません。対象ウィンドウの翻訳を開始してから設定してください。</value>
+    <value>번역 중인 윈도우가 없기에 직사각형을 선택할 수 없습니다. 대상 윈도우의 번역을 시작한 뒤에 설정해 주십시오.</value>
   </data>
   <data name="PriorityRectTooSmall" xml:space="preserve">
-    <value>矩形が小さすぎます。もう一度選択してください。</value>
+    <value>직사각형이 너무 작습니다. 한 번 더 선택해 주십시오.</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>언어 설정</value>
