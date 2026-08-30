@@ -328,6 +328,9 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Hiển thị biểu tượng bận</value>
   </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>ホットキーを押したときだけOCR・翻訳する</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>
   </data>
