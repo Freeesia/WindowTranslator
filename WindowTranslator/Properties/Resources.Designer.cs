@@ -538,6 +538,11 @@ internal class Resources
     public static string RegisterAutoStart => ResourceManager.GetString("RegisterAutoStart", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "再起動" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string Restart => ResourceManager.GetString("Restart", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "今すぐ再起動" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string RestartNow => ResourceManager.GetString("RestartNow", resourceCulture) ?? string.Empty;
@@ -546,11 +551,6 @@ internal class Resources
     /// "プラグインの変更を適用するには、WindowTranslatorを再起動してください。" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string RestartRequired => ResourceManager.GetString("RestartRequired", resourceCulture) ?? string.Empty;
-
-    /// <summary>
-    /// "再起動" に類似しているローカライズされた文字列を検索します。
-    /// </summary>
-    public static string Restart => ResourceManager.GetString("Restart", resourceCulture) ?? string.Empty;
 
     /// <summary>
     /// "後で" に類似しているローカライズされた文字列を検索します。
