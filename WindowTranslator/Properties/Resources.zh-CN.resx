@@ -328,6 +328,9 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>显示忙碌图标</value>
   </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>ホットキーを押したときだけOCR・翻訳する</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>仅在鼠标指针位置的文本上显示覆盖翻译</value>
   </data>
