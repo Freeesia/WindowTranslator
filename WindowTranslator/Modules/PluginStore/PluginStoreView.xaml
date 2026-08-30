@@ -125,10 +125,7 @@
                                         CornerRadius="16"
                                         ToolTip="{x:Static properties:Resources.UpdateAvailable}"
                                         Visibility="{Binding IsUpdateAvailable, Converter={StaticResource b2vConv}}">
-                                        <ui:SymbolIcon
-                                            Filled="True"
-                                            Foreground="White"
-                                            Symbol="Alert24" />
+                                        <ui:SymbolIcon Foreground="DimGray" Symbol="Alert24" />
                                     </Border>
                                 </Grid>
 
