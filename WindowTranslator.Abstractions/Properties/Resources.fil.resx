@@ -122,4 +122,10 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Modyul ng Cache</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>Saklaw ng OCR</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Mga Saklaw ng OCR</value>
+  </data>
 </root>

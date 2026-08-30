@@ -49,10 +49,12 @@
                     <ctl:WindowCaptureCompositionHost.Adornment>
                         <Viewbox>
                             <control:OverlayTextsControl
+                                x:Name="overlay"
                                 FontFamily="{Binding Font, Mode=OneWay}"
                                 RectHeight="{Binding Height}"
                                 RectWidth="{Binding Width}"
-                                Texts="{Binding OcrTexts}" />
+                                Texts="{Binding OcrTexts}"
+                                Visibility="{Binding OverlayVisible, Mode=OneWayToSource, Converter={StaticResource b2vConv}}" />
                         </Viewbox>
                     </ctl:WindowCaptureCompositionHost.Adornment>
                 </ctl:WindowCaptureCompositionHost>

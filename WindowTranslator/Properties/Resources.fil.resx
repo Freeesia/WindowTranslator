@@ -515,5 +515,10 @@ Ang monitor ay hindi suportado.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Opisyal na plugin</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Magdagdag ng saklaw</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Ginagamit ng mga module ng pagsasalin na sumusuporta sa konteksto</value>
   </data>
 </root>

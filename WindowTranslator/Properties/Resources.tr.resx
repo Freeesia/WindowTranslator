@@ -515,5 +515,10 @@ Monitör desteklenmiyor.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Resmî eklenti</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Alan ekle</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Bağlamı destekleyen çeviri modülleri tarafından kullanılır</value>
   </data>
 </root>

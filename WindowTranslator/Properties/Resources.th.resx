@@ -515,5 +515,10 @@
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>ปลั๊กอินอย่างเป็นทางการ</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>เพิ่มพื้นที่</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>ใช้โดยโมดูลการแปลที่รองรับบริบท</value>
   </data>
 </root>

@@ -515,5 +515,10 @@
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>官方外掛程式</value>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>新增範圍</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>供支援上下文的翻譯模組使用</value>
   </data>
 </root>
