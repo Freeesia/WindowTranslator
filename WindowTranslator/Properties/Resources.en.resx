@@ -328,6 +328,9 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="DisplayBusy" xml:space="preserve">
     <value>Show busy icon</value>
   </data>
+  <data name="IsOneShotMode" xml:space="preserve">
+    <value>Run OCR and translation only when the hotkey is pressed</value>
+  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
   </data>
