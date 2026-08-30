@@ -23,6 +23,7 @@ namespace WindowTranslator.Modules.Main;
 public partial class OverlayMainWindow : Window
 {
     private readonly OverlaySwitch overlaySwitch;
+    private readonly bool isOneShotMode;
     private readonly bool isEnableCapture;
     private readonly IProcessInfoStore processInfo;
     private readonly IVirtualDesktopManager desktopManager;
@@ -72,7 +73,8 @@ public partial class OverlayMainWindow : Window
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
-        if (targetSettings.Value.IsOneShotMode)
+        this.isOneShotMode = targetSettings.Value.IsOneShotMode;
+        if (this.isOneShotMode)
         {
             this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
         }
@@ -237,11 +239,11 @@ public partial class OverlayMainWindow : Window
     private async void HoldHideOverlay()
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
-        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        this.overlay.SetCurrentValue(VisibilityProperty, this.isOneShotMode ? Visibility.Visible : Visibility.Hidden);
         await Task.Delay(500);
         if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
         {
-            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            this.overlay.SetCurrentValue(VisibilityProperty, this.isOneShotMode ? Visibility.Hidden : Visibility.Visible);
         }
     }
 }
