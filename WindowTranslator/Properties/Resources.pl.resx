@@ -515,6 +515,7 @@ Monitory nie są obsługiwane.
   </data>
   <data name="PluginOfficial" xml:space="preserve">
     <value>Oficjalna wtyczka</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Dodaj obszar</value>
   </data>
