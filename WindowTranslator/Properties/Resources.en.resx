@@ -459,6 +459,66 @@ Monitors are not supported.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prerelease</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Are you sure you want to uninstall {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Installed version</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Latest version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Failed to retrieve plugin list from NuGet. Please check your network connection.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation complete</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Installation failed</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Restart now</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Please restart WindowTranslator to apply plugin changes.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Project page</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>License information</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugins are third-party packages distributed through NuGet. Each package is licensed by its owner; WindowTranslator does not guarantee its content, behavior, or safety. Install only packages you trust.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Official plugin</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Add range</value>
   </data>

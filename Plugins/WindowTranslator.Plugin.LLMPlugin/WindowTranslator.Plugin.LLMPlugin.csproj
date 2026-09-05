@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
+    <Title>LLM Plugin</Title>
+    <Description>Translation, OCR, and text correction through OpenAI-compatible language models.</Description>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" />

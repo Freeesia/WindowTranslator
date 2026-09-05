@@ -456,6 +456,66 @@ Màn hình không được hỗ trợ.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Bản phát hành trước</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Đã cài đặt</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Cập nhật</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Gỡ cài đặt</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Bạn có chắc muốn gỡ cài đặt {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Có cập nhật</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Phiên bản đã cài</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Phiên bản mới nhất</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Không thể lấy danh sách plugin từ NuGet. Vui lòng kiểm tra kết nối mạng.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Cài đặt hoàn tất</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Cài đặt thất bại</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Khởi động lại ngay</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Vui lòng khởi động lại WindowTranslator để áp dụng thay đổi plugin.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Khởi động lại</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Trang dự án</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Thông tin giấy phép</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugin là các gói của bên thứ ba được phân phối qua NuGet. Giấy phép của mỗi gói do chủ sở hữu cung cấp; WindowTranslator không đảm bảo nội dung, hoạt động hoặc độ an toàn của gói. Chỉ cài đặt các gói bạn tin cậy.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Plugin chính thức</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Thêm vùng</value>
   </data>

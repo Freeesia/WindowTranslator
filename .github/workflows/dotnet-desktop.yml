@@ -125,9 +125,6 @@ jobs:
           versionSpec: "6.x"
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v4.7.0
-      - uses: Jimver/cuda-toolkit@v0.2.36
-        with:
-          cuda: '12.9.0'
       - run: |
           dotnet publish WindowTranslator -c Release -o publish --sc ${{ matrix.self }} `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
@@ -137,15 +134,14 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - run: |
-          $folders = Get-ChildItem -Path "Plugins" -Directory | Where-Object { $_.Name -notmatch "Dummy" -and $_.Name -notmatch "Tests?" }
-          for ($i = 0; $i -lt $folders.Count; $i++) {
-            dotnet publish $folders[$i].FullName -c Release -o "publish\plugins\$($folders[$i].Name)" `
-              -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
-              -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
-              -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-              -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
-              -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
-          }
+          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:PublishAppBundle `
+            -p:Configuration=Release `
+            -p:AppBundleOutputPath="$PWD\publish\plugins" `
+            -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
+            -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
+            -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
       - uses: actions/download-artifact@v8
         if: ${{ needs.docs.result == 'success' }}
         with:

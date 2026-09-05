@@ -6,6 +6,7 @@
     xmlns:data="clr-namespace:WindowTranslator.Data"
     xmlns:local="clr-namespace:WindowTranslator.Modules.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginStore="clr-namespace:WindowTranslator.Modules.PluginStore"
     xmlns:properties="clr-namespace:WindowTranslator.Properties"
     xmlns:pt="http://propertytools.org/wpf"
     xmlns:root="clr-namespace:WindowTranslator"
@@ -203,6 +204,11 @@
                         </Style>
                     </ui:Button.Style>
                 </ui:Button>
+                <ui:Button
+                    Command="{Binding PluginStore.RestartCommand}"
+                    Content="{x:Static properties:Resources.Restart}"
+                    DockPanel.Dock="Right"
+                    Visibility="{Binding PluginStore.RequiresRestart, Converter={StaticResource b2vConv}}" />
                 <ui:ToggleSwitch
                     Margin="4"
                     Content="{x:Static properties:Resources.AutoStartWithPC}"
@@ -348,6 +354,9 @@
                             </pt:PropertyGrid.Resources>
                         </pt:PropertyGrid>
                     </Grid>
+                </TabItem>
+                <TabItem Header="{x:Static properties:Resources.PluginStore}">
+                    <pluginStore:PluginStoreView DataContext="{Binding PluginStore}" />
                 </TabItem>
                 <TabItem Header="{x:Static properties:Resources.About}" Visibility="{Binding IsVisibleAbout, Converter={StaticResource b2vConv}}">
                     <DockPanel>

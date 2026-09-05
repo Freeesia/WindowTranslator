@@ -1,12 +1,16 @@
 name: .NET Core Package
 
 on:
+  pull_request:
   push:
     tags: [v*]
 
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -25,10 +29,24 @@ jobs:
           versionSpec: "6.x"
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v4.7.0
+      - uses: Jimver/cuda-toolkit@v0.2.30
+        with:
+          cuda: '12.9.0'
       - run: |
-          dotnet pack WindowTranslator.Abstractions -c Release -o pack `
+          dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:Pack `
+            -p:Configuration=Release `
+            -p:PackageOutputPath="$PWD\pack" `
             -p:Version=${{ steps.gitversion.outputs.fullSemVer }} `
             -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} `
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
-            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }}
-          dotnet nuget push pack\*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+            -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
+            -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
+      - name: NuGet login
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: Freesia
+      - name: NuGet push
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: dotnet nuget push pack\*.nupkg --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

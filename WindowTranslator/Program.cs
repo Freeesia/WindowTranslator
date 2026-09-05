@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Markup;
@@ -12,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using Octokit;
 using Sentry.Extensions.Logging;
 using Weikio.PluginFramework.Abstractions;
@@ -27,6 +31,7 @@ using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
 using WindowTranslator.Modules.Validate;
@@ -36,6 +41,8 @@ using Wpf.Ui;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
+
+args = ApplicationRestart.WaitForPreviousProcess(args);
 
 #if NO_MUTEX
 var createdNew = true;
@@ -108,17 +115,31 @@ builder.Services.AddPluginFramework()
     .AddPluginType<ITargetSettingsValidator>()
     .AddPluginType<IPluginParam>();
 
-var pluginFolderCatalog = new CompositePluginCatalog();
+var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
+var nugetPluginsDir = Path.Combine(PathUtility.UserDir, "nuget-plugins");
+var hostPackageVersions = NuGetPluginService.CreateHostPackageVersions();
+IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
+    nugetPluginsDir,
+    AppInfo.Instance.Version.Major,
+    hostPackageVersions[NuGetPluginService.AbstractionsPackageId],
+    new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
+var fallbackPluginCatalogs = new List<IPluginCatalog>();
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    fallbackPluginCatalogs.Add(
+        new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
-
-var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    pluginFolderCatalog.AddCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    fallbackPluginCatalogs.Add(
+        new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+}
+if (fallbackPluginCatalogs.Count > 0)
+{
+    pluginFolderCatalog = new PrioritizedPluginCatalog(
+        pluginFolderCatalog,
+        new CompositePluginCatalog([.. fallbackPluginCatalogs]));
 }
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);
@@ -157,6 +178,23 @@ builder.Services.AddPresentation<LogWindow, LogViewModel>();
 builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
+builder.Services.AddHttpClient(NuGetPluginService.HttpClientName, client =>
+    client.Timeout = TimeSpan.FromSeconds(30))
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All,
+    });
+builder.Services.AddSingleton<SourceRepository>(_ =>
+    NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3(NuGetPluginService.NuGetServiceIndexUrl));
+builder.Services.AddSingleton(sp => new NuGetPluginService(
+        sp.GetRequiredService<ILogger<NuGetPluginService>>(),
+        sp.GetRequiredService<IHttpClientFactory>(),
+        sp.GetRequiredService<SourceRepository>(),
+        nugetPluginsDir,
+        hostPackageVersions,
+        AppInfo.Instance.Version.Major))
+    .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
+builder.Services.AddTransient<PluginStoreViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));

@@ -441,6 +441,66 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>افزونه‌ها</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>پیش‌انتشار</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>نصب</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>نصب شده</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>به‌روزرسانی</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>آیا مطمئن هستید که می‌خواهید {0} را حذف کنید؟</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>به‌روزرسانی موجود است</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>نسخه نصب شده</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>جدیدترین نسخه</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>دریافت لیست افزونه از NuGet ناموفق بود. لطفاً اتصال شبکه خود را بررسی کنید.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>نصب کامل شد</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>نصب ناموفق بود</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>اکنون راه‌اندازی مجدد شود</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>لطفاً WindowTranslator را مجدداً راه‌اندازی کنید تا تغییرات افزونه اعمال شود.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>راه‌اندازی مجدد</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>صفحه پروژه</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>اطلاعات مجوز</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>افزونه‌ها بسته‌های شخص ثالثی هستند که از طریق NuGet توزیع می‌شوند. مجوز هر بسته را مالک آن ارائه می‌کند و WindowTranslator محتوا، عملکرد یا امنیت آن را تضمین نمی‌کند. فقط بسته‌های مورد اعتماد را نصب کنید.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>افزونه رسمی</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>افزودن محدوده</value>
   </data>
