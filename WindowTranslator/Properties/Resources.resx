@@ -481,4 +481,11 @@
 
 </value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCRトラッキング</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>位置・サイズの安定性</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>位置・サイズの揺れを抑えます。1: 追従重視、5: 安定重視（既定: 3）。大きな移動はすぐに反映します。</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>認識結果の安定性</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>文字列や領域の分割・統合の一時的な変動を抑えます。1: 追従重視、5: 安定重視（既定: 3）。</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>一時消失の保持</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>認識できない状態が連続して何回続くまで表示を保持するかを指定します。0: 最初の欠落で除去、最大: 7回、既定: 3回。秒数ではありません。</value></data>
 </root>

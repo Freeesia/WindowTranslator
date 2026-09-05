@@ -455,4 +455,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>संदर्भ का समर्थन करने वाले अनुवाद मॉड्यूल द्वारा उपयोग किया जाता है</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR ट्रैकिंग</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>स्थिति और आकार की स्थिरता</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>स्थिति और आकार का कंपन कम करता है। 1: तेज़ प्रतिक्रिया, 5: अधिक स्थिरता (डिफ़ॉल्ट: 3)। बड़ी हलचल तुरंत लागू होती है।</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>पहचान की स्थिरता</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>पाठ और क्षेत्रों के विभाजन या विलय में अस्थायी बदलाव कम करता है। 1: तेज़ प्रतिक्रिया, 5: अधिक स्थिरता (डिफ़ॉल्ट: 3)।</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>अस्थायी रूप से गायब होने पर बनाए रखना</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>लगातार कितनी बार पहचान विफल होने तक पाठ दिखाई देता रहे। 0: पहली विफलता पर हटाएँ, अधिकतम: 7, डिफ़ॉल्ट: 3। यह विफलताओं की गिनती है, सेकंड नहीं।</value></data>
 </root>

@@ -481,4 +481,11 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="PriorityRectTooSmall" xml:space="preserve">
     <value>The rectangle is too small. Please select again.</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR tracking</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Position and size stability</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Reduces position and size jitter. 1: responsive, 5: stable (default: 3). Large movements are applied immediately.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Recognition stability</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduces temporary changes in text and region splitting or merging. 1: responsive, 5: stable (default: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Temporary disappearance retention</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Number of consecutive missed recognitions to keep displaying text. 0: remove on the first miss, maximum: 7, default: 3. Counted in misses, not seconds.</value></data>
 </root>

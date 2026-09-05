@@ -462,4 +462,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR 추적</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>위치 및 크기 안정성</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>위치와 크기의 흔들림을 줄입니다. 1: 빠른 반응, 5: 높은 안정성(기본값: 3). 큰 이동은 즉시 반영합니다.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>인식 결과 안정성</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>문자열이나 영역의 분할·병합에 따른 일시적인 변동을 줄입니다. 1: 빠른 반응, 5: 높은 안정성(기본값: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>일시적 사라짐 유지</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>인식이 연속으로 누락될 때 표시를 유지할 횟수입니다. 0: 첫 누락 시 제거, 최대: 7회, 기본값: 3회. 초 단위가 아닙니다.</value></data>
 </root>

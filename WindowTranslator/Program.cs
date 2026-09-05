@@ -128,7 +128,9 @@ builder.Configuration
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
 builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
-builder.Services.AddScoped<IOcrTextTracker, OcrTextTracker>();
+builder.Services.AddScoped<IOcrTextTracker>(sp => new OcrTextTracker(
+    sp.GetRequiredService<ILogger<OcrTextTracker>>(),
+    sp.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Value));
 builder.Services.AddHostedService<WindowMonitor>();
 if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
 {

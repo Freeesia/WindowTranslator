@@ -462,4 +462,11 @@ Màn hình không được hỗ trợ.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Được sử dụng bởi các mô-đun dịch hỗ trợ ngữ cảnh</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Theo dõi OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Độ ổn định vị trí và kích thước</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Giảm rung vị trí và kích thước. 1: phản hồi nhanh, 5: ưu tiên ổn định (mặc định: 3). Chuyển động lớn được áp dụng ngay.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Độ ổn định nhận dạng</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Giảm thay đổi tạm thời của văn bản và việc tách hoặc gộp vùng. 1: phản hồi nhanh, 5: ưu tiên ổn định (mặc định: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Giữ hiển thị khi tạm biến mất</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Số lần liên tiếp không nhận dạng được mà vẫn giữ hiển thị. 0: xóa ngay lần đầu, tối đa: 7, mặc định: 3. Tính theo số lần, không phải giây.</value></data>
 </root>

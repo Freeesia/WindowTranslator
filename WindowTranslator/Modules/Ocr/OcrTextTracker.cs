@@ -10,20 +10,15 @@ namespace WindowTranslator.Modules.Ocr;
 /// <summary>
 /// OCRテキスト領域を1対1割当てと分割・統合候補によって継続追跡する。
 /// </summary>
-public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTracker
+public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSettings? settings = null) : IOcrTextTracker
 {
-    private const int MaxMissedFrames = 3;
-    private const int StructureConfirmationFrames = 2;
-    private const int NormalGeometryConfirmationFrames = 2;
-    private const int NoiseGeometrySampleCount = 5;
+    private const int AssignmentRecencyFrames = 4;
     private const int MaxStructureCandidates = 6;
     private const int MaxStructureSelectionStates = 1024;
     private const int MaxOneToOneCandidatesPerResource = 3;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
     private const double TextVoteDecay = 0.75;
-    private const double TextVoteThreshold = 1.5;
-    private const int TextVoteHistorySize = 5;
     private const double MinimumStructureSizeRatio = 0.65;
     private const double MinimumStructureOverlap = 0.45;
     private const double MinimumStructureTextSimilarity = 0.65;
@@ -41,6 +36,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
     private static readonly TimeSpan dormantRetention = TimeSpan.FromSeconds(5);
 
     private readonly ILogger<OcrTextTracker> logger = logger;
+    private readonly TrackingProfile profile = TrackingProfile.FromSettings(settings ?? new());
     private readonly object syncRoot = new();
     private readonly List<TextTrack> tracks = [];
     private Dictionary<string, int> mergeCandidates = [];
@@ -208,7 +204,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         }
 
         foreach (TextTrack track in this.tracks
-            .Where(track => (!track.IsDormant && track.MissedFrames > MaxMissedFrames)
+            .Where(track => (!track.IsDormant && track.MissedFrames > this.profile.MaxMissedFrames)
                 || (track.IsDormant
                     && !matchedTracks.Contains(track)
                     && timestamp - track.DormantSince > dormantRetention))
@@ -703,7 +699,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             return -1;
         }
         double aspect = RatioSimilarity(previous.Width / previous.Height, observation.Width / observation.Height);
-        double recency = Math.Max(0, 1 - ((double)track.MissedFrames / (MaxMissedFrames + 1)));
+        double recency = Math.Max(0, 1 - ((double)track.MissedFrames / AssignmentRecencyFrames));
         double score = (text * 0.35)
             + (overlap * 0.25)
             + (center * 0.2)
@@ -1292,7 +1288,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 currentRestoreCandidates[parent.Id] = restoreCount;
                 matchedTracks.Add(parent);
                 matchedTracks.UnionWith(children);
-                if (restoreCount >= StructureConfirmationFrames)
+                if (restoreCount >= this.profile.StructureConfirmationFrames)
                 {
                     foreach (RestorationAssignment assignment in candidate.RestorationAssignments)
                     {
@@ -1328,7 +1324,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             {
                 matchedTracks.Add(track);
             }
-            if (count >= StructureConfirmationFrames)
+            if (count >= this.profile.StructureConfirmationFrames)
             {
                 TextTrack parent = this.CreateTrack(candidate.Combined, timestamp);
                 matchedTracks.Add(parent);
@@ -1763,7 +1759,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
     private TextTrack CreateTrack(TextRect observation, TimeSpan timestamp, long? coveringTrackId = null)
     {
-        TextTrack track = new(++this.nextTrackId, observation, timestamp, coveringTrackId);
+        TextTrack track = new(++this.nextTrackId, observation, timestamp, coveringTrackId, this.profile);
         this.tracks.Add(track);
         this.logger.LogDebug("OCR track {TrackId} created for {SourceText}", track.Id, observation.SourceText);
         return track;
@@ -1877,11 +1873,43 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
         public IReadOnlyList<RestorationAssignment> RestorationAssignments { get; init; } = [];
     }
 
+    private sealed record TrackingProfile(
+        int GeometryConfirmationFrames,
+        int MicroGeometryConfirmationFrames,
+        int StructureConfirmationFrames,
+        int MinimumTextVotes,
+        double TextVoteThreshold,
+        int TextVoteHistorySize,
+        int MaxMissedFrames)
+    {
+        public static TrackingProfile FromSettings(TargetSettings settings)
+        {
+            (int geometry, int microGeometry) = settings.OcrGeometryStability switch
+            {
+                1 => (1, 1),
+                2 => (1, 2),
+                4 => (3, 6),
+                5 => (4, 8),
+                _ => (2, 4),
+            };
+            (int structure, int votes, double threshold, int history) = settings.OcrRecognitionStability switch
+            {
+                1 => (1, 1, 1.0, 3),
+                2 => (1, 2, 1.25, 4),
+                4 => (3, 3, 2.0, 6),
+                5 => (4, 4, 2.5, 8),
+                _ => (2, 2, 1.5, 5),
+            };
+            return new(geometry, microGeometry, structure, votes, threshold, history, settings.OcrMissingFrameRetention);
+        }
+    }
+
     private sealed class TextTrack(
         long id,
         TextRect observation,
         TimeSpan timestamp,
-        long? coveringTrackId)
+        long? coveringTrackId,
+        TrackingProfile profile)
     {
         private TextRect? normalGeometryCandidate;
         private int normalGeometryCandidateCount;
@@ -2011,7 +2039,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
             }
 
             this.textVotes.Add(new(normalizedCurrent, current));
-            if (this.textVotes.Count > TextVoteHistorySize)
+            if (this.textVotes.Count > profile.TextVoteHistorySize)
             {
                 this.textVotes.RemoveAt(0);
             }
@@ -2027,7 +2055,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 .ThenByDescending(candidate => candidate.count)
                 .Cast<(string normalized, int count, double weight)?>()
                 .FirstOrDefault();
-            if (winner is { count: >= 2, weight: >= TextVoteThreshold })
+            if (winner is { } candidate
+                && candidate.count >= profile.MinimumTextVotes
+                && candidate.weight >= profile.TextVoteThreshold)
             {
                 this.ConfirmedText = this.textVotes.Last(vote => vote.Normalized == winner.Value.normalized).Original;
                 this.normalizedConfirmedText = winner.Value.normalized;
@@ -2035,7 +2065,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 return;
             }
 
-            if (this.textVotes.Count == TextVoteHistorySize)
+            if (this.textVotes.Count == profile.TextVoteHistorySize)
             {
                 TextVote latest = this.textVotes[^1];
                 this.ConfirmedText = latest.Original;
@@ -2093,6 +2123,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
 
             if (IsGeometryNoise(this.Stabilized, current))
             {
+                if (profile.MicroGeometryConfirmationFrames == 1)
+                {
+                    this.ApplyGeometry(current);
+                    return;
+                }
                 this.normalGeometryCandidate = null;
                 this.normalGeometryCandidateCount = 0;
                 if (this.noiseGeometrySamples.Count == 0)
@@ -2101,7 +2136,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 }
 
                 this.noiseGeometrySamples.Add(current);
-                if (this.noiseGeometrySamples.Count >= NoiseGeometrySampleCount)
+                // 現在の表示値を含めた中央値で微小な揺れを抑える。
+                if (this.noiseGeometrySamples.Count >= profile.MicroGeometryConfirmationFrames + 1)
                 {
                     this.ApplyGeometry(RepresentativeGeometry(this.noiseGeometrySamples));
                 }
@@ -2121,7 +2157,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger) : IOcrTextTra
                 this.normalGeometryCandidateCount = 1;
             }
 
-            if (this.normalGeometryCandidateCount >= NormalGeometryConfirmationFrames)
+            if (this.normalGeometryCandidateCount >= profile.GeometryConfirmationFrames)
             {
                 this.ApplyGeometry(current);
             }

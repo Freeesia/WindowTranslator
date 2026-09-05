@@ -461,4 +461,11 @@ Monitor tidak disokong.</value>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Digunakan oleh modul terjemahan yang menyokong konteks</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Penjejakan OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Kestabilan kedudukan dan saiz</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Mengurangkan gegaran kedudukan dan saiz. 1: respons pantas, 5: lebih stabil (lalai: 3). Pergerakan besar diterapkan serta-merta.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Kestabilan pengecaman</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Mengurangkan perubahan sementara pada teks serta pemisahan atau penggabungan kawasan. 1: respons pantas, 5: lebih stabil (lalai: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Kekalkan paparan semasa kehilangan sementara</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Bilangan kegagalan pengecaman berturut-turut untuk mengekalkan paparan. 0: buang pada kegagalan pertama, maksimum: 7, lalai: 3. Dikira mengikut bilangan kegagalan, bukan saat.</value></data>
 </root>

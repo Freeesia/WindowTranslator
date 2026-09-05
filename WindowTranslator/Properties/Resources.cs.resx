@@ -343,4 +343,11 @@ Monitory nejsou podporovány.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Používají jej překladové moduly podporující kontext</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Sledování OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilita polohy a velikosti</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Omezuje kolísání polohy a velikosti. 1: rychlá odezva, 5: vysoká stabilita (výchozí: 3). Velké pohyby se projeví okamžitě.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilita rozpoznávání</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Omezuje dočasné změny textu a rozdělování nebo slučování oblastí. 1: rychlá odezva, 5: vysoká stabilita (výchozí: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Zachování při dočasném zmizení</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Počet po sobě jdoucích neúspěšných rozpoznání, při nichž text zůstane zobrazený. 0: odstranit při prvním výpadku, maximum: 7, výchozí: 3. Jde o počet výpadků, nikoli sekund.</value></data>
 </root>

@@ -462,4 +462,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>供支援上下文的翻譯模組使用</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR 追蹤</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>位置與大小穩定性</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>減少位置與大小的抖動。1：優先反應，5：優先穩定（預設：3）。大幅移動會立即反映。</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>辨識結果穩定性</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>減少文字及區域分割、合併的暫時變化。1：優先反應，5：優先穩定（預設：3）。</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>暫時消失保留</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>連續辨識缺失時維持顯示的次數。0：首次缺失即移除，最多：7次，預設：3次。單位為次數，而非秒數。</value></data>
 </root>

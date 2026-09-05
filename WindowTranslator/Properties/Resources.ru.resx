@@ -453,4 +453,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Используется модулями перевода, поддерживающими контекст</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Отслеживание OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Стабильность положения и размера</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Уменьшает колебания положения и размера. 1: быстрый отклик, 5: высокая стабильность (по умолчанию: 3). Большие перемещения применяются сразу.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Стабильность распознавания</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Уменьшает временные изменения текста, разделение и объединение областей. 1: быстрый отклик, 5: высокая стабильность (по умолчанию: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Сохранение при временном исчезновении</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Число последовательных пропусков распознавания, при которых текст остаётся видимым. 0: удалить при первом пропуске, максимум: 7, по умолчанию: 3. Измеряется в пропусках, а не секундах.</value></data>
 </root>

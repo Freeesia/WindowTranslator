@@ -88,6 +88,21 @@ public class TargetSettings
     public double MousePointerHitTestPadding { get; set; }
 
     /// <summary>
+    /// OCR矩形の位置・サイズの安定性（1: 追従重視、5: 安定重視）
+    /// </summary>
+    public int OcrGeometryStability { get; set => field = Math.Clamp(value, 1, 5); } = 3;
+
+    /// <summary>
+    /// OCR文字列と分割・統合・復元の安定性（1: 追従重視、5: 安定重視）
+    /// </summary>
+    public int OcrRecognitionStability { get; set => field = Math.Clamp(value, 1, 5); } = 3;
+
+    /// <summary>
+    /// 表示を保持する連続OCR欠落回数（0～7回）
+    /// </summary>
+    public int OcrMissingFrameRetention { get; set => field = Math.Clamp(value, 0, 7); } = 3;
+
+    /// <summary>
     /// プラグインの選択
     /// </summary>
     public Dictionary<string, string> SelectedPlugins { get; init; } = new(StringComparer.OrdinalIgnoreCase);

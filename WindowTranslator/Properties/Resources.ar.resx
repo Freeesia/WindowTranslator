@@ -453,4 +453,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>تستخدمه وحدات الترجمة التي تدعم السياق</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>تتبّع OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>استقرار الموضع والحجم</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>يقلل اهتزاز الموضع والحجم. 1: استجابة سريعة، 5: استقرار أكبر (الافتراضي: 3). تُطبَّق الحركات الكبيرة فورًا.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>استقرار نتائج التعرّف</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>يقلل التغيّرات المؤقتة في النص وتقسيم المناطق أو دمجها. 1: استجابة سريعة، 5: استقرار أكبر (الافتراضي: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>الاحتفاظ عند الاختفاء المؤقت</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>عدد مرات فشل التعرّف المتتالية التي يبقى خلالها النص ظاهرًا. 0: إزالة عند أول فشل، الحد الأقصى: 7، الافتراضي: 3. يُحسب بالمرات وليس بالثواني.</value></data>
 </root>

@@ -462,4 +462,11 @@ Monitory nie są obsługiwane.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Używane przez moduły tłumaczeniowe obsługujące kontekst</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Śledzenie OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilność pozycji i rozmiaru</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Ogranicza drgania pozycji i rozmiaru. 1: szybka reakcja, 5: wysoka stabilność (domyślnie: 3). Duże przesunięcia są stosowane natychmiast.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilność rozpoznawania</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Ogranicza chwilowe zmiany tekstu oraz podział lub łączenie obszarów. 1: szybka reakcja, 5: wysoka stabilność (domyślnie: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Zachowanie przy chwilowym zniknięciu</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Liczba kolejnych nieudanych rozpoznań, podczas których tekst pozostaje widoczny. 0: usuń przy pierwszym braku, maksimum: 7, domyślnie: 3. Liczone w brakach rozpoznania, nie w sekundach.</value></data>
 </root>

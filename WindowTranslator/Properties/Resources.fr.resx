@@ -453,4 +453,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Utilisé par les modules de traduction prenant en charge le contexte</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Suivi OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilité de la position et de la taille</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Réduit les variations de position et de taille. 1 : réactivité, 5 : stabilité (par défaut : 3). Les grands déplacements sont appliqués immédiatement.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilité de la reconnaissance</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Réduit les variations temporaires du texte et de la division ou fusion des zones. 1 : réactivité, 5 : stabilité (par défaut : 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Maintien en cas de disparition temporaire</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Nombre d'échecs consécutifs de reconnaissance pendant lesquels le texte reste affiché. 0 : supprimer dès le premier échec, maximum : 7, par défaut : 3. Il s'agit d'échecs, pas de secondes.</value></data>
 </root>

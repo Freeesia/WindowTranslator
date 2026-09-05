@@ -462,4 +462,11 @@ Ang monitor ay hindi suportado.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Ginagamit ng mga module ng pagsasalin na sumusuporta sa konteksto</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>Pagsubaybay ng OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Katatagan ng posisyon at laki</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Binabawasan ang pag-uga ng posisyon at laki. 1: mabilis na pagtugon, 5: mas matatag (default: 3). Agad na inilalapat ang malalaking paggalaw.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Katatagan ng pagkilala</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Binabawasan ang pansamantalang pagbabago sa teksto at paghahati o pagsasama ng mga rehiyon. 1: mabilis na pagtugon, 5: mas matatag (default: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Pagpapanatili kapag pansamantalang nawala</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Bilang ng sunod-sunod na hindi pagkilala habang nananatiling nakikita ang teksto. 0: alisin sa unang pagkabigo, pinakamataas: 7, default: 3. Bilang ng pagkabigo, hindi segundo.</value></data>
 </root>

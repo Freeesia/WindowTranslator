@@ -462,4 +462,11 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>ใช้โดยโมดูลการแปลที่รองรับบริบท</value>
   </data>
+  <data name="OcrTracking" xml:space="preserve"><value>การติดตาม OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>ความคงที่ของตำแหน่งและขนาด</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>ลดการสั่นของตำแหน่งและขนาด 1: ตอบสนองเร็ว, 5: เน้นความคงที่ (ค่าเริ่มต้น: 3) การเคลื่อนที่มากจะมีผลทันที</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>ความคงที่ของผลการรู้จำ</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>ลดการเปลี่ยนแปลงชั่วคราวของข้อความและการแยกหรือรวมพื้นที่ 1: ตอบสนองเร็ว, 5: เน้นความคงที่ (ค่าเริ่มต้น: 3)</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>คงการแสดงผลเมื่อหายไปชั่วคราว</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>จำนวนครั้งที่รู้จำไม่สำเร็จติดต่อกันซึ่งยังคงแสดงข้อความไว้ 0: ลบเมื่อพลาดครั้งแรก, สูงสุด: 7 ครั้ง, ค่าเริ่มต้น: 3 ครั้ง นับเป็นครั้ง ไม่ใช่วินาที</value></data>
 </root>
