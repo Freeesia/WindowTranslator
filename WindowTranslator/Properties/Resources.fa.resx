@@ -507,4 +507,13 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>توسط ماژول‌های ترجمه‌ای که از زمینه پشتیبانی می‌کنند استفاده می‌شود</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>همه</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>ترجمه</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>فیلترها</value>
+  </data>
 </root>

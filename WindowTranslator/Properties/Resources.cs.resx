@@ -403,4 +403,13 @@ Monitory nejsou podporovány.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Používají jej překladové moduly podporující kontext</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Vše</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Překlad</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtry</value>
+  </data>
 </root>

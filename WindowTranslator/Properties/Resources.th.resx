@@ -522,4 +522,13 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>ใช้โดยโมดูลการแปลที่รองรับบริบท</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>ทั้งหมด</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>การแปล</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>ตัวกรอง</value>
+  </data>
 </root>

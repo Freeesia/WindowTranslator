@@ -513,4 +513,13 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>تستخدمه وحدات الترجمة التي تدعم السياق</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>الترجمة</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>المرشحات</value>
+  </data>
 </root>

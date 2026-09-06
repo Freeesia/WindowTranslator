@@ -522,4 +522,13 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>供支援上下文的翻譯模組使用</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>翻譯</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>篩選器</value>
+  </data>
 </root>

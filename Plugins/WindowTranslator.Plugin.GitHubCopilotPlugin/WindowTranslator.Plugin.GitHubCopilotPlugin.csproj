@@ -4,6 +4,7 @@
     <Title>GitHub Copilot Translator Plugin</Title>
     <Description>Translation for WindowTranslator using GitHub Copilot.</Description>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);translate</PackageTags>
     <IsPublishable>false</IsPublishable>
     <IncludePluginRuntimeAssetsInPackage>true</IncludePluginRuntimeAssetsInPackage>
   </PropertyGroup>

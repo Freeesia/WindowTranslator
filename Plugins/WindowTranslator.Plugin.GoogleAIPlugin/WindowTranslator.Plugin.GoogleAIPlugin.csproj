@@ -5,6 +5,7 @@
     <Title>Google AI Plugin</Title>
     <Description>Translation, OCR, and text correction for WindowTranslator using Google AI.</Description>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);translate;ocr;filter</PackageTags>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>

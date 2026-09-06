@@ -5,6 +5,7 @@
     <Title>Tesseract OCR Plugin</Title>
     <Description>OCR for WindowTranslator using the Tesseract engine.</Description>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);ocr</PackageTags>
     <IsPublishable>false</IsPublishable>
     <IncludePluginRuntimeAssetsInPackage>true</IncludePluginRuntimeAssetsInPackage>
   </PropertyGroup>
