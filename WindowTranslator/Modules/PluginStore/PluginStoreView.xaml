@@ -49,14 +49,26 @@
             <!--  パッケージ一覧  -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <ui:ListView
+                <ComboBox
                     Grid.Row="0"
                     Margin="4"
-                    ItemsSource="{Binding Packages}"
+                    SelectedValue="{Binding SelectedCategory, Mode=TwoWay}"
+                    SelectedValuePath="Tag">
+                    <ComboBoxItem Content="{x:Static properties:Resources.PluginCategoryAll}" Tag="" />
+                    <ComboBoxItem Content="{x:Static properties:Resources.PluginCategoryTranslate}" Tag="translate" />
+                    <ComboBoxItem Content="OCR" Tag="ocr" />
+                    <ComboBoxItem Content="{x:Static properties:Resources.PluginCategoryFilter}" Tag="filter" />
+                </ComboBox>
+
+                <ui:ListView
+                    Grid.Row="1"
+                    Margin="4"
+                    ItemsSource="{Binding FilteredPackages}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     SelectedItem="{Binding SelectedPackage}"
                     VirtualizingPanel.ScrollUnit="Pixel">
@@ -169,7 +181,7 @@
                 </ui:ListView>
 
                 <Border
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Margin="4"
                     Padding="8"
                     BorderBrush="{DynamicResource SeparatorBorderBrush}"

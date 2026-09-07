@@ -5,6 +5,7 @@
     <Description>Context-aware translation filtering for Fields of Mistria.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);filter</PackageTags>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 

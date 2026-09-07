@@ -551,4 +551,13 @@
   <data name="PluginOfficial" xml:space="preserve">
     <value>公式プラグイン</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>すべて</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>翻訳</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>フィルター</value>
+  </data>
 </root>

@@ -529,4 +529,13 @@ Monitory nie są obsługiwane.
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Ogranicza chwilowe zmiany tekstu oraz podział lub łączenie obszarów. 1: szybka reakcja, 5: wysoka stabilność (domyślnie: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Zachowanie przy chwilowym zniknięciu</value></data>
   <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Liczba kolejnych nieudanych rozpoznań, podczas których tekst pozostaje widoczny. 0: usuń przy pierwszym braku, maksimum: 7, domyślnie: 3. Liczone w brakach rozpoznania, nie w sekundach.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Wszystkie</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Tłumaczenie</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtry</value>
+  </data>
 </root>

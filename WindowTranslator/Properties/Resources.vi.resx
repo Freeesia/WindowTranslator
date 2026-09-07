@@ -529,4 +529,13 @@ Màn hình không được hỗ trợ.
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Giảm thay đổi tạm thời của văn bản và việc tách hoặc gộp vùng. 1: phản hồi nhanh, 5: ưu tiên ổn định (mặc định: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Giữ hiển thị khi tạm biến mất</value></data>
   <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Số lần liên tiếp không nhận dạng được mà vẫn giữ hiển thị. 0: xóa ngay lần đầu, tối đa: 7, mặc định: 3. Tính theo số lần, không phải giây.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Tất cả</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Dịch thuật</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Bộ lọc</value>
+  </data>
 </root>

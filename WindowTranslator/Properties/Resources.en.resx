@@ -551,4 +551,13 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduces temporary changes in text and region splitting or merging. 1: responsive, 5: stable (default: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Temporary disappearance retention</value></data>
   <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Number of consecutive missed recognitions to keep displaying text. 0: remove on the first miss, maximum: 7, default: 3. Counted in misses, not seconds.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Translation</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filters</value>
+  </data>
 </root>

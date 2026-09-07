@@ -453,6 +453,21 @@ internal class Resources
     public static string Plugin => ResourceManager.GetString("Plugin", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "すべて" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginCategoryAll => ResourceManager.GetString("PluginCategoryAll", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "フィルター" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginCategoryFilter => ResourceManager.GetString("PluginCategoryFilter", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "翻訳" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string PluginCategoryTranslate => ResourceManager.GetString("PluginCategoryTranslate", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "インストール失敗" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string PluginInstallFailed => ResourceManager.GetString("PluginInstallFailed", resourceCulture) ?? string.Empty;

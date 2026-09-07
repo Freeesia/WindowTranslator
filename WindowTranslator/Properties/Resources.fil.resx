@@ -529,4 +529,13 @@ Ang monitor ay hindi suportado.
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Binabawasan ang pansamantalang pagbabago sa teksto at paghahati o pagsasama ng mga rehiyon. 1: mabilis na pagtugon, 5: mas matatag (default: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Pagpapanatili kapag pansamantalang nawala</value></data>
   <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Bilang ng sunod-sunod na hindi pagkilala habang nananatiling nakikita ang teksto. 0: alisin sa unang pagkabigo, pinakamataas: 7, default: 3. Bilang ng pagkabigo, hindi segundo.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Lahat</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Pagsasalin</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Mga filter</value>
+  </data>
 </root>

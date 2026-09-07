@@ -33,7 +33,7 @@ cd WindowTranslator.Plugin.YourPlugin
     <PackageProjectUrl>https://github.com/YourName/YourPlugin</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- この タグ が必須です（アプリ内一覧への表示条件） -->
-    <PackageTags>$(PackageTags);windowtranslator-plugin</PackageTags>
+    <PackageTags>$(PackageTags);windowtranslator-plugin;translate</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -60,6 +60,28 @@ cd WindowTranslator.Plugin.YourPlugin
 > `WindowTranslator.Abstractions` の依存バージョン範囲は、インストール先の
 > WindowTranslator との互換性判定に使用されます。サポートする最も古い
 > `WindowTranslator.Abstractions` のバージョンを指定してください。
+
+### 機能カテゴリの指定
+
+`windowtranslator-plugin` はストアへの掲載用タグです。機能の分類には、実装している
+インターフェースに対応するカテゴリタグを追加してください。
+
+| カテゴリ | タグ | インターフェース |
+|---|---|---|
+| 翻訳 | `translate` | `ITranslateModule` |
+| OCR | `ocr` | `IOcrModule` |
+| フィルター | `filter` | `IFilterModule` |
+
+複数の機能を提供するパッケージには、複数のカテゴリタグを指定できます。
+たとえば、翻訳・OCR・フィルターを提供する場合は次のように指定します。
+
+```xml
+<PackageTags>$(PackageTags);windowtranslator-plugin;translate;ocr;filter</PackageTags>
+```
+
+カテゴリタグだけではストアに掲載されません。カテゴリタグを持たないパッケージは
+「すべて」に表示されます。カテゴリは取得済みのパッケージ情報から絞り込まれるため、
+選択を変更してもNuGetの再検索は行いません。
 
 ### README の多言語化
 

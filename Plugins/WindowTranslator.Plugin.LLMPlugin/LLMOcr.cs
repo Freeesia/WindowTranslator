@@ -12,6 +12,7 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 
+#if DEBUG
 namespace WindowTranslator.Plugin.LLMPlugin;
 
 [Experimental("WT0001")]
@@ -162,3 +163,4 @@ public sealed class LLMOcr : IOcrModule
     private record Rect([property: JsonPropertyName("box_2d")] int[] Box2d, string Text);
     private record RecognizedTexts(Rect[] Texts);
 }
+#endif

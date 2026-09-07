@@ -410,4 +410,13 @@ A monitorok nem támogatottak.
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Csökkenti a szöveg, valamint a területek felosztásának és egyesítésének átmeneti változásait. 1: gyors reakció, 5: nagy stabilitás (alapérték: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Megjelenítés megtartása átmeneti eltűnéskor</value></data>
   <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Egymást követő sikertelen felismerések száma, ameddig a szöveg látható marad. 0: eltávolítás az első kimaradáskor, maximum: 7, alapérték: 3. Kimaradásokban mérve, nem másodpercekben.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Összes</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Fordítás</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Szűrők</value>
+  </data>
 </root>
