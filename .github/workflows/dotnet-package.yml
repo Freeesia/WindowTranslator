@@ -41,12 +41,90 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
             -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
-      - name: Upload NuGet packages
+      - name: Upload WindowTranslator.Abstractions
         uses: actions/upload-artifact@v7
         with:
-          name: WindowTranslator-plugins-${{ steps.gitversion.outputs.fullSemVer }}
-          path: pack\*.nupkg
+          path: pack\WindowTranslator.Abstractions.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
           if-no-files-found: error
+          archive: false
+      - name: Upload WindowTranslator.ColorThief
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.ColorThief.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload BergamotTranslator plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.BergamotTranslatorPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload ColorThief plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.ColorThiefPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload DeepLTranslate plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.DeepLTranslatePlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload FoM plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.FoMPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload GitHubCopilot plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.GitHubCopilotPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload GoogleAI plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.GoogleAIPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload GoogleAppsSctipt plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.GoogleAppsSctiptPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload LLM plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.LLMPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload OneOcr plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.OneOcrPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload OrcaRouter plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.OrcaRouterPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload PLaMo plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.PLaMoPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
+      - name: Upload TesseractOCR plugin
+        uses: actions/upload-artifact@v7
+        with:
+          path: pack\WindowTranslator.Plugin.TesseractOCRPlugin.${{ steps.gitversion.outputs.fullSemVer }}.nupkg
+          if-no-files-found: error
+          archive: false
       - name: NuGet login
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: nuget_login
