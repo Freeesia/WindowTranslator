@@ -5,6 +5,7 @@
     <Title>PLaMo Translator Plugin</Title>
     <Description>Local PLaMo translation for WindowTranslator using LLamaSharp and CUDA.</Description>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);translate</PackageTags>
     <IsPublishable>false</IsPublishable>
     <IncludePluginRuntimeAssetsInPackage>true</IncludePluginRuntimeAssetsInPackage>
     <PlatformTarget>x64</PlatformTarget>

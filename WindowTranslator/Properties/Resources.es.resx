@@ -513,4 +513,13 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Se utiliza en los módulos de traducción compatibles con el contexto</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Traducción</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtros</value>
+  </data>
 </root>

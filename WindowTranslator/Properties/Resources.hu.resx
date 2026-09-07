@@ -403,4 +403,13 @@ A monitorok nem támogatottak.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>A kontextust támogató fordítási modulok használják</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Összes</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Fordítás</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Szűrők</value>
+  </data>
 </root>

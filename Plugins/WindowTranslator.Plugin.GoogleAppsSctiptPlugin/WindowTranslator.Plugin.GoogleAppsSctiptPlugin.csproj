@@ -3,6 +3,7 @@
     <Title>Google Apps Script Translator Plugin</Title>
     <Description>Translation for WindowTranslator through Google Apps Script.</Description>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);translate</PackageTags>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>

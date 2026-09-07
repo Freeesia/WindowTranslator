@@ -521,4 +521,13 @@ Monitor tidak didukung.</value>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Usado por módulos de tradução compatíveis com contexto</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Tradução</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtros</value>
+  </data>
 </root>

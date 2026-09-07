@@ -522,4 +522,13 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>전체</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>번역</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>필터</value>
+  </data>
 </root>

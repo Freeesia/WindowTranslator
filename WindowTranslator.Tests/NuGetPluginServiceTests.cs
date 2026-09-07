@@ -600,6 +600,81 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task CategoryFilterUsesCachedPackageTagsWithoutRefreshingNuGet()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults =
+                [
+                    CreatePackageSearchMetadata(
+                        "Translate.Plugin",
+                        "Translate Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        tags: "windowtranslator-plugin Translate"),
+                    CreatePackageSearchMetadata(
+                        "Multiple.Plugin",
+                        "Multiple Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        tags: "windowtranslator-plugin;ocr;filter"),
+                    CreatePackageSearchMetadata(
+                        "Uncategorized.Plugin",
+                        "Uncategorized Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        tags: "windowtranslator-plugin"),
+                ];
+            handler.AddMetadataVersions(
+                "Translate.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            handler.AddMetadataVersions(
+                "Multiple.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            handler.AddMetadataVersions(
+                "Uncategorized.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            using var service = CreateService(handler, testDirectory);
+            using var viewModel = new PluginStoreViewModel(
+                service,
+                NullLogger<PluginStoreViewModel>.Instance,
+                dialogService: null!);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.Equal(3, viewModel.FilteredPackages.Count());
+            Assert.Contains(
+                "Translate",
+                service.PackageSnapshot.Packages.Single(package => package.Id == "Translate.Plugin").Tags);
+
+            viewModel.SelectedCategory = "translate";
+            Assert.Equal("Translate.Plugin", Assert.Single(viewModel.FilteredPackages).Id);
+
+            viewModel.SelectedCategory = "ocr";
+            Assert.Equal("Multiple.Plugin", Assert.Single(viewModel.FilteredPackages).Id);
+
+            viewModel.SelectedCategory = "filter";
+            Assert.Equal("Multiple.Plugin", Assert.Single(viewModel.FilteredPackages).Id);
+
+            viewModel.SelectedCategory = string.Empty;
+            Assert.Equal(3, viewModel.FilteredPackages.Count());
+            Assert.Equal(["tags:windowtranslator-plugin"], handler.RequestedSearchTerms);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task PluginStoreKeepsInstalledPackagesVisibleWhenNuGetSearchFails()
     {
         var testDirectory = CreateTestDirectory();
@@ -1967,7 +2042,8 @@ public sealed class NuGetPluginServiceTests
         bool isListed = true,
         string? readmeFileUrl = null,
         string? iconUrl = null,
-        IReadOnlyList<string>? owners = null)
+        IReadOnlyList<string>? owners = null,
+        string? tags = null)
         => new TestPackageSearchMetadata
         {
             Identity = new PackageIdentity(
@@ -1983,6 +2059,7 @@ public sealed class NuGetPluginServiceTests
             ReadmeFileUrl = readmeFileUrl!,
             IconUrl = iconUrl is null ? null! : new Uri(iconUrl),
             OwnersList = owners ?? [],
+            Tags = tags!,
         };
 
     private static async Task WaitForReadmeAsync(

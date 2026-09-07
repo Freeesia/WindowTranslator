@@ -522,4 +522,13 @@ Monitory nie są obsługiwane.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Używane przez moduły tłumaczeniowe obsługujące kontekst</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Wszystkie</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Tłumaczenie</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtry</value>
+  </data>
 </root>

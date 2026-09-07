@@ -522,4 +522,13 @@ Ang monitor ay hindi suportado.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Ginagamit ng mga module ng pagsasalin na sumusuporta sa konteksto</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Lahat</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Pagsasalin</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Mga filter</value>
+  </data>
 </root>

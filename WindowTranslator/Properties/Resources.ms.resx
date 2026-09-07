@@ -521,4 +521,13 @@ Monitor tidak disokong.</value>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Digunakan oleh modul terjemahan yang menyokong konteks</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Semua</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Terjemahan</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Penapis</value>
+  </data>
 </root>

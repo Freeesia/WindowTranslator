@@ -6,6 +6,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPublishable>true</IsPublishable>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);ocr</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Panlingo.LanguageIdentification.FastText" />

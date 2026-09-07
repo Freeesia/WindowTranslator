@@ -522,4 +522,13 @@ Màn hình không được hỗ trợ.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Được sử dụng bởi các mô-đun dịch hỗ trợ ngữ cảnh</value>
   </data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Tất cả</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Dịch thuật</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Bộ lọc</value>
+  </data>
 </root>
