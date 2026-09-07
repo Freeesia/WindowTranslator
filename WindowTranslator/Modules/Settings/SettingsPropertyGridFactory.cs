@@ -54,6 +54,11 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             fe = editor;
         }
 
+        if (fe == null && property is IDynamicItemsPropertyItem { DynamicItemsSource: { } source })
+        {
+            fe = new DynamicItemsComboBox(property, source);
+        }
+
         // EditableItemsSourceAttributeが指定されている場合、編集可能ComboBoxを生成
         if (fe == null && property is IEditableItemsPropertyItem editableItem && editableItem.EditableCandidates != null)
         {

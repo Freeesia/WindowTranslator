@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Pengaturan OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Terjemahan OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Masuk / Keluar</value></data>
+  <data name="Model" xml:space="preserve"><value>Model (harga input / output dalam USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Status masuk</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Konteks terjemahan</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Jalur glosarium</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Sudah masuk</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Belum masuk</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Silakan masuk di browser. Tekan tombol sekali lagi untuk membatalkan.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Proses masuk dibatalkan atau kehabisan waktu.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Gagal masuk. Periksa koneksi lalu coba lagi.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Kembali ke WindowTranslator untuk memeriksa hasil masuk. Tab ini boleh ditutup.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>berbeda menurut model</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>informasi harga tidak tersedia</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Masuk melalui pengaturan OrcaRouter lalu simpan pengaturan.</value></data>
+</root>

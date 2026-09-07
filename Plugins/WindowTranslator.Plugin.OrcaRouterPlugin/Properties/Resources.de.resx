@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter-Einstellungen</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter-Übersetzung</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Anmelden / Abmelden</value></data>
+  <data name="Model" xml:space="preserve"><value>Modell (Eingabe- / Ausgabepreis in USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Anmeldestatus</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Übersetzungskontext</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Glossarpfad</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Angemeldet</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Nicht angemeldet</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Melden Sie sich im Browser an. Drücken Sie die Schaltfläche erneut, um abzubrechen.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Die Anmeldung wurde abgebrochen oder das Zeitlimit wurde überschritten.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Die Anmeldung ist fehlgeschlagen. Prüfen Sie die Verbindung und versuchen Sie es erneut.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Kehren Sie zu WindowTranslator zurück, um das Ergebnis zu prüfen. Sie können diesen Tab schließen.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>je nach Modell unterschiedlich</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>Preisinformationen nicht verfügbar</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Melden Sie sich in den OrcaRouter-Einstellungen an und speichern Sie die Einstellungen.</value></data>
+</root>

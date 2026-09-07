@@ -36,6 +36,7 @@
     <Project Path="Plugins/WindowTranslator.Plugin.GoogleAppsSctiptPlugin/WindowTranslator.Plugin.GoogleAppsSctiptPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.LLMPlugin/WindowTranslator.Plugin.LLMPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.OneOcrPlugin/WindowTranslator.Plugin.OneOcrPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.OrcaRouterPlugin/WindowTranslator.Plugin.OrcaRouterPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.PLaMoPlugin/WindowTranslator.Plugin.PLaMoPlugin.csproj">
       <Build Solution="*|ARM64" Project="false" />
     </Project>

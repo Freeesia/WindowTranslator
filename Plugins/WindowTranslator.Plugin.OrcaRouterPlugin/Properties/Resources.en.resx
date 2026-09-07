@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter settings</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter translation</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Sign in / Sign out</value></data>
+  <data name="Model" xml:space="preserve"><value>Model (input / output price in USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Sign-in status</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Translation context</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Glossary path</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Signed in</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Not signed in</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Sign in in your browser. Press the button again to cancel.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Sign-in was cancelled or timed out.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Sign-in failed. Check your connection and try again.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Return to WindowTranslator to check the sign-in result. You can close this tab.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>varies by model</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>pricing unavailable</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Sign in from OrcaRouter settings and save your settings.</value></data>
+</root>

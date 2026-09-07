@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Paramètres OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Traduction OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Se connecter / Se déconnecter</value></data>
+  <data name="Model" xml:space="preserve"><value>Modèle (prix d'entrée / sortie en USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>État de connexion</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Contexte de traduction</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Chemin du glossaire</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Connecté</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Non connecté</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Connectez-vous dans votre navigateur. Appuyez à nouveau sur le bouton pour annuler.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>La connexion a été annulée ou a expiré.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Échec de la connexion. Vérifiez votre connexion réseau et réessayez.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Revenez dans WindowTranslator pour vérifier le résultat. Vous pouvez fermer cet onglet.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>varie selon le modèle</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>tarif indisponible</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Connectez-vous dans les paramètres OrcaRouter puis enregistrez les paramètres.</value></data>
+</root>

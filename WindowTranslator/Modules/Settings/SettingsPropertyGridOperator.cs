@@ -16,6 +16,11 @@ internal interface IEditableItemsPropertyItem
     IEnumerable? EditableCandidates { get; set; }
 }
 
+internal interface IDynamicItemsPropertyItem
+{
+    IDynamicItemsSource? DynamicItemsSource { get; set; }
+}
+
 internal class SettingsPropertyGridOperator : PropertyGridOperator
 {
     public IModelHistoryStore? HistoryStore { get; set; }
@@ -93,6 +98,11 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
 
     protected override void SetAttribute(Attribute attribute, PropertyItem pi, object instance)
     {
+        if (attribute is DynamicItemsSourceAttribute && pi is IDynamicItemsPropertyItem dynamicItem)
+        {
+            dynamicItem.DynamicItemsSource = instance as IDynamicItemsSource
+                ?? throw new InvalidOperationException($"{instance.GetType().Name} must implement {nameof(IDynamicItemsSource)}.");
+        }
         if (attribute is DisplayAttribute display && display.GetOrder() is { } order)
         {
             pi.SortIndex = order;
@@ -120,11 +130,13 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         => new ParentablePropertyItem(pd, propertyDescriptors);
 
     private class ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
-        : PropertyItem(propertyDescriptor, propertyDescriptors), IEditableItemsPropertyItem
+        : PropertyItem(propertyDescriptor, propertyDescriptors), IEditableItemsPropertyItem, IDynamicItemsPropertyItem
     {
         private readonly Stack<string> parents = new();
 
         public IEnumerable? EditableCandidates { get; set; }
+
+        public IDynamicItemsSource? DynamicItemsSource { get; set; }
 
         public void AddParent(string parent)
             => parents.Push(parent);

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>OrcaRouter Plugin</Title>
+    <Description>OrcaRouter のブラウザー認証、料金付きモデル選択と翻訳に対応する WindowTranslator プラグイン。</Description>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" ExcludeAssets="runtime" />
+    <PackageReference Include="CsvHelper" />
+    <PackageReference Include="Duende.IdentityModel" />
+    <PackageReference Include="OpenAI" />
+    <InternalsVisibleTo Include="WindowTranslator.Tests" />
+  </ItemGroup>
+</Project>

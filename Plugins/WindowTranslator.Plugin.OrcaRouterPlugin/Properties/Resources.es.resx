@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Configuración de OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Traducción de OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Iniciar sesión / Cerrar sesión</value></data>
+  <data name="Model" xml:space="preserve"><value>Modelo (precio de entrada / salida en USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Estado de inicio de sesión</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Contexto de traducción</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Ruta del glosario</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Sesión iniciada</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Sesión no iniciada</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Inicia sesión en el navegador. Pulsa de nuevo el botón para cancelar.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>El inicio de sesión se canceló o agotó el tiempo de espera.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>No se pudo iniciar sesión. Comprueba la conexión e inténtalo de nuevo.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Vuelve a WindowTranslator para comprobar el resultado. Puedes cerrar esta pestaña.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>varía según el modelo</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>precio no disponible</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Inicia sesión desde la configuración de OrcaRouter y guarda la configuración.</value></data>
+</root>

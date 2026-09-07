@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Mga setting ng OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Pagsasalin gamit ang OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Mag-sign in / Mag-sign out</value></data>
+  <data name="Model" xml:space="preserve"><value>Modelo (presyo ng input / output sa USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Katayuan ng pag-sign in</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Konteksto ng pagsasalin</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Landas ng glossary</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Naka-sign in</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Hindi naka-sign in</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Mag-sign in sa iyong browser. Pindutin muli ang button para kanselahin.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Kinansela o nag-timeout ang pag-sign in.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Nabigo ang pag-sign in. Suriin ang koneksyon at subukan muli.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Bumalik sa WindowTranslator para tingnan ang resulta. Maaari mong isara ang tab na ito.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>nag-iiba ayon sa modelo</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>walang impormasyon sa presyo</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Mag-sign in mula sa mga setting ng OrcaRouter at i-save ang mga setting.</value></data>
+</root>

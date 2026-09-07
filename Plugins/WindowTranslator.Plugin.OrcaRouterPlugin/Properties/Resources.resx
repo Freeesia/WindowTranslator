@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter設定</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter翻訳</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>サインイン / サインアウト</value></data>
+  <data name="Model" xml:space="preserve"><value>使用するモデル（入力 / 出力料金・USD）</value></data>
+  <data name="Status" xml:space="preserve"><value>認証状態</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>翻訳時に利用する文脈情報</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>用語集パス</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>サインイン済み</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>未サインイン</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>ブラウザーでサインインしてください。ボタンをもう一度押すとキャンセルします。</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>サインインをキャンセルしたか、待機時間を超えました。</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>サインインに失敗しました。接続を確認して再試行してください。</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>WindowTranslator に戻って認証結果を確認してください。このタブは閉じて構いません。</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>モデルにより変動</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>料金情報なし</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>OrcaRouter設定からサインインし、設定を保存してください。</value></data>
+</root>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter सेटिंग</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter अनुवाद</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>साइन इन / साइन आउट</value></data>
+  <data name="Model" xml:space="preserve"><value>मॉडल (इनपुट / आउटपुट मूल्य USD में)</value></data>
+  <data name="Status" xml:space="preserve"><value>साइन-इन स्थिति</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>अनुवाद संदर्भ</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>शब्दावली पथ</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>साइन इन है</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>साइन इन नहीं है</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>अपने ब्राउज़र में साइन इन करें। रद्द करने के लिए बटन फिर दबाएँ।</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>साइन इन रद्द हो गया या समय समाप्त हो गया।</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>साइन इन विफल रहा। कनेक्शन जाँचें और फिर प्रयास करें।</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>परिणाम जाँचने के लिए WindowTranslator पर वापस जाएँ। यह टैब बंद किया जा सकता है।</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>मॉडल के अनुसार बदलता है</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>मूल्य जानकारी उपलब्ध नहीं</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>OrcaRouter सेटिंग से साइन इन करें और सेटिंग सहेजें।</value></data>
+</root>
