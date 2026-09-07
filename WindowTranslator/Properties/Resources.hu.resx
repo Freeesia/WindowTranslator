@@ -337,6 +337,66 @@ A monitorok nem támogatottak.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Bővítmények</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Előzetes kiadás</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Telepítés</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Telepítve</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Frissítés</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Eltávolítás</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Biztosan eltávolítja a(z) {0} bővítményt?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Frissítés érhető el</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Telepített verzió</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Legújabb verzió</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Nem sikerült lekérni a bővítmények listáját a NuGet szolgáltatásból. Ellenőrizze a hálózati kapcsolatot.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>A telepítés befejeződött</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>A telepítés sikertelen</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Újraindítás most</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>A bővítménymódosítások alkalmazásához indítsa újra a WindowTranslator alkalmazást.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Újraindítás</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Projektoldal</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Licencinformációk</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>A beépülő modulok a NuGeten keresztül terjesztett, harmadik féltől származó csomagok. Az egyes csomagok licencét a tulajdonosuk biztosítja; a WindowTranslator nem garantálja azok tartalmát, működését vagy biztonságát. Csak megbízható csomagokat telepítsen.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Hivatalos beépülő modul</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Tartomány hozzáadása</value>
   </data>

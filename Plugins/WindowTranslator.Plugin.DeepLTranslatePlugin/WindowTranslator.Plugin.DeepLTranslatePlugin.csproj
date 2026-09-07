@@ -1,5 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <Title>DeepL Translator Plugin</Title>
+    <Description>Translation for WindowTranslator using the DeepL API.</Description>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="DeepL.net" />

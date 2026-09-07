@@ -19,6 +19,7 @@ using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Properties;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -96,6 +97,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool IsVisibleReviewButton => this.reviewRequestService.CanOpenReview;
 
+    public PluginStoreViewModel PluginStore { get; }
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
@@ -108,6 +111,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
         [Inject] ILogger<AllSettingsViewModel> logger,
+        [Inject] PluginStoreViewModel pluginStoreViewModel,
         string target,
         bool? applyMode = null)
     {
@@ -146,6 +150,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.logger = logger;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
+        this.PluginStore = pluginStoreViewModel;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
@@ -246,6 +251,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
+                IsOneShotMode = t.IsOneShotMode,
                 OverlayOpacity = t.OverlayOpacity,
                 MousePointerHitTestPadding = t.MousePointerHitTestPadding,
                 OcrGeometryStability = t.OcrGeometryStability,
@@ -316,6 +322,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         this.updateChecker.UpdateAvailable -= UpdateChecker_UpdateAvailable;
+        this.PluginStore.Dispose();
     }
 }
 
@@ -431,13 +438,11 @@ public partial class TargetSettingsViewModel(
     [Category("SettingsViewModel|Font")]
     [FontFamilySelector]
     [FontPreview(18)]
-    [SortIndex(5)]
     public string Font { get; set; } = settings.Font;
 
     [property: Category("SettingsViewModel|Font")]
     [property: Slidable(0.1, 5, 0.1, 1.0, true, 0.1)]
     [property: FormatString("F2")]
-    [property: SortIndex(6)]
     [ObservableProperty]
     private double fontScale = settings.FontScale;
 
@@ -462,33 +467,29 @@ public partial class TargetSettingsViewModel(
     [ObservableProperty]
     private int ocrMissingFrameRetention = settings.OcrMissingFrameRetention;
 
-    [property: Category("SettingsViewModel|Shortcut")]
-    [ObservableProperty]
-    private string overlayShortcut = settings.OverlayShortcut;
+    [Category("SettingsViewModel|Overlay")]
+    public string OverlayShortcut { get; set; } = settings.OverlayShortcut;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(7)]
-    [ObservableProperty]
-    private bool isEnableAutoTarget = settings.IsEnableAutoTarget;
-
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(8)]
+    [property: Category("SettingsViewModel|Overlay")]
     [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
     [property: FormatString("P1")]
     [ObservableProperty]
     private double overlayOpacity = settings.OverlayOpacity;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(9)]
-    [ObservableProperty]
-    private bool displayBusy = settings.DisplayBusy;
+    [Category("SettingsViewModel|Overlay")]
+    public bool IsOneShotMode { get; set; } = settings.IsOneShotMode;
 
-    [property: Category("SettingsViewModel|Misc")]
+    [property: Category("SettingsViewModel|Overlay")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
     [property: Slidable(0, 100, 1, 10, true, 1)]
-    [property: SortIndex(10)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
+
+    [Category("SettingsViewModel|Misc")]
+    public bool IsEnableAutoTarget { get; set; } = settings.IsEnableAutoTarget;
+
+    [Category("SettingsViewModel|Misc")]
+    public bool DisplayBusy { get; set; } = settings.DisplayBusy;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
     {

@@ -337,6 +337,66 @@ Monitory nejsou podporovány.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Pluginy</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Předběžná verze</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Nainstalovat</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Nainstalováno</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualizovat</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Odinstalovat</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Opravdu chcete odinstalovat {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Dostupná aktualizace</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Nainstalovaná verze</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Nejnovější verze</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Nepodařilo se načíst seznam pluginů z NuGet. Zkontrolujte připojení k síti.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalace dokončena</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Instalace se nezdařila</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Restartovat nyní</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Restartujte WindowTranslator, aby se změny pluginu projevily.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Restartovat</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Stránka projektu</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informace o licenci</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Pluginy jsou balíčky třetích stran distribuované prostřednictvím NuGet. Licenci ke každému balíčku uděluje jeho vlastník; WindowTranslator nezaručuje jeho obsah, chování ani bezpečnost. Instalujte pouze balíčky, kterým důvěřujete.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Oficiální plugin</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Přidat oblast</value>
   </data>

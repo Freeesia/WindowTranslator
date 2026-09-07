@@ -455,6 +455,66 @@ Monitor tidak disokong.</value>
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prakeluaran</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Pasang</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Dipasang</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Kemaskini</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Nyahpasang</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Adakah anda pasti mahu menyahpasang {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Kemaskini tersedia</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Versi yang dipasang</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Versi terkini</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Gagal mendapatkan senarai plugin dari NuGet. Sila semak sambungan rangkaian anda.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Pemasangan selesai</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Pemasangan gagal</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Mulakan semula sekarang</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Sila mulakan semula WindowTranslator untuk menerapkan perubahan plugin.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Mulakan semula</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Halaman projek</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Maklumat lesen</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Pemalam ialah pakej pihak ketiga yang diedarkan melalui NuGet. Lesen setiap pakej diberikan oleh pemiliknya; WindowTranslator tidak menjamin kandungan, tingkah laku atau keselamatannya. Pasang hanya pakej yang anda percayai.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Pemalam rasmi</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>Tambah kawasan</value>
   </data>

@@ -456,6 +456,66 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>ปลั๊กอิน</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>รุ่นก่อนเผยแพร่</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>ติดตั้ง</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>ติดตั้งแล้ว</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>อัปเดต</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>ถอนการติดตั้ง</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้ง {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>มีการอัปเดต</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>เวอร์ชันที่ติดตั้ง</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>เวอร์ชันล่าสุด</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>ไม่สามารถดึงรายการปลั๊กอินจาก NuGet ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่าย</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>การติดตั้งเสร็จสมบูรณ์</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>การติดตั้งล้มเหลว</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>เริ่มใหม่ตอนนี้</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>กรุณาเริ่ม WindowTranslator ใหม่เพื่อนำการเปลี่ยนแปลงปลั๊กอินไปใช้</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>เริ่มใหม่</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>หน้าโครงการ</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>ข้อมูลใบอนุญาต</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>ปลั๊กอินเป็นแพ็กเกจของบุคคลที่สามที่เผยแพร่ผ่าน NuGet เจ้าของแพ็กเกจเป็นผู้ให้สิทธิ์การใช้งาน และ WindowTranslator ไม่รับประกันเนื้อหา การทำงาน หรือความปลอดภัย โปรดติดตั้งเฉพาะแพ็กเกจที่คุณเชื่อถือ</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>ปลั๊กอินอย่างเป็นทางการ</value>
+  </data>
   <data name="PriorityRectAdd" xml:space="preserve">
     <value>เพิ่มพื้นที่</value>
   </data>
