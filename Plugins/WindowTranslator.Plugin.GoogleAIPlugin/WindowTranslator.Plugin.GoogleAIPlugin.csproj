@@ -5,12 +5,15 @@
     <Title>Google AI Plugin</Title>
     <Description>Translation, OCR, and text correction for WindowTranslator using Google AI.</Description>
     <IsPackable>true</IsPackable>
-    <PackageTags>$(PackageTags);translate;ocr;filter</PackageTags>
+    <PackageTags>$(PackageTags);translate;filter</PackageTags>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="Google_GenerativeAI" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <Compile Remove="GoogleAIOcr.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
