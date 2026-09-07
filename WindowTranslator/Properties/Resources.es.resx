@@ -513,4 +513,16 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Se utiliza en los módulos de traducción compatibles con el contexto</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Configuración inicial</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Selecciona los complementos oficiales que quieras usar. Puedes cambiarlos más tarde en la pantalla de complementos.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Reintentar</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Omitir</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>No se encontraron complementos oficiales que se puedan instalar.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Selecciona una versión para instalar.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>No se pudieron instalar algunos complementos. Reintenta o guarda las instalaciones correctas y sal.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>No se pudieron guardar los resultados de la configuración. Reinténtalo.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Traducción y OCR</value></data>
+  <data name="SetupFilters" xml:space="preserve"><value>Filtros</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Extracción de color</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Otros</value></data>
 </root>

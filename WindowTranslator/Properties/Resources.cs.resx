@@ -403,4 +403,16 @@ Monitory nejsou podporovány.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Používají jej překladové moduly podporující kontext</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Počáteční nastavení</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Vyberte oficiální pluginy, které chcete používat. Později je můžete změnit na obrazovce Pluginy.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Opakovat</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Přeskočit</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Nebyly nalezeny žádné instalovatelné oficiální pluginy.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Vyberte verzi, kterou chcete nainstalovat.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Některé pluginy se nepodařilo nainstalovat. Opakujte akci nebo uložte úspěšné instalace a ukončete průvodce.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Výsledky nastavení se nepodařilo uložit. Opakujte akci.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Překlad a OCR</value></data>
+  <data name="SetupFilters" xml:space="preserve"><value>Filtry</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Extrakce barev</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Ostatní</value></data>
 </root>

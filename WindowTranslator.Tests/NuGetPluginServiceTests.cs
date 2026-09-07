@@ -33,6 +33,111 @@ public sealed class NuGetPluginServiceTests
     private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
 
     [Fact]
+    public async Task SetupSavesManifestOnlyAfterCompletion()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Setup.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Setup.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Setup.Plugin.dll"] = "plugin"u8.ToArray(),
+                    }));
+            using var service = CreateService(handler, testDirectory);
+
+            var installed = await service.InstallSetupPackageAsync("Setup.Plugin", "1.0.0");
+
+            var manifestPath = Path.Combine(testDirectory, "nuget-manifest.json");
+            Assert.True(service.IsSetupRequired);
+            Assert.False(File.Exists(manifestPath));
+            Assert.Empty(service.PackageSnapshot.InstalledPackages);
+            Assert.True(File.Exists(Path.Combine(testDirectory, "Setup.Plugin", "Setup.Plugin.dll")));
+
+            await service.CompleteSetupAsync([installed]);
+
+            Assert.False(service.IsSetupRequired);
+            Assert.True(service.IsRestartRequired);
+            var manifest = JsonSerializer.Deserialize<InstalledManifest>(
+                await File.ReadAllTextAsync(manifestPath),
+                NuGetPluginService.ManifestJsonOptions);
+            var package = Assert.Single(manifest!.Packages);
+            Assert.Equal("Setup.Plugin", package.Id);
+            Assert.Equal("1.0.0", package.Version);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task SetupCanCompleteWithAnEmptyManifestWithoutRestart()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            using var service = CreateService(handler, testDirectory);
+
+            await service.CompleteSetupAsync([]);
+
+            Assert.False(service.IsSetupRequired);
+            Assert.False(service.IsRestartRequired);
+            var manifest = JsonSerializer.Deserialize<InstalledManifest>(
+                await File.ReadAllTextAsync(Path.Combine(testDirectory, "nuget-manifest.json")),
+                NuGetPluginService.ManifestJsonOptions);
+            Assert.Empty(manifest!.Packages);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task SetupKeepsSuccessfulPackagesWhenAnotherPackageFails()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Successful.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Successful.Plugin",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Successful.Plugin.dll"] = "plugin"u8.ToArray(),
+                    }));
+            using var service = CreateService(handler, testDirectory);
+
+            var installed = await service.InstallSetupPackageAsync("Successful.Plugin", "1.0.0");
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.InstallSetupPackageAsync("Missing.Plugin", "1.0.0"));
+            await service.CompleteSetupAsync([installed]);
+
+            Assert.True(File.Exists(Path.Combine(
+                testDirectory, "Successful.Plugin", "Successful.Plugin.dll")));
+            Assert.False(Directory.Exists(Path.Combine(testDirectory, "Missing.Plugin")));
+            Assert.Equal("Successful.Plugin", Assert.Single(service.PackageSnapshot.InstalledPackages).Id);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task InstallResolvesDependenciesUsingNuGetRuntimeAssetLayout()
     {
         var testDirectory = CreateTestDirectory();

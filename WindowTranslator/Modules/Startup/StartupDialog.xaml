@@ -30,7 +30,8 @@
             <Setter Property="FontSize" Value="48" />
         </Style>
     </ui:FluentWindow.Resources>
-    <StackPanel Orientation="Vertical">
+    <Grid>
+    <StackPanel x:Name="StartupContent" Orientation="Vertical">
         <ui:TitleBar
             Title="WindowTranslator"
             Icon="{ui:ImageIcon '/wt.ico'}"
@@ -71,4 +72,6 @@
             </ui:Button>
         </StackPanel>
     </StackPanel>
+    <ContentPresenter x:Name="SetupHost" />
+    </Grid>
 </ui:FluentWindow>

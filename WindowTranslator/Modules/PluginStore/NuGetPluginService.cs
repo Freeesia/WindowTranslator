@@ -76,6 +76,8 @@ public sealed class NuGetPluginService : BackgroundService
 
     internal bool IsRestartRequired => Volatile.Read(ref this.restartRequired) != 0;
 
+    internal bool IsSetupRequired => !File.Exists(this.manifestPath);
+
     internal PluginStoreSnapshot PackageSnapshot
     {
         get
@@ -256,6 +258,65 @@ public sealed class NuGetPluginService : BackgroundService
         var currentManifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
         using var pluginOperation = new NuGetPluginOperation(this.nugetPluginsDir, packageId);
 
+        var installedPackage = await InstallPackageCoreAsync(
+            pluginOperation, packageId, version, progress, cancellationToken).ConfigureAwait(false);
+        var updatedManifest = currentManifest with
+        {
+            Packages =
+            [
+                .. currentManifest.Packages.Where(package =>
+                    !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)),
+                installedPackage,
+            ],
+            HideDisclaimer = this.HideDisclaimer,
+        };
+        await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
+        pluginOperation.Commit();
+        UpdateInstalledPackages(updatedManifest.Packages);
+        Volatile.Write(ref this.restartRequired, 1);
+        progress?.Report(100);
+    }
+
+    // セットアップ中は配置だけを確定し、成功分の一覧は完了時にまとめて保存する。
+    internal async Task<InstalledPackageInfo> InstallSetupPackageAsync(
+        string packageId, string version, IProgress<double>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        using var operation = await this.operationLock.EnterAsync(cancellationToken);
+        EnsureSetupRequired();
+        using var pluginOperation = new NuGetPluginOperation(this.nugetPluginsDir, packageId);
+        var installedPackage = await InstallPackageCoreAsync(
+            pluginOperation, packageId, version, progress, cancellationToken).ConfigureAwait(false);
+        pluginOperation.Commit();
+        progress?.Report(100);
+        return installedPackage;
+    }
+
+    internal async Task CompleteSetupAsync(
+        IReadOnlyCollection<InstalledPackageInfo> packages, CancellationToken cancellationToken = default)
+    {
+        using var operation = await this.operationLock.EnterAsync(cancellationToken);
+        EnsureSetupRequired();
+        await SaveManifestAsync(new([.. packages], this.HideDisclaimer), cancellationToken).ConfigureAwait(false);
+        UpdateInstalledPackages(packages);
+        if (packages.Count > 0)
+        {
+            Volatile.Write(ref this.restartRequired, 1);
+        }
+    }
+
+    private void EnsureSetupRequired()
+    {
+        if (!this.IsSetupRequired)
+        {
+            throw new InvalidOperationException("初回セットアップは完了しています。");
+        }
+    }
+
+    private async Task<InstalledPackageInfo> InstallPackageCoreAsync(
+        NuGetPluginOperation pluginOperation, string packageId, string version,
+        IProgress<double>? progress, CancellationToken cancellationToken)
+    {
         var packageResource = await this.repository
             .GetResourceAsync<FindPackageByIdResource>(cancellationToken)
             .ConfigureAwait(false);
@@ -277,31 +338,12 @@ public sealed class NuGetPluginService : BackgroundService
         Directory.Move(pluginOperation.WorkingPath, pluginOperation.TargetPath);
         progress?.Report(95);
 
-        var updatedManifest = currentManifest with
-        {
-            Packages =
-            [
-                .. currentManifest.Packages.Where(package =>
-                    !package.Id.Equals(packageId, StringComparison.OrdinalIgnoreCase)),
-                new(
-                    packageId,
-                    version,
-                    this.hostMajorVersion,
-                    abstractionsVersionRange.ToString()),
-            ],
-            HideDisclaimer = this.HideDisclaimer,
-        };
-        await SaveManifestAsync(updatedManifest, cancellationToken).ConfigureAwait(false);
-        pluginOperation.Commit();
-        UpdateInstalledPackages(updatedManifest.Packages);
-        Volatile.Write(ref this.restartRequired, 1);
-        progress?.Report(100);
-
         this.logger.LogInformation(
-            "パッケージのインストール完了: {PackageId} {Version} -> {TargetDir}",
+            "パッケージの配置完了: {PackageId} {Version} -> {TargetDir}",
             packageId,
             version,
             pluginOperation.TargetPath);
+        return new(packageId, version, this.hostMajorVersion, abstractionsVersionRange.ToString());
     }
 
     /// <summary>
@@ -334,6 +376,10 @@ public sealed class NuGetPluginService : BackgroundService
     {
         Volatile.Write(ref this.hideDisclaimer, value);
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
+        if (this.IsSetupRequired)
+        {
+            return;
+        }
         var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
         var currentValue = this.HideDisclaimer;
         if (manifest.HideDisclaimer == currentValue)

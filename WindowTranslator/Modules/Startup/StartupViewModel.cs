@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Windows.Graphics.Capture;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Properties;
 using static Windows.Win32.PInvoke;
 
@@ -24,17 +25,24 @@ public partial class StartupViewModel
     private readonly IServiceProvider serviceProvider;
     private readonly IMainWindowModule mainWindowModule;
     private readonly IVirtualDesktopManager desktopManager;
+    private readonly NuGetPluginService pluginService;
     private readonly ObservableCollection<MenuItemViewModel> attachingWindows;
     private IWindow? logView;
 
     public IEnumerable<MenuItemViewModel> TaskBarIconMenus { get; }
 
-    public StartupViewModel(IPresentationService presentationService, IServiceProvider serviceProvider, IMainWindowModule mainWindowModule, IVirtualDesktopManager desktopManager)
+    public StartupViewModel(
+        IPresentationService presentationService,
+        IServiceProvider serviceProvider,
+        IMainWindowModule mainWindowModule,
+        IVirtualDesktopManager desktopManager,
+        NuGetPluginService pluginService)
     {
         this.presentationService = presentationService;
         this.serviceProvider = serviceProvider;
         this.mainWindowModule = mainWindowModule;
         this.desktopManager = desktopManager;
+        this.pluginService = pluginService;
         this.attachingWindows = new(this.mainWindowModule.OpenedWindows.Select(CreateMenu));
         this.mainWindowModule.OpenedWindows.CollectionChanged += OpenedWindows_CollectionChanged;
         this.TaskBarIconMenus =
@@ -79,6 +87,10 @@ public partial class StartupViewModel
     [RelayCommand]
     public async Task RunAsync()
     {
+        if (this.pluginService.IsSetupRequired)
+        {
+            return;
+        }
         var app = Application.Current;
         var window = app.MainWindow;
         var beforeVisible = window.IsVisible;
@@ -130,6 +142,10 @@ public partial class StartupViewModel
     [RelayCommand]
     public async Task OpenSettingsDialogAsync(string? target)
     {
+        if (this.pluginService.IsSetupRequired)
+        {
+            return;
+        }
         using var scope = this.serviceProvider.CreateScope();
         var ps = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         await ps.OpenAllSettingsDialogAsync(target ?? string.Empty, null, Application.Current.MainWindow, new() { WindowStartupLocation = Kamishibai.WindowStartupLocation.CenterOwner });

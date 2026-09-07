@@ -1,0 +1,100 @@
+<ui:ContentDialog
+    x:Class="WindowTranslator.Modules.PluginStore.PluginSetupDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:data="clr-namespace:WindowTranslator.Data"
+    xmlns:properties="clr-namespace:WindowTranslator.Properties"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="{Binding [SetupTitle]}"
+    CloseButtonText=""
+    ContentTemplate="{x:Null}"
+    DialogMaxWidth="700"
+    IsPrimaryButtonEnabled="{Binding CanInstall}"
+    IsSecondaryButtonEnabled="{Binding CanFinish}"
+    PrimaryButtonText="{Binding PrimaryText}"
+    SecondaryButtonText="{Binding SecondaryText}">
+    <ui:ContentDialog.Resources>
+        <BooleanToVisibilityConverter x:Key="b2v" />
+    </ui:ContentDialog.Resources>
+    <Grid MaxWidth="600">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Margin="0,0,0,12" Text="{Binding [SetupDescription]}" TextWrapping="Wrap" />
+        <ProgressBar
+            Grid.Row="1"
+            Height="4"
+            Margin="0,0,0,8"
+            IsIndeterminate="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource b2v}}" />
+        <ScrollViewer
+            Grid.Row="2"
+            MaxHeight="320"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Groups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock
+                                Margin="0,4,0,8"
+                                FontWeight="SemiBold"
+                                Text="{Binding Name}" />
+                            <ItemsControl ItemsSource="{Binding Packages}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="4,0,12,12">
+                                            <CheckBox
+                                                Content="{Binding Package.Title}"
+                                                IsChecked="{Binding IsSelected}"
+                                                IsEnabled="{Binding DataContext.CanSelect, RelativeSource={RelativeSource AncestorType=ui:ContentDialog}}" />
+                                            <TextBlock
+                                                Margin="28,2,0,4"
+                                                Opacity="0.75"
+                                                Text="{Binding Package.Description}"
+                                                TextWrapping="Wrap" />
+                                            <StackPanel Margin="28,0,0,0" Orientation="Horizontal">
+                                                <CheckBox
+                                                    Content="{x:Static properties:Resources.Prerelease}"
+                                                    IsChecked="{Binding Package.UsePrerelease}"
+                                                    IsEnabled="{Binding DataContext.CanSelect, RelativeSource={RelativeSource AncestorType=ui:ContentDialog}}"
+                                                    Visibility="{Binding Package.HasPrereleaseVersion, Converter={StaticResource b2v}}" />
+                                                <TextBlock Margin="8,0,0,0" Text="{Binding Package.LatestVersion}" />
+                                                <TextBlock
+                                                    Margin="8,0,0,0"
+                                                    Text="{x:Static properties:Resources.Installed}"
+                                                    Visibility="{Binding Package.IsInstalled, Converter={StaticResource b2v}}" />
+                                            </StackPanel>
+                                            <ProgressBar
+                                                Height="4"
+                                                Margin="28,4,0,0"
+                                                Value="{Binding Package.InstallProgress}"
+                                                Visibility="{Binding Package.IsInstalling, Converter={StaticResource b2v}}" />
+                                            <TextBlock
+                                                Margin="28,4,0,0"
+                                                Text="{Binding ErrorMessage}"
+                                                TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <StackPanel Grid.Row="3" Margin="0,8,0,0">
+            <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+            <ui:Button
+                Margin="0,8,0,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ReloadCommand}"
+                Content="{Binding [SetupRetry]}"
+                IsEnabled="{Binding IsLoading, Converter={x:Static data:InverseBoolConverter.Default}}"
+                Visibility="{Binding HasSearchError, Converter={StaticResource b2v}}" />
+        </StackPanel>
+    </Grid>
+</ui:ContentDialog>

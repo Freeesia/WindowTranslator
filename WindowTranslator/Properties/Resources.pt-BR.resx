@@ -521,4 +521,16 @@ Monitor tidak didukung.</value>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Usado por módulos de tradução compatíveis com contexto</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Configuração inicial</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Selecione os plugins oficiais que deseja usar. Você poderá alterá-los depois na tela de Plugins.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Tentar novamente</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Pular</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Nenhum plugin oficial instalável foi encontrado.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Selecione uma versão para instalar.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Não foi possível instalar alguns plugins. Tente novamente ou salve as instalações concluídas e saia.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Não foi possível salvar os resultados da configuração. Tente novamente.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Tradução e OCR</value></data>
+  <data name="SetupFilters" xml:space="preserve"><value>Filtros</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Extração de cores</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Outros</value></data>
 </root>

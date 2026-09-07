@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32.SafeHandles;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Windows.Win32.Foundation;
+using WindowTranslator.Modules.PluginStore;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using static Windows.Win32.PInvoke;
@@ -17,15 +19,28 @@ public partial class StartupDialog : FluentWindow
 {
     private static readonly SafeFileHandle StartupDialogMarkerValue = new(new(1), ownsHandle: false);
     private readonly LaunchMode mode;
+    private readonly IServiceProvider serviceProvider;
     private HWND windowHandle;
     private HwndSource? hwndSource;
     private bool activationRequested;
+    private bool setupInProgress;
 
-    public StartupDialog(IConfiguration configuration)
+    public StartupDialog(
+        IConfiguration configuration,
+        NuGetPluginService pluginService,
+        IServiceProvider serviceProvider)
     {
         SystemThemeWatcher.Watch(this);
         InitializeComponent();
         this.mode = configuration.GetValue(nameof(LaunchMode), LaunchMode.Direct);
+        this.serviceProvider = serviceProvider;
+        this.setupInProgress = pluginService.IsSetupRequired;
+        if (this.setupInProgress)
+        {
+            this.StartupContent.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+            this.SetCurrentValue(WidthProperty, Math.Min(760, SystemParameters.WorkArea.Width));
+            this.SetCurrentValue(HeightProperty, Math.Min(680, SystemParameters.WorkArea.Height));
+        }
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -54,11 +69,29 @@ public partial class StartupDialog : FluentWindow
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         e.Cancel = true;
-        Hide();
+        if (!this.setupInProgress)
+        {
+            Hide();
+        }
     }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e)
+    private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        if (this.setupInProgress)
+        {
+            using var viewModel = this.serviceProvider.GetRequiredService<PluginSetupViewModel>();
+            var dialog = new PluginSetupDialog(viewModel) { DialogHost = this.SetupHost };
+            await dialog.ShowAsync();
+            this.setupInProgress = false;
+            if (viewModel.RequiresRestart)
+            {
+                ApplicationRestart.Restart();
+                return;
+            }
+            this.SetCurrentValue(WidthProperty, 240.0);
+            this.SetCurrentValue(HeightProperty, 168.0);
+            this.StartupContent.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+        }
         if (this.activationRequested)
         {
             ActivateStartupDialog();

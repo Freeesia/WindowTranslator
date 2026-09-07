@@ -195,6 +195,7 @@ builder.Services.AddSingleton(sp => new NuGetPluginService(
         AppInfo.Instance.Version.Major))
     .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
 builder.Services.AddTransient<PluginStoreViewModel>();
+builder.Services.AddTransient<PluginSetupViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));

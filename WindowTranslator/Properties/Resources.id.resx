@@ -521,4 +521,16 @@ Monitor tidak didukung.</value>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Digunakan oleh modul terjemahan yang mendukung konteks</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Penyiapan awal</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Pilih plugin resmi yang ingin digunakan. Anda dapat mengubahnya nanti di layar Plugin.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Coba lagi</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Lewati</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Tidak ditemukan plugin resmi yang dapat diinstal.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Pilih versi yang akan diinstal.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Beberapa plugin tidak dapat diinstal. Coba lagi, atau simpan instalasi yang berhasil lalu keluar.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil penyiapan tidak dapat disimpan. Coba lagi.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Terjemahan dan OCR</value></data>
+  <data name="SetupFilters" xml:space="preserve"><value>Filter</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Ekstraksi warna</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Lainnya</value></data>
 </root>
