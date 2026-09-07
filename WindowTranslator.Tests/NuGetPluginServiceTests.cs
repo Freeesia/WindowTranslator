@@ -1656,6 +1656,75 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task NestedPrioritizedCatalogUsesUserThenNuGetThenBundled()
+    {
+        var allAssemblyName = $"All.Plugin.{Guid.NewGuid():N}";
+        var userNugetAssemblyName = $"UserNuGet.Plugin.{Guid.NewGuid():N}";
+        var userBundledAssemblyName = $"UserBundled.Plugin.{Guid.NewGuid():N}";
+        var nugetBundledAssemblyName = $"NuGetBundled.Plugin.{Guid.NewGuid():N}";
+        var userAllType = CreatePluginTypes(allAssemblyName, "User.AllPlugin")[0];
+        var userNugetType = CreatePluginTypes(userNugetAssemblyName, "User.UserNuGetPlugin")[0];
+        var userBundledType = CreatePluginTypes(userBundledAssemblyName, "User.UserBundledPlugin")[0];
+        var userOnlyType = CreatePluginTypes(
+            $"User.Plugin.{Guid.NewGuid():N}",
+            "User.UserOnlyPlugin")[0];
+        var userSameTypeName = CreatePluginTypes(
+            $"User.SameName.Plugin.{Guid.NewGuid():N}",
+            "User.SamePlugin")[0];
+        var nugetAllType = CreatePluginTypes(allAssemblyName, "NuGet.AllPlugin")[0];
+        var nugetUserType = CreatePluginTypes(userNugetAssemblyName, "NuGet.UserNuGetPlugin")[0];
+        var nugetBundledType = CreatePluginTypes(nugetBundledAssemblyName, "NuGet.NuGetBundledPlugin")[0];
+        var nugetOnlyType = CreatePluginTypes(
+            $"NuGet.Plugin.{Guid.NewGuid():N}",
+            "NuGet.NuGetOnlyPlugin")[0];
+        var bundledAllType = CreatePluginTypes(allAssemblyName, "Bundled.AllPlugin")[0];
+        var bundledUserType = CreatePluginTypes(userBundledAssemblyName, "Bundled.UserBundledPlugin")[0];
+        var bundledNugetType = CreatePluginTypes(nugetBundledAssemblyName, "Bundled.NuGetBundledPlugin")[0];
+        var bundledOnlyType = CreatePluginTypes(
+            $"Bundled.Plugin.{Guid.NewGuid():N}",
+            "Bundled.BundledOnlyPlugin")[0];
+        var bundledSameTypeName = CreatePluginTypes(
+            $"Bundled.SameName.Plugin.{Guid.NewGuid():N}",
+            "Bundled.SamePlugin")[0];
+        var userCatalog = new TestPluginCatalog(
+            userAllType,
+            userNugetType,
+            userBundledType,
+            userOnlyType,
+            userSameTypeName);
+        var nugetCatalog = new TestPluginCatalog(
+            nugetAllType,
+            nugetUserType,
+            nugetBundledType,
+            nugetOnlyType);
+        var bundledCatalog = new TestPluginCatalog(
+            bundledAllType,
+            bundledUserType,
+            bundledNugetType,
+            bundledOnlyType,
+            bundledSameTypeName);
+        var catalog = new PrioritizedPluginCatalog(
+            userCatalog,
+            new PrioritizedPluginCatalog(nugetCatalog, bundledCatalog));
+
+        await catalog.Initialize();
+
+        Assert.Equal(
+            [
+                userAllType,
+                userNugetType,
+                userBundledType,
+                userOnlyType,
+                userSameTypeName,
+                nugetBundledType,
+                nugetOnlyType,
+                bundledOnlyType,
+                bundledSameTypeName,
+            ],
+            catalog.GetPlugins().Select(plugin => plugin.Type));
+    }
+
+    [Fact]
     public async Task CatalogLoadsARealAssemblyFromAPackageSubdirectory()
     {
         var sourceDirectory = CreateTestDirectory();
