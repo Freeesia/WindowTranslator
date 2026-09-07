@@ -123,23 +123,18 @@ IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
     AppInfo.Instance.Version.Major,
     hostPackageVersions[NuGetPluginService.AbstractionsPackageId],
     new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
-var fallbackPluginCatalogs = new List<IPluginCatalog>();
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    fallbackPluginCatalogs.Add(
+    pluginFolderCatalog = new PrioritizedPluginCatalog(
+        pluginFolderCatalog,
         new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
 if (Directory.Exists(userPluginsDir))
 {
-    fallbackPluginCatalogs.Add(
-        new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
-}
-if (fallbackPluginCatalogs.Count > 0)
-{
     pluginFolderCatalog = new PrioritizedPluginCatalog(
-        pluginFolderCatalog,
-        new CompositePluginCatalog([.. fallbackPluginCatalogs]));
+        new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }),
+        pluginFolderCatalog);
 }
 
 builder.Services.AddPluginCatalog(pluginFolderCatalog);

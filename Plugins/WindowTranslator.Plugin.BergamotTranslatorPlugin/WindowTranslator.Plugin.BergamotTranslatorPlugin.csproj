@@ -6,6 +6,7 @@
     <Description>Offline neural machine translation for WindowTranslator using Bergamot.</Description>
     <IsPublishable>true</IsPublishable>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);translate</PackageTags>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

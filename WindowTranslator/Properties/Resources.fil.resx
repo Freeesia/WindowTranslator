@@ -534,4 +534,13 @@ Ang monitor ay hindi suportado.
   <data name="SetupFilters" xml:space="preserve"><value>Mga filter</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Pagkuha ng kulay</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Iba pa</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Lahat</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Pagsasalin</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Mga filter</value>
+  </data>
 </root>

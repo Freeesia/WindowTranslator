@@ -534,4 +534,13 @@ Monitory nie są obsługiwane.
   <data name="SetupFilters" xml:space="preserve"><value>Filtry</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Wyodrębnianie kolorów</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Inne</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Wszystkie</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Tłumaczenie</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtry</value>
+  </data>
 </root>

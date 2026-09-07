@@ -705,6 +705,81 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task CategoryFilterUsesCachedPackageTagsWithoutRefreshingNuGet()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults =
+                [
+                    CreatePackageSearchMetadata(
+                        "Translate.Plugin",
+                        "Translate Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        tags: "windowtranslator-plugin Translate"),
+                    CreatePackageSearchMetadata(
+                        "Multiple.Plugin",
+                        "Multiple Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        tags: "windowtranslator-plugin;ocr;filter"),
+                    CreatePackageSearchMetadata(
+                        "Uncategorized.Plugin",
+                        "Uncategorized Plugin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        tags: "windowtranslator-plugin"),
+                ];
+            handler.AddMetadataVersions(
+                "Translate.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            handler.AddMetadataVersions(
+                "Multiple.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            handler.AddMetadataVersions(
+                "Uncategorized.Plugin",
+                CreatePluginVersionMetadata("1.0.0"));
+            using var service = CreateService(handler, testDirectory);
+            using var viewModel = new PluginStoreViewModel(
+                service,
+                NullLogger<PluginStoreViewModel>.Instance,
+                dialogService: null!);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.Equal(3, viewModel.FilteredPackages.Count());
+            Assert.Contains(
+                "Translate",
+                service.PackageSnapshot.Packages.Single(package => package.Id == "Translate.Plugin").Tags);
+
+            viewModel.SelectedCategory = "translate";
+            Assert.Equal("Translate.Plugin", Assert.Single(viewModel.FilteredPackages).Id);
+
+            viewModel.SelectedCategory = "ocr";
+            Assert.Equal("Multiple.Plugin", Assert.Single(viewModel.FilteredPackages).Id);
+
+            viewModel.SelectedCategory = "filter";
+            Assert.Equal("Multiple.Plugin", Assert.Single(viewModel.FilteredPackages).Id);
+
+            viewModel.SelectedCategory = string.Empty;
+            Assert.Equal(3, viewModel.FilteredPackages.Count());
+            Assert.Equal(["tags:windowtranslator-plugin"], handler.RequestedSearchTerms);
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task PluginStoreKeepsInstalledPackagesVisibleWhenNuGetSearchFails()
     {
         var testDirectory = CreateTestDirectory();
@@ -1761,6 +1836,75 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task NestedPrioritizedCatalogUsesUserThenNuGetThenBundled()
+    {
+        var allAssemblyName = $"All.Plugin.{Guid.NewGuid():N}";
+        var userNugetAssemblyName = $"UserNuGet.Plugin.{Guid.NewGuid():N}";
+        var userBundledAssemblyName = $"UserBundled.Plugin.{Guid.NewGuid():N}";
+        var nugetBundledAssemblyName = $"NuGetBundled.Plugin.{Guid.NewGuid():N}";
+        var userAllType = CreatePluginTypes(allAssemblyName, "User.AllPlugin")[0];
+        var userNugetType = CreatePluginTypes(userNugetAssemblyName, "User.UserNuGetPlugin")[0];
+        var userBundledType = CreatePluginTypes(userBundledAssemblyName, "User.UserBundledPlugin")[0];
+        var userOnlyType = CreatePluginTypes(
+            $"User.Plugin.{Guid.NewGuid():N}",
+            "User.UserOnlyPlugin")[0];
+        var userSameTypeName = CreatePluginTypes(
+            $"User.SameName.Plugin.{Guid.NewGuid():N}",
+            "User.SamePlugin")[0];
+        var nugetAllType = CreatePluginTypes(allAssemblyName, "NuGet.AllPlugin")[0];
+        var nugetUserType = CreatePluginTypes(userNugetAssemblyName, "NuGet.UserNuGetPlugin")[0];
+        var nugetBundledType = CreatePluginTypes(nugetBundledAssemblyName, "NuGet.NuGetBundledPlugin")[0];
+        var nugetOnlyType = CreatePluginTypes(
+            $"NuGet.Plugin.{Guid.NewGuid():N}",
+            "NuGet.NuGetOnlyPlugin")[0];
+        var bundledAllType = CreatePluginTypes(allAssemblyName, "Bundled.AllPlugin")[0];
+        var bundledUserType = CreatePluginTypes(userBundledAssemblyName, "Bundled.UserBundledPlugin")[0];
+        var bundledNugetType = CreatePluginTypes(nugetBundledAssemblyName, "Bundled.NuGetBundledPlugin")[0];
+        var bundledOnlyType = CreatePluginTypes(
+            $"Bundled.Plugin.{Guid.NewGuid():N}",
+            "Bundled.BundledOnlyPlugin")[0];
+        var bundledSameTypeName = CreatePluginTypes(
+            $"Bundled.SameName.Plugin.{Guid.NewGuid():N}",
+            "Bundled.SamePlugin")[0];
+        var userCatalog = new TestPluginCatalog(
+            userAllType,
+            userNugetType,
+            userBundledType,
+            userOnlyType,
+            userSameTypeName);
+        var nugetCatalog = new TestPluginCatalog(
+            nugetAllType,
+            nugetUserType,
+            nugetBundledType,
+            nugetOnlyType);
+        var bundledCatalog = new TestPluginCatalog(
+            bundledAllType,
+            bundledUserType,
+            bundledNugetType,
+            bundledOnlyType,
+            bundledSameTypeName);
+        var catalog = new PrioritizedPluginCatalog(
+            userCatalog,
+            new PrioritizedPluginCatalog(nugetCatalog, bundledCatalog));
+
+        await catalog.Initialize();
+
+        Assert.Equal(
+            [
+                userAllType,
+                userNugetType,
+                userBundledType,
+                userOnlyType,
+                userSameTypeName,
+                nugetBundledType,
+                nugetOnlyType,
+                bundledOnlyType,
+                bundledSameTypeName,
+            ],
+            catalog.GetPlugins().Select(plugin => plugin.Type));
+    }
+
+    [Fact]
     public async Task CatalogLoadsARealAssemblyFromAPackageSubdirectory()
     {
         var sourceDirectory = CreateTestDirectory();
@@ -2003,7 +2147,8 @@ public sealed class NuGetPluginServiceTests
         bool isListed = true,
         string? readmeFileUrl = null,
         string? iconUrl = null,
-        IReadOnlyList<string>? owners = null)
+        IReadOnlyList<string>? owners = null,
+        string? tags = null)
         => new TestPackageSearchMetadata
         {
             Identity = new PackageIdentity(
@@ -2019,6 +2164,7 @@ public sealed class NuGetPluginServiceTests
             ReadmeFileUrl = readmeFileUrl!,
             IconUrl = iconUrl is null ? null! : new Uri(iconUrl),
             OwnersList = owners ?? [],
+            Tags = tags!,
         };
 
     private static async Task WaitForReadmeAsync(

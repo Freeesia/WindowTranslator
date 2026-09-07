@@ -433,7 +433,13 @@ public sealed class NuGetPluginService : BackgroundService
             IconUrl: data.IconUrl?.AbsoluteUri,
             IsOfficial: data.OwnersList.Contains(
                 OfficialPackageOwner,
-                StringComparer.OrdinalIgnoreCase));
+                StringComparer.OrdinalIgnoreCase))
+        {
+            Tags = (data.Tags ?? string.Empty)
+                .Split([' ', ';', ',', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray(),
+        };
     }
 
     private bool HasCompatibleAbstractionsDependency(
@@ -632,7 +638,10 @@ public record NuGetPackageInfo(
     IReadOnlyList<string> Versions,
     string? IconUrl = null,
     bool IsOfficial = false
-);
+)
+{
+    public IReadOnlyList<string> Tags { get; init; } = [];
+}
 
 /// <summary>インストール済みパッケージ情報</summary>
 public record InstalledPackageInfo(

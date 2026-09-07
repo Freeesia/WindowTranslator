@@ -4,6 +4,7 @@
     <Title>DeepL Translator Plugin</Title>
     <Description>Translation for WindowTranslator using the DeepL API.</Description>
     <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);translate</PackageTags>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 

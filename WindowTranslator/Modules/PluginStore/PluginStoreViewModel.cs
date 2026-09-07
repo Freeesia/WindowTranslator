@@ -36,6 +36,10 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool requiresRestart;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilteredPackages))]
+    private string selectedCategory = string.Empty;
+
     public bool HasError => this.ErrorMessage is not null;
 
     public PluginPackageViewModel? SelectedPackage
@@ -69,6 +73,10 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<PluginPackageViewModel> Packages { get; } = [];
 
+    public IEnumerable<PluginPackageViewModel> FilteredPackages => this.Packages
+        .Where(package => string.IsNullOrEmpty(this.SelectedCategory)
+            || package.Tags.Contains(this.SelectedCategory, StringComparer.OrdinalIgnoreCase));
+
     public PluginStoreViewModel(
         NuGetPluginService nugetService,
         ILogger<PluginStoreViewModel> logger,
@@ -85,6 +93,14 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
 
     partial void OnHideDisclaimerChanged(bool value)
         => _ = SaveHideDisclaimerAsync(value);
+
+    partial void OnSelectedCategoryChanged(string value)
+    {
+        if (this.SelectedPackage is not null && !this.FilteredPackages.Contains(this.SelectedPackage))
+        {
+            this.SelectedPackage = null;
+        }
+    }
 
     private async Task SaveHideDisclaimerAsync(bool value)
     {
@@ -186,9 +202,10 @@ public partial class PluginStoreViewModel : ObservableObject, IDisposable
                 hasCompatiblePackageVersion: false));
         }
 
+        OnPropertyChanged(nameof(FilteredPackages));
         this.SelectedPackage = selectedPackageId is null
             ? null
-            : this.Packages.FirstOrDefault(package => package.Id.Equals(
+            : this.FilteredPackages.FirstOrDefault(package => package.Id.Equals(
                 selectedPackageId,
                 StringComparison.OrdinalIgnoreCase));
         this.ErrorMessage = snapshot.Error is null ? null : Resources.NuGetSearchFailed;
@@ -427,6 +444,7 @@ public partial class PluginPackageViewModel : ObservableObject
     public string Title { get; }
     public string Description { get; }
     public string Authors { get; }
+    public IReadOnlyList<string> Tags { get; }
     public string? IconUrl { get; }
     public bool IsOfficial { get; }
     public string? ReleaseVersion { get; }
@@ -508,6 +526,7 @@ public partial class PluginPackageViewModel : ObservableObject
         this.Title = info.Title;
         this.Description = info.Description;
         this.Authors = info.Authors;
+        this.Tags = info.Tags;
         this.IconUrl = info.IconUrl;
         this.IsOfficial = info.IsOfficial;
         this.ReleaseVersion = versions

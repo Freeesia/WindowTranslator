@@ -533,4 +533,13 @@ Monitor tidak didukung.</value>
   <data name="SetupFilters" xml:space="preserve"><value>Filtros</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Extração de cores</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Outros</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Tradução</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtros</value>
+  </data>
 </root>

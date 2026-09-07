@@ -9,6 +9,7 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 
+#if DEBUG
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 [Experimental("WT0001")]
@@ -80,3 +81,4 @@ public sealed class GoogleAIOcr : IOcrModule
 
     private record Rect(int[] Box2d, string Text);
 }
+#endif

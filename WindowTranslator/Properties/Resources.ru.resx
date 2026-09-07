@@ -525,4 +525,13 @@
   <data name="SetupFilters" xml:space="preserve"><value>Фильтры</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Извлечение цвета</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Другое</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Перевод</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Фильтры</value>
+  </data>
 </root>
