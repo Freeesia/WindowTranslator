@@ -254,6 +254,9 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 IsOneShotMode = t.IsOneShotMode,
                 OverlayOpacity = t.OverlayOpacity,
                 MousePointerHitTestPadding = t.MousePointerHitTestPadding,
+                OcrGeometryStability = t.OcrGeometryStability,
+                OcrRecognitionStability = t.OcrRecognitionStability,
+                OcrMissingFrameRetention = t.OcrMissingFrameRetention,
             }),
         };
 
@@ -442,6 +445,27 @@ public partial class TargetSettingsViewModel(
     [property: FormatString("F2")]
     [ObservableProperty]
     private double fontScale = settings.FontScale;
+
+    [property: Category("SettingsViewModel|OcrTracking")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrGeometryStability)}_Desc")]
+    [property: Slidable(1, 5, 1, 1, true, 1)]
+    [property: SortIndex(1)]
+    [ObservableProperty]
+    private int ocrGeometryStability = settings.OcrGeometryStability;
+
+    [property: Category("SettingsViewModel|OcrTracking")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrRecognitionStability)}_Desc")]
+    [property: Slidable(1, 5, 1, 1, true, 1)]
+    [property: SortIndex(2)]
+    [ObservableProperty]
+    private int ocrRecognitionStability = settings.OcrRecognitionStability;
+
+    [property: Category("SettingsViewModel|OcrTracking")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrMissingFrameRetention)}_Desc")]
+    [property: Slidable(0, 7, 1, 1, true, 1)]
+    [property: SortIndex(3)]
+    [ObservableProperty]
+    private int ocrMissingFrameRetention = settings.OcrMissingFrameRetention;
 
     [Category("SettingsViewModel|Overlay")]
     public string OverlayShortcut { get; set; } = settings.OverlayShortcut;

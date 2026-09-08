@@ -519,6 +519,13 @@
   <data name="SetupFilters" xml:space="preserve"><value>فیلترها</value></data>
   <data name="SetupColors" xml:space="preserve"><value>استخراج رنگ</value></data>
   <data name="SetupOther" xml:space="preserve"><value>سایر</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>ردیابی OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>پایداری موقعیت و اندازه</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>لرزش موقعیت و اندازه را کاهش می‌دهد. 1: پاسخ سریع، 5: پایداری بیشتر (پیش‌فرض: 3). جابه‌جایی‌های بزرگ فوراً اعمال می‌شوند.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>پایداری تشخیص</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>تغییرات موقت متن و تقسیم یا ادغام ناحیه‌ها را کاهش می‌دهد. 1: پاسخ سریع، 5: پایداری بیشتر (پیش‌فرض: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>حفظ نمایش هنگام ناپدید شدن موقت</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>تعداد دفعات متوالی عدم تشخیص که متن همچنان نمایش داده می‌شود. 0: حذف در اولین عدم تشخیص، حداکثر: 7، پیش‌فرض: 3. بر حسب تعداد دفعات است، نه ثانیه.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>همه</value>
   </data>

@@ -41,7 +41,7 @@
     <PackageVersion Include="NuGet.Protocol" Version="7.6.0" />
     <PackageVersion Include="NuGet.Versioning" Version="7.6.0" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
-    <PackageVersion Include="Panlingo.LanguageIdentification.FastText" Version="0.6.2" />
+    <PackageVersion Include="Panlingo.LanguageIdentification.FastText" Version="0.8.0" />
     <PackageVersion Include="PropertyTools" Version="3.1.0" />
     <PackageVersion Include="PropertyTools.Wpf" Version="3.1.0" />
     <PackageVersion Include="Quickenshtein" Version="1.5.1" />
