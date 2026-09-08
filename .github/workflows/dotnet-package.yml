@@ -41,17 +41,10 @@ jobs:
             -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} `
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
             -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
-      - name: Set up artifact uploader runtime
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: .github/scripts/upload-nupkgs/package-lock.json
-      - name: Install artifact uploader dependencies
-        working-directory: .github/scripts/upload-nupkgs
-        run: npm ci --omit=dev --ignore-scripts --no-audit --no-fund
       - name: Upload NuGet packages
-        run: node .github/scripts/upload-nupkgs/index.mjs pack
+        uses: ./.github/scripts/upload-nupkgs
+        with:
+          path: pack
       - name: NuGet login
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: nuget_login

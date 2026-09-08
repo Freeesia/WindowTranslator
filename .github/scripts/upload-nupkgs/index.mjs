@@ -2,7 +2,7 @@ import artifact from '@actions/artifact';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 
-const directory = path.resolve(process.argv[2] ?? 'pack');
+const directory = path.resolve(process.env.INPUT_PATH ?? 'pack');
 const packages = (await readdir(directory, { withFileTypes: true }))
   .filter(entry => entry.isFile() && entry.name.endsWith('.nupkg'))
   .map(entry => entry.name)

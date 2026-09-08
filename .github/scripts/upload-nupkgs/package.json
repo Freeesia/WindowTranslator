@@ -2,7 +2,13 @@
   "name": "windowtranslator-upload-nupkgs",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "ncc build index.mjs --out dist --minify"
+  },
   "dependencies": {
     "@actions/artifact": "6.2.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "0.38.4"
   }
 }
