@@ -1,19 +1,20 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using WindowTranslator.ComponentModel;
 using WindowTranslator.Plugin.OrcaRouterPlugin.Properties;
 
 namespace WindowTranslator.Plugin.OrcaRouterPlugin;
+
+public sealed record OrcaRouterModelItem(string Value, string DisplayName);
 
 internal static class OrcaRouterModels
 {
     public const string Endpoint = "https://api.orcarouter.ai/v1";
     public const string AutoModel = "orcarouter/auto";
 
-    public static async Task<IReadOnlyList<DynamicItem>> GetItemsAsync(HttpClient client, string? apiKey, string selectedModel, CancellationToken cancellationToken)
+    public static async Task<IReadOnlyList<OrcaRouterModelItem>> GetItemsAsync(HttpClient client, string? apiKey, string selectedModel, CancellationToken cancellationToken)
     {
-        var items = new List<DynamicItem> { new(AutoModel, $"OrcaRouter Auto ({Resources.Text("VariablePrice")})") };
+        var items = new List<OrcaRouterModelItem> { CreateAutoItem() };
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, $"{Endpoint}/models");
@@ -39,7 +40,10 @@ internal static class OrcaRouterModels
         return items;
     }
 
-    internal static IEnumerable<DynamicItem> ParseModels(JsonElement root)
+    internal static OrcaRouterModelItem CreateAutoItem()
+        => new(AutoModel, $"OrcaRouter Auto ({Resources.Text("VariablePrice")})");
+
+    internal static IEnumerable<OrcaRouterModelItem> ParseModels(JsonElement root)
     {
         var seen = new HashSet<string>(StringComparer.Ordinal) { AutoModel };
         foreach (var model in root.GetProperty("data").EnumerateArray())

@@ -1,0 +1,8 @@
+{
+  "name": "windowtranslator-upload-nupkgs",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@actions/artifact": "6.2.0"
+  }
+}

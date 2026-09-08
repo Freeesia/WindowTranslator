@@ -16,9 +16,9 @@ internal interface IEditableItemsPropertyItem
     IEnumerable? EditableCandidates { get; set; }
 }
 
-internal interface IDynamicItemsPropertyItem
+internal interface IItemsSourcePropertyItem
 {
-    IDynamicItemsSource? DynamicItemsSource { get; set; }
+    object? ItemsSourceOwner { get; set; }
 }
 
 internal class SettingsPropertyGridOperator : PropertyGridOperator
@@ -98,10 +98,9 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
 
     protected override void SetAttribute(Attribute attribute, PropertyItem pi, object instance)
     {
-        if (attribute is DynamicItemsSourceAttribute && pi is IDynamicItemsPropertyItem dynamicItem)
+        if (attribute is ItemsSourcePropertyAttribute && pi is IItemsSourcePropertyItem itemsSourceItem)
         {
-            dynamicItem.DynamicItemsSource = instance as IDynamicItemsSource
-                ?? throw new InvalidOperationException($"{instance.GetType().Name} must implement {nameof(IDynamicItemsSource)}.");
+            itemsSourceItem.ItemsSourceOwner = instance;
         }
         if (attribute is DisplayAttribute display && display.GetOrder() is { } order)
         {
@@ -130,13 +129,13 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
         => new ParentablePropertyItem(pd, propertyDescriptors);
 
     private class ParentablePropertyItem(PropertyDescriptor propertyDescriptor, PropertyDescriptorCollection propertyDescriptors)
-        : PropertyItem(propertyDescriptor, propertyDescriptors), IEditableItemsPropertyItem, IDynamicItemsPropertyItem
+        : PropertyItem(propertyDescriptor, propertyDescriptors), IEditableItemsPropertyItem, IItemsSourcePropertyItem
     {
         private readonly Stack<string> parents = new();
 
         public IEnumerable? EditableCandidates { get; set; }
 
-        public IDynamicItemsSource? DynamicItemsSource { get; set; }
+        public object? ItemsSourceOwner { get; set; }
 
         public void AddParent(string parent)
             => parents.Push(parent);

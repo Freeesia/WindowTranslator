@@ -65,6 +65,7 @@ internal static class OrcaRouterAuthentication
                 RequireKeySet = false, // API キーを交換する OAuth フローであり、ID Token は使用しない。
                 // 現在の Discovery はリバースプロキシ内の http URL を返す。
                 // 以下で正規ホスト・ポートを検証し、HTTPS の URL のみを使用する。
+                RequireHttps = false,
                 ValidateIssuerName = false,
                 ValidateEndpoints = false,
             },

@@ -9,10 +9,18 @@ using BrowsableAttribute = System.ComponentModel.BrowsableAttribute;
 
 namespace WindowTranslator.Plugin.OrcaRouterPlugin;
 
-public partial class OrcaRouterOptions : ObservableObject, IPluginParam, IDynamicItemsSource
+public partial class OrcaRouterOptions : ObservableObject, IPluginParam
 {
     private CancellationTokenSource? signInCancellation;
     private string? status;
+    private string model = OrcaRouterModels.AutoModel;
+    private IReadOnlyList<OrcaRouterModelItem> modelItems = [OrcaRouterModels.CreateAutoItem()];
+    private int modelRefreshVersion;
+
+    public OrcaRouterOptions()
+    {
+        _ = RefreshModelsAsync();
+    }
 
     [property: Browsable(false)]
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -21,8 +29,33 @@ public partial class OrcaRouterOptions : ObservableObject, IPluginParam, IDynami
     private string? apiKey;
 
     [Display(Order = 1)]
-    [DynamicItemsSource]
-    public string Model { get; set; } = OrcaRouterModels.AutoModel;
+    [ItemsSourceProperty(nameof(ModelItems))]
+    [DisplayMemberPath(nameof(OrcaRouterModelItem.DisplayName))]
+    [SelectedValuePath(nameof(OrcaRouterModelItem.Value))]
+    public string Model
+    {
+        get => this.model;
+        set
+        {
+            value ??= OrcaRouterModels.AutoModel;
+            if (!SetProperty(ref this.model, value))
+            {
+                return;
+            }
+            if (!this.ModelItems.Any(item => item.Value == value))
+            {
+                this.ModelItems = [.. this.ModelItems, new(value, value)];
+            }
+        }
+    }
+
+    [Browsable(false)]
+    [JsonIgnore]
+    public IReadOnlyList<OrcaRouterModelItem> ModelItems
+    {
+        get => this.modelItems;
+        private set => SetProperty(ref this.modelItems, value);
+    }
 
     [Display(Order = 2)]
     [JsonIgnore]
@@ -87,13 +120,29 @@ public partial class OrcaRouterOptions : ObservableObject, IPluginParam, IDynami
         OnPropertyChanged(nameof(Status));
     }
 
-    public async ValueTask<IReadOnlyList<DynamicItem>> GetItemsAsync(string propertyName, CancellationToken cancellationToken)
+    partial void OnApiKeyChanged(string? value)
+        => _ = RefreshModelsAsync();
+
+    private async Task RefreshModelsAsync()
     {
-        if (propertyName != nameof(Model))
+        var refreshVersion = Interlocked.Increment(ref this.modelRefreshVersion);
+        try
         {
-            return [];
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+            var items = await OrcaRouterModels.GetItemsAsync(client, this.ApiKey, this.Model, CancellationToken.None);
+            if (refreshVersion != Volatile.Read(ref this.modelRefreshVersion))
+            {
+                return;
+            }
+            var selectedModel = this.Model;
+            this.ModelItems = items.Any(item => item.Value == selectedModel)
+                ? items
+                : [.. items, new(selectedModel, selectedModel)];
         }
-        using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-        return await OrcaRouterModels.GetItemsAsync(client, this.ApiKey, this.Model, cancellationToken);
+        catch (Exception)
+        {
+            // 候補取得に失敗した場合は、現在の候補と選択値を維持する。
+            System.Diagnostics.Trace.WriteLine("Failed to refresh OrcaRouter models.");
+        }
     }
 }

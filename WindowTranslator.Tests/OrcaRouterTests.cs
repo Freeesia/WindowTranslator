@@ -2,8 +2,10 @@ extern alias OrcaRouter;
 
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Text;
 using System.Text.Json;
-using WindowTranslator.ComponentModel;
+using PropertyTools.DataAnnotations;
 using OrcaRouterAuthentication = OrcaRouter::WindowTranslator.Plugin.OrcaRouterPlugin.OrcaRouterAuthentication;
 using OrcaRouterModels = OrcaRouter::WindowTranslator.Plugin.OrcaRouterPlugin.OrcaRouterModels;
 using OrcaRouterOptions = OrcaRouter::WindowTranslator.Plugin.OrcaRouterPlugin.OrcaRouterOptions;
@@ -14,15 +16,34 @@ namespace WindowTranslator.Tests;
 public class OrcaRouterTests
 {
     [Fact]
-    public void OptionsHideApiKeyAndUseDynamicModelItems()
+    public void OptionsHideApiKeyAndUseStandardModelItemsSource()
     {
         var properties = TypeDescriptor.GetProperties(typeof(OrcaRouterOptions));
         var apiKey = Assert.IsAssignableFrom<PropertyDescriptor>(properties[nameof(OrcaRouterOptions.ApiKey)]);
         var model = Assert.IsAssignableFrom<PropertyDescriptor>(properties[nameof(OrcaRouterOptions.Model)]);
+        var modelItems = Assert.IsAssignableFrom<PropertyDescriptor>(properties[nameof(OrcaRouterOptions.ModelItems)]);
 
         Assert.False(apiKey.IsBrowsable);
+        Assert.False(modelItems.IsBrowsable);
         Assert.Null(apiKey.Attributes[typeof(DataTypeAttribute)]);
-        Assert.NotNull(model.Attributes[typeof(DynamicItemsSourceAttribute)]);
+        var itemsSource = Assert.IsType<ItemsSourcePropertyAttribute>(model.Attributes[typeof(ItemsSourcePropertyAttribute)]);
+        Assert.Equal(nameof(OrcaRouterOptions.ModelItems), itemsSource.PropertyName);
+        Assert.IsType<DisplayMemberPathAttribute>(model.Attributes[typeof(DisplayMemberPathAttribute)]);
+        Assert.IsType<SelectedValuePathAttribute>(model.Attributes[typeof(SelectedValuePathAttribute)]);
+    }
+
+    [Fact]
+    public async Task DiscoveryAcceptsTheCurrentOrcaRouterResponse()
+    {
+        const string response = """
+            {"authorization_endpoint":"http://www.orcarouter.ai/auth","code_challenge_methods_supported":["S256","plain"],"grant_types_supported":["authorization_code"],"issuer":"http://www.orcarouter.ai","response_types_supported":["code"],"token_endpoint":"http://www.orcarouter.ai/api/v1/auth/keys","token_endpoint_auth_methods_supported":["none"]}
+            """;
+        using var client = new HttpClient(new StaticResponseHandler(response));
+
+        var endpoints = await OrcaRouterAuthentication.DiscoverAsync(client, CancellationToken.None);
+
+        Assert.Equal("https://www.orcarouter.ai/auth", endpoints.Authorization.AbsoluteUri);
+        Assert.Equal("https://www.orcarouter.ai/api/v1/auth/keys", endpoints.Token.AbsoluteUri);
     }
 
     [Fact]
@@ -64,5 +85,15 @@ public class OrcaRouterTests
             ```
             """, 2));
         Assert.Throws<JsonException>(() => OrcaRouterTranslator.ParseTranslation("{\"translated\":[\"1件だけ\"]}", 2));
+    }
+
+    private sealed class StaticResponseHandler(string response) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(response, Encoding.UTF8, "application/json"),
+                RequestMessage = request,
+            });
     }
 }
