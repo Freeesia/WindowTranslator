@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>liší se podle modelu</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>cena není k dispozici</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>Přihlaste se v nastavení OrcaRouter a nastavení uložte.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Kredit OrcaRouter je nedostatečný nebo byl dosažen limit využití. Pro bezplatné použití vyberte model „OrcaRouter Free“.</value></data>
 </root>

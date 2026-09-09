@@ -146,6 +146,34 @@ public class OrcaRouterTests
         Assert.Equal(OrcaRouterModels.FreeModel, request.RootElement.GetProperty("model").GetString());
     }
 
+    [Theory]
+    [InlineData(402)] // 実サービスで観測した応答
+    [InlineData(403)] // OrcaRouter の公開仕様
+    public async Task CreditShortageIsReportedAsUserError(int statusCode)
+    {
+        var handler = new RecordingResponseHandler("""
+            {"error":{"message":"You've run out of credits -- this request needs $0.0003.","type":"orcarouter_api_error","code":"insufficient_user_quota"}}
+            """, (HttpStatusCode)statusCode);
+        using var httpClient = new HttpClient(handler);
+        var client = new ChatClient(OrcaRouterModels.AutoModel, new ApiKeyCredential("sk-orca-test"), new OpenAIClientOptions
+        {
+            Endpoint = new Uri(OrcaRouterModels.Endpoint),
+            Transport = new HttpClientPipelineTransport(httpClient),
+            RetryPolicy = new ClientRetryPolicy(0),
+        });
+        var translator = new OrcaRouterTranslator(new OrcaRouterOptions { Model = OrcaRouterModels.AutoModel }, new LanguageOptions
+        {
+            Source = "ja-JP",
+            Target = "en-US",
+        }, client);
+
+        var error = await Assert.ThrowsAsync<AppUserException>(async ()
+            => await translator.TranslateAsync([new TextInfo("こんにちは", null)]));
+
+        Assert.Contains("OrcaRouter", error.Message);
+        Assert.IsType<ClientResultException>(error.InnerException);
+    }
+
     [Fact]
     public void TranslationResponseRequiresOneResultPerInput()
     {
@@ -167,7 +195,7 @@ public class OrcaRouterTests
             });
     }
 
-    private sealed class RecordingResponseHandler(string response) : HttpMessageHandler
+    private sealed class RecordingResponseHandler(string response, HttpStatusCode statusCode = HttpStatusCode.OK) : HttpMessageHandler
     {
         public HttpMethod? Method { get; private set; }
         public Uri? RequestUri { get; private set; }
@@ -182,7 +210,7 @@ public class OrcaRouterTests
             this.AuthorizationScheme = request.Headers.Authorization?.Scheme;
             this.AuthorizationParameter = request.Headers.Authorization?.Parameter;
             this.RequestBody = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            return new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(response, Encoding.UTF8, "application/json"),
                 RequestMessage = request,

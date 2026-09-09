@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>मॉडल के अनुसार बदलता है</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>मूल्य जानकारी उपलब्ध नहीं</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>OrcaRouter सेटिंग से साइन इन करें और सेटिंग सहेजें।</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>OrcaRouter क्रेडिट अपर्याप्त है या उपयोग सीमा पूरी हो गई है। मुफ़्त उपयोग के लिए मॉडल के रूप में “OrcaRouter Free” चुनें।</value></data>
 </root>

@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>thay đổi theo mô hình</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>không có thông tin giá</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>Đăng nhập từ cài đặt OrcaRouter rồi lưu cài đặt.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Tín dụng OrcaRouter không đủ hoặc đã đạt giới hạn sử dụng. Để sử dụng miễn phí, hãy chọn “OrcaRouter Free” làm mô hình.</value></data>
 </root>

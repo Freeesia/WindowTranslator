@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>بسته به مدل متفاوت است</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>اطلاعات قیمت در دسترس نیست</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>از تنظیمات OrcaRouter وارد شوید و تنظیمات را ذخیره کنید.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>اعتبار OrcaRouter کافی نیست یا به سقف استفاده رسیده‌اید. برای استفاده رایگان، مدل «OrcaRouter Free» را انتخاب کنید.</value></data>
 </root>

@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>modele göre değişir</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>fiyat bilgisi yok</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>OrcaRouter ayarlarından oturum açın ve ayarları kaydedin.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>OrcaRouter kredisi yetersiz veya kullanım sınırına ulaşıldı. Ücretsiz kullanmak için model olarak “OrcaRouter Free” seçin.</value></data>
 </root>

@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>依模型而異</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>無價格資訊</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>請從 OrcaRouter 設定登入並儲存設定。</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>OrcaRouter 餘額不足或已達使用上限。若要免費使用，請選擇「OrcaRouter Free」模型。</value></data>
 </root>

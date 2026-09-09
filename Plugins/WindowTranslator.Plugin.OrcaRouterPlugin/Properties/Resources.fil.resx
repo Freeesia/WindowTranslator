@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>nag-iiba ayon sa modelo</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>walang impormasyon sa presyo</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>Mag-sign in mula sa mga setting ng OrcaRouter at i-save ang mga setting.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Kulang ang OrcaRouter credit o naabot na ang limitasyon sa paggamit. Para gumamit nang libre, piliin ang “OrcaRouter Free” bilang modelo.</value></data>
 </root>

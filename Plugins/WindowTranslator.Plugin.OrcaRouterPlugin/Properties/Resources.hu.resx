@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>modellenként változik</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>az ár nem érhető el</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>Jelentkezzen be az OrcaRouter beállításaiban, majd mentse a beállításokat.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Az OrcaRouter-egyenleg nem elegendő, vagy elérte a használati korlátot. Ingyenes használathoz válassza az „OrcaRouter Free” modellt.</value></data>
 </root>

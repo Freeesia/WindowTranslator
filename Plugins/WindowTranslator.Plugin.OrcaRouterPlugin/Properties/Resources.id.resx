@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>berbeda menurut model</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>informasi harga tidak tersedia</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>Masuk melalui pengaturan OrcaRouter lalu simpan pengaturan.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Kredit OrcaRouter tidak mencukupi atau batas penggunaan telah tercapai. Untuk menggunakan layanan secara gratis, pilih “OrcaRouter Free” sebagai model.</value></data>
 </root>

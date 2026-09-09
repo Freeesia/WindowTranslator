@@ -75,11 +75,24 @@ public sealed class OrcaRouterTranslator : ITranslateModule
         var input = JsonSerializer.Serialize(srcTexts.Select(t => new { text = t.SourceText, context = t.Context }), jsonOptions);
         for (var attempt = 0; ; attempt++)
         {
-            // Structured Output・assistant prefill・stop は Provider によって非対応なので使用しない。
-            ChatCompletion completion = await this.client.CompleteChatAsync([
-                ChatMessage.CreateSystemMessage(prompt),
-                ChatMessage.CreateUserMessage(input),
-            ]).ConfigureAwait(false);
+            // auto/free は OpenAI・Anthropic・Gemini など異なる上流モデルへ振り分けられる。
+            // response_format・末尾 assistant prefill・stop は全上流モデル共通ではないため送信しない。
+            ChatCompletion completion;
+            try
+            {
+                completion = await this.client.CompleteChatAsync([
+                    ChatMessage.CreateSystemMessage(prompt),
+                    ChatMessage.CreateUserMessage(input),
+                ]).ConfigureAwait(false);
+            }
+            catch (ClientResultException e)
+            {
+                if (IsQuotaExceeded(e))
+                {
+                    throw new AppUserException(Resources.Text("QuotaExceeded"), e);
+                }
+                throw;
+            }
             var text = string.Concat(completion.Content.Select(c => c.Text));
             try
             {
@@ -91,6 +104,38 @@ public sealed class OrcaRouterTranslator : ITranslateModule
             }
         }
     }
+
+    internal static bool IsQuotaExceeded(ClientResultException exception)
+    {
+        string? code = null;
+        string? message = null;
+        try
+        {
+            var content = exception.GetRawResponse()?.Content.ToString();
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                using var document = JsonDocument.Parse(content);
+                if (document.RootElement.TryGetProperty("error", out var error) && error.ValueKind == JsonValueKind.Object)
+                {
+                    code = error.TryGetProperty("code", out var codeValue) ? codeValue.GetString() : null;
+                    message = error.TryGetProperty("message", out var messageValue) ? messageValue.GetString() : null;
+                }
+            }
+        }
+        catch (Exception e) when (e is JsonException or InvalidOperationException)
+        {
+            // SDK がレスポンス本文を保持していない場合は、例外メッセージで判定する。
+        }
+
+        return code is "insufficient_user_quota" or "pre_consume_token_quota_failed"
+            || HasQuotaMessage(message)
+            || HasQuotaMessage(exception.Message);
+    }
+
+    private static bool HasQuotaMessage(string? message)
+        => message?.Contains("You've run out of credits", StringComparison.OrdinalIgnoreCase) == true
+            || message?.Contains("token quota is not enough", StringComparison.OrdinalIgnoreCase) == true
+            || message?.Contains("token cycle spend limit reached", StringComparison.OrdinalIgnoreCase) == true;
 
     internal static string[] ParseTranslation(string text, int count)
     {

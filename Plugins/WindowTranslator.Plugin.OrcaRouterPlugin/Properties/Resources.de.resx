@@ -18,4 +18,5 @@
   <data name="VariablePrice" xml:space="preserve"><value>je nach Modell unterschiedlich</value></data>
   <data name="PriceUnavailable" xml:space="preserve"><value>Preisinformationen nicht verfügbar</value></data>
   <data name="NeedSignIn" xml:space="preserve"><value>Melden Sie sich in den OrcaRouter-Einstellungen an und speichern Sie die Einstellungen.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Das OrcaRouter-Guthaben reicht nicht aus oder ein Nutzungslimit wurde erreicht. Wählen Sie für die kostenlose Nutzung das Modell „OrcaRouter Free“.</value></data>
 </root>
