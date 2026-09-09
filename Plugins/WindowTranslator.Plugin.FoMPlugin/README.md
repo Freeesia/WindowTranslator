@@ -7,7 +7,7 @@
 ## 機能
 
 - 実行中の`FieldsOfMistria.exe`を検出した場合だけ有効化
-- ゲームの`localization.json`を参照してOCR結果を補正
+- ゲームの`assets.zip`内にある現在の英語原文と日本語翻訳を直接参照してOCR結果を補正
 - キャラクター、シーン、会話の情報を翻訳コンテキストとして追加
 - キャラクター名やアイテム名を選択中の翻訳モジュールへ用語集として登録
 
@@ -27,7 +27,7 @@ A filter plugin that adapts [WindowTranslator](https://github.com/Freeesia/Windo
 ## Features
 
 - Activates only while `FieldsOfMistria.exe` is running
-- Corrects OCR results using the game's `localization.json`
+- Corrects OCR results using the current English source text and Japanese translations directly from the game's `assets.zip`
 - Adds character, scene, and dialogue information to the translation context
 - Registers character and item names as glossary entries with the selected translation module
 

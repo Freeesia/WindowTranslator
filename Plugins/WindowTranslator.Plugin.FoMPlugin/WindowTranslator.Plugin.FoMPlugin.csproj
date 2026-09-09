@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Quickenshtein" />
+    <PackageReference Include="Tomlyn" />
   </ItemGroup>
 
   <ItemGroup>
