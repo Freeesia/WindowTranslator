@@ -10,6 +10,7 @@
 - 無料の`orcarouter/free`を既定値とし、`orcarouter/auto`または特定モデルも選択可能
 - モデルごとの入力・出力料金を100万トークン単位で表示
 - カスタム翻訳コンテキストとCSV用語集
+- 対応モデルではJSON SchemaによるStructured Outputsを使用し、非対応モデルでは通常のJSON出力へ自動フォールバック
 - 応答の検証と一時的な出力エラーからの自動再試行
 
 ## 設定
@@ -19,7 +20,7 @@
 3. 「OrcaRouter設定」の「サインイン / サインアウト」を押し、ブラウザーで認証を許可します。
 4. モデルを選択し、設定を保存・適用します。既定値は無料モデルのみへ振り分ける`orcarouter/free`です。
 
-用語集はヘッダーなしの`原文,訳文`形式のCSVファイルです。翻訳テキストはOrcaRouterと選択されたモデルの提供元へ送信されます。料金、上限、データの扱いは各サービスの契約内容に従います。
+用語集はヘッダーなしの`原文,訳文`形式のCSVファイルです。翻訳テキストはOrcaRouterと、転送先となる上流モデルの提供元（OpenAI、Anthropic、Googleなど）へ送信されます。`orcarouter/auto`と有料モデルにはOrcaRouterのクレジットが必要です。料金、上限、データの扱いは各サービスの契約内容に従います。
 
 認証情報とモデル選択は対象ごとの設定JSONに保存されます。APIキーは設定UIには表示されません。サインアウト後に設定を保存・適用すると、保存されたAPIキーが削除されます。OrcaRouter側でもキーを無効にする場合は、Authorized Appsから連携を取り消してください。
 
@@ -33,6 +34,7 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 - Free-only routing through `orcarouter/free` by default, with `orcarouter/auto` and specific models also available
 - Input and output pricing displayed per one million tokens
 - Custom translation context and CSV glossaries
+- JSON Schema structured outputs on supported models, with automatic fallback to ordinary JSON output on unsupported models
 - Response validation and automatic retries for transient output errors
 
 ## Configuration
@@ -42,7 +44,7 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 3. Select "Sign in / Sign out" under "OrcaRouter settings" and authorize access in the browser.
 4. Select a model, then save and apply the settings. The default is `orcarouter/free`, which only routes to free models.
 
-Glossaries use a headerless CSV file in `source,target` format. Translation text is sent to OrcaRouter and the provider of the selected model. Pricing, usage limits, and data handling depend on the applicable service terms.
+Glossaries use a headerless CSV file in `source,target` format. Translation text is sent to OrcaRouter and the upstream model provider selected as the destination, such as OpenAI, Anthropic, or Google. `orcarouter/auto` and paid models require OrcaRouter credit. Pricing, usage limits, and data handling depend on the applicable service terms.
 
 Credentials and the selected model are stored in the target's settings JSON. The API key is not shown in the settings UI. Saving and applying the settings after signing out removes the stored API key. To revoke the key on OrcaRouter as well, disconnect the application from Authorized Apps.
 

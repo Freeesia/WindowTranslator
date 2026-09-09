@@ -144,6 +144,66 @@ public class OrcaRouterTests
         Assert.Equal($"{OrcaRouterModels.Endpoint}/chat/completions", handler.RequestUri?.AbsoluteUri);
         using var request = JsonDocument.Parse(Assert.IsType<string>(handler.RequestBody));
         Assert.Equal(OrcaRouterModels.FreeModel, request.RootElement.GetProperty("model").GetString());
+        var responseFormat = request.RootElement.GetProperty("response_format");
+        Assert.Equal("json_schema", responseFormat.GetProperty("type").GetString());
+        Assert.True(responseFormat.GetProperty("json_schema").GetProperty("strict").GetBoolean());
+    }
+
+    [Fact]
+    public async Task AnthropicModelDoesNotUseStructuredOutput()
+    {
+        var handler = new RecordingResponseHandler("""
+            {"id":"test","object":"chat.completion","created":0,"model":"anthropic/claude-sonnet-test","choices":[{"index":0,"message":{"role":"assistant","content":"{\"translated\":[\"Hello\"]}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":1,"completion_tokens":1,"total_tokens":2}}
+            """);
+        using var httpClient = new HttpClient(handler);
+        var client = new ChatClient("anthropic/claude-sonnet-test", new ApiKeyCredential("sk-orca-test"), new OpenAIClientOptions
+        {
+            Endpoint = new Uri(OrcaRouterModels.Endpoint),
+            Transport = new HttpClientPipelineTransport(httpClient),
+            RetryPolicy = new ClientRetryPolicy(0),
+        });
+        var translator = new OrcaRouterTranslator(new OrcaRouterOptions { Model = "anthropic/claude-sonnet-test" }, new LanguageOptions
+        {
+            Source = "ja-JP",
+            Target = "en-US",
+        }, client);
+
+        Assert.Equal(["Hello"], await translator.TranslateAsync([new TextInfo("こんにちは", null)]));
+
+        using var request = JsonDocument.Parse(Assert.IsType<string>(handler.RequestBody));
+        Assert.False(request.RootElement.TryGetProperty("response_format", out _));
+    }
+
+    [Fact]
+    public async Task UnsupportedStructuredOutputFallsBackToPromptOnlyJson()
+    {
+        var handler = new SequenceResponseHandler(
+            (HttpStatusCode.BadRequest, """
+                {"error":{"message":"response_format json_schema is not supported by this model","type":"orcarouter_api_error","code":"api_not_implemented"}}
+                """),
+            (HttpStatusCode.OK, """
+                {"id":"test","object":"chat.completion","created":0,"model":"orcarouter/auto","choices":[{"index":0,"message":{"role":"assistant","content":"{\"translated\":[\"Hello\"]}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":1,"completion_tokens":1,"total_tokens":2}}
+                """));
+        using var httpClient = new HttpClient(handler);
+        var client = new ChatClient(OrcaRouterModels.AutoModel, new ApiKeyCredential("sk-orca-test"), new OpenAIClientOptions
+        {
+            Endpoint = new Uri(OrcaRouterModels.Endpoint),
+            Transport = new HttpClientPipelineTransport(httpClient),
+            RetryPolicy = new ClientRetryPolicy(0),
+        });
+        var translator = new OrcaRouterTranslator(new OrcaRouterOptions { Model = OrcaRouterModels.AutoModel }, new LanguageOptions
+        {
+            Source = "ja-JP",
+            Target = "en-US",
+        }, client);
+
+        Assert.Equal(["Hello"], await translator.TranslateAsync([new TextInfo("こんにちは", null)]));
+
+        Assert.Equal(2, handler.RequestBodies.Count);
+        using var structuredRequest = JsonDocument.Parse(handler.RequestBodies[0]);
+        using var fallbackRequest = JsonDocument.Parse(handler.RequestBodies[1]);
+        Assert.True(structuredRequest.RootElement.TryGetProperty("response_format", out _));
+        Assert.False(fallbackRequest.RootElement.TryGetProperty("response_format", out _));
     }
 
     [Theory]
@@ -213,6 +273,27 @@ public class OrcaRouterTests
             return new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(response, Encoding.UTF8, "application/json"),
+                RequestMessage = request,
+            };
+        }
+    }
+
+    private sealed class SequenceResponseHandler : HttpMessageHandler
+    {
+        private readonly Queue<(HttpStatusCode StatusCode, string Body)> responses;
+
+        public SequenceResponseHandler(params (HttpStatusCode StatusCode, string Body)[] responses)
+            => this.responses = new(responses);
+
+        public List<string> RequestBodies { get; } = [];
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            this.RequestBodies.Add(await Assert.IsAssignableFrom<HttpContent>(request.Content).ReadAsStringAsync(cancellationToken));
+            var response = this.responses.Dequeue();
+            return new HttpResponseMessage(response.StatusCode)
+            {
+                Content = new StringContent(response.Body, Encoding.UTF8, "application/json"),
                 RequestMessage = request,
             };
         }

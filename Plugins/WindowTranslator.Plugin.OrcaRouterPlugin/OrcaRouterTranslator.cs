@@ -19,7 +19,28 @@ public sealed class OrcaRouterTranslator : ITranslateModule
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         AllowTrailingCommas = true,
     };
+    private static readonly ChatCompletionOptions structuredOutputOptions = new()
+    {
+        ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+            "translated_array",
+            BinaryData.FromBytes("""
+                {
+                    "type": "object",
+                    "properties": {
+                        "translated": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        }
+                    },
+                    "required": ["translated"],
+                    "additionalProperties": false
+                }
+                """u8.ToArray()),
+            "翻訳後のテキストの配列",
+            true),
+    };
     private readonly ChatClient client;
+    private readonly bool structuredOutputSupported;
     private readonly string system;
     private readonly Dictionary<string, string> glossary = new();
     private string? context;
@@ -35,6 +56,7 @@ public sealed class OrcaRouterTranslator : ITranslateModule
     {
         this.client = client;
         this.Name = $"{nameof(OrcaRouterTranslator)}: {options.Model}";
+        this.structuredOutputSupported = !options.Model.StartsWith("anthropic/", StringComparison.OrdinalIgnoreCase);
         var source = CultureInfo.GetCultureInfo(languages.Source).DisplayName;
         var target = CultureInfo.GetCultureInfo(languages.Target).DisplayName;
         this.system = $$"""
@@ -73,23 +95,35 @@ public sealed class OrcaRouterTranslator : ITranslateModule
             .ToDictionary(kv => kv.Key, kv => kv.Value);
         var prompt = $"{this.system}\n<背景>{this.context}</背景>\n用語集の指定訳を使用し、原文と訳が同じ用語はそのまま出力してください。\n<用語集>{JsonSerializer.Serialize(terms, jsonOptions)}</用語集>";
         var input = JsonSerializer.Serialize(srcTexts.Select(t => new { text = t.SourceText, context = t.Context }), jsonOptions);
-        for (var attempt = 0; ; attempt++)
+        ChatMessage[] messages = [
+            ChatMessage.CreateSystemMessage(prompt),
+            ChatMessage.CreateUserMessage(input),
+        ];
+        var useStructuredOutput = this.structuredOutputSupported;
+        var parseFailures = 0;
+        while (true)
         {
-            // auto/free は OpenAI・Anthropic・Gemini など異なる上流モデルへ振り分けられる。
-            // response_format・末尾 assistant prefill・stop は全上流モデル共通ではないため送信しない。
+            // OrcaRouter の response_format は Anthropic 以外の対応モデルで使用する。
+            // ルーターが非対応モデルを選んだ場合だけ、通常の JSON 指示へフォールバックする。
+            // 末尾 assistant prefill と stop は全上流モデル共通ではないため送信しない。
             ChatCompletion completion;
             try
             {
-                completion = await this.client.CompleteChatAsync([
-                    ChatMessage.CreateSystemMessage(prompt),
-                    ChatMessage.CreateUserMessage(input),
-                ]).ConfigureAwait(false);
+                completion = useStructuredOutput
+                    ? await this.client.CompleteChatAsync(messages, structuredOutputOptions).ConfigureAwait(false)
+                    : await this.client.CompleteChatAsync(messages).ConfigureAwait(false);
             }
             catch (ClientResultException e)
             {
-                if (IsQuotaExceeded(e))
+                var error = ReadApiError(e);
+                if (IsQuotaExceeded(e, error))
                 {
                     throw new AppUserException(Resources.Text("QuotaExceeded"), e);
+                }
+                if (useStructuredOutput && IsStructuredOutputUnsupported(e, error))
+                {
+                    useStructuredOutput = false;
+                    continue;
                 }
                 throw;
             }
@@ -98,17 +132,15 @@ public sealed class OrcaRouterTranslator : ITranslateModule
             {
                 return ParseTranslation(text, srcTexts.Length);
             }
-            catch (JsonException) when (attempt < 4)
+            catch (JsonException) when (++parseFailures < 5)
             {
                 await Task.Delay(300).ConfigureAwait(false);
             }
         }
     }
 
-    internal static bool IsQuotaExceeded(ClientResultException exception)
+    private static ApiError ReadApiError(ClientResultException exception)
     {
-        string? code = null;
-        string? message = null;
         try
         {
             var content = exception.GetRawResponse()?.Content.ToString();
@@ -117,8 +149,9 @@ public sealed class OrcaRouterTranslator : ITranslateModule
                 using var document = JsonDocument.Parse(content);
                 if (document.RootElement.TryGetProperty("error", out var error) && error.ValueKind == JsonValueKind.Object)
                 {
-                    code = error.TryGetProperty("code", out var codeValue) ? codeValue.GetString() : null;
-                    message = error.TryGetProperty("message", out var messageValue) ? messageValue.GetString() : null;
+                    return new(
+                        error.TryGetProperty("code", out var codeValue) ? codeValue.GetString() : null,
+                        error.TryGetProperty("message", out var messageValue) ? messageValue.GetString() : null);
                 }
             }
         }
@@ -126,16 +159,29 @@ public sealed class OrcaRouterTranslator : ITranslateModule
         {
             // SDK がレスポンス本文を保持していない場合は、例外メッセージで判定する。
         }
-
-        return code is "insufficient_user_quota" or "pre_consume_token_quota_failed"
-            || HasQuotaMessage(message)
-            || HasQuotaMessage(exception.Message);
+        return default;
     }
+
+    private static bool IsQuotaExceeded(ClientResultException exception, ApiError error)
+        => error.Code is "insufficient_user_quota" or "pre_consume_token_quota_failed"
+            || HasQuotaMessage(error.Message)
+            || HasQuotaMessage(exception.Message);
+
+    private static bool IsStructuredOutputUnsupported(ClientResultException exception, ApiError error)
+        => exception.Status == 400
+            && (error.Code == "api_not_implemented"
+                || HasStructuredOutputMessage(error.Message)
+                || HasStructuredOutputMessage(exception.Message));
 
     private static bool HasQuotaMessage(string? message)
         => message?.Contains("You've run out of credits", StringComparison.OrdinalIgnoreCase) == true
             || message?.Contains("token quota is not enough", StringComparison.OrdinalIgnoreCase) == true
             || message?.Contains("token cycle spend limit reached", StringComparison.OrdinalIgnoreCase) == true;
+
+    private static bool HasStructuredOutputMessage(string? message)
+        => message?.Contains("response_format", StringComparison.OrdinalIgnoreCase) == true
+            || message?.Contains("json_schema", StringComparison.OrdinalIgnoreCase) == true
+            || message?.Contains("structured output", StringComparison.OrdinalIgnoreCase) == true;
 
     internal static string[] ParseTranslation(string text, int count)
     {
@@ -168,6 +214,7 @@ public sealed class OrcaRouterTranslator : ITranslateModule
     public void RegisterContext(string context) => this.context = context;
 
     private sealed record Glossary(string Source, string Target);
+    private readonly record struct ApiError(string? Code, string? Message);
     private sealed record Response(string[] Translated);
 }
 
