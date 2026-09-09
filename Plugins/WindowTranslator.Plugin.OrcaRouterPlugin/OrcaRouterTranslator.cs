@@ -60,7 +60,7 @@ public sealed class OrcaRouterTranslator : ITranslateModule
     private static ChatClient CreateClient(OrcaRouterOptions options)
         => string.IsNullOrWhiteSpace(options.ApiKey)
             ? throw new AppUserException(Resources.Text("NeedSignIn"))
-            : new ChatClient(string.IsNullOrWhiteSpace(options.Model) ? OrcaRouterModels.AutoModel : options.Model,
+            : new ChatClient(string.IsNullOrWhiteSpace(options.Model) ? OrcaRouterModels.FreeModel : options.Model,
                 new ApiKeyCredential(options.ApiKey), new OpenAIClientOptions { Endpoint = new Uri(OrcaRouterModels.Endpoint) });
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)

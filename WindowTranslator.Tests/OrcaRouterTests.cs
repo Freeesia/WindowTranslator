@@ -2,9 +2,13 @@ extern alias OrcaRouter;
 
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ClientModel;
+using System.ClientModel.Primitives;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using OpenAI;
+using OpenAI.Chat;
 using PropertyTools.DataAnnotations;
 using OrcaRouterAuthentication = OrcaRouter::WindowTranslator.Plugin.OrcaRouterPlugin.OrcaRouterAuthentication;
 using OrcaRouterModels = OrcaRouter::WindowTranslator.Plugin.OrcaRouterPlugin.OrcaRouterModels;
@@ -18,6 +22,7 @@ public class OrcaRouterTests
     [Fact]
     public void OptionsHideApiKeyAndUseStandardModelItemsSource()
     {
+        var options = new OrcaRouterOptions();
         var properties = TypeDescriptor.GetProperties(typeof(OrcaRouterOptions));
         var apiKey = Assert.IsAssignableFrom<PropertyDescriptor>(properties[nameof(OrcaRouterOptions.ApiKey)]);
         var model = Assert.IsAssignableFrom<PropertyDescriptor>(properties[nameof(OrcaRouterOptions.Model)]);
@@ -30,6 +35,8 @@ public class OrcaRouterTests
         Assert.Equal(nameof(OrcaRouterOptions.ModelItems), itemsSource.PropertyName);
         Assert.IsType<DisplayMemberPathAttribute>(model.Attributes[typeof(DisplayMemberPathAttribute)]);
         Assert.IsType<SelectedValuePathAttribute>(model.Attributes[typeof(SelectedValuePathAttribute)]);
+        Assert.Equal(OrcaRouterModels.FreeModel, options.Model);
+        Assert.Equal([OrcaRouterModels.FreeModel, OrcaRouterModels.AutoModel], options.ModelItems.Select(item => item.Value));
     }
 
     [Fact]
@@ -77,6 +84,69 @@ public class OrcaRouterTests
     }
 
     [Fact]
+    public void ModelsAcceptCurrentFreeCatalogEntriesWithNullCapabilities()
+    {
+        using var document = JsonDocument.Parse("""
+            {"data":[
+              {"id":"deepseek/deepseek-v4-flash-free","name":"DeepSeek V4 Flash (Free)","supported_endpoint_types":null,"pricing":{"request":"0.000000"}},
+              {"id":"codex-auto-review","supported_endpoint_types":null,"pricing":{"prompt_per_million":"0.2","completion_per_million":"1.2"}},
+              {"id":"deepseek/deepseek-reasoner","supported_endpoint_types":["openai"],"architecture":{"output_modalities":null},"pricing":{"prompt_per_million":"0.147","completion_per_million":"0.295"}}
+            ]}
+            """);
+
+        var items = OrcaRouterModels.ParseModels(document.RootElement).ToArray();
+
+        Assert.Equal(2, items.Length);
+        Assert.Equal("DeepSeek V4 Flash (Free) ($0 / $0 per 1M)", items[0].DisplayName);
+        Assert.Equal("deepseek/deepseek-reasoner ($0.147 / $0.295 per 1M)", items[1].DisplayName);
+    }
+
+    [Fact]
+    public async Task ModelCatalogRequestUsesOrcaRouterEndpointAndApiKey()
+    {
+        var handler = new RecordingResponseHandler("""
+            {"data":[{"id":"tencent/hy3-free","name":"Tencent: Hy3 (Free)","supported_endpoint_types":null,"pricing":{"request":"0.000000"}}]}
+            """);
+        using var client = new HttpClient(handler);
+
+        var items = await OrcaRouterModels.GetItemsAsync(client, "sk-orca-test", OrcaRouterModels.FreeModel, CancellationToken.None);
+
+        Assert.Equal(HttpMethod.Get, handler.Method);
+        Assert.Equal($"{OrcaRouterModels.Endpoint}/models", handler.RequestUri?.AbsoluteUri);
+        Assert.Equal("Bearer", handler.AuthorizationScheme);
+        Assert.Equal("sk-orca-test", handler.AuthorizationParameter);
+        Assert.Equal([OrcaRouterModels.FreeModel, OrcaRouterModels.AutoModel, "tencent/hy3-free"], items.Select(item => item.Value));
+    }
+
+    [Fact]
+    public async Task TranslationRequestUsesFreeModelAndOrcaRouterEndpoint()
+    {
+        var handler = new RecordingResponseHandler("""
+            {"id":"test","object":"chat.completion","created":0,"model":"orcarouter/free","choices":[{"index":0,"message":{"role":"assistant","content":"{\"translated\":[\"Hello\"]}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":1,"completion_tokens":1,"total_tokens":2}}
+            """);
+        using var httpClient = new HttpClient(handler);
+        var client = new ChatClient(OrcaRouterModels.FreeModel, new ApiKeyCredential("sk-orca-test"), new OpenAIClientOptions
+        {
+            Endpoint = new Uri(OrcaRouterModels.Endpoint),
+            Transport = new HttpClientPipelineTransport(httpClient),
+            RetryPolicy = new ClientRetryPolicy(0),
+        });
+        var translator = new OrcaRouterTranslator(new OrcaRouterOptions(), new LanguageOptions
+        {
+            Source = "ja-JP",
+            Target = "en-US",
+        }, client);
+
+        var translated = await translator.TranslateAsync([new TextInfo("こんにちは", null)]);
+
+        Assert.Equal(["Hello"], translated);
+        Assert.Equal(HttpMethod.Post, handler.Method);
+        Assert.Equal($"{OrcaRouterModels.Endpoint}/chat/completions", handler.RequestUri?.AbsoluteUri);
+        using var request = JsonDocument.Parse(Assert.IsType<string>(handler.RequestBody));
+        Assert.Equal(OrcaRouterModels.FreeModel, request.RootElement.GetProperty("model").GetString());
+    }
+
+    [Fact]
     public void TranslationResponseRequiresOneResultPerInput()
     {
         Assert.Equal(["翻訳1", "翻訳2"], OrcaRouterTranslator.ParseTranslation("""
@@ -95,5 +165,28 @@ public class OrcaRouterTests
                 Content = new StringContent(response, Encoding.UTF8, "application/json"),
                 RequestMessage = request,
             });
+    }
+
+    private sealed class RecordingResponseHandler(string response) : HttpMessageHandler
+    {
+        public HttpMethod? Method { get; private set; }
+        public Uri? RequestUri { get; private set; }
+        public string? AuthorizationScheme { get; private set; }
+        public string? AuthorizationParameter { get; private set; }
+        public string? RequestBody { get; private set; }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            this.Method = request.Method;
+            this.RequestUri = request.RequestUri;
+            this.AuthorizationScheme = request.Headers.Authorization?.Scheme;
+            this.AuthorizationParameter = request.Headers.Authorization?.Parameter;
+            this.RequestBody = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(response, Encoding.UTF8, "application/json"),
+                RequestMessage = request,
+            };
+        }
     }
 }

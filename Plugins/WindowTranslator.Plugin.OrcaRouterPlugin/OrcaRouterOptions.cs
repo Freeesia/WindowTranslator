@@ -13,14 +13,9 @@ public partial class OrcaRouterOptions : ObservableObject, IPluginParam
 {
     private CancellationTokenSource? signInCancellation;
     private string? status;
-    private string model = OrcaRouterModels.AutoModel;
-    private IReadOnlyList<OrcaRouterModelItem> modelItems = [OrcaRouterModels.CreateAutoItem()];
+    private string model = OrcaRouterModels.FreeModel;
+    private IReadOnlyList<OrcaRouterModelItem> modelItems = [OrcaRouterModels.CreateFreeItem(), OrcaRouterModels.CreateAutoItem()];
     private int modelRefreshVersion;
-
-    public OrcaRouterOptions()
-    {
-        _ = RefreshModelsAsync();
-    }
 
     [property: Browsable(false)]
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -37,7 +32,7 @@ public partial class OrcaRouterOptions : ObservableObject, IPluginParam
         get => this.model;
         set
         {
-            value ??= OrcaRouterModels.AutoModel;
+            value ??= OrcaRouterModels.FreeModel;
             if (!SetProperty(ref this.model, value))
             {
                 return;

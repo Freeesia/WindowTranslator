@@ -7,7 +7,7 @@
 ## 機能
 
 - OAuth 2.0 + PKCEによるブラウザー認証。APIキーや接続先の手入力は不要です。
-- `orcarouter/auto`によるモデルの自動選択と、特定モデルの選択
+- 無料の`orcarouter/free`を既定値とし、`orcarouter/auto`または特定モデルも選択可能
 - モデルごとの入力・出力料金を100万トークン単位で表示
 - カスタム翻訳コンテキストとCSV用語集
 - 応答の検証と一時的な出力エラーからの自動再試行
@@ -17,7 +17,7 @@
 1. プラグインストアからインストールし、WindowTranslatorを再起動します。
 2. 対象ごとの設定で「OrcaRouter翻訳」を選択します。
 3. 「OrcaRouter設定」の「サインイン / サインアウト」を押し、ブラウザーで認証を許可します。
-4. モデルを選択し、設定を保存・適用します。既定値は`orcarouter/auto`です。
+4. モデルを選択し、設定を保存・適用します。既定値は無料モデルのみへ振り分ける`orcarouter/free`です。
 
 用語集はヘッダーなしの`原文,訳文`形式のCSVファイルです。翻訳テキストはOrcaRouterと選択されたモデルの提供元へ送信されます。料金、上限、データの扱いは各サービスの契約内容に従います。
 
@@ -30,7 +30,7 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 ## Features
 
 - Browser-based OAuth 2.0 + PKCE sign-in with no API key or endpoint entry
-- Automatic model routing through `orcarouter/auto` or selection of a specific model
+- Free-only routing through `orcarouter/free` by default, with `orcarouter/auto` and specific models also available
 - Input and output pricing displayed per one million tokens
 - Custom translation context and CSV glossaries
 - Response validation and automatic retries for transient output errors
@@ -40,7 +40,7 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 1. Install the plugin from the plugin store and restart WindowTranslator.
 2. Select "OrcaRouter Translation" in the settings for the target.
 3. Select "Sign in / Sign out" under "OrcaRouter settings" and authorize access in the browser.
-4. Select a model, then save and apply the settings. The default is `orcarouter/auto`.
+4. Select a model, then save and apply the settings. The default is `orcarouter/free`, which only routes to free models.
 
 Glossaries use a headerless CSV file in `source,target` format. Translation text is sent to OrcaRouter and the provider of the selected model. Pricing, usage limits, and data handling depend on the applicable service terms.
 

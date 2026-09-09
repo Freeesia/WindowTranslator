@@ -10,11 +10,12 @@ public sealed record OrcaRouterModelItem(string Value, string DisplayName);
 internal static class OrcaRouterModels
 {
     public const string Endpoint = "https://api.orcarouter.ai/v1";
+    public const string FreeModel = "orcarouter/free";
     public const string AutoModel = "orcarouter/auto";
 
     public static async Task<IReadOnlyList<OrcaRouterModelItem>> GetItemsAsync(HttpClient client, string? apiKey, string selectedModel, CancellationToken cancellationToken)
     {
-        var items = new List<OrcaRouterModelItem> { CreateAutoItem() };
+        var items = new List<OrcaRouterModelItem> { CreateFreeItem(), CreateAutoItem() };
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, $"{Endpoint}/models");
@@ -40,12 +41,15 @@ internal static class OrcaRouterModels
         return items;
     }
 
+    internal static OrcaRouterModelItem CreateFreeItem()
+        => new(FreeModel, "OrcaRouter Free ($0 / $0 per 1M)");
+
     internal static OrcaRouterModelItem CreateAutoItem()
         => new(AutoModel, $"OrcaRouter Auto ({Resources.Text("VariablePrice")})");
 
     internal static IEnumerable<OrcaRouterModelItem> ParseModels(JsonElement root)
     {
-        var seen = new HashSet<string>(StringComparer.Ordinal) { AutoModel };
+        var seen = new HashSet<string>(StringComparer.Ordinal) { FreeModel, AutoModel };
         foreach (var model in root.GetProperty("data").EnumerateArray())
         {
             if (!model.TryGetProperty("id", out var idValue) || idValue.ValueKind != JsonValueKind.String
@@ -53,21 +57,27 @@ internal static class OrcaRouterModels
             {
                 continue;
             }
+            var isFree = id.EndsWith("-free", StringComparison.Ordinal);
             // Chat Completions で扱えない画像生成・音声・埋め込み専用モデルは候補に含めない。
             if (model.TryGetProperty("supported_endpoint_types", out var endpoints)
-                && !endpoints.EnumerateArray().Any(e => e.GetString() == "openai"))
+                && (endpoints.ValueKind != JsonValueKind.Array
+                    ? !isFree
+                    : !endpoints.EnumerateArray().Any(e => e.GetString() == "openai")))
             {
                 continue;
             }
-            if (model.TryGetProperty("architecture", out var architecture)
+            if (model.TryGetProperty("architecture", out var architecture) && architecture.ValueKind == JsonValueKind.Object
                 && architecture.TryGetProperty("output_modalities", out var outputs)
+                && outputs.ValueKind == JsonValueKind.Array
                 && !outputs.EnumerateArray().Any(e => e.GetString() == "text"))
             {
                 continue;
             }
             var name = model.TryGetProperty("name", out var nameValue) ? nameValue.GetString() : null;
-            var price = Resources.Text("PriceUnavailable");
-            if (model.TryGetProperty("pricing", out var pricing))
+            var price = isFree
+                ? "$0 / $0 per 1M"
+                : Resources.Text("PriceUnavailable");
+            if (!isFree && model.TryGetProperty("pricing", out var pricing) && pricing.ValueKind == JsonValueKind.Object)
             {
                 var input = GetPrice(pricing, "prompt");
                 var output = GetPrice(pricing, "completion");
