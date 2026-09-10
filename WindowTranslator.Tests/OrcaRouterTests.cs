@@ -174,13 +174,16 @@ public class OrcaRouterTests
         Assert.False(request.RootElement.TryGetProperty("response_format", out _));
     }
 
-    [Fact]
-    public async Task UnsupportedStructuredOutputFallsBackToPromptOnlyJson()
+    [Theory]
+    [InlineData("この機能は利用できません。")]
+    [InlineData(null)]
+    public async Task UnsupportedStructuredOutputFallsBackToPromptOnlyJson(string? message)
     {
         var handler = new SequenceResponseHandler(
-            (HttpStatusCode.BadRequest, """
-                {"error":{"message":"response_format json_schema is not supported by this model","type":"orcarouter_api_error","code":"api_not_implemented"}}
-                """),
+            (HttpStatusCode.BadRequest, JsonSerializer.Serialize(new
+            {
+                error = new { message, type = "orcarouter_api_error", code = "api_not_implemented" },
+            })),
             (HttpStatusCode.OK, """
                 {"id":"test","object":"chat.completion","created":0,"model":"orcarouter/auto","choices":[{"index":0,"message":{"role":"assistant","content":"{\"translated\":[\"Hello\"]}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":1,"completion_tokens":1,"total_tokens":2}}
                 """));
@@ -207,13 +210,16 @@ public class OrcaRouterTests
     }
 
     [Theory]
-    [InlineData(402)] // 実サービスで観測した応答
-    [InlineData(403)] // OrcaRouter の公開仕様
-    public async Task CreditShortageIsReportedAsUserError(int statusCode)
+    [InlineData(402, "insufficient_user_quota", "利用できません。")] // 実サービスで観測したステータス
+    [InlineData(403, "insufficient_user_quota", null)] // OrcaRouter の公開仕様
+    [InlineData(403, "pre_consume_token_quota_failed", "利用できません。")]
+    [InlineData(403, "pre_consume_token_quota_failed", null)]
+    public async Task QuotaErrorCodeIsReportedAsUserError(int statusCode, string code, string? message)
     {
-        var handler = new RecordingResponseHandler("""
-            {"error":{"message":"You've run out of credits -- this request needs $0.0003.","type":"orcarouter_api_error","code":"insufficient_user_quota"}}
-            """, (HttpStatusCode)statusCode);
+        var handler = new RecordingResponseHandler(JsonSerializer.Serialize(new
+        {
+            error = new { message, type = "orcarouter_api_error", code },
+        }), (HttpStatusCode)statusCode);
         using var httpClient = new HttpClient(handler);
         var client = new ChatClient(OrcaRouterModels.AutoModel, new ApiKeyCredential("sk-orca-test"), new OpenAIClientOptions
         {
@@ -232,6 +238,42 @@ public class OrcaRouterTests
 
         Assert.Contains("OrcaRouter", error.Message);
         Assert.IsType<ClientResultException>(error.InnerException);
+    }
+
+    [Theory]
+    [InlineData(402, """{"error":{"message":"You've run out of credits"}}""")]
+    [InlineData(403, """{"error":{"code":"unknown","message":"token quota is not enough"}}""")]
+    [InlineData(403, """{"error":{"code":"access_denied","message":"token cycle spend limit reached"}}""")]
+    [InlineData(400, """{"error":{"message":"response_format is not supported"}}""")]
+    [InlineData(400, """{"error":{"code":null,"message":"json_schema is not supported"}}""")]
+    [InlineData(400, """{"error":{"code":"bad_request_body","message":"structured output is invalid"}}""")]
+    [InlineData(403, """{"error":{"code":"api_not_implemented","message":"response_format is not supported"}}""")]
+    [InlineData(400, """{"error":{"code":400,"message":"response_format is not supported"}}""")]
+    [InlineData(400, """{"error":"response_format is not supported"}""")]
+    [InlineData(400, "response_format is not supported")]
+    [InlineData(400, "[]")]
+    [InlineData(400, "")]
+    public async Task UnclassifiedApiErrorsArePropagatedWithoutRetry(int statusCode, string response)
+    {
+        var handler = new SequenceResponseHandler(((HttpStatusCode)statusCode, response));
+        using var httpClient = new HttpClient(handler);
+        var client = new ChatClient(OrcaRouterModels.AutoModel, new ApiKeyCredential("sk-orca-test"), new OpenAIClientOptions
+        {
+            Endpoint = new Uri(OrcaRouterModels.Endpoint),
+            Transport = new HttpClientPipelineTransport(httpClient),
+            RetryPolicy = new ClientRetryPolicy(0),
+        });
+        var translator = new OrcaRouterTranslator(new OrcaRouterOptions { Model = OrcaRouterModels.AutoModel }, new LanguageOptions
+        {
+            Source = "ja-JP",
+            Target = "en-US",
+        }, client);
+
+        var error = await Assert.ThrowsAsync<ClientResultException>(async ()
+            => await translator.TranslateAsync([new TextInfo("こんにちは", null)]));
+
+        Assert.Equal(statusCode, error.Status);
+        Assert.Single(handler.RequestBodies);
     }
 
     [Fact]

@@ -115,12 +115,12 @@ public sealed class OrcaRouterTranslator : ITranslateModule
             }
             catch (ClientResultException e)
             {
-                var error = ReadApiError(e);
-                if (IsQuotaExceeded(e, error))
+                var errorCode = ReadApiErrorCode(e);
+                if (errorCode is "insufficient_user_quota" or "pre_consume_token_quota_failed")
                 {
                     throw new AppUserException(Resources.Text("QuotaExceeded"), e);
                 }
-                if (useStructuredOutput && IsStructuredOutputUnsupported(e, error))
+                if (useStructuredOutput && e.Status == 400 && errorCode == "api_not_implemented")
                 {
                     useStructuredOutput = false;
                     continue;
@@ -139,7 +139,7 @@ public sealed class OrcaRouterTranslator : ITranslateModule
         }
     }
 
-    private static ApiError ReadApiError(ClientResultException exception)
+    private static string? ReadApiErrorCode(ClientResultException exception)
     {
         try
         {
@@ -147,41 +147,20 @@ public sealed class OrcaRouterTranslator : ITranslateModule
             if (!string.IsNullOrWhiteSpace(content))
             {
                 using var document = JsonDocument.Parse(content);
-                if (document.RootElement.TryGetProperty("error", out var error) && error.ValueKind == JsonValueKind.Object)
+                if (document.RootElement.ValueKind == JsonValueKind.Object
+                    && document.RootElement.TryGetProperty("error", out var error) && error.ValueKind == JsonValueKind.Object
+                    && error.TryGetProperty("code", out var code) && code.ValueKind == JsonValueKind.String)
                 {
-                    return new(
-                        error.TryGetProperty("code", out var codeValue) ? codeValue.GetString() : null,
-                        error.TryGetProperty("message", out var messageValue) ? messageValue.GetString() : null);
+                    return code.GetString();
                 }
             }
         }
         catch (Exception e) when (e is JsonException or InvalidOperationException)
         {
-            // SDK がレスポンス本文を保持していない場合は、例外メッセージで判定する。
+            // コードを取得できない応答は分類せず、元の例外を伝播する。
         }
-        return default;
+        return null;
     }
-
-    private static bool IsQuotaExceeded(ClientResultException exception, ApiError error)
-        => error.Code is "insufficient_user_quota" or "pre_consume_token_quota_failed"
-            || HasQuotaMessage(error.Message)
-            || HasQuotaMessage(exception.Message);
-
-    private static bool IsStructuredOutputUnsupported(ClientResultException exception, ApiError error)
-        => exception.Status == 400
-            && (error.Code == "api_not_implemented"
-                || HasStructuredOutputMessage(error.Message)
-                || HasStructuredOutputMessage(exception.Message));
-
-    private static bool HasQuotaMessage(string? message)
-        => message?.Contains("You've run out of credits", StringComparison.OrdinalIgnoreCase) == true
-            || message?.Contains("token quota is not enough", StringComparison.OrdinalIgnoreCase) == true
-            || message?.Contains("token cycle spend limit reached", StringComparison.OrdinalIgnoreCase) == true;
-
-    private static bool HasStructuredOutputMessage(string? message)
-        => message?.Contains("response_format", StringComparison.OrdinalIgnoreCase) == true
-            || message?.Contains("json_schema", StringComparison.OrdinalIgnoreCase) == true
-            || message?.Contains("structured output", StringComparison.OrdinalIgnoreCase) == true;
 
     internal static string[] ParseTranslation(string text, int count)
     {
@@ -214,7 +193,6 @@ public sealed class OrcaRouterTranslator : ITranslateModule
     public void RegisterContext(string context) => this.context = context;
 
     private sealed record Glossary(string Source, string Target);
-    private readonly record struct ApiError(string? Code, string? Message);
     private sealed record Response(string[] Translated);
 }
 

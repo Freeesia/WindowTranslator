@@ -10,7 +10,7 @@
 - 無料の`orcarouter/free`を既定値とし、`orcarouter/auto`または特定モデルも選択可能
 - モデルごとの入力・出力料金を100万トークン単位で表示
 - カスタム翻訳コンテキストとCSV用語集
-- 対応モデルではJSON SchemaによるStructured Outputsを使用し、非対応モデルでは通常のJSON出力へ自動フォールバック
+- 対応モデルではJSON SchemaによるStructured Outputsを使用。Anthropicモデル、またはAPIのエラーコードで非対応と判断できる場合は通常のJSON出力を使用
 - 応答の検証と一時的な出力エラーからの自動再試行
 
 ## 設定
@@ -34,7 +34,7 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 - Free-only routing through `orcarouter/free` by default, with `orcarouter/auto` and specific models also available
 - Input and output pricing displayed per one million tokens
 - Custom translation context and CSV glossaries
-- JSON Schema structured outputs on supported models, with automatic fallback to ordinary JSON output on unsupported models
+- JSON Schema structured outputs on supported models; ordinary JSON output for Anthropic models or when an API error code indicates unsupported functionality
 - Response validation and automatic retries for transient output errors
 
 ## Configuration
