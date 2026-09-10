@@ -10,6 +10,7 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="DeepL.net" Version="1.15.0" />
+    <PackageVersion Include="Duende.IdentityModel" Version="8.1.0" />
     <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
     <PackageVersion Include="GitHub.Copilot.SDK" Version="1.0.7" />
     <PackageVersion Include="gong-wpf-dragdrop" Version="4.0.0" />

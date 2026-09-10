@@ -69,6 +69,13 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
 
         fe ??= base.CreateControl(property, options);
 
+        // 入れ子になったプラグイン設定では、ItemsSource の所有者を明示して標準 ComboBox の更新通知を受け取る。
+        if (fe is ComboBox itemsSourceComboBox && property.ItemsSourceDescriptor is { } itemsSourceDescriptor
+            && property is IItemsSourcePropertyItem { ItemsSourceOwner: { } owner })
+        {
+            itemsSourceComboBox.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(itemsSourceDescriptor.Name) { Source = owner });
+        }
+
         // マウスポインター判定の余白は、コントロールにフォーカスがある間だけ設定画面内にプレビュー表示する
         if (property.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
         {

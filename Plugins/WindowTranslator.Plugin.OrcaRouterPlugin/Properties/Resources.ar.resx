@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>إعدادات OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>ترجمة OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>تسجيل الدخول / تسجيل الخروج</value></data>
+  <data name="Model" xml:space="preserve"><value>النموذج (سعر الإدخال / الإخراج بالدولار)</value></data>
+  <data name="Status" xml:space="preserve"><value>حالة تسجيل الدخول</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>سياق الترجمة</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>مسار قائمة المصطلحات</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>تم تسجيل الدخول</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>لم يتم تسجيل الدخول</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>سجّل الدخول في المتصفح. اضغط الزر مرة أخرى للإلغاء.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>تم إلغاء تسجيل الدخول أو انتهت المهلة.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>فشل تسجيل الدخول. تحقق من الاتصال وحاول مرة أخرى.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>ارجع إلى WindowTranslator للتحقق من النتيجة. يمكنك إغلاق علامة التبويب هذه.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>يختلف حسب النموذج</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>معلومات السعر غير متوفرة</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>سجّل الدخول من إعدادات OrcaRouter واحفظ الإعدادات.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>رصيد OrcaRouter غير كافٍ أو تم بلوغ حد الاستخدام. للاستخدام المجاني، اختر «OrcaRouter Free» كنموذج.</value></data>
+</root>
