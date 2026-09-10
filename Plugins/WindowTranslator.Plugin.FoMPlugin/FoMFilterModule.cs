@@ -1,10 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Diagnostics;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Text.Unicode;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,11 +13,6 @@ namespace WindowTranslator.Plugin.FoMPlugin;
 
 public partial class FoMFilterModule : IFilterModule
 {
-    private static readonly JsonSerializerOptions serializerOptions = new()
-    {
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-        PropertyNameCaseInsensitive = true,
-    };
     private readonly bool isEnabled;
     private readonly bool useJpn;
     private readonly bool exclude;
@@ -286,29 +278,22 @@ public partial class FoMFilterModule : IFilterModule
         {
             return;
         }
-
-
-        this.isEnabled = true;
-        this.useJpn = options.Value.UseJpn;
-        var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
-        if (!File.Exists(path))
+        var loc = FoMLocalization.Load(Path.Combine(Path.GetDirectoryName(exePath)!, "assets.zip"));
+        if (loc is null)
         {
             return;
         }
-        using var fs = File.OpenRead(path);
-        var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions) ?? new([], []);
-        if (loc.Eng is null)
-        {
-            loc = loc with { Eng = [] };
-        }
-        if (loc.Jpn is null)
+
+        this.isEnabled = true;
+        this.useJpn = options.Value.UseJpn;
+        if (loc.Jpn.Count == 0)
         {
             loc = loc with { Jpn = names };
         }
         var player = options.Value.PlayerName;
         var farm = options.Value.FarmName;
         this.exclude = options.Value.ExcludeUnspecifiedText;
-        this.builtin = loc!.Eng
+        this.builtin = loc.Eng
             .Select(p => (
                 en: p.Value.ReplaceToPlain(player, farm),
                 ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) ? s.CorrenctJpn().ReplaceToPlain(player, farm) : string.Empty)))
@@ -578,7 +563,7 @@ public partial class FoMFilterModule : IFilterModule
         => keys is ["Conversations" or "Cutscenes", _, var c, ..] ? GetCharContext(c) : string.Empty;
 }
 
-record Localization(Dictionary<string, string> Eng, Dictionary<string, string>? Jpn);
+record Localization(Dictionary<string, string> Eng, Dictionary<string, string> Jpn);
 record LocInto(string Key, string Text);
 
 record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
