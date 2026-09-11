@@ -37,10 +37,4 @@ Para la instalación de GitHub Copilot CLI, consulte la [documentación de GitHu
   <data name="TranslateContext" xml:space="preserve">
     <value>Información contextual utilizada durante la traducción</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>Iniciar sesión en GitHub</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>Se requiere autenticación de GitHub Copilot. Abra la configuración del destino, seleccione la configuración de GitHub Copilot, haga clic en Iniciar sesión en GitHub y siga las instrucciones de la ventana que se abre.</value>
-  </data>
 </root>

@@ -491,5 +491,16 @@ public partial class TargetSettingsViewModel(
     [Category("SettingsViewModel|Misc")]
     public bool DisplayBusy { get; set; } = settings.DisplayBusy;
 
-    public IReadOnlyList<IPluginParam> Params { get; } = sp.GetPluginParams(name);
+    public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
+    {
+        var configureType = typeof(IConfigureNamedOptions<>).MakeGenericType(p.GetType());
+        var configures = (IEnumerable<object>)sp.GetService(typeof(IEnumerable<>).MakeGenericType(configureType))!;
+        var configureMethod = configureType.GetMethod(nameof(IConfigureNamedOptions<object>.Configure))!;
+        foreach (var configure in configures)
+        {
+            configureMethod.Invoke(configure, [name, p]);
+        }
+
+        return p;
+    }).ToArray();
 }

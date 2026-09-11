@@ -37,10 +37,4 @@ Para instalação do GitHub Copilot CLI, consulte a [documentação do GitHub Co
   <data name="TranslateContext" xml:space="preserve">
     <value>Informações de contexto usadas durante a tradução</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>Entrar no GitHub</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>É necessário autenticar-se no GitHub Copilot. Abra as configurações do alvo, selecione as configurações do GitHub Copilot, clique em Entrar no GitHub e siga as instruções na janela exibida.</value>
-  </data>
 </root>

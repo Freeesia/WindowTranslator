@@ -19,8 +19,6 @@
 
 利用可能なモデル、料金、上限はGitHub Copilotの契約内容に従います。
 
-初回は「対象ごとの設定」→「GitHub Copilot設定」→「GitHubにログイン」を押し、開いた認証画面の案内に従ってください。同梱のCopilot CLIで認証するため、別途CLIをインストールしたり、別のアプリで事前にログインしたりする必要はありません。認証情報はCopilot CLIが管理し、WindowTranslatorの設定ファイルには保存しません。
-
 ## en
 
 A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation plugin that uses GitHub Copilot.
@@ -39,8 +37,6 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 - Optionally, translation context and a headerless CSV glossary in `source,target` format
 
 Available models, pricing, and usage limits depend on your GitHub Copilot plan.
-
-Before first use, open the target settings, select GitHub Copilot settings, and click **Sign in to GitHub**. Follow the instructions in the authentication window. The plugin uses its bundled Copilot CLI, so no separate CLI installation or prior sign-in through another app is needed. The Copilot CLI manages credentials; they are not saved in WindowTranslator's settings file.
 
 ## ar
 

@@ -24,7 +24,6 @@ using Weikio.PluginFramework.Catalogs;
 using Weikio.PluginFramework.TypeFinding;
 using WindowTranslator;
 using WindowTranslator.ComponentModel;
-using WindowTranslator.Extensions;
 using WindowTranslator.Logging;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
@@ -301,13 +300,20 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
     }
 }
 
-class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store, IServiceProvider provider) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
 
     public void Configure(TargetSettings options)
-        => Configure(this.store.Name, options);
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.Bind(options);
+    }
 
     public void Configure(string? name, TargetSettings options)
     {
@@ -318,10 +324,6 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
             section = this.configuration.GetSection(Options.DefaultName);
         }
         section.Bind(options);
-        foreach (var param in provider.GetPluginParams(name))
-        {
-            options.PluginParams[param.GetType().Name] = param;
-        }
     }
 }
 

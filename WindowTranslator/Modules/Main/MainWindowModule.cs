@@ -31,9 +31,8 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
         var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
         // 対象の設定を取得
-        if (options.Value.Targets.ContainsKey(name))
+        if (options.Value.Targets.TryGetValue(name, out var settings))
         {
-            var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get(name);
             // 設定を検証
             var validationResults = await presentationService.OpenValidateAsync(settings);
             if (validationResults.IsEmpty())

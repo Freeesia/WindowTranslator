@@ -37,10 +37,4 @@ For GitHub Copilot CLI installation, refer to the [GitHub Copilot CLI documentat
   <data name="TranslateContext" xml:space="preserve">
     <value>Contextual information to be used during translation</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>Sign in to GitHub</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>GitHub Copilot authentication is required. Open the target settings, select GitHub Copilot settings, click Sign in to GitHub, and follow the instructions in the window that opens.</value>
-  </data>
 </root>

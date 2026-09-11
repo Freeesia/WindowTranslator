@@ -37,10 +37,4 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>Контекстная информация, используемая при переводе</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>Войти в GitHub</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>Требуется аутентификация GitHub Copilot. Откройте настройки цели, выберите настройки GitHub Copilot, нажмите «Войти в GitHub» и следуйте инструкциям в появившемся окне.</value>
-  </data>
 </root>

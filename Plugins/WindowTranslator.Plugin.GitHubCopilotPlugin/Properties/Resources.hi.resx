@@ -37,10 +37,4 @@ GitHub Copilot CLI की स्थापना के लिए [GitHub Copilot
   <data name="TranslateContext" xml:space="preserve">
     <value>अनुवाद के दौरान उपयोग की जाने वाली संदर्भ जानकारी</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>GitHub में साइन इन करें</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>GitHub Copilot के लिए प्रमाणीकरण आवश्यक है। लक्ष्य की सेटिंग खोलें, GitHub Copilot सेटिंग चुनें, GitHub में साइन इन करें पर क्लिक करें और खुलने वाली विंडो के निर्देशों का पालन करें।</value>
-  </data>
 </root>

@@ -37,10 +37,4 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>翻譯時使用的上下文資訊</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>登入 GitHub</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>需要進行 GitHub Copilot 驗證。請開啟目標設定，選擇 GitHub Copilot 設定，按一下「登入 GitHub」，然後依照顯示視窗中的指示登入。</value>
-  </data>
 </root>

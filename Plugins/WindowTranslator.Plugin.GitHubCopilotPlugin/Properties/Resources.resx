@@ -142,10 +142,4 @@ GitHub Copilot翻訳を利用するにはGitHub Copilot CLIがインストール
 
 GitHub Copilot CLIのインストールについては[GitHub Copilot CLIのドキュメント](https://docs.github.com/ja/copilot/github-copilot-in-the-cli)を参照してください。</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>GitHubにログイン</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>GitHub Copilotの認証が必要です。「対象ごとの設定」→「GitHub Copilot設定」→「GitHubにログイン」を押し、表示された画面の案内に従ってログインしてください。</value>
-  </data>
 </root>

@@ -37,10 +37,4 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>Thông tin ngữ cảnh sử dụng khi dịch thuật</value>
   </data>
-  <data name="LoginCommand" xml:space="preserve">
-    <value>Đăng nhập GitHub</value>
-  </data>
-  <data name="AuthenticationRequired" xml:space="preserve">
-    <value>Cần xác thực GitHub Copilot. Mở cài đặt của đối tượng, chọn cài đặt GitHub Copilot, nhấn Đăng nhập GitHub và làm theo hướng dẫn trong cửa sổ xuất hiện.</value>
-  </data>
 </root>
