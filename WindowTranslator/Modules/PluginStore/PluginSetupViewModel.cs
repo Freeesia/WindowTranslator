@@ -14,40 +14,50 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     private readonly ILogger<PluginSetupViewModel> logger;
     private readonly List<InstalledPackageInfo> installedPackages = [];
     private bool disposed;
+    private bool finishRequested;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
     [NotifyPropertyChangedFor(nameof(CanFinish))]
     [NotifyPropertyChangedFor(nameof(CanSelect))]
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand), nameof(FinishCommand), nameof(ReloadCommand))]
     private bool isBusy;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand), nameof(ReloadCommand))]
     private bool isLoading;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSelect))]
     [NotifyPropertyChangedFor(nameof(PrimaryText))]
     [NotifyPropertyChangedFor(nameof(SecondaryText))]
+    [NotifyPropertyChangedFor(nameof(CanInstall))]
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand), nameof(ReloadCommand))]
     private bool hasStarted;
 
     [ObservableProperty]
     private string? errorMessage;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInstall))]
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand))]
     private bool hasSearchError;
 
     [ObservableProperty]
     private IReadOnlyList<PluginSetupGroup> groups = [];
 
     public string this[string key] => Resources.ResourceManager.GetString(key, Resources.Culture) ?? string.Empty;
-    public bool CanInstall => !this.IsBusy && !this.IsLoading;
-    public bool CanFinish => !this.IsBusy;
+    public bool CanInstall => !this.IsBusy && !this.IsCompleted
+        && (this.HasStarted || (!this.IsLoading && !this.HasSearchError));
+    public bool CanFinish => !this.IsBusy && !this.IsCompleted;
+    private bool CanReload => !this.IsBusy && !this.IsLoading && !this.HasStarted;
     public bool CanSelect => !this.HasStarted && !this.IsBusy;
     public string PrimaryText => this.HasStarted ? this["SetupRetry"] : Resources.Install;
     public string SecondaryText => this.HasStarted ? Resources.Exit : this["SetupSkip"];
     public bool IsCompleted { get; private set; }
     public bool RequiresRestart => this.installedPackages.Count > 0;
+    public event EventHandler? Completed;
 
     public PluginSetupViewModel(
         NuGetPluginService service, IConfiguration configuration, ILogger<PluginSetupViewModel> logger)
@@ -101,9 +111,13 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
             : !this.IsLoading && packages.Length == 0 ? this["SetupNoPackages"] : null;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanReload))]
     private async Task ReloadAsync()
     {
+        if (!this.CanReload)
+        {
+            return;
+        }
         this.IsLoading = true;
         try
         {
@@ -115,10 +129,16 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanInstall))]
     public async Task InstallAsync()
     {
         if (!this.CanInstall || this.IsCompleted)
         {
+            return;
+        }
+        if (this.finishRequested)
+        {
+            await FinishAsync();
             return;
         }
         if (this.Groups.SelectMany(group => group.Packages)
@@ -175,15 +195,21 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         {
             this.IsBusy = false;
         }
+        if (this.IsCompleted)
+        {
+            this.Completed?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     // スキップ時は未選択扱いで完了し、失敗後の終了時は成功済みの一覧を保存する。
+    [RelayCommand(CanExecute = nameof(CanFinish))]
     public async Task FinishAsync()
     {
         if (!this.CanFinish || this.IsCompleted)
         {
             return;
         }
+        this.finishRequested = true;
         this.HasStarted = true;
         this.IsBusy = true;
         try
@@ -194,10 +220,15 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         {
             this.IsBusy = false;
         }
+        if (this.IsCompleted)
+        {
+            this.Completed?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private async Task SaveAsync()
     {
+        this.ErrorMessage = null;
         try
         {
             await this.service.CompleteSetupAsync(this.installedPackages);
@@ -214,6 +245,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     {
         this.disposed = true;
         this.service.PackageInformationUpdated -= OnPackageInformationUpdated;
+        this.Completed = null;
     }
 }
 

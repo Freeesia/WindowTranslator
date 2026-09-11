@@ -11,6 +11,7 @@ using System.Runtime.Loader;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Configuration;
@@ -31,6 +32,169 @@ namespace WindowTranslator.Tests;
 public sealed class NuGetPluginServiceTests
 {
     private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
+
+    [Fact]
+    public async Task SetupCanSkipWhileLoadingAndCompletesOnlyOnce()
+    {
+        var directory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            using var service = CreateService(handler, directory);
+            using var viewModel = CreateSetupViewModel(service);
+            var completed = 0;
+            viewModel.Completed += (_, _) => completed++;
+
+            Assert.True(viewModel.IsLoading);
+            Assert.False(viewModel.InstallCommand.CanExecute(null));
+            Assert.True(viewModel.FinishCommand.CanExecute(null));
+            await viewModel.FinishCommand.ExecuteAsync(null);
+            await viewModel.FinishAsync();
+
+            Assert.Equal(1, completed);
+            Assert.True(viewModel.IsCompleted);
+            Assert.False(viewModel.RequiresRestart);
+            Assert.False(service.IsSetupRequired);
+            Assert.Empty(service.PackageSnapshot.InstalledPackages);
+            Assert.False(viewModel.InstallCommand.CanExecute(null));
+            Assert.False(viewModel.FinishCommand.CanExecute(null));
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
+    [Fact]
+    public async Task SetupSearchFailureCannotCompleteAsAnEmptyInstallation()
+    {
+        var directory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler { SearchException = new HttpRequestException("offline") };
+            using var service = CreateService(handler, directory);
+            using var viewModel = CreateSetupViewModel(service);
+
+            await service.RefreshPackageInformationAsync();
+            Assert.True(viewModel.HasSearchError);
+            Assert.False(viewModel.InstallCommand.CanExecute(null));
+            Assert.True(viewModel.ReloadCommand.CanExecute(null));
+            await viewModel.InstallAsync();
+            Assert.True(service.IsSetupRequired);
+
+            handler.SearchException = null;
+            await viewModel.ReloadCommand.ExecuteAsync(null);
+            Assert.False(viewModel.HasSearchError);
+            Assert.True(viewModel.InstallCommand.CanExecute(null));
+            await viewModel.InstallCommand.ExecuteAsync(null);
+            Assert.True(viewModel.IsCompleted);
+            Assert.False(viewModel.RequiresRestart);
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task SetupRetainsSuccessesUntilRetryOrFinish(bool retry)
+    {
+        var directory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage("Successful.Plugin", "1.0.0", CreateSetupPackage("Successful.Plugin"));
+            using var service = CreateService(handler, directory);
+            using var viewModel = CreateSetupViewModel(service, "Successful.Plugin", "Missing.Plugin");
+            var completed = 0;
+            viewModel.Completed += (_, _) => completed++;
+
+            await viewModel.InstallCommand.ExecuteAsync(null);
+
+            Assert.Equal(0, completed);
+            Assert.False(viewModel.IsCompleted);
+            Assert.True(service.IsSetupRequired);
+            Assert.Empty(service.PackageSnapshot.InstalledPackages);
+            Assert.True(viewModel.Groups[0].Packages[0].Package.IsInstalled);
+            Assert.NotNull(viewModel.Groups[0].Packages[1].ErrorMessage);
+            Assert.False(viewModel.CanSelect);
+            Assert.True(viewModel.InstallCommand.CanExecute(null));
+            Assert.True(viewModel.FinishCommand.CanExecute(null));
+            if (retry)
+            {
+                handler.AddPackage("Missing.Plugin", "1.0.0", CreateSetupPackage("Missing.Plugin"));
+                await viewModel.InstallCommand.ExecuteAsync(null);
+            }
+            else
+            {
+                await viewModel.FinishCommand.ExecuteAsync(null);
+            }
+
+            Assert.Equal(1, completed);
+            Assert.True(viewModel.IsCompleted);
+            Assert.True(viewModel.RequiresRestart);
+            Assert.False(service.IsSetupRequired);
+            Assert.Equal(retry ? 2 : 1, service.PackageSnapshot.InstalledPackages.Count);
+            Assert.Single(service.PackageSnapshot.InstalledPackages, package => package.Id == "Successful.Plugin");
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
+    [Fact]
+    public async Task SetupRetryAfterSkipSaveFailureDoesNotInstallSelectedPackages()
+    {
+        var directory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            using var service = CreateService(handler, directory);
+            using var viewModel = CreateSetupViewModel(service, "Selected.Plugin");
+            var manifestPath = Path.Combine(directory, "nuget-manifest.json");
+            Directory.CreateDirectory(manifestPath);
+
+            await viewModel.FinishCommand.ExecuteAsync(null);
+
+            Assert.False(viewModel.IsCompleted);
+            Assert.NotNull(viewModel.ErrorMessage);
+            Assert.True(viewModel.InstallCommand.CanExecute(null));
+            Directory.Delete(manifestPath);
+            await viewModel.InstallCommand.ExecuteAsync(null);
+
+            Assert.True(viewModel.IsCompleted);
+            Assert.Null(viewModel.ErrorMessage);
+            Assert.False(viewModel.RequiresRestart);
+            Assert.Empty(service.PackageSnapshot.InstalledPackages);
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
+    private static PluginSetupViewModel CreateSetupViewModel(NuGetPluginService service, params string[] packageIds)
+    {
+        var configuration = new ConfigurationBuilder().Build();
+        var viewModel = new PluginSetupViewModel(service, configuration, NullLogger<PluginSetupViewModel>.Instance);
+        if (packageIds.Length > 0)
+        {
+            viewModel.IsLoading = false;
+            viewModel.Groups = [new("test", [.. packageIds.Select(id => new PluginSetupPackage(
+                new(id, id, string.Empty, "Freesia", null, null, ["1.0.0"], IsOfficial: true), configuration)
+                { IsSelected = true })])];
+        }
+        return viewModel;
+    }
+
+    private static byte[] CreateSetupPackage(string id)
+        => CreatePackage(id, "1.0.0", [], new Dictionary<string, byte[]>
+        {
+            [$"lib/net10.0/{id}.dll"] = "plugin"u8.ToArray(),
+        });
 
     [Fact]
     public async Task SetupSavesManifestOnlyAfterCompletion()

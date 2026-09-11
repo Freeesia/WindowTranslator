@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.Threading;
 using System.Diagnostics;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
-using WindowTranslator.Modules.PluginStore;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator;
@@ -15,7 +14,7 @@ public class WindowMonitor(
     IOptionsMonitor<UserSettings> userSettings,
     IVirtualDesktopManager desktopManager,
     ILogger<WindowMonitor> logger,
-    NuGetPluginService pluginService) : BackgroundService
+    App app) : BackgroundService
 {
     private readonly IMainWindowModule mainWindowModule = mainWindowModule;
     private readonly IOptionsMonitor<UserSettings> userSettings = userSettings;
@@ -25,12 +24,10 @@ public class WindowMonitor(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await app.WaitForStartupAsync().WaitAsync(stoppingToken);
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (!pluginService.IsSetupRequired)
-            {
-                CheckProcesses();
-            }
+            CheckProcesses();
             stoppingToken.ThrowIfCancellationRequested();
             await Task.Delay(5000, stoppingToken);
             stoppingToken.ThrowIfCancellationRequested();

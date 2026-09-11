@@ -52,7 +52,7 @@ internal class ReviewRequestService(ILogger<ReviewRequestService> logger, App ap
         }
         this.CanOpenReview = true;
 
-        await this.app.WaitForStartupAsync();
+        await this.app.WaitForStartupAsync().WaitAsync(stoppingToken);
 
         // Toast通知のアクティベーション処理を登録
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;

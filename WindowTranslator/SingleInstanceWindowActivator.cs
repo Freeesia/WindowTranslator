@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -14,6 +16,42 @@ internal static class SingleInstanceWindowActivator
     private const string ActivationMessageName = "WindowTranslator.ActivateStartupDialog";
     internal const string StartupDialogMarker = "WindowTranslator.StartupDialog";
     internal static uint ActivationMessage { get; } = RegisterActivationMessage();
+    private static readonly SafeFileHandle MarkerValue = new(new(1), ownsHandle: false);
+
+    public static void Register(Window window, Action activate)
+    {
+        HWND handle = HWND.Null;
+        HwndSource? source = null;
+        window.SourceInitialized += (_, _) =>
+        {
+            handle = new(new WindowInteropHelper(window).Handle);
+            if (!SetProp(handle, StartupDialogMarker, MarkerValue))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            source = HwndSource.FromHwnd(handle);
+            source.AddHook(WndProc);
+        };
+        window.Closed += (_, _) =>
+        {
+            source?.RemoveHook(WndProc);
+            if (!handle.IsNull)
+            {
+                using SafeFileHandle marker = RemoveProp(handle, StartupDialogMarker);
+                marker.SetHandleAsInvalid();
+            }
+        };
+
+        IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (unchecked((uint)msg) == ActivationMessage)
+            {
+                activate();
+                handled = true;
+            }
+            return IntPtr.Zero;
+        }
+    }
 
     public static bool TryActivateExistingInstance()
     {

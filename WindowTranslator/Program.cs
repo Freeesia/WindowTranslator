@@ -60,7 +60,7 @@ var d = SplashWindow.ShowSplash();
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
 
-var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
+var builder = KamishibaiApplication<App, Window>.CreateBuilder();
 
 builder.Host.ConfigureLogging((c, l) =>
 {
@@ -210,11 +210,18 @@ builder.Services.AddSingleton<IGitHubClient>(_ =>
     return new GitHubClient(new ProductHeaderValue(name, version.ToString()));
 });
 
+// ホストの既定ウィンドウ登録後に、セットアップの完了状態で選ぶファクトリを登録する。
+builder.Host.ConfigureContainer<IServiceCollection>((_, services) => services.AddTransient<Window>(StartupWindowFactory.Create));
+
 var app = builder.Build();
 app.Loaded += (_, e) =>
 {
     d.Dispose();
     e.Window.Activate();
+    if (e.Window is StartupDialog)
+    {
+        ((App)System.Windows.Application.Current).CompleteStartup();
+    }
 };
 
 if (SentrySdk.IsEnabled)

@@ -60,7 +60,7 @@ internal class UpdateChecker : BackgroundService, IUpdateChecker
             this.logger.LogInformation("インストールされていないアプリなのでチェックしない");
             return;
         }
-        await this.app.WaitForStartupAsync();
+        await this.app.WaitForStartupAsync().WaitAsync(stoppingToken);
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
         try
         {

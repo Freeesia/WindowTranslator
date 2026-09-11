@@ -30,17 +30,16 @@
             <Setter Property="FontSize" Value="48" />
         </Style>
     </ui:FluentWindow.Resources>
-    <Grid>
-    <StackPanel x:Name="StartupContent" Orientation="Vertical">
+    <StackPanel Orientation="Vertical">
         <ui:TitleBar
             Title="WindowTranslator"
-            Icon="{ui:ImageIcon '/wt.ico'}"
+            Icon="{ui:ImageIcon '/WindowTranslator;component/wt.ico'}"
             ShowMaximize="False"
             ShowMinimize="False" />
         <StackPanel Orientation="Horizontal">
             <ctrl:NotifyIcon2
                 Command="{Binding RunCommand}"
-                Icon="/wt.ico"
+                Icon="/WindowTranslator;component/wt.ico"
                 MenuOnRightClick="True">
                 <ctrl:NotifyIcon2.Menu>
                     <ContextMenu ItemsSource="{Binding TaskBarIconMenus, Mode=OneWay}">
@@ -72,6 +71,4 @@
             </ui:Button>
         </StackPanel>
     </StackPanel>
-    <ContentPresenter x:Name="SetupHost" />
-    </Grid>
 </ui:FluentWindow>
