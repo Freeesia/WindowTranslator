@@ -20,5 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\WindowTranslator\WindowTranslator.csproj" />
     <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OrcaRouterPlugin\WindowTranslator.Plugin.OrcaRouterPlugin.csproj" Aliases="OrcaRouter" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.DeepLTranslatePlugin\WindowTranslator.Plugin.DeepLTranslatePlugin.csproj" Aliases="DeepLPlugin" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.GoogleAIPlugin\WindowTranslator.Plugin.GoogleAIPlugin.csproj" Aliases="GoogleAIPlugin" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.GitHubCopilotPlugin\WindowTranslator.Plugin.GitHubCopilotPlugin.csproj" Aliases="CopilotPlugin" />
   </ItemGroup>
 </Project>

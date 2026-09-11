@@ -37,4 +37,10 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>ข้อมูลบริบทที่ใช้ระหว่างการแปล</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>ลงชื่อเข้าใช้ GitHub</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>จำเป็นต้องยืนยันตัวตนสำหรับ GitHub Copilot เปิดการตั้งค่าเป้าหมาย เลือกการตั้งค่า GitHub Copilot คลิกลงชื่อเข้าใช้ GitHub แล้วทำตามคำแนะนำในหน้าต่างที่ปรากฏ</value>
+  </data>
 </root>

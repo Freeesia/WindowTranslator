@@ -37,4 +37,10 @@ GitHub Copilot CLI kurulumu için [GitHub Copilot CLI belgelerine](https://docs.
   <data name="TranslateContext" xml:space="preserve">
     <value>Çeviri sırasında kullanılan bağlam bilgisi</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>GitHub'da oturum aç</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>GitHub Copilot kimlik doğrulaması gerekiyor. Hedef ayarlarını açın, GitHub Copilot ayarlarını seçin, GitHub'da oturum aç düğmesine tıklayın ve açılan penceredeki yönergeleri izleyin.</value>
+  </data>
 </root>

@@ -37,4 +37,10 @@ GitHub Copilot CLI 설치에 대해서는 [GitHub Copilot CLI 문서](https://do
   <data name="TranslateContext" xml:space="preserve">
     <value>번역 시 사용할 문맥 정보</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>GitHub에 로그인</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>GitHub Copilot 인증이 필요합니다. 대상별 설정에서 GitHub Copilot 설정을 선택하고 GitHub에 로그인을 누른 다음, 표시되는 창의 안내에 따라 로그인하세요.</value>
+  </data>
 </root>

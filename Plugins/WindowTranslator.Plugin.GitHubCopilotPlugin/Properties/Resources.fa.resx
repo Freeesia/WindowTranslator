@@ -37,4 +37,10 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>اطلاعات زمینه‌ای که هنگام ترجمه استفاده می‌شود</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>ورود به GitHub</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>احراز هویت GitHub Copilot لازم است. تنظیمات هدف را باز کنید، تنظیمات GitHub Copilot را انتخاب کنید، روی ورود به GitHub کلیک کنید و دستورالعمل‌های پنجره‌ای را که باز می‌شود دنبال کنید.</value>
+  </data>
 </root>

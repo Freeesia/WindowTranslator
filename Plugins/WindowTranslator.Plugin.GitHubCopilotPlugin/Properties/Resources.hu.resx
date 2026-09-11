@@ -25,4 +25,10 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>Fordítás során használandó kontextuális információk</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>Bejelentkezés a GitHubra</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>A GitHub Copilot használatához hitelesítés szükséges. Nyissa meg a cél beállításait, válassza a GitHub Copilot beállításait, kattintson a Bejelentkezés a GitHubra gombra, és kövesse a megjelenő ablak utasításait.</value>
+  </data>
 </root>

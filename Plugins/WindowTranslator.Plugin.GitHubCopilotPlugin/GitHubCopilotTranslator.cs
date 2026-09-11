@@ -59,7 +59,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
         </出力テキストのJsonフォーマット>
         """;
 
-        this.client = new CopilotClient(new() { Connection = RuntimeConnection.ForStdio(Utility.GetBundledCliPath()) });
+        this.client = Utility.CreateClient();
 
         this.session = new(this.CreateSessionAsync);
 
@@ -80,6 +80,7 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
     private async ValueTask<CopilotSession> CreateSessionAsync()
     {
+        await Utility.EnsureAuthenticatedAsync(this.client).ConfigureAwait(false);
         var system = string.Join(Environment.NewLine, [this.preSystem, this.context, this.userContext, this.postSystem]);
         var s = await this.client.CreateSessionAsync(new()
         {

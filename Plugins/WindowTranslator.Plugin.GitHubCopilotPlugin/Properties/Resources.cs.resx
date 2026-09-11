@@ -37,4 +37,10 @@ Informace o instalaci GitHub Copilot CLI naleznete v [dokumentaci GitHub Copilot
   <data name="TranslateContext" xml:space="preserve">
     <value>Kontextové informace použité při překladu</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>Přihlásit se ke GitHubu</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>Je vyžadováno ověření GitHub Copilot. Otevřete nastavení cíle, vyberte nastavení GitHub Copilot, klikněte na Přihlásit se ke GitHubu a postupujte podle pokynů v zobrazeném okně.</value>
+  </data>
 </root>

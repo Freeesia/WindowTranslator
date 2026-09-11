@@ -1,10 +1,29 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using GitHub.Copilot;
+using WindowTranslator.Plugin.GitHubCopilotPlugin.Properties;
 
 namespace WindowTranslator.Plugin.GitHubCopilotPlugin;
 
 public static class Utility
 {
+    internal static string AuthenticationRequiredMessage
+        => Resources.ResourceManager.GetString("AuthenticationRequired", Resources.Culture) ?? string.Empty;
+
+    internal static CopilotClient CreateClient()
+        => new(new() { Connection = RuntimeConnection.ForStdio(GetBundledCliPath()) });
+
+    internal static async Task EnsureAuthenticatedAsync(CopilotClient client)
+    {
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        await client.StartAsync(cancellation.Token).ConfigureAwait(false);
+        var status = await client.GetAuthStatusAsync(cancellation.Token).ConfigureAwait(false);
+        if (!status.IsAuthenticated)
+        {
+            throw new AppUserException(AuthenticationRequiredMessage);
+        }
+    }
+
     private static string? GetPortableRid()
     {
         string text;

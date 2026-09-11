@@ -37,4 +37,10 @@ Para sa pag-install ng GitHub Copilot CLI, tingnan ang [dokumentasyon ng GitHub 
   <data name="TranslateContext" xml:space="preserve">
     <value>Impormasyon ng konteksto na ginagamit sa panahon ng pagsasalin</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>Mag-sign in sa GitHub</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>Kailangan ang pagpapatunay sa GitHub Copilot. Buksan ang mga setting ng target, piliin ang mga setting ng GitHub Copilot, i-click ang Mag-sign in sa GitHub, at sundin ang mga tagubilin sa lalabas na window.</value>
+  </data>
 </root>

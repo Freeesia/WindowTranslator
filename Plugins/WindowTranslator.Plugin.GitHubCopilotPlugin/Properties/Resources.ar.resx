@@ -37,4 +37,10 @@
   <data name="TranslateContext" xml:space="preserve">
     <value>معلومات السياق المستخدمة أثناء الترجمة</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>تسجيل الدخول إلى GitHub</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>تلزم المصادقة لاستخدام GitHub Copilot. افتح إعدادات الهدف، وحدد إعدادات GitHub Copilot، وانقر على تسجيل الدخول إلى GitHub، ثم اتبع التعليمات في النافذة التي تظهر.</value>
+  </data>
 </root>

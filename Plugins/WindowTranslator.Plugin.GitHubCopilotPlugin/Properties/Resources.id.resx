@@ -37,4 +37,10 @@ Untuk pemasangan GitHub Copilot CLI, silakan merujuk [dokumentasi GitHub Copilot
   <data name="TranslateContext" xml:space="preserve">
     <value>Informasi konteks yang digunakan saat penerjemahan</value>
   </data>
+  <data name="LoginCommand" xml:space="preserve">
+    <value>Masuk ke GitHub</value>
+  </data>
+  <data name="AuthenticationRequired" xml:space="preserve">
+    <value>Autentikasi GitHub Copilot diperlukan. Buka pengaturan target, pilih pengaturan GitHub Copilot, klik Masuk ke GitHub, lalu ikuti petunjuk di jendela yang muncul.</value>
+  </data>
 </root>

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" />
+    <PackageReference Include="CommunityToolkit.Mvvm" ExcludeAssets="runtime" />
     <PackageReference Include="GitHub.Copilot.SDK" />
     <PackageReference Include="ValueTaskSupplement" />
   </ItemGroup>
@@ -27,5 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    <InternalsVisibleTo Include="WindowTranslator.Tests" />
   </ItemGroup>
 </Project>
