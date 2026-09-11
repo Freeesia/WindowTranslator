@@ -1,0 +1,10 @@
+name: Upload NuGet package artifacts
+description: Upload every NuGet package as a separate unarchived artifact.
+inputs:
+  path:
+    description: Directory containing NuGet packages.
+    required: false
+    default: pack
+runs:
+  using: node24
+  main: dist/index.mjs
