@@ -185,16 +185,20 @@ file static class CopilotClientExtensions
                     break;
 
                 case SessionErrorEvent { Data: var err }:
-                    tcs.TrySetException(new AppUserException($"""
-                    ## {err.ErrorType}: {err.StatusCode}
+                    tcs.TrySetException(err.Message.Contains(
+                        "Session was not created with authentication info or custom provider",
+                        StringComparison.Ordinal)
+                        ? new AppUserException(Properties.Resources.InvalidOptions)
+                        : new AppUserException($"""
+                        ## {err.ErrorType}: {err.StatusCode}
 
-                    {err.Message}
-                    ({err.Url})
+                        {err.Message}
+                        ({err.Url})
 
-                    ```
-                    {err.Stack}
-                    ```
-                    """));
+                        ```
+                        {err.Stack}
+                        ```
+                        """));
                     break;
             }
         });
