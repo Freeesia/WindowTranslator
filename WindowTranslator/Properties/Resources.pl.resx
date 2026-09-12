@@ -522,6 +522,17 @@ Monitory nie są obsługiwane.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Używane przez moduły tłumaczeniowe obsługujące kontekst</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Konfiguracja początkowa</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Wybierz oficjalne wtyczki, których chcesz używać. Możesz je później zmienić na ekranie Wtyczki.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Ponów</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Pomiń</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Nie znaleziono oficjalnych wtyczek możliwych do zainstalowania.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Wybierz wersję do zainstalowania.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Nie udało się zainstalować niektórych wtyczek. Spróbuj ponownie albo zapisz udane instalacje i zakończ.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Nie udało się zapisać wyników konfiguracji. Spróbuj ponownie.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Tłumaczenie i OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Wyodrębnianie kolorów</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Inne</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Śledzenie OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilność pozycji i rozmiaru</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Ogranicza drgania pozycji i rozmiaru. 1: szybka reakcja, 5: wysoka stabilność (domyślnie: 3). Duże przesunięcia są stosowane natychmiast.</value></data>

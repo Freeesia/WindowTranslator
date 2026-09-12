@@ -521,6 +521,17 @@ Monitor tidak disokong.</value>
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Digunakan oleh modul terjemahan yang menyokong konteks</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Persediaan awal</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Pilih pemalam rasmi yang ingin digunakan. Anda boleh mengubahnya kemudian pada skrin Pemalam.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Cuba lagi</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Langkau</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Tiada pemalam rasmi yang boleh dipasang ditemui.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Pilih versi untuk dipasang.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Sesetengah pemalam gagal dipasang. Cuba lagi, atau simpan pemasangan yang berjaya dan keluar.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil persediaan tidak dapat disimpan. Cuba lagi.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Terjemahan dan OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Pengekstrakan warna</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Lain-lain</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Penjejakan OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Kestabilan kedudukan dan saiz</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Mengurangkan gegaran kedudukan dan saiz. 1: respons pantas, 5: lebih stabil (lalai: 3). Pergerakan besar diterapkan serta-merta.</value></data>

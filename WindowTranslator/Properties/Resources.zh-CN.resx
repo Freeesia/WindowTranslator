@@ -522,6 +522,17 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>由支持上下文的翻译模块使用</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>首次设置</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>请选择要使用的官方插件。之后可在插件页面中更改。</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>重试</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>跳过</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>未找到可安装的官方插件。</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>请选择要安装的版本。</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>部分插件安装失败。请重试，或保存已成功安装的插件后退出。</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>无法保存设置结果。请重试。</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>翻译和 OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>颜色提取</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>其他</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR 跟踪</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>位置和大小稳定性</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>减少位置和大小的抖动。1：优先响应，5：优先稳定（默认：3）。大幅移动会立即反映。</value></data>

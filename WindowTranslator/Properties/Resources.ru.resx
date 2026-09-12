@@ -513,6 +513,17 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Используется модулями перевода, поддерживающими контекст</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Первоначальная настройка</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Выберите официальные плагины, которые хотите использовать. Позже их можно изменить на экране плагинов.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Повторить</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Пропустить</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Не найдено официальных плагинов, доступных для установки.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Выберите версию для установки.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Не удалось установить некоторые плагины. Повторите попытку или сохраните успешно установленные плагины и выйдите.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Не удалось сохранить результаты настройки. Повторите попытку.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Перевод и OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Извлечение цвета</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Другое</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Отслеживание OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Стабильность положения и размера</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Уменьшает колебания положения и размера. 1: быстрый отклик, 5: высокая стабильность (по умолчанию: 3). Большие перемещения применяются сразу.</value></data>

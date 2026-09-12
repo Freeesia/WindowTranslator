@@ -54,11 +54,11 @@ if (!createdNew)
     _ = SingleInstanceWindowActivator.TryActivateExistingInstance();
     return;
 }
-var d = SplashWindow.ShowSplash();
-
-
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
+
+var setupShown = PluginSetup.ShowIfRequired(args);
+var d = SplashWindow.ShowSplash();
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
@@ -212,6 +212,10 @@ builder.Services.AddSingleton<IGitHubClient>(_ =>
 var app = builder.Build();
 app.Loaded += (_, e) =>
 {
+    if (setupShown)
+    {
+        PluginSetup.AttachApplicationTheme(e.Window);
+    }
     d.Dispose();
     e.Window.Activate();
 };

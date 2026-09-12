@@ -507,6 +507,17 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>توسط ماژول‌های ترجمه‌ای که از زمینه پشتیبانی می‌کنند استفاده می‌شود</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>راه‌اندازی اولیه</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>افزونه‌های رسمی مورد نظر را انتخاب کنید. بعداً می‌توانید آن‌ها را در صفحه افزونه‌ها تغییر دهید.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>تلاش مجدد</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>رد کردن</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>هیچ افزونه رسمی قابل نصبی پیدا نشد.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>نسخه‌ای را برای نصب انتخاب کنید.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>نصب برخی افزونه‌ها ناموفق بود. دوباره تلاش کنید یا نصب‌های موفق را ذخیره کرده و خارج شوید.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>نتایج راه‌اندازی ذخیره نشد. دوباره تلاش کنید.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>ترجمه و OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>استخراج رنگ</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>سایر</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>ردیابی OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>پایداری موقعیت و اندازه</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>لرزش موقعیت و اندازه را کاهش می‌دهد. 1: پاسخ سریع، 5: پایداری بیشتر (پیش‌فرض: 3). جابه‌جایی‌های بزرگ فوراً اعمال می‌شوند.</value></data>

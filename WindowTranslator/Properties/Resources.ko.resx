@@ -522,6 +522,17 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>초기 설정</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>사용할 공식 플러그인을 선택하세요. 나중에 플러그인 화면에서 변경할 수 있습니다.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>다시 시도</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>건너뛰기</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>설치 가능한 공식 플러그인을 찾지 못했습니다.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>설치할 버전을 선택하세요.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>일부 플러그인을 설치하지 못했습니다. 다시 시도하거나 성공한 설치를 저장하고 종료하세요.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>설정 결과를 저장하지 못했습니다. 다시 시도하세요.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>번역 및 OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>색상 추출</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>기타</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR 추적</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>위치 및 크기 안정성</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>위치와 크기의 흔들림을 줄입니다. 1: 빠른 반응, 5: 높은 안정성(기본값: 3). 큰 이동은 즉시 반영합니다.</value></data>

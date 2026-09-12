@@ -513,6 +513,17 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Utilisé par les modules de traduction prenant en charge le contexte</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Configuration initiale</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Sélectionnez les extensions officielles à utiliser. Vous pourrez modifier ce choix plus tard dans l’écran des extensions.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Réessayer</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Ignorer</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Aucune extension officielle installable n’a été trouvée.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Sélectionnez une version à installer.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Certaines extensions n’ont pas pu être installées. Réessayez ou enregistrez les installations réussies et quittez.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Les résultats de la configuration n’ont pas pu être enregistrés. Réessayez.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Traduction et OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Extraction des couleurs</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Autres</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Suivi OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilité de la position et de la taille</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Réduit les variations de position et de taille. 1 : réactivité, 5 : stabilité (par défaut : 3). Les grands déplacements sont appliqués immédiatement.</value></data>
