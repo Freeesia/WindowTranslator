@@ -25,15 +25,17 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
     public bool IsTargetOpened(IntPtr targetWindowHandle)
         => this.app.Dispatcher.Invoke(() => this.OpenedWindows.Any(w => w.Target == targetWindowHandle));
 
-    private async ValueTask<TargetSettings?> GetSettingsAsync(string name)
+    private async ValueTask<TargetSettings?> GetSettingsAsync(IntPtr targetWindowHandle, string name)
     {
         using var scope = provider.CreateScope();
+        var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
+        processInfo.SetTargetProcess(targetWindowHandle, name);
         var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
         // 対象の設定を取得
-        if (options.Value.Targets.TryGetValue(name, out var settings))
+        if (options.Value.Targets.ContainsKey(name))
         {
-            ConfigurePluginParams(scope.ServiceProvider, name, settings);
+            var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Value;
             // 設定を検証
             var validationResults = await presentationService.OpenValidateAsync(settings);
             if (validationResults.IsEmpty())
@@ -72,28 +74,13 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             return null;
         }
 
-        return scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get(name);
-    }
-
-    internal static void ConfigurePluginParams(IServiceProvider provider, string name, TargetSettings settings)
-    {
-        foreach (var param in provider.GetServices<IPluginParam>())
-        {
-            var configureType = typeof(IConfigureNamedOptions<>).MakeGenericType(param.GetType());
-            var configures = (IEnumerable<object>)provider.GetRequiredService(typeof(IEnumerable<>).MakeGenericType(configureType));
-            var configureMethod = configureType.GetMethod(nameof(IConfigureNamedOptions<object>.Configure))!;
-            foreach (var configure in configures)
-            {
-                configureMethod.Invoke(configure, [name, param]);
-            }
-            settings.PluginParams[param.GetType().Name] = param;
-        }
+        return scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Value;
     }
 
     private async Task OpenTargetWindowCoreAsync(IntPtr targetWindowHandle, string name)
     {
         using var l = await this.asyncLock.EnterAsync();
-        var settings = await GetSettingsAsync(name);
+        var settings = await GetSettingsAsync(targetWindowHandle, name);
         if (settings is null)
         {
             return;
