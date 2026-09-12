@@ -531,7 +531,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>ไม่สามารถติดตั้งปลั๊กอินบางรายการได้ ลองอีกครั้ง หรือบันทึกรายการที่ติดตั้งสำเร็จแล้วออก</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>ไม่สามารถบันทึกผลการตั้งค่าได้ โปรดลองอีกครั้ง</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>การแปลและ OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>ตัวกรอง</value></data>
   <data name="SetupColors" xml:space="preserve"><value>การแยกสี</value></data>
   <data name="SetupOther" xml:space="preserve"><value>อื่นๆ</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>การติดตาม OCR</value></data>

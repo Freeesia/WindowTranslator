@@ -28,7 +28,6 @@ internal static class StartupWindowFactory
             // OnMainWindowCloseによる終了を避けるため、閉じる前にメインウィンドウを引き継ぐ。
             app.MainWindow = startupDialog;
             startupDialog.Show();
-            app.CompleteStartup();
             window.Close();
         };
         return window;

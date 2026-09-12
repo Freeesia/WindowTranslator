@@ -522,7 +522,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>Не удалось установить некоторые плагины. Повторите попытку или сохраните успешно установленные плагины и выйдите.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Не удалось сохранить результаты настройки. Повторите попытку.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Перевод и OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Фильтры</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Извлечение цвета</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Другое</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Отслеживание OCR</value></data>

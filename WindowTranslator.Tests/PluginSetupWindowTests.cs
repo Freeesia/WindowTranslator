@@ -82,7 +82,7 @@ public sealed class PluginSetupWindowTests
                         var window = Assert.IsType<PluginSetupWindow>(e.Window);
                         Assert.Same(window, app.MainWindow);
                         Assert.Single(app.Windows.Cast<Window>());
-                        Assert.False(app.WaitForStartupAsync().IsCompleted);
+                        Assert.True(app.WaitForStartupAsync().IsCompletedSuccessfully);
                         Assert.IsAssignableFrom<FluentWindow>(window);
                         Assert.Empty(Descendants<ContentDialog>(window));
                         var titleBar = Assert.Single(Descendants<TitleBar>(window));

@@ -516,7 +516,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>نصب برخی افزونه‌ها ناموفق بود. دوباره تلاش کنید یا نصب‌های موفق را ذخیره کرده و خارج شوید.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>نتایج راه‌اندازی ذخیره نشد. دوباره تلاش کنید.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>ترجمه و OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>فیلترها</value></data>
   <data name="SetupColors" xml:space="preserve"><value>استخراج رنگ</value></data>
   <data name="SetupOther" xml:space="preserve"><value>سایر</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>ردیابی OCR</value></data>

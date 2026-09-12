@@ -531,7 +531,6 @@ Ang monitor ay hindi suportado.
   <data name="SetupInstallFailed" xml:space="preserve"><value>Hindi na-install ang ilang plugin. Subukang muli, o i-save ang mga matagumpay na pag-install at lumabas.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Hindi na-save ang resulta ng pag-setup. Subukang muli.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Pagsasalin at OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Mga filter</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Pagkuha ng kulay</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Iba pa</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Pagsubaybay ng OCR</value></data>

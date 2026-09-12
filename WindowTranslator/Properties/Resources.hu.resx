@@ -412,7 +412,6 @@ A monitorok nem támogatottak.
   <data name="SetupInstallFailed" xml:space="preserve"><value>Néhány bővítményt nem sikerült telepíteni. Próbálja újra, vagy mentse a sikeres telepítéseket, majd lépjen ki.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>A beállítás eredményét nem sikerült menteni. Próbálja újra.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Fordítás és OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Szűrők</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Színkinyerés</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Egyéb</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR-követés</value></data>

@@ -531,7 +531,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>部分外掛程式安裝失敗。請重試，或儲存已成功安裝的外掛程式後結束。</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>無法儲存設定結果。請重試。</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>翻譯和 OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>篩選器</value></data>
   <data name="SetupColors" xml:space="preserve"><value>色彩擷取</value></data>
   <data name="SetupOther" xml:space="preserve"><value>其他</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR 追蹤</value></data>

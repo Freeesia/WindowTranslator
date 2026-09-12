@@ -531,7 +531,6 @@ Monitore werden nicht unterstützt.
   <data name="SetupInstallFailed" xml:space="preserve"><value>Einige Plugins konnten nicht installiert werden. Versuchen Sie es erneut oder speichern Sie die erfolgreichen Installationen und beenden Sie das Setup.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Das Setup-Ergebnis konnte nicht gespeichert werden. Versuchen Sie es erneut.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Übersetzung und OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Filter</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Farbextraktion</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Sonstiges</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR-Verfolgung</value></data>

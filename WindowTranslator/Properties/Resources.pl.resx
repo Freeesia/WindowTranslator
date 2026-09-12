@@ -531,7 +531,6 @@ Monitory nie są obsługiwane.
   <data name="SetupInstallFailed" xml:space="preserve"><value>Nie udało się zainstalować niektórych wtyczek. Spróbuj ponownie albo zapisz udane instalacje i zakończ.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Nie udało się zapisać wyników konfiguracji. Spróbuj ponownie.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Tłumaczenie i OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Filtry</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Wyodrębnianie kolorów</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Inne</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Śledzenie OCR</value></data>

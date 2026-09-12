@@ -524,7 +524,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>कुछ प्लगइन इंस्टॉल नहीं हो सके। पुनः प्रयास करें, या सफल इंस्टॉलेशन सहेजकर बाहर निकलें।</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>सेटअप परिणाम सहेजे नहीं जा सके। पुनः प्रयास करें।</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>अनुवाद और OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>फ़िल्टर</value></data>
   <data name="SetupColors" xml:space="preserve"><value>रंग निष्कर्षण</value></data>
   <data name="SetupOther" xml:space="preserve"><value>अन्य</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR ट्रैकिंग</value></data>

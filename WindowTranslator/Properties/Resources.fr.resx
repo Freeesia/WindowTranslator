@@ -522,7 +522,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>Certaines extensions n’ont pas pu être installées. Réessayez ou enregistrez les installations réussies et quittez.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Les résultats de la configuration n’ont pas pu être enregistrés. Réessayez.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Traduction et OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Filtres</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Extraction des couleurs</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Autres</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Suivi OCR</value></data>

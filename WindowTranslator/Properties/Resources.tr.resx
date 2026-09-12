@@ -531,7 +531,6 @@ Monitör desteklenmiyor.
   <data name="SetupInstallFailed" xml:space="preserve"><value>Bazı eklentiler yüklenemedi. Yeniden deneyin veya başarılı yüklemeleri kaydedip çıkın.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Kurulum sonuçları kaydedilemedi. Yeniden deneyin.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Çeviri ve OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Filtreler</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Renk çıkarma</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Diğer</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR takibi</value></data>

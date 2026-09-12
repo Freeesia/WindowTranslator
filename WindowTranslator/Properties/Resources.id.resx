@@ -530,7 +530,6 @@ Monitor tidak didukung.</value>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Beberapa plugin tidak dapat diinstal. Coba lagi, atau simpan instalasi yang berhasil lalu keluar.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil penyiapan tidak dapat disimpan. Coba lagi.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Terjemahan dan OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Filter</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Ekstraksi warna</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Lainnya</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Pelacakan OCR</value></data>

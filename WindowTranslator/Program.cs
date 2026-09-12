@@ -218,10 +218,6 @@ app.Loaded += (_, e) =>
 {
     d.Dispose();
     e.Window.Activate();
-    if (e.Window is StartupDialog)
-    {
-        ((App)System.Windows.Application.Current).CompleteStartup();
-    }
 };
 
 if (SentrySdk.IsEnabled)

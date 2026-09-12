@@ -300,7 +300,7 @@ internal sealed partial class PluginSetupPackage : ObservableObject
             "WINDOWTRANSLATOR.PLUGIN.PLAMOPLUGIN" => ("TranslateModule", ["PLaMoTranslator"]),
             "WINDOWTRANSLATOR.PLUGIN.LLMPLUGIN" => ("SetupTranslationOcr", ["LLMTranslator", "LLMOcr"]),
             "WINDOWTRANSLATOR.PLUGIN.GOOGLEAIPLUGIN" => ("SetupTranslationOcr", ["GoogleAITranslator", "GoogleAIOcr"]),
-            "WINDOWTRANSLATOR.PLUGIN.FOMPLUGIN" => ("SetupFilters", ["FoMFilterModule"]),
+            "WINDOWTRANSLATOR.PLUGIN.FOMPLUGIN" => ("PluginCategoryFilter", ["FoMFilterModule"]),
             "WINDOWTRANSLATOR.PLUGIN.COLORTHIEFPLUGIN" => ("SetupColors", ["ColorThiefModule"]),
             _ => ("SetupOther", []),
         };

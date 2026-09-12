@@ -522,7 +522,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>تعذر تثبيت بعض المكونات الإضافية. أعد المحاولة، أو احفظ عمليات التثبيت الناجحة ثم اخرج.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>تعذر حفظ نتائج الإعداد. يرجى إعادة المحاولة.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>الترجمة وOCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>عوامل التصفية</value></data>
   <data name="SetupColors" xml:space="preserve"><value>استخراج الألوان</value></data>
   <data name="SetupOther" xml:space="preserve"><value>أخرى</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>تتبّع OCR</value></data>

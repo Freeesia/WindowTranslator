@@ -531,7 +531,6 @@ Màn hình không được hỗ trợ.
   <data name="SetupInstallFailed" xml:space="preserve"><value>Không thể cài đặt một số plugin. Hãy thử lại hoặc lưu các plugin đã cài đặt thành công rồi thoát.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Không thể lưu kết quả thiết lập. Hãy thử lại.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Dịch thuật và OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Bộ lọc</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Trích xuất màu</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Khác</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Theo dõi OCR</value></data>

@@ -530,7 +530,6 @@ Monitor tidak disokong.</value>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Sesetengah pemalam gagal dipasang. Cuba lagi, atau simpan pemasangan yang berjaya dan keluar.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil persediaan tidak dapat disimpan. Cuba lagi.</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>Terjemahan dan OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>Penapis</value></data>
   <data name="SetupColors" xml:space="preserve"><value>Pengekstrakan warna</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Lain-lain</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Penjejakan OCR</value></data>

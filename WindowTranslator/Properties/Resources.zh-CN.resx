@@ -531,7 +531,6 @@
   <data name="SetupInstallFailed" xml:space="preserve"><value>部分插件安装失败。请重试，或保存已成功安装的插件后退出。</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>无法保存设置结果。请重试。</value></data>
   <data name="SetupTranslationOcr" xml:space="preserve"><value>翻译和 OCR</value></data>
-  <data name="SetupFilters" xml:space="preserve"><value>筛选器</value></data>
   <data name="SetupColors" xml:space="preserve"><value>颜色提取</value></data>
   <data name="SetupOther" xml:space="preserve"><value>其他</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR 跟踪</value></data>
