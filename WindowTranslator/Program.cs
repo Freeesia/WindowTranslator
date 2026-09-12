@@ -300,20 +300,13 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
     }
 }
 
-class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store, IServiceProvider provider) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
 
     public void Configure(TargetSettings options)
-    {
-        var section = this.configuration.GetSection(this.store.Name);
-        if (!section.Exists())
-        {
-            section = this.configuration.GetSection(Options.DefaultName);
-        }
-        section.Bind(options);
-    }
+        => Configure(this.store.Name, options);
 
     public void Configure(string? name, TargetSettings options)
     {
@@ -324,6 +317,14 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
             section = this.configuration.GetSection(Options.DefaultName);
         }
         section.Bind(options);
+        foreach (var param in provider.GetServices<IPluginParam>())
+        {
+            var paramType = param.GetType();
+            var optionsType = typeof(IOptionsSnapshot<>).MakeGenericType(paramType);
+            var pluginOptions = provider.GetRequiredService(optionsType);
+            var getMethod = optionsType.GetMethod(nameof(IOptionsSnapshot<object>.Get))!;
+            options.PluginParams[paramType.Name] = (IPluginParam)getMethod.Invoke(pluginOptions, [name])!;
+        }
     }
 }
 
