@@ -13,6 +13,8 @@ using NuGet.Protocol.Core.Types;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Startup;
+using Wpf.Ui;
+using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
 namespace WindowTranslator.Tests;
@@ -24,7 +26,7 @@ public sealed class WpfStartupCollection;
 public sealed class PluginSetupWindowTests
 {
     [Fact]
-    public async Task SetupIsTheFirstWindowAndSkipTransfersMainWindowWithoutShutdown()
+    public async Task SetupCompletesBeforeApplicationAndNormalHostStartsOnTheSameThread()
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var thread = new Thread(() =>
@@ -50,84 +52,107 @@ public sealed class PluginSetupWindowTests
         Directory.CreateDirectory(directory);
         try
         {
-            // 実際のAppとホストを使いつつ、設定とインストール先を利用者の環境から分離する。
-            var builder = KamishibaiApplication<App, Window>.CreateBuilder();
-            builder.Configuration.Sources.Clear();
-            builder.Configuration.AddInMemoryCollection();
-            builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
-            builder.Services.AddSingleton<IVirtualDesktopManager, TestDesktopManager>();
-            builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
-            builder.Services.AddTransient<PluginSetupViewModel>();
-            builder.Services.AddSingleton(_ => new NuGetPluginService(
-                NullLogger<NuGetPluginService>.Instance,
-                new UnusedHttpClientFactory(),
-                Repository.Factory.GetCoreV3("https://nuget.test/v3/index.json"),
-                directory, NuGetPluginService.CreateHostPackageVersions(), AppInfo.Instance.Version.Major));
-            IServiceProvider? services = null;
-            builder.Host.ConfigureContainer<IServiceCollection>((_, collection) => collection.AddTransient<Window>(provider =>
-            {
-                services = provider;
-                return StartupWindowFactory.Create(provider);
-            }));
-            var host = builder.Build();
+            Assert.Null(Application.Current);
+            Assert.True(PluginSetup.IsRequired(directory));
+            using var service = new NuGetPluginService(
+                NullLogger<NuGetPluginService>.Instance, new UnusedHttpClientFactory(),
+                Repository.Factory.GetCoreV3("https://nuget.test/v3/index.json"), directory,
+                NuGetPluginService.CreateHostPackageVersions(), AppInfo.Instance.Version.Major);
+            using var configuration = new ConfigurationManager();
+            using var viewModel = new PluginSetupViewModel(service, configuration,
+                NullLogger<PluginSetupViewModel>.Instance, Dispatcher.CurrentDispatcher);
+            var setup = new PluginSetupWindow(viewModel);
             Exception? failure = null;
-            var verified = false;
-            host.Loaded += (_, e) =>
+            setup.Loaded += (_, _) =>
             {
-                _ = e.Window.Dispatcher.InvokeAsync(async () =>
+                _ = setup.Dispatcher.InvokeAsync(async () =>
                 {
-                    var app = (App)Application.Current;
                     try
                     {
-                        var window = Assert.IsType<PluginSetupWindow>(e.Window);
-                        Assert.Same(window, app.MainWindow);
-                        Assert.Single(app.Windows.Cast<Window>());
-                        Assert.True(app.WaitForStartupAsync().IsCompletedSuccessfully);
-                        Assert.IsAssignableFrom<FluentWindow>(window);
-                        Assert.Empty(Descendants<ContentDialog>(window));
-                        var titleBar = Assert.Single(Descendants<TitleBar>(window));
+                        Assert.Null(Application.Current);
+                        Assert.Empty(Descendants<ContentDialog>(setup));
+                        var titleBar = Assert.Single(Descendants<TitleBar>(setup));
                         Assert.False(titleBar.ShowClose);
-                        Assert.True(titleBar.ActualHeight > 0);
                         Assert.NotNull(titleBar.Template);
-                        window.Close();
-                        Assert.True(window.IsVisible);
+                        Assert.True(titleBar.ActualHeight > 0);
+                        foreach (var theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark })
+                        {
+                            ApplicationThemeManager.Apply(theme);
+                            Assert.Equal(
+                                Assert.IsType<SolidColorBrush>(UiApplication.Current.TryFindResource("TextFillColorPrimaryBrush")).Color,
+                                Assert.IsType<SolidColorBrush>(setup.FindResource("TextFillColorPrimaryBrush")).Color);
+                        }
+                        setup.Close();
+                        Assert.True(setup.IsVisible);
 
-                        var viewModel = Assert.IsType<PluginSetupViewModel>(window.DataContext);
-                        var buttons = Descendants<Wpf.Ui.Controls.Button>(window).ToArray();
+                        var buttons = Descendants<Wpf.Ui.Controls.Button>(setup).ToArray();
                         var install = Assert.Single(buttons, button => button.Command == viewModel.InstallCommand);
                         var skip = Assert.Single(buttons, button => button.Command == viewModel.FinishCommand);
                         Assert.False(install.IsEnabled);
                         Assert.True(skip.IsEnabled);
                         Assert.InRange(skip.ActualHeight, 24, 60);
-                        Assert.True(skip.TransformToAncestor(window).Transform(new Point()).Y + skip.ActualHeight <= window.ActualHeight);
-
+                        Assert.True(skip.TransformToAncestor(setup).Transform(new Point()).Y + skip.ActualHeight <= setup.ActualHeight);
                         viewModel.Groups = [new("OCR", [new PluginSetupPackage(new(
                             "WindowTranslator.Plugin.OneOcrPlugin", "OneOCR", "WindowsのOCRエンジンを使用します。",
-                            "Freesia", null, null, ["1.0.0"], IsOfficial: true), builder.Configuration)])];
+                            "Freesia", null, null, ["1.0.0"], IsOfficial: true), configuration)])];
                         viewModel.IsLoading = false;
-                        window.UpdateLayout();
+                        setup.UpdateLayout();
                         Assert.True(install.IsEnabled);
-
+                    }
+                    catch (Exception ex)
+                    {
+                        failure = ex;
+                    }
+                    finally
+                    {
                         await viewModel.FinishCommand.ExecuteAsync(null);
+                    }
+                }, DispatcherPriority.ApplicationIdle);
+            };
+            setup.ShowDialog();
+            if (failure is not null)
+            {
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
+            }
+            Assert.True(viewModel.IsCompleted);
+            Assert.False(setup.IsVisible);
+            Assert.Null(Application.Current);
+            Assert.False(PluginSetup.IsRequired(directory));
+            Assert.False(service.IsRestartRequired);
 
-                        Assert.True(viewModel.IsCompleted);
-                        Assert.False(viewModel.RequiresRestart);
-                        Assert.False(window.IsVisible);
-                        var startup = Assert.IsType<StartupDialog>(app.MainWindow);
-                        Assert.IsType<StartupViewModel>(startup.DataContext);
-                        Assert.True(startup.IsVisible);
-                        Assert.True(app.WaitForStartupAsync().IsCompletedSuccessfully);
+            // 前段のShowDialogと同じSTAで、従来どおりの本体ホストを初めて起動する。
+            var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
+            builder.Configuration.Sources.Clear();
+            builder.Configuration.AddInMemoryCollection();
+            builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
+            builder.Services.AddSingleton<IVirtualDesktopManager, TestDesktopManager>();
+            builder.Services.AddPresentation<StartupDialog, StartupViewModel>();
+            var host = builder.Build();
+            var verified = false;
+            host.Loaded += (_, e) =>
+            {
+                _ = e.Window.Dispatcher.InvokeAsync(async () =>
+                {
+                    var app = Assert.IsType<App>(Application.Current);
+                    try
+                    {
+                        PluginSetup.AttachApplicationTheme(e.Window);
+                        Assert.Same(app.Resources, UiApplication.Current.Resources);
+                        Assert.Same(e.Window, app.MainWindow);
                         Assert.Single(app.Windows.Cast<Window>());
-                        Assert.True(File.Exists(Path.Combine(directory, "nuget-manifest.json")));
+                        Assert.IsType<StartupViewModel>(e.Window.DataContext);
+                        Assert.True(app.WaitForStartupAsync().IsCompletedSuccessfully);
+                        Assert.True(e.Window.IsVisible);
+                        // 閉じたセットアップに残るWPF-UIのイベントが、通常起動を壊さないこと。
+                        ApplicationThemeManager.Apply(ApplicationTheme.Light);
+                        ApplicationThemeManager.Apply(ApplicationTheme.Dark);
 
-                        // 次回起動相当ではセットアップを作らず、自動起動時の非表示も維持する。
-                        var provider = Assert.IsAssignableFrom<IServiceProvider>(services);
-                        provider.GetRequiredService<IConfiguration>()[nameof(LaunchMode)] = nameof(LaunchMode.Startup);
-                        var existing = Assert.IsType<StartupDialog>(StartupWindowFactory.Create(provider));
-                        Assert.IsType<StartupViewModel>(existing.DataContext);
-                        existing.Show();
-                        await existing.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-                        Assert.False(existing.IsVisible);
+                        // 自動起動時に通常画面を隠す既存の処理も変更しない。
+                        builder.Configuration[nameof(LaunchMode)] = nameof(LaunchMode.Startup);
+                        var hidden = host.Services.GetRequiredService<StartupDialog>();
+                        hidden.Show();
+                        await hidden.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                        Assert.False(hidden.IsVisible);
                         verified = true;
                     }
                     catch (Exception ex)
@@ -140,8 +165,7 @@ public sealed class PluginSetupWindowTests
                     }
                 }, DispatcherPriority.ApplicationIdle);
             };
-            // 専用STAスレッドでは、ホスト内部のApplication.Runがメッセージループを実行する。
-#pragma warning disable VSTHRD002
+#pragma warning disable VSTHRD002 // 専用STAでApplication.Runのメッセージループを実行する。
             host.RunAsync().GetAwaiter().GetResult();
 #pragma warning restore VSTHRD002
             if (failure is not null)
@@ -161,14 +185,8 @@ public sealed class PluginSetupWindowTests
         for (var index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
         {
             var child = VisualTreeHelper.GetChild(parent, index);
-            if (child is T match)
-            {
-                yield return match;
-            }
-            foreach (var descendant in Descendants<T>(child))
-            {
-                yield return descendant;
-            }
+            if (child is T match) yield return match;
+            foreach (var descendant in Descendants<T>(child)) yield return descendant;
         }
     }
 

@@ -54,13 +54,13 @@ if (!createdNew)
     _ = SingleInstanceWindowActivator.TryActivateExistingInstance();
     return;
 }
-var d = SplashWindow.ShowSplash();
-
-
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
 
-var builder = KamishibaiApplication<App, Window>.CreateBuilder();
+var setupShown = PluginSetup.ShowIfRequired(args);
+var d = SplashWindow.ShowSplash();
+
+var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
 builder.Host.ConfigureLogging((c, l) =>
 {
@@ -192,7 +192,6 @@ builder.Services.AddSingleton(sp => new NuGetPluginService(
         AppInfo.Instance.Version.Major))
     .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
 builder.Services.AddTransient<PluginStoreViewModel>();
-builder.Services.AddTransient<PluginSetupViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
@@ -210,12 +209,13 @@ builder.Services.AddSingleton<IGitHubClient>(_ =>
     return new GitHubClient(new ProductHeaderValue(name, version.ToString()));
 });
 
-// ホストの既定ウィンドウ登録後に、セットアップの完了状態で選ぶファクトリを登録する。
-builder.Host.ConfigureContainer<IServiceCollection>((_, services) => services.AddTransient<Window>(StartupWindowFactory.Create));
-
 var app = builder.Build();
 app.Loaded += (_, e) =>
 {
+    if (setupShown)
+    {
+        PluginSetup.AttachApplicationTheme(e.Window);
+    }
     d.Dispose();
     e.Window.Activate();
 };

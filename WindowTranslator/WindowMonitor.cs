@@ -5,17 +5,11 @@ using Microsoft.VisualStudio.Threading;
 using System.Diagnostics;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
-using WindowTranslator.Modules.PluginStore;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator;
 
-public class WindowMonitor(
-    IMainWindowModule mainWindowModule,
-    IOptionsMonitor<UserSettings> userSettings,
-    IVirtualDesktopManager desktopManager,
-    ILogger<WindowMonitor> logger,
-    App app) : BackgroundService
+public class WindowMonitor(IMainWindowModule mainWindowModule, IOptionsMonitor<UserSettings> userSettings, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
 {
     private readonly IMainWindowModule mainWindowModule = mainWindowModule;
     private readonly IOptionsMonitor<UserSettings> userSettings = userSettings;
@@ -25,14 +19,9 @@ public class WindowMonitor(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await app.WaitForStartupAsync().WaitAsync(stoppingToken);
         while (!stoppingToken.IsCancellationRequested)
         {
-            // 保存完了から再起動・画面切替までの間も、自動翻訳は開始しない。
-            if (!await app.Dispatcher.InvokeAsync(() => app.MainWindow is PluginSetupWindow))
-            {
-                CheckProcesses();
-            }
+            CheckProcesses();
             stoppingToken.ThrowIfCancellationRequested();
             await Task.Delay(5000, stoppingToken);
             stoppingToken.ThrowIfCancellationRequested();

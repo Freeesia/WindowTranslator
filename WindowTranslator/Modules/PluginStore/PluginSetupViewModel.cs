@@ -1,4 +1,4 @@
-using System.Windows;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +12,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     private readonly NuGetPluginService service;
     private readonly IConfiguration configuration;
     private readonly ILogger<PluginSetupViewModel> logger;
+    private readonly Dispatcher? dispatcher;
     private readonly List<InstalledPackageInfo> installedPackages = [];
     private bool disposed;
     private bool finishRequested;
@@ -56,22 +57,23 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     public string PrimaryText => this.HasStarted ? this["SetupRetry"] : Resources.Install;
     public string SecondaryText => this.HasStarted ? Resources.Exit : this["SetupSkip"];
     public bool IsCompleted { get; private set; }
-    public bool RequiresRestart => this.installedPackages.Count > 0;
     public event EventHandler? Completed;
 
     public PluginSetupViewModel(
-        NuGetPluginService service, IConfiguration configuration, ILogger<PluginSetupViewModel> logger)
+        NuGetPluginService service, IConfiguration configuration, ILogger<PluginSetupViewModel> logger,
+        Dispatcher? dispatcher = null)
     {
         this.service = service;
         this.configuration = configuration;
         this.logger = logger;
+        this.dispatcher = dispatcher;
         this.service.PackageInformationUpdated += OnPackageInformationUpdated;
         ApplySnapshot();
     }
 
     private void OnPackageInformationUpdated(object? sender, EventArgs e)
     {
-        if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+        if (this.dispatcher is { } dispatcher && !dispatcher.CheckAccess())
         {
             _ = dispatcher.BeginInvoke(ApplySnapshot);
         }

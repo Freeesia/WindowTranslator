@@ -53,7 +53,7 @@ public sealed class NuGetPluginServiceTests
 
             Assert.Equal(1, completed);
             Assert.True(viewModel.IsCompleted);
-            Assert.False(viewModel.RequiresRestart);
+            Assert.False(service.IsRestartRequired);
             Assert.False(service.IsSetupRequired);
             Assert.Empty(service.PackageSnapshot.InstalledPackages);
             Assert.False(viewModel.InstallCommand.CanExecute(null));
@@ -88,7 +88,7 @@ public sealed class NuGetPluginServiceTests
             Assert.True(viewModel.InstallCommand.CanExecute(null));
             await viewModel.InstallCommand.ExecuteAsync(null);
             Assert.True(viewModel.IsCompleted);
-            Assert.False(viewModel.RequiresRestart);
+            Assert.False(service.IsRestartRequired);
         }
         finally
         {
@@ -134,7 +134,7 @@ public sealed class NuGetPluginServiceTests
 
             Assert.Equal(1, completed);
             Assert.True(viewModel.IsCompleted);
-            Assert.True(viewModel.RequiresRestart);
+            Assert.False(service.IsRestartRequired);
             Assert.False(service.IsSetupRequired);
             Assert.Equal(retry ? 2 : 1, service.PackageSnapshot.InstalledPackages.Count);
             Assert.Single(service.PackageSnapshot.InstalledPackages, package => package.Id == "Successful.Plugin");
@@ -167,7 +167,7 @@ public sealed class NuGetPluginServiceTests
 
             Assert.True(viewModel.IsCompleted);
             Assert.Null(viewModel.ErrorMessage);
-            Assert.False(viewModel.RequiresRestart);
+            Assert.False(service.IsRestartRequired);
             Assert.Empty(service.PackageSnapshot.InstalledPackages);
         }
         finally
@@ -227,7 +227,7 @@ public sealed class NuGetPluginServiceTests
             await service.CompleteSetupAsync([installed]);
 
             Assert.False(service.IsSetupRequired);
-            Assert.True(service.IsRestartRequired);
+            Assert.False(service.IsRestartRequired);
             var manifest = JsonSerializer.Deserialize<InstalledManifest>(
                 await File.ReadAllTextAsync(manifestPath),
                 NuGetPluginService.ManifestJsonOptions);
@@ -238,6 +238,54 @@ public sealed class NuGetPluginServiceTests
         finally
         {
             DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
+    public async Task SetupInstalledPluginLoadsInTheSameProcessWithoutRestart()
+    {
+        var directory = CreateTestDirectory();
+        var cacheDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            var assemblyPath = typeof(NuGetPluginServiceTests).Assembly.Location;
+            handler.AddPackage("Catalog.Probe", "1.0.0", CreatePackage("Catalog.Probe", "1.0.0", [],
+                new Dictionary<string, byte[]>
+                {
+                    [$"lib/net10.0/{Path.GetFileName(assemblyPath)}"] = await File.ReadAllBytesAsync(assemblyPath),
+                }));
+            using var service = CreateService(handler, directory);
+            using var viewModel = CreateSetupViewModel(service, "Catalog.Probe");
+
+            await viewModel.InstallCommand.ExecuteAsync(null);
+
+            Assert.True(viewModel.IsCompleted);
+            Assert.False(service.IsRestartRequired);
+            var options = new FolderPluginCatalogOptions();
+            options.TypeFinderOptions.TypeFinderCriterias.Clear();
+            options.TypeFinderOptions.TypeFinderCriterias.Add(new()
+            {
+                Query = static (_, type) => type.Name == nameof(CatalogProbeTranslateModule),
+            });
+            options.PluginLoadContextOptions.UseHostApplicationAssemblies = UseHostApplicationAssembliesEnum.Selected;
+            options.PluginLoadContextOptions.HostApplicationAssemblies = AssemblyLoadContext.Default.Assemblies
+                .Where(assembly => !assembly.IsDynamic && assembly != typeof(NuGetPluginServiceTests).Assembly)
+                .Select(assembly => assembly.GetName()).ToList();
+            var catalog = new NuGetPluginCatalog(directory, cacheDirectory, AppInfo.Instance.Version.Major,
+                NuGetPluginService.CreateHostPackageVersions()[NuGetPluginService.AbstractionsPackageId], options);
+
+            await catalog.Initialize();
+
+            var plugin = Assert.Single(catalog.GetPlugins(), plugin => plugin.Type.Name == nameof(CatalogProbeTranslateModule));
+            Assert.NotSame(AssemblyLoadContext.Default, AssemblyLoadContext.GetLoadContext(plugin.Type.Assembly));
+            var module = Assert.IsAssignableFrom<ITranslateModule>(Activator.CreateInstance(plugin.Type));
+            Assert.Equal("1.2.3", Assert.Single(await module.TranslateAsync([new("source", null)])));
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+            DeleteTestDirectory(cacheDirectory);
         }
     }
 

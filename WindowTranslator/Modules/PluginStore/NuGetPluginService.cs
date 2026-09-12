@@ -299,10 +299,6 @@ public sealed class NuGetPluginService : BackgroundService
         EnsureSetupRequired();
         await SaveManifestAsync(new([.. packages], this.HideDisclaimer), cancellationToken).ConfigureAwait(false);
         UpdateInstalledPackages(packages);
-        if (packages.Count > 0)
-        {
-            Volatile.Write(ref this.restartRequired, 1);
-        }
     }
 
     private void EnsureSetupRequired()
