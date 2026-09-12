@@ -1180,6 +1180,7 @@ public sealed class NuGetPluginServiceTests
             using (var service = CreateService(handler, testDirectory))
             {
                 await service.SetHideDisclaimerAsync(true);
+                Assert.True(File.Exists(Path.Combine(testDirectory, "nuget-manifest.json")));
                 await service.InstallPackageAsync("Root.Plugin", "1.0.0");
                 await service.UninstallPackageAsync("Root.Plugin");
             }

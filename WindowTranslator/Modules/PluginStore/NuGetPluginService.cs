@@ -275,6 +275,12 @@ public sealed class NuGetPluginService : BackgroundService
         UpdateInstalledPackages(updatedManifest.Packages);
         Volatile.Write(ref this.restartRequired, 1);
         progress?.Report(100);
+
+        this.logger.LogInformation(
+            "パッケージのインストール完了: {PackageId} {Version} -> {TargetDir}",
+            packageId,
+            version,
+            pluginOperation.TargetPath);
     }
 
     // セットアップ中は配置だけを確定し、成功分の一覧は完了時にまとめて保存する。
@@ -334,11 +340,6 @@ public sealed class NuGetPluginService : BackgroundService
         Directory.Move(pluginOperation.WorkingPath, pluginOperation.TargetPath);
         progress?.Report(95);
 
-        this.logger.LogInformation(
-            "パッケージの配置完了: {PackageId} {Version} -> {TargetDir}",
-            packageId,
-            version,
-            pluginOperation.TargetPath);
         return new(packageId, version, this.hostMajorVersion, abstractionsVersionRange.ToString());
     }
 
@@ -372,10 +373,6 @@ public sealed class NuGetPluginService : BackgroundService
     {
         Volatile.Write(ref this.hideDisclaimer, value);
         using var operation = await this.operationLock.EnterAsync(cancellationToken);
-        if (this.IsSetupRequired)
-        {
-            return;
-        }
         var manifest = await LoadManifestAsync(cancellationToken).ConfigureAwait(false);
         var currentValue = this.HideDisclaimer;
         if (manifest.HideDisclaimer == currentValue)

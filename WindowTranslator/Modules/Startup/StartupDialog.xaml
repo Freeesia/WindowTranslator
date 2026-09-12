@@ -33,13 +33,13 @@
     <StackPanel Orientation="Vertical">
         <ui:TitleBar
             Title="WindowTranslator"
-            Icon="{ui:ImageIcon '/WindowTranslator;component/wt.ico'}"
+            Icon="{ui:ImageIcon '/wt.ico'}"
             ShowMaximize="False"
             ShowMinimize="False" />
         <StackPanel Orientation="Horizontal">
             <ctrl:NotifyIcon2
                 Command="{Binding RunCommand}"
-                Icon="/WindowTranslator;component/wt.ico"
+                Icon="/wt.ico"
                 MenuOnRightClick="True">
                 <ctrl:NotifyIcon2.Menu>
                     <ContextMenu ItemsSource="{Binding TaskBarIconMenus, Mode=OneWay}">

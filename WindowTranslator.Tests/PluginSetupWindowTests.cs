@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -50,9 +51,12 @@ public sealed class PluginSetupWindowTests
     {
         var directory = Path.Combine(Path.GetTempPath(), "WindowTranslator.Tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
+        var entryAssembly = Assembly.GetEntryAssembly();
         try
         {
             Assert.Null(Application.Current);
+            // testhostではなく本体のアセンブリから、既存XAMLの相対リソースを解決する。
+            Assembly.SetEntryAssembly(typeof(App).Assembly);
             Assert.True(PluginSetup.IsRequired(directory));
             using var service = new NuGetPluginService(
                 NullLogger<NuGetPluginService>.Instance, new UnusedHttpClientFactory(),
@@ -176,6 +180,7 @@ public sealed class PluginSetupWindowTests
         }
         finally
         {
+            Assembly.SetEntryAssembly(entryAssembly);
             Directory.Delete(directory, recursive: true);
         }
     }
