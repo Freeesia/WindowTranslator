@@ -79,13 +79,7 @@ public sealed class PluginSetupWindowTests
                         Assert.False(titleBar.ShowClose);
                         Assert.NotNull(titleBar.Template);
                         Assert.True(titleBar.ActualHeight > 0);
-                        foreach (var theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark })
-                        {
-                            ApplicationThemeManager.Apply(theme);
-                            Assert.Equal(
-                                Assert.IsType<SolidColorBrush>(UiApplication.Current.TryFindResource("TextFillColorPrimaryBrush")).Color,
-                                Assert.IsType<SolidColorBrush>(setup.FindResource("TextFillColorPrimaryBrush")).Color);
-                        }
+                        Assert.IsType<SolidColorBrush>(setup.FindResource("TextFillColorPrimaryBrush"));
                         setup.Close();
                         Assert.True(setup.IsVisible);
 
@@ -140,7 +134,7 @@ public sealed class PluginSetupWindowTests
                     var app = Assert.IsType<App>(Application.Current);
                     try
                     {
-                        PluginSetup.AttachApplicationTheme(e.Window);
+                        PluginSetup.AttachApplicationTheme();
                         Assert.Same(app.Resources, UiApplication.Current.Resources);
                         Assert.Same(e.Window, app.MainWindow);
                         Assert.Single(app.Windows.Cast<Window>());

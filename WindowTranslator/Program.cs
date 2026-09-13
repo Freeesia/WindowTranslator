@@ -214,7 +214,7 @@ app.Loaded += (_, e) =>
 {
     if (setupShown)
     {
-        PluginSetup.AttachApplicationTheme(e.Window);
+        PluginSetup.AttachApplicationTheme();
     }
     d.Dispose();
     e.Window.Activate();

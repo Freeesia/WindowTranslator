@@ -69,11 +69,9 @@ internal static class PluginSetup
 #pragma warning restore VSTHRD002
     }
 
-    internal static void AttachApplicationTheme(Window window)
+    internal static void AttachApplicationTheme()
     {
-        // Applicationなしで作られたWPF-UIのリソース参照を、本体のApplicationへ接続する。
         UiApplication.Current.Resources = Application.Current.Resources;
-        UiApplication.Current.MainWindow = window;
         ApplicationThemeManager.ApplySystemTheme();
     }
 }

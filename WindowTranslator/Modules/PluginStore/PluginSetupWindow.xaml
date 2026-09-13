@@ -14,7 +14,13 @@
     WindowBackdropType="Mica"
     WindowStartupLocation="CenterScreen">
     <ui:FluentWindow.Resources>
-        <BooleanToVisibilityConverter x:Key="b2v" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="b2v" />
+        </ResourceDictionary>
     </ui:FluentWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>

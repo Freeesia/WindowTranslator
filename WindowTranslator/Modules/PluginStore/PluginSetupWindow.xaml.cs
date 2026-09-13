@@ -2,10 +2,8 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32.Foundation;
-using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using static Windows.Win32.PInvoke;
 
@@ -23,20 +21,10 @@ public partial class PluginSetupWindow : FluentWindow
         this.viewModel = viewModel;
         InitializeComponent();
         this.DataContext = viewModel;
-        this.SetCurrentValue(MinWidthProperty, Math.Min(this.MinWidth, SystemParameters.WorkArea.Width));
-        this.SetCurrentValue(MinHeightProperty, Math.Min(this.MinHeight, SystemParameters.WorkArea.Height));
-        this.SetCurrentValue(WidthProperty, Math.Min(this.Width, SystemParameters.WorkArea.Width));
-        this.SetCurrentValue(HeightProperty, Math.Min(this.Height, SystemParameters.WorkArea.Height));
-        ApplicationThemeManager.Changed += OnThemeChanged;
-        SystemThemeWatcher.Watch(this);
-        ApplicationThemeManager.Apply(this);
         this.viewModel.Completed += OnCompleted;
     }
 
     private void OnCompleted(object? sender, EventArgs e) => Close();
-
-    private void OnThemeChanged(ApplicationTheme theme, Color accent)
-        => ApplicationThemeManager.Apply(this);
 
     protected override void OnSourceInitialized(EventArgs e)
     {
@@ -69,15 +57,10 @@ public partial class PluginSetupWindow : FluentWindow
         base.OnClosing(e);
         // Alt+F4などでも未完了のセットアップを閉じず、スキップ操作で確定する。
         e.Cancel |= !this.viewModel.IsCompleted;
-        if (!e.Cancel && this.IsLoaded)
-        {
-            SystemThemeWatcher.UnWatch(this);
-        }
     }
 
     protected override void OnClosed(EventArgs e)
     {
-        ApplicationThemeManager.Changed -= OnThemeChanged;
         this.viewModel.Completed -= OnCompleted;
         this.hwndSource?.RemoveHook(WndProc);
         if (!this.windowHandle.IsNull)
@@ -85,7 +68,6 @@ public partial class PluginSetupWindow : FluentWindow
             using SafeFileHandle marker = RemoveProp(this.windowHandle, SingleInstanceWindowActivator.StartupDialogMarker);
             marker.SetHandleAsInvalid();
         }
-        this.viewModel.Dispose();
         base.OnClosed(e);
     }
 }
