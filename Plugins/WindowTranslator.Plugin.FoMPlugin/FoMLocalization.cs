@@ -34,14 +34,15 @@ internal static class FoMLocalization
         }
 
         var eng = new Dictionary<string, string>(StringComparer.Ordinal);
-        ReadT2Localization(archive, eng);
+        var speakers = new Dictionary<string, string>(StringComparer.Ordinal);
+        ReadT2Localization(archive, eng, speakers);
         ReadFiddleLocalization(archive, fiddleRenames, eng);
         if (eng.Count == 0)
         {
             return null;
         }
 
-        return new(eng, ReadAssetProperties(archive.GetEntry(JapaneseTranslationEntryName)) ?? []);
+        return new(eng, ReadAssetProperties(archive.GetEntry(JapaneseTranslationEntryName)) ?? [], speakers);
     }
 
     private static Dictionary<string, string[]>? ReadFiddleRenames(ZipArchiveEntry? entry)
@@ -61,7 +62,10 @@ internal static class FoMLocalization
                 StringComparer.Ordinal);
     }
 
-    private static void ReadT2Localization(ZipArchive archive, Dictionary<string, string> localization)
+    private static void ReadT2Localization(
+        ZipArchive archive,
+        Dictionary<string, string> localization,
+        Dictionary<string, string> speakers)
     {
         foreach (var entry in archive.Entries.Where(entry =>
                      entry.FullName.StartsWith(T2EntryPrefix, StringComparison.Ordinal) &&
@@ -74,15 +78,21 @@ internal static class FoMLocalization
             }
 
             var fileKey = entry.FullName[T2EntryPrefix.Length..^ConversationEntrySuffix.Length];
+            var fileSpeaker = GetFileSpeaker(fileKey);
             foreach (var conversation in document.Where(property => property.Value is TomlTable))
             {
                 var conversationKey = $"{fileKey}/{conversation.Key}";
                 var conversationTable = (TomlTable)conversation.Value;
-                ReadConversationEntry(conversationTable, conversationKey, "init", localization);
+                var currentSpeaker = GetExplicitSpeaker(conversationTable)
+                    ?? fileSpeaker
+                    ?? GetRequiredNpc(conversationTable);
+                ReadConversationEntry(conversationTable, conversationKey, "init", currentSpeaker, localization, speakers);
 
                 foreach (var sequence in conversationTable.Where(property => property.Value is TomlTable))
                 {
-                    ReadConversationEntry((TomlTable)sequence.Value, conversationKey, sequence.Key, localization);
+                    var sequenceTable = (TomlTable)sequence.Value;
+                    currentSpeaker = GetExplicitSpeaker(sequenceTable) ?? currentSpeaker;
+                    ReadConversationEntry(sequenceTable, conversationKey, sequence.Key, currentSpeaker, localization, speakers);
                 }
             }
         }
@@ -92,11 +102,13 @@ internal static class FoMLocalization
         TomlTable entry,
         string conversationKey,
         string sequenceKey,
-        Dictionary<string, string> localization)
+        string? speaker,
+        Dictionary<string, string> localization,
+        Dictionary<string, string> speakers)
     {
         if (entry.TryGetValue("local", out var local))
         {
-            AddConversationText(localization, $"{conversationKey}/{sequenceKey}", local);
+            AddConversationText(localization, speakers, $"{conversationKey}/{sequenceKey}", local, speaker);
         }
 
         if (entry.TryGetValue("prompts", out var prompts))
@@ -107,7 +119,9 @@ internal static class FoMLocalization
                 if (prompt.TryGetValue("local", out var promptLocal) &&
                     promptLocal is string text)
                 {
-                    localization[$"{conversationKey}/{sequenceKey}/prompts/{index}"] = text;
+                    var key = $"{conversationKey}/{sequenceKey}/prompts/{index}";
+                    localization[key] = text;
+                    speakers[key] = "Ari";
                 }
 
                 index++;
@@ -137,12 +151,15 @@ internal static class FoMLocalization
 
     private static void AddConversationText(
         Dictionary<string, string> localization,
+        Dictionary<string, string> speakers,
         string key,
-        object? value)
+        object? value,
+        string? speaker)
     {
         if (value is string text)
         {
             localization[key] = text;
+            AddSpeaker(speakers, key, speaker);
             return;
         }
 
@@ -160,6 +177,75 @@ internal static class FoMLocalization
 
             var sequenceKey = index == 0 ? key : $"{key}$_sequence_entry_{index}$";
             localization[sequenceKey] = sequenceText;
+            AddSpeaker(speakers, sequenceKey, speaker);
+        }
+    }
+
+    private static void AddSpeaker(Dictionary<string, string> speakers, string key, string? speaker)
+    {
+        if (!string.IsNullOrWhiteSpace(speaker))
+        {
+            speakers[key] = speaker;
+        }
+    }
+
+    private static string? GetFileSpeaker(string fileKey)
+    {
+        var parts = fileKey.Split('/');
+        return parts is ["Conversations", "Bank", var speaker, ..] ? speaker : null;
+    }
+
+    private static string? GetExplicitSpeaker(TomlTable entry)
+    {
+        if (entry.TryGetValue("speaker", out var speaker) && speaker is string speakerName)
+        {
+            return speakerName;
+        }
+
+        return null;
+    }
+
+    private static string? GetRequiredNpc(TomlTable entry)
+    {
+        if (!entry.TryGetValue("requires", out var requires))
+        {
+            return null;
+        }
+
+        var npcNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        CollectNpcRequirements(requires, npcNames);
+        return npcNames.Count == 1 ? npcNames.Single() : null;
+    }
+
+    private static void CollectNpcRequirements(object? value, HashSet<string> npcNames)
+    {
+        switch (value)
+        {
+            case TomlTable table:
+                if (table.TryGetValue("npc", out var npc) && npc is string npcName)
+                {
+                    npcNames.Add(npcName);
+                }
+
+                foreach (var property in table.Values)
+                {
+                    CollectNpcRequirements(property, npcNames);
+                }
+                break;
+
+            case TomlArray array:
+                foreach (var item in array)
+                {
+                    CollectNpcRequirements(item, npcNames);
+                }
+                break;
+
+            case TomlTableArray tableArray:
+                foreach (var table in tableArray)
+                {
+                    CollectNpcRequirements(table, npcNames);
+                }
+                break;
         }
     }
 
