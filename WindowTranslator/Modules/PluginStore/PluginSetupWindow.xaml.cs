@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32.Foundation;
+using Wpf.Ui;
+using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using static Windows.Win32.PInvoke;
 
@@ -21,6 +23,8 @@ public partial class PluginSetupWindow : FluentWindow
         this.viewModel = viewModel;
         InitializeComponent();
         this.DataContext = viewModel;
+        UiApplication.Current.Resources = this.Resources;
+        SystemThemeWatcher.Watch(this);
         this.viewModel.Completed += OnCompleted;
     }
 
@@ -55,8 +59,16 @@ public partial class PluginSetupWindow : FluentWindow
     protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);
-        // Alt+F4などでも未完了のセットアップを閉じず、スキップ操作で確定する。
-        e.Cancel |= !this.viewModel.IsCompleted;
+        if (!this.viewModel.IsCompleted)
+        {
+            // 閉じる操作はスキップとして結果を保存し、保存できるまでは画面を閉じない。
+            e.Cancel = true;
+            _ = this.viewModel.FinishCommand.ExecuteAsync(null);
+        }
+        else if (this.IsLoaded)
+        {
+            SystemThemeWatcher.UnWatch(this);
+        }
     }
 
     protected override void OnClosed(EventArgs e)

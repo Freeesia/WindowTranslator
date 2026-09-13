@@ -76,12 +76,15 @@ public sealed class PluginSetupWindowTests
                         Assert.Null(Application.Current);
                         Assert.Empty(Descendants<ContentDialog>(setup));
                         var titleBar = Assert.Single(Descendants<TitleBar>(setup));
-                        Assert.False(titleBar.ShowClose);
+                        Assert.True(titleBar.ShowClose);
                         Assert.NotNull(titleBar.Template);
                         Assert.True(titleBar.ActualHeight > 0);
-                        Assert.IsType<SolidColorBrush>(setup.FindResource("TextFillColorPrimaryBrush"));
-                        setup.Close();
-                        Assert.True(setup.IsVisible);
+                        Assert.False(titleBar.ShowMinimize);
+                        Assert.Same(setup.Resources, UiApplication.Current.Resources);
+                        var lightForeground = GetForegroundColor(setup, ApplicationTheme.Light);
+                        var darkForeground = GetForegroundColor(setup, ApplicationTheme.Dark);
+                        Assert.NotEqual(lightForeground, darkForeground);
+                        ApplicationThemeManager.ApplySystemTheme();
 
                         var buttons = Descendants<Wpf.Ui.Controls.Button>(setup).ToArray();
                         var install = Assert.Single(buttons, button => button.Command == viewModel.InstallCommand);
@@ -96,6 +99,7 @@ public sealed class PluginSetupWindowTests
                         viewModel.IsLoading = false;
                         setup.UpdateLayout();
                         Assert.True(install.IsEnabled);
+                        setup.Close();
                     }
                     catch (Exception ex)
                     {
@@ -103,7 +107,10 @@ public sealed class PluginSetupWindowTests
                     }
                     finally
                     {
-                        await viewModel.FinishCommand.ExecuteAsync(null);
+                        if (!viewModel.IsCompleted)
+                        {
+                            await viewModel.FinishCommand.ExecuteAsync(null);
+                        }
                     }
                 }, DispatcherPriority.ApplicationIdle);
             };
@@ -187,6 +194,12 @@ public sealed class PluginSetupWindowTests
             if (child is T match) yield return match;
             foreach (var descendant in Descendants<T>(child)) yield return descendant;
         }
+    }
+
+    private static Color GetForegroundColor(FrameworkElement element, ApplicationTheme theme)
+    {
+        ApplicationThemeManager.Apply(theme);
+        return Assert.IsType<SolidColorBrush>(element.FindResource("TextFillColorPrimaryBrush")).Color;
     }
 
     private sealed class UnusedHttpClientFactory : IHttpClientFactory

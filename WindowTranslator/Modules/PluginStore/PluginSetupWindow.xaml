@@ -30,8 +30,9 @@
         <ui:TitleBar
             Title="WindowTranslator"
             Icon="{ui:ImageIcon '/WindowTranslator;component/wt.ico'}"
-            ShowClose="False"
-            ShowMaximize="False" />
+            ShowClose="True"
+            ShowMaximize="False"
+            ShowMinimize="False" />
         <Grid Grid.Row="1" Margin="24,8,24,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
