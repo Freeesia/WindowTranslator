@@ -14,7 +14,6 @@ namespace WindowTranslator.Plugin.FoMPlugin;
 public partial class FoMFilterModule : IFilterModule
 {
     private readonly bool isEnabled;
-    private readonly bool useJpn;
     private readonly bool exclude;
     private readonly FrozenDictionary<string, LocInfo[]> builtin = FrozenDictionary<string, LocInfo[]>.Empty;
     private readonly FrozenSet<string> untranslatedSources = FrozenSet<string>.Empty;
@@ -288,7 +287,6 @@ public partial class FoMFilterModule : IFilterModule
         }
 
         this.isEnabled = true;
-        this.useJpn = options.Value.UseJpn;
         if (loc.Jpn.Count == 0)
         {
             loc = loc with { Jpn = names };
@@ -450,11 +448,7 @@ public partial class FoMFilterModule : IFilterModule
                 }
 
                 var match = CreateCacheInfo(selected, src.SourceText);
-                if (this.useJpn && !string.IsNullOrEmpty(match.Ja))
-                {
-                    yield return src with { TranslatedText = match.Ja };
-                }
-                else if (!string.IsNullOrEmpty(match.CharContext))
+                if (!string.IsNullOrEmpty(match.CharContext))
                 {
                     yield return src with { Context = match.CharContext + match.SceneContext };
                 }
@@ -478,11 +472,7 @@ public partial class FoMFilterModule : IFilterModule
                 }
 
                 var match = CreateCacheInfo(selected, correction.En);
-                if (this.useJpn && !string.IsNullOrEmpty(match.Ja))
-                {
-                    yield return src with { TranslatedText = match.Ja };
-                }
-                else if (!string.IsNullOrEmpty(match.CharContext))
+                if (!string.IsNullOrEmpty(match.CharContext))
                 {
                     yield return src with { SourceText = match.En, Context = match.CharContext + match.SceneContext };
                 }
@@ -627,7 +617,7 @@ public partial class FoMFilterModule : IFilterModule
     private CacheInfo CreateCacheInfo(LocInfo info, string en)
     {
         var keys = info.Key.Split('/');
-        return new(keys, en, info.Text, GetCharContext(info), GetSceneContext(keys));
+        return new(keys, en, GetCharContext(info), GetSceneContext(keys));
     }
 
     private static string? GetProcessPath(int processId)
@@ -693,13 +683,11 @@ record Localization(
 record LocInfo(string Key, string Text, string Speaker);
 
 record CorrectionMatch(string En, LocInfo[] Candidates);
-record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
+record CacheInfo(string[] Keys, string En, string CharContext, string SceneContext);
 
 public class FoMOptions : IPluginParam
 {
     public bool IsEnabledCorrect { get; set; } = true;
-
-    public bool UseJpn { get; set; } = true;
 
     public string PlayerName { get; set; } = string.Empty;
 
