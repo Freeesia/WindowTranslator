@@ -11,12 +11,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Startup;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using ProgressBar = System.Windows.Controls.ProgressBar;
 
 namespace WindowTranslator.Tests;
 
@@ -93,12 +95,19 @@ public sealed class PluginSetupWindowTests
                         Assert.True(skip.IsEnabled);
                         Assert.InRange(skip.ActualHeight, 24, 60);
                         Assert.True(skip.TransformToAncestor(setup).Transform(new Point()).Y + skip.ActualHeight <= setup.ActualHeight);
-                        viewModel.Groups = [new("OCR", [new PluginSetupPackage(new(
+                        viewModel.Groups = [new("OcrModule", [new PluginSetupPackage(new(
                             "WindowTranslator.Plugin.OneOcrPlugin", "OneOCR", "WindowsのOCRエンジンを使用します。",
                             "Freesia", null, null, ["1.0.0"], IsOfficial: true), configuration)])];
                         viewModel.IsLoading = false;
                         setup.UpdateLayout();
                         Assert.True(install.IsEnabled);
+                        Assert.DoesNotContain(Descendants<TextBlock>(setup), text =>
+                            text.Text == "WindowsのOCRエンジンを使用します。");
+                        var help = Assert.Single(Descendants<HyperlinkButton>(setup));
+                        Assert.Equal(
+                            HelpUriBuilder.Build("OcrModule", System.Globalization.CultureInfo.CurrentUICulture),
+                            help.NavigateUri);
+                        Assert.Single(Descendants<ProgressBar>(setup));
                         setup.Close();
                     }
                     catch (Exception ex)

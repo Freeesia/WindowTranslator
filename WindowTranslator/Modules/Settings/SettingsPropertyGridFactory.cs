@@ -220,7 +220,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         grid.Children.Add(control);
 
         // 現在のUI言語に基づいてURLを構築
-        var helpUri = BuildHelpUri(pageName);
+        var helpUri = HelpUriBuilder.Build(pageName, CultureInfo.CurrentUICulture);
 
         // ヘルプボタンを配置
         var helpButton = new HyperlinkButton
@@ -242,25 +242,6 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         grid.Children.Add(helpButton);
 
         return grid;
-    }
-
-    private static string BuildHelpUri(string pageName)
-    {
-        const string baseUrl = "https://wt.studiofreesia.com/";
-
-        // 現在のUI言語を取得
-        var culture = CultureInfo.CurrentUICulture;
-
-        // 言語コードをドキュメントファイルのサフィックスにマッピング
-        var languageSuffix = culture.Name switch
-        {
-            "ja-JP" or "ja" => "", // 日本語はデフォルト（サフィックスなし）
-            "zh-Hans" or "zh-CN" => ".zh-cn",
-            "zh-Hant" or "zh-TW" => ".zh-tw",
-            _ => "." + culture.TwoLetterISOLanguageName.ToLowerInvariant(),
-        };
-
-        return $"{baseUrl}{pageName}{languageSuffix}";
     }
 
     private class SymbolIcon(SymbolRegular symbol) : Wpf.Ui.Controls.SymbolIcon(symbol)

@@ -119,6 +119,8 @@ public sealed class NuGetPluginServiceTests
             Assert.Empty(service.PackageSnapshot.InstalledPackages);
             Assert.True(viewModel.Groups[0].Packages[0].Package.IsInstalled);
             Assert.NotNull(viewModel.Groups[0].Packages[1].ErrorMessage);
+            Assert.Equal(100, viewModel.InstallProgress);
+            Assert.False(viewModel.IsInstalling);
             Assert.False(viewModel.CanSelect);
             Assert.True(viewModel.InstallCommand.CanExecute(null));
             Assert.True(viewModel.FinishCommand.CanExecute(null));

@@ -1,8 +1,10 @@
+using System.Globalization;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using WindowTranslator.ComponentModel;
 using WindowTranslator.Properties;
 
 namespace WindowTranslator.Modules.PluginStore;
@@ -26,6 +28,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInstall))]
+    [NotifyPropertyChangedFor(nameof(IsProgressVisible))]
     [NotifyCanExecuteChangedFor(nameof(InstallCommand), nameof(ReloadCommand))]
     private bool isLoading;
 
@@ -48,6 +51,13 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     [ObservableProperty]
     private IReadOnlyList<PluginSetupGroup> groups = [];
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsProgressVisible))]
+    private bool isInstalling;
+
+    [ObservableProperty]
+    private double installProgress;
+
     public string this[string key] => Resources.ResourceManager.GetString(key, Resources.Culture) ?? string.Empty;
     public bool CanInstall => !this.IsBusy && !this.IsCompleted
         && (this.HasStarted || (!this.IsLoading && !this.HasSearchError));
@@ -56,6 +66,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     public bool CanSelect => !this.HasStarted && !this.IsBusy;
     public string PrimaryText => this.HasStarted ? this["SetupRetry"] : Resources.Install;
     public string SecondaryText => this.HasStarted ? Resources.Exit : this["SetupSkip"];
+    public bool IsProgressVisible => this.IsLoading || this.IsInstalling;
     public bool IsCompleted { get; private set; }
     public event EventHandler? Completed;
 
@@ -102,11 +113,10 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
             if (previousSelections.TryGetValue(package.Package.Id, out var previous))
             {
                 package.IsSelected = previous.IsSelected;
-                package.Package.UsePrerelease = previous.Package.UsePrerelease;
             }
         }
-        this.Groups = [.. packages.GroupBy(package => package.Category)
-            .OrderBy(group => group.Key)
+        this.Groups = [.. packages.GroupBy(package => package.CategoryKey)
+            .OrderBy(group => Resources.ResourceManager.GetString(group.Key, Resources.Culture))
             .Select(group => new PluginSetupGroup(group.Key, [.. group.OrderBy(package => package.Package.Title)]))];
         this.HasSearchError = snapshot.Error is not null;
         this.ErrorMessage = this.HasSearchError ? Resources.NuGetSearchFailed
@@ -154,21 +164,25 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         this.HasSearchError = false;
         this.ErrorMessage = null;
         var failed = false;
+        var packages = this.Groups.SelectMany(group => group.Packages)
+            .Where(package => package.IsSelected && !package.Package.IsInstalled)
+            .ToArray();
+        var completedCount = 0;
+        this.InstallProgress = 0;
+        this.IsInstalling = packages.Length > 0;
         try
         {
-            foreach (var package in this.Groups.SelectMany(group => group.Packages)
-                .Where(package => package.IsSelected && !package.Package.IsInstalled))
+            foreach (var package in packages)
             {
                 package.ErrorMessage = null;
-                package.Package.IsInstalling = true;
-                package.Package.InstallProgress = 0;
                 try
                 {
                     var version = package.Package.LatestVersion
                         ?? throw new InvalidOperationException(this["SetupSelectVersion"]);
                     var installed = await this.service.InstallSetupPackageAsync(
                         package.Package.Id, version,
-                        new Progress<double>(value => package.Package.InstallProgress = value));
+                        new CallbackProgress<double>(value => SetInstallProgress(
+                            (completedCount + Math.Clamp(value, 0, 100) / 100) / packages.Length * 100)));
                     this.installedPackages.Add(installed);
                     package.Package.IsInstalled = true;
                     package.Package.InstalledVersion = version;
@@ -181,7 +195,8 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
                 }
                 finally
                 {
-                    package.Package.IsInstalling = false;
+                    completedCount++;
+                    this.InstallProgress = (double)completedCount / packages.Length * 100;
                 }
             }
             if (failed)
@@ -195,6 +210,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         }
         finally
         {
+            this.IsInstalling = false;
             this.IsBusy = false;
         }
         if (this.IsCompleted)
@@ -243,20 +259,54 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         }
     }
 
+    private void SetInstallProgress(double value)
+    {
+        if (this.dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(() => this.InstallProgress = value);
+        }
+        else
+        {
+            this.InstallProgress = value;
+        }
+    }
+
     public void Dispose()
     {
         this.disposed = true;
         this.service.PackageInformationUpdated -= OnPackageInformationUpdated;
         this.Completed = null;
     }
+
+    private sealed class CallbackProgress<T>(Action<T> callback) : IProgress<T>
+    {
+        public void Report(T value) => callback(value);
+    }
 }
 
-internal sealed record PluginSetupGroup(string Name, IReadOnlyList<PluginSetupPackage> Packages);
+internal sealed record PluginSetupGroup(string CategoryKey, IReadOnlyList<PluginSetupPackage> Packages)
+{
+    public string Name { get; } = Resources.ResourceManager.GetString(CategoryKey, Resources.Culture) ?? string.Empty;
+    public IReadOnlyList<PluginSetupHelpLink> HelpLinks { get; } = CategoryKey switch
+    {
+        "OcrModule" => [CreateHelpLink("OcrModule")],
+        "TranslateModule" => [CreateHelpLink("TranslateModule")],
+        "SetupTranslationOcr" => [CreateHelpLink("TranslateModule"), CreateHelpLink("OcrModule")],
+        _ => [],
+    };
+
+    private static PluginSetupHelpLink CreateHelpLink(string pageName)
+        => new(
+            HelpUriBuilder.Build(pageName, CultureInfo.CurrentUICulture),
+            Resources.ResourceManager.GetString(pageName, Resources.Culture) ?? string.Empty);
+}
+
+internal sealed record PluginSetupHelpLink(string Uri, string ToolTip);
 
 internal sealed partial class PluginSetupPackage : ObservableObject
 {
     public PluginPackageViewModel Package { get; }
-    public string Category { get; }
+    public string CategoryKey { get; }
 
     [ObservableProperty]
     private bool isSelected;
@@ -268,7 +318,7 @@ internal sealed partial class PluginSetupPackage : ObservableObject
     {
         this.Package = new(info, false, null);
         var (categoryKey, modules) = GetDefinition(info.Id);
-        this.Category = Resources.ResourceManager.GetString(categoryKey, Resources.Culture) ?? string.Empty;
+        this.CategoryKey = categoryKey;
         var targets = configuration.GetSection(nameof(UserSettings.Targets)).GetChildren().ToArray();
         this.isSelected = targets.SelectMany(target => target.GetSection(nameof(TargetSettings.SelectedPlugins)).GetChildren())
             .Any(selection => modules.Contains(selection.Value, StringComparer.OrdinalIgnoreCase));
