@@ -3,6 +3,12 @@
     <DistributionProject Include="$(MSBuildThisFileDirectory)..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
     <DistributionProject Include="$(MSBuildThisFileDirectory)..\ColorThief\ColorThief\ColorThief.csproj" />
     <DistributionProject Include="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.*\*.csproj" />
+
+    <AppBundleProject Include="$(MSBuildThisFileDirectory)..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
+    <AppBundleProject Include="$(MSBuildThisFileDirectory)..\ColorThief\ColorThief\ColorThief.csproj" />
+    <AppBundleProject
+      Include="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.*\*.csproj"
+      Exclude="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.OrcaRouterPlugin\WindowTranslator.Plugin.OrcaRouterPlugin.csproj" />
   </ItemGroup>
 
   <Target Name="RestoreProjects">
@@ -20,10 +26,10 @@
 
   <Target Name="PublishAppBundle" DependsOnTargets="RestoreProjects">
     <MSBuild
-      Projects="@(DistributionProject)"
+      Projects="@(AppBundleProject)"
       Targets="Publish"
       BuildInParallel="true"
       RemoveProperties="AppBundleOutputPath"
-      Properties="PublishDir=$(AppBundleOutputPath)\%(DistributionProject.Filename)\" />
+      Properties="PublishDir=$(AppBundleOutputPath)\%(AppBundleProject.Filename)\" />
   </Target>
 </Project>

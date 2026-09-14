@@ -68,6 +68,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 > |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | |
 > |     Gemini     | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い | 少額の課金が必要 |
 > |    ChatGPT     | TBD | 翻訳精度が高い | 少額の課金が必要 |
+> |   OrcaRouter   | TBD | 無料で簡単にAI翻訳を使える<br/>有料ならいろんなAIモデルを利用できる | 無料だと翻訳速度が遅い |
 > |  ローカルLLM   | TBD | サービス自体は無料 | 高スペックなPCが必要 |
 
 ## その他の機能
