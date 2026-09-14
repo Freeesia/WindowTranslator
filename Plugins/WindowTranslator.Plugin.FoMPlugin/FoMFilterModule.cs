@@ -263,7 +263,12 @@ public partial class FoMFilterModule : IFilterModule
 
     public double Priority => -1;
 
-    public FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptionsSnapshot<FoMOptions> options, ILogger<FoMFilterModule> logger)
+    public FoMFilterModule(
+        IProcessInfoStore processInfo,
+        ITranslateModule translateModule,
+        IOptionsSnapshot<LanguageOptions> languageOptions,
+        IOptionsSnapshot<FoMOptions> options,
+        ILogger<FoMFilterModule> logger)
     {
         this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
         {
@@ -280,16 +285,17 @@ public partial class FoMFilterModule : IFilterModule
         {
             return;
         }
-        var loc = FoMLocalization.Load(Path.Combine(Path.GetDirectoryName(exePath)!, "assets.zip"));
+        var translationCode = GetTranslationCode(languageOptions.Value.Target);
+        var loc = FoMLocalization.Load(Path.Combine(Path.GetDirectoryName(exePath)!, "assets.zip"), translationCode);
         if (loc is null)
         {
             return;
         }
 
         this.isEnabled = true;
-        if (loc.Jpn.Count == 0)
+        if (translationCode == "jpn" && loc.Translation.Count == 0)
         {
-            loc = loc with { Jpn = names };
+            loc = loc with { Translation = names };
         }
         var player = options.Value.PlayerName;
         var farm = options.Value.FarmName;
@@ -299,7 +305,7 @@ public partial class FoMFilterModule : IFilterModule
                 en: p.Value.ReplaceToPlain(player, farm),
                 info: new LocInfo(
                     p.Key,
-                    loc.Jpn.TryGetValue(p.Key, out var s) ? s.CorrenctJpn().ReplaceToPlain(player, farm) : string.Empty,
+                    loc.Translation.TryGetValue(p.Key, out var s) ? s.CorrectTranslation(translationCode == "jpn").ReplaceToPlain(player, farm) : string.Empty,
                     loc.Speakers.GetValueOrDefault(p.Key, string.Empty))))
             // OCRで段落ごとに分割されている場合があるので、それを考慮する
             .SelectMany(p => SplitParagraph(p.en, p.info))
@@ -361,15 +367,15 @@ public partial class FoMFilterModule : IFilterModule
                     </シーン全体>
                     """);
 
-        var sample = loc.Jpn
+        var sample = loc.Translation
                 .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
                 .Select(p => (p.Key,
-                    Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
+                    Translation: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
                     En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
-                .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
+                .GroupBy(p => p.Key.Split('/')[2], t => (t.Translation, t.En))
                 .ToDictionary(
                     g => g.Key,
-                g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}日本語: {p.Ja}")));
+                g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}翻訳: {p.Translation}")));
 
         this.context = charContext
             .ToFrozenDictionary(
@@ -561,7 +567,7 @@ public partial class FoMFilterModule : IFilterModule
         }
 
         var preferred = candidates;
-        // 日本語表示中に英語で残るのは未翻訳リソースなので、同じ英文なら日本語訳がない候補を優先する
+        // 翻訳先言語で英語のまま残るのは未翻訳リソースなので、同じ英文なら翻訳がない候補を優先する
         var untranslated = preferred.Where(candidate => string.IsNullOrEmpty(candidate.Text)).ToArray();
         if (untranslated.Length > 0)
         {
@@ -658,6 +664,31 @@ public partial class FoMFilterModule : IFilterModule
             _ => string.Empty,
         };
 
+    private static string? GetTranslationCode(string targetLanguage)
+    {
+        var normalized = targetLanguage.Replace('_', '-');
+        var language = normalized.Split('-', 2)[0];
+        if (language.Equals("zh", StringComparison.OrdinalIgnoreCase))
+        {
+            return normalized.Contains("Hant", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.EndsWith("-TW", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.EndsWith("-HK", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.EndsWith("-MO", StringComparison.OrdinalIgnoreCase)
+                ? "zh-Hant"
+                : "zh-Hans";
+        }
+
+        return language.ToLowerInvariant() switch
+        {
+            "ja" => "jpn",
+            "fr" => "fra",
+            "ko" => "kor",
+            "ru" => "rus",
+            "es" => "spa",
+            _ => null,
+        };
+    }
+
     private static string GetSpeakerName(LocInfo info)
     {
         if (!string.IsNullOrWhiteSpace(info.Speaker))
@@ -678,7 +709,7 @@ public partial class FoMFilterModule : IFilterModule
 
 record Localization(
     Dictionary<string, string> Eng,
-    Dictionary<string, string> Jpn,
+    Dictionary<string, string> Translation,
     Dictionary<string, string> Speakers);
 record LocInfo(string Key, string Text, string Speaker);
 
@@ -699,12 +730,12 @@ public class FoMOptions : IPluginParam
 file static class Extentions
 {
 
-    public static string CorrenctJpn(this string s)
+    public static string CorrectTranslation(this string s, bool isJapanese)
         => s switch
         {
             "MISSING" => string.Empty,
-            "近い" => "閉じる",
-            "出口" => "終了",
+            "近い" when isJapanese => "閉じる",
+            "出口" when isJapanese => "終了",
             _ => s,
         };
 

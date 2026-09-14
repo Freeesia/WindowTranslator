@@ -7,13 +7,14 @@ namespace WindowTranslator.Plugin.FoMPlugin;
 internal static class FoMLocalization
 {
     private const string LocalizationManifestEntryName = "assets/localization/l10n.meta.toml";
-    private const string JapaneseTranslationEntryName = "assets/localization/translations/jpn.meta.toml";
+    private const string TranslationEntryPrefix = "assets/localization/translations/";
+    private const string TranslationEntrySuffix = ".meta.toml";
     private const string T2EntryPrefix = "assets/t2/";
     private const string ConversationEntrySuffix = ".c.toml";
     private const string FiddleEntryPrefix = "assets/fiddle/";
     private const string TomlEntrySuffix = ".toml";
 
-    public static Localization? Load(string archivePath)
+    public static Localization? Load(string archivePath, string? translationCode)
     {
         if (!File.Exists(archivePath))
         {
@@ -21,10 +22,10 @@ internal static class FoMLocalization
         }
 
         using var stream = File.OpenRead(archivePath);
-        return Load(stream);
+        return Load(stream, translationCode);
     }
 
-    internal static Localization? Load(Stream stream)
+    internal static Localization? Load(Stream stream, string? translationCode)
     {
         using var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true);
         var fiddleRenames = ReadFiddleRenames(archive.GetEntry(LocalizationManifestEntryName));
@@ -42,7 +43,10 @@ internal static class FoMLocalization
             return null;
         }
 
-        return new(eng, ReadAssetProperties(archive.GetEntry(JapaneseTranslationEntryName)) ?? [], speakers);
+        var translation = string.IsNullOrEmpty(translationCode)
+            ? []
+            : ReadAssetProperties(archive.GetEntry($"{TranslationEntryPrefix}{translationCode}{TranslationEntrySuffix}")) ?? [];
+        return new(eng, translation, speakers);
     }
 
     private static Dictionary<string, string[]>? ReadFiddleRenames(ZipArchiveEntry? entry)
