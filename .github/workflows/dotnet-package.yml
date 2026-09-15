@@ -32,6 +32,8 @@ jobs:
       - uses: Jimver/cuda-toolkit@v0.2.36
         with:
           cuda: '12.9.0'
+          sub-packages: '["cublas", "cudart"]'
+          use-github-cache: false
       - run: |
           dotnet msbuild Plugins\WindowTranslator.Plugins.proj -target:Pack `
             -p:Configuration=Release `
