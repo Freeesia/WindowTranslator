@@ -3,7 +3,7 @@
     <Title>OrcaRouter Plugin</Title>
     <Description>OrcaRouter のブラウザー認証、料金付きモデル選択と翻訳に対応する WindowTranslator プラグイン。</Description>
     <IsPackable>true</IsPackable>
-    <IsPublishable>true</IsPublishable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" ExcludeAssets="runtime" />
