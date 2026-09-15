@@ -4,11 +4,8 @@
     <DistributionProject Include="$(MSBuildThisFileDirectory)..\ColorThief\ColorThief\ColorThief.csproj" />
     <DistributionProject Include="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.*\*.csproj" />
 
-    <AppBundleProject Include="$(MSBuildThisFileDirectory)..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
-    <AppBundleProject Include="$(MSBuildThisFileDirectory)..\ColorThief\ColorThief\ColorThief.csproj" />
-    <AppBundleProject
-      Include="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.*\*.csproj"
-      Exclude="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.OrcaRouterPlugin\WindowTranslator.Plugin.OrcaRouterPlugin.csproj" />
+    <AppBundleProject Include="@(DistributionProject)" />
+    <AppBundleProject Remove="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.OrcaRouterPlugin\WindowTranslator.Plugin.OrcaRouterPlugin.csproj" />
   </ItemGroup>
 
   <Target Name="RestoreProjects">

@@ -136,6 +136,25 @@ A translation module using local LLM specialized for Japanese.
 
 ---
 
+## OrcaRouter
+
+A translation module that uses OrcaRouter's OpenAI-compatible API. The OrcaRouter plugin is not included in the application bundle, so install it from the plugin store.
+
+### Advantages
+- **Free to use**: Select a free model to use AI translation at no cost
+- **Many models**: With credits, you can use a variety of AI models through OrcaRouter
+- **No API Key Entry**: You can get started with browser-based authentication
+
+### Disadvantages
+- **Free Model Speed**: Free models may translate more slowly than paid models
+- **External Service Transmission**: Translation text is sent to OrcaRouter and the selected upstream model provider
+
+### Recommended Use Cases
+- When you want to use AI translation for free
+- When you want to use a variety of AI models from one plugin
+
+---
+
 ## How to Choose a Module
 
 | Purpose                        | Recommended Module                           |
@@ -143,5 +162,6 @@ A translation module using local LLM specialized for Japanese.
 | Start using immediately        | **Bergamot** or **Google Translate**        |
 | Highest quality translation    | **Google AI** or **ChatGPT API**            |
 | Keep costs down                | **Bergamot** or **DeepL (within free tier)** |
+| Use AI translation for free    | **OrcaRouter**                              |
 | Privacy focused                | **Bergamot** or **PLaMo**                   |
 | High frequency usage           | **Bergamot** or **DeepL**                   |
