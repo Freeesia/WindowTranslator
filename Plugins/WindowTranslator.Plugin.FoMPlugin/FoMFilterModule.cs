@@ -1,10 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Diagnostics;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Text.Unicode;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,21 +13,18 @@ namespace WindowTranslator.Plugin.FoMPlugin;
 
 public partial class FoMFilterModule : IFilterModule
 {
-    private static readonly JsonSerializerOptions serializerOptions = new()
-    {
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-        PropertyNameCaseInsensitive = true,
-    };
     private readonly bool isEnabled;
-    private readonly bool useJpn;
     private readonly bool exclude;
-    private readonly FrozenDictionary<string, LocInto> builtin = FrozenDictionary<string, LocInto>.Empty;
+    private readonly FrozenDictionary<string, LocInfo[]> builtin = FrozenDictionary<string, LocInfo[]>.Empty;
+    private readonly FrozenSet<string> untranslatedSources = FrozenSet<string>.Empty;
     private readonly FrozenDictionary<string, string> scenes = FrozenDictionary<string, string>.Empty;
     private readonly FrozenDictionary<string, string> context = FrozenDictionary<string, string>.Empty;
-    private readonly ConcurrentDictionary<string, CacheInfo> cache = [];
+    private readonly ConcurrentDictionary<string, CorrectionMatch> cache = [];
     private readonly Channel<IReadOnlyList<string>> queue;
     private readonly ILogger<FoMFilterModule> logger;
-    private static readonly Dictionary<string, string> charContext = new()
+    private string recentScene = string.Empty;
+    private string recentSpeaker = string.Empty;
+    private static readonly Dictionary<string, string> charContext = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Celine"] = """
                 この文章はCelineという女性のセリフです。
@@ -269,7 +263,12 @@ public partial class FoMFilterModule : IFilterModule
 
     public double Priority => -1;
 
-    public FoMFilterModule(IProcessInfoStore processInfo, ITranslateModule translateModule, IOptionsSnapshot<FoMOptions> options, ILogger<FoMFilterModule> logger)
+    public FoMFilterModule(
+        IProcessInfoStore processInfo,
+        ITranslateModule translateModule,
+        IOptionsSnapshot<LanguageOptions> languageOptions,
+        IOptionsSnapshot<FoMOptions> options,
+        ILogger<FoMFilterModule> logger)
     {
         this.queue = Channel.CreateBounded<IReadOnlyList<string>>(new(1)
         {
@@ -286,40 +285,43 @@ public partial class FoMFilterModule : IFilterModule
         {
             return;
         }
-
-
-        this.isEnabled = true;
-        this.useJpn = options.Value.UseJpn;
-        var path = Path.Combine(Path.GetDirectoryName(exePath)!, "localization.json");
-        if (!File.Exists(path))
+        var translationCode = GetTranslationCode(languageOptions.Value.Target);
+        var loc = FoMLocalization.Load(Path.Combine(Path.GetDirectoryName(exePath)!, "assets.zip"), translationCode);
+        if (loc is null)
         {
             return;
         }
-        using var fs = File.OpenRead(path);
-        var loc = JsonSerializer.Deserialize<Localization>(fs, serializerOptions) ?? new([], []);
-        if (loc.Eng is null)
+
+        this.isEnabled = true;
+        if (translationCode == "jpn" && loc.Translation.Count == 0)
         {
-            loc = loc with { Eng = [] };
-        }
-        if (loc.Jpn is null)
-        {
-            loc = loc with { Jpn = names };
+            loc = loc with { Translation = names };
         }
         var player = options.Value.PlayerName;
         var farm = options.Value.FarmName;
         this.exclude = options.Value.ExcludeUnspecifiedText;
-        this.builtin = loc!.Eng
+        this.builtin = loc.Eng
             .Select(p => (
                 en: p.Value.ReplaceToPlain(player, farm),
-                ja: new LocInto(p.Key, loc.Jpn.TryGetValue(p.Key, out var s) ? s.CorrenctJpn().ReplaceToPlain(player, farm) : string.Empty)))
+                info: new LocInfo(
+                    p.Key,
+                    loc.Translation.TryGetValue(p.Key, out var s) ? s.CorrectTranslation(translationCode == "jpn").ReplaceToPlain(player, farm) : string.Empty,
+                    loc.Speakers.GetValueOrDefault(p.Key, string.Empty))))
             // OCRで段落ごとに分割されている場合があるので、それを考慮する
-            .SelectMany(p => SplitParagraph(p.en, p.ja))
+            .SelectMany(p => SplitParagraph(p.en, p.info))
             // OCRでは改行コードが抜けているので、編集距離を計算する際に邪魔になる
-            .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.ja))
+            .Select(p => (en: p.en.ReplaceLineEndings(string.Empty), p.info))
             // 置換系は対象外
             .Where(p => !p.en.Contains('['))
-            .DistinctBy(p => p.en)
-            .ToFrozenDictionary(p => p.en, p => p.ja);
+            .GroupBy(p => p.en, StringComparer.Ordinal)
+            .ToFrozenDictionary(
+                group => group.Key,
+                group => group.Select(p => p.info).DistinctBy(p => p.Key).ToArray(),
+                StringComparer.Ordinal);
+        this.untranslatedSources = this.builtin
+            .Where(p => p.Value.Any(info => string.IsNullOrEmpty(info.Text)))
+            .Select(p => p.Key)
+            .ToFrozenSet(StringComparer.Ordinal);
 
         // 会話文全体を抜き出しておく
         static double ParseOrder(string n) => n switch
@@ -329,7 +331,7 @@ public partial class FoMFilterModule : IFilterModule
             _ => int.TryParse(n, out var i) ? i : 99,
         };
         this.scenes = loc.Eng
-            .Select(p => (key: p.Key.Split('/'), p.Value))
+            .Select(p => (key: p.Key.Split('/'), p.Value, Speaker: loc.Speakers.GetValueOrDefault(p.Key, string.Empty)))
             .Where(p => p.key[0] is "Conversations" or "Cutscenes" or "letters")
             .GroupBy(
                 p => p.key switch
@@ -365,15 +367,15 @@ public partial class FoMFilterModule : IFilterModule
                     </シーン全体>
                     """);
 
-        var sample = loc.Jpn
+        var sample = loc.Translation
                 .Where(p => p.Key.StartsWith("Conversations/Bank/", StringComparison.Ordinal) && p.Value != "MISSING")
                 .Select(p => (p.Key,
-                    Ja: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
+                    Translation: p.Value.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty),
                     En: loc.Eng.TryGetValue(p.Key, out var en) ? en.ReplaceToPlain(player, farm).ReplaceLineEndings(string.Empty) : string.Empty))
-                .GroupBy(p => p.Key.Split('/')[2], t => (t.Ja, t.En))
+                .GroupBy(p => p.Key.Split('/')[2], t => (t.Translation, t.En))
                 .ToDictionary(
                     g => g.Key,
-                g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}日本語: {p.Ja}")));
+                g => string.Join(Environment.NewLine + Environment.NewLine, g.Take(5).Select(p => $"英語: {p.En}{Environment.NewLine}翻訳: {p.Translation}")));
 
         this.context = charContext
             .ToFrozenDictionary(
@@ -384,12 +386,14 @@ public partial class FoMFilterModule : IFilterModule
 
                     以下のテキストはこのキャラクターのセリフの翻訳例です。
                     {s}
-                    """ : p.Value);
+                    """ : p.Value,
+                StringComparer.OrdinalIgnoreCase);
 
         // キャラ名やアイテム名を用語集として登録
         translateModule.RegisterGlossaryAsync(
-            this.builtin.Where(p => Glossary1Regex().IsMatch(p.Value.Key) || Glossary2Regex().IsMatch(p.Value.Key))
-                .Select(p => (p.Key, p.Value.Text))
+            this.builtin.SelectMany(p => p.Value.Select(info => (En: p.Key, Info: info)))
+                .Where(p => Glossary1Regex().IsMatch(p.Info.Key) || Glossary2Regex().IsMatch(p.Info.Key))
+                .Select(p => (p.En, p.Info.Text))
                 .Append((player, player))
                 .Append((farm, farm))
                 .Where(p => !string.IsNullOrEmpty(p.Item2))
@@ -405,21 +409,21 @@ public partial class FoMFilterModule : IFilterModule
         Task.Run(Correct);
     }
 
-    private static IEnumerable<(string en, LocInto ja)> SplitParagraph(string en, LocInto ja)
+    private static IEnumerable<(string en, LocInfo info)> SplitParagraph(string en, LocInfo info)
     {
         var enLines = en.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
-        var jaLines = ja.Text.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
+        var jaLines = info.Text.Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
         if (enLines.Length == jaLines.Length)
         {
-            return enLines.Zip(jaLines, (e, j) => (e, ja with { Text = j }));
+            return enLines.Zip(jaLines, (e, j) => (e, info with { Text = j }));
         }
         else if (enLines.Length > jaLines.Length)
         {
-            return enLines.Select((e, i) => (e, ja with { Text = i < jaLines.Length ? jaLines[i] : string.Empty }));
+            return enLines.Select((e, i) => (e, info with { Text = i < jaLines.Length ? jaLines[i] : string.Empty }));
         }
         else
         {
-            return enLines.Select((e, i) => (e, ja with { Text = i == enLines.Length - 1 ? string.Join("\n\n", jaLines[i..]) : jaLines[i] }));
+            return enLines.Select((e, i) => (e, info with { Text = i == enLines.Length - 1 ? string.Join("\n\n", jaLines[i..]) : jaLines[i] }));
         }
     }
 
@@ -434,50 +438,57 @@ public partial class FoMFilterModule : IFilterModule
             }
             yield break;
         }
-        var match = new List<string>();
+        var matchedSpeakers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var notContexts = new List<(TextRect text, CacheInfo cache)>();
         var targets = new List<string>();
         await foreach (var src in texts.ConfigureAwait(false))
         {
-            if (this.builtin.TryGetValue(src.SourceText, out var dst))
+            if (this.builtin.TryGetValue(src.SourceText, out var candidates))
             {
-                match.Add(src.SourceText);
-                var keys = dst.Key.Split('/');
-                if (this.useJpn && !string.IsNullOrEmpty(dst.Text))
+                var selected = SelectCandidate(candidates);
+                RememberCandidate(candidates);
+                var selectedSpeaker = GetSpeakerName(selected);
+                if (!string.IsNullOrEmpty(selectedSpeaker))
                 {
-                    yield return src with { TranslatedText = dst.Text };
+                    matchedSpeakers.Add(selectedSpeaker);
                 }
-                else if (GetCharContext(keys) is { Length: > 0 } charContext)
+
+                var match = CreateCacheInfo(selected, src.SourceText);
+                if (!string.IsNullOrEmpty(match.CharContext))
                 {
-                    yield return src with { Context = charContext + GetSceneContext(keys) };
+                    yield return src with { Context = match.CharContext + match.SceneContext };
                 }
-                else if (keys is [.., "prompts", _])
+                else if (match.Keys is [.., "prompts", _])
                 {
-                    yield return src with { Context = GetCharContext("Ari") + GetSceneContext(keys) };
+                    yield return src with { Context = GetCharContext("Ari") + match.SceneContext };
                 }
                 else
                 {
-                    notContexts.Add((src, new(keys, src.SourceText, dst.Text, string.Empty, GetSceneContext(keys))));
+                    notContexts.Add((src, match));
                 }
             }
-            else if (this.cache.TryGetValue(src.SourceText, out var c))
+            else if (this.cache.TryGetValue(src.SourceText, out var correction))
             {
-                match.Add(c.En);
-                if (this.useJpn && !string.IsNullOrEmpty(c.Ja))
+                var selected = SelectCandidate(correction.Candidates);
+                RememberCandidate(correction.Candidates);
+                var selectedSpeaker = GetSpeakerName(selected);
+                if (!string.IsNullOrEmpty(selectedSpeaker))
                 {
-                    yield return src with { TranslatedText = c.Ja };
+                    matchedSpeakers.Add(selectedSpeaker);
                 }
-                else if (!string.IsNullOrEmpty(c.CharContext))
+
+                var match = CreateCacheInfo(selected, correction.En);
+                if (!string.IsNullOrEmpty(match.CharContext))
                 {
-                    yield return src with { SourceText = c.En, Context = c.CharContext + c.SceneContext };
+                    yield return src with { SourceText = match.En, Context = match.CharContext + match.SceneContext };
                 }
-                else if (c.Keys is [.., "prompts", _])
+                else if (match.Keys is [.., "prompts", _])
                 {
-                    yield return src with { SourceText = c.En, Context = GetCharContext("Ari") + c.SceneContext };
+                    yield return src with { SourceText = match.En, Context = GetCharContext("Ari") + match.SceneContext };
                 }
                 else
                 {
-                    notContexts.Add((src, c));
+                    notContexts.Add((src, match));
                 }
             }
             else
@@ -491,7 +502,7 @@ public partial class FoMFilterModule : IFilterModule
         }
         if (notContexts.Count > 0)
         {
-            var contexts = match.Select(GetCharContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
+            var contexts = matchedSpeakers.Select(GetCharContext).Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
             if (contexts is [var ctx])
             {
                 notContexts = notContexts.Select(p => p with { text = p.text with { SourceText = p.cache.En, Context = ctx + p.cache.SceneContext } }).ToList();
@@ -521,7 +532,12 @@ public partial class FoMFilterModule : IFilterModule
             foreach (var text in texts)
             {
                 var t = DateTime.UtcNow;
-                var (key, en, ja, distance) = this.builtin.Select(p => (p.Value.Key, p.Key, p.Value.Text, length: Levenshtein.GetDistance(p.Key, text, CalculationOptions.DefaultWithThreading))).MinBy(s => s.length);
+                IEnumerable<string> sources = this.untranslatedSources.Count > 0
+                    ? this.untranslatedSources
+                    : this.builtin.Keys;
+                var (en, distance) = sources
+                    .Select(source => (source, distance: Levenshtein.GetDistance(source, text, CalculationOptions.DefaultWithThreading)))
+                    .MinBy(result => result.distance);
                 // 一致率の計算
                 var p = 1 - ((float)distance / Math.Max(text.Length, en.Length));
                 this.logger.LogDebug($"LevenshteinDistance: {text} -> {en} ({p:p2}%) [{DateTime.UtcNow - t}]");
@@ -530,10 +546,84 @@ public partial class FoMFilterModule : IFilterModule
                 {
                     continue;
                 }
-                var keys = key.Split('/');
-                this.cache.TryAdd(text, new(keys, en, ja, GetCharContext(keys), GetSceneContext(keys)));
+                this.cache.TryAdd(text, new(en, this.builtin[en]));
             }
         }
+    }
+
+    private LocInfo SelectCandidate(LocInfo[] candidates)
+    {
+        var preferred = GetPreferredCandidates(candidates);
+        return preferred
+            .OrderByDescending(candidate => !string.IsNullOrEmpty(GetSpeakerName(candidate)))
+            .First();
+    }
+
+    private LocInfo[] GetPreferredCandidates(LocInfo[] candidates)
+    {
+        if (candidates.Length == 1)
+        {
+            return candidates;
+        }
+
+        var preferred = candidates;
+        // 翻訳先言語で英語のまま残るのは未翻訳リソースなので、同じ英文なら翻訳がない候補を優先する
+        var untranslated = preferred.Where(candidate => string.IsNullOrEmpty(candidate.Text)).ToArray();
+        if (untranslated.Length > 0)
+        {
+            preferred = untranslated;
+        }
+
+        if (!string.IsNullOrEmpty(this.recentScene))
+        {
+            var sameScene = preferred.Where(candidate => GetSceneKey(candidate.Key.Split('/')) == this.recentScene).ToArray();
+            if (sameScene.Length > 0)
+            {
+                preferred = sameScene;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(this.recentSpeaker))
+        {
+            var sameSpeaker = preferred.Where(candidate =>
+                string.Equals(GetSpeakerName(candidate), this.recentSpeaker, StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (sameSpeaker.Length > 0)
+            {
+                preferred = sameSpeaker;
+            }
+        }
+
+        return preferred;
+    }
+
+    private void RememberCandidate(LocInfo[] candidates)
+    {
+        var preferred = GetPreferredCandidates(candidates);
+        var scenes = preferred
+            .Select(candidate => GetSceneKey(candidate.Key.Split('/')))
+            .Where(scene => !string.IsNullOrEmpty(scene))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        if (scenes is [var scene])
+        {
+            this.recentScene = scene;
+        }
+
+        var speakers = preferred
+            .Select(GetSpeakerName)
+            .Where(speaker => !string.IsNullOrEmpty(speaker))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        if (speakers is [var speaker])
+        {
+            this.recentSpeaker = speaker;
+        }
+    }
+
+    private CacheInfo CreateCacheInfo(LocInfo info, string en)
+    {
+        var keys = info.Key.Split('/');
+        return new(keys, en, GetCharContext(info), GetSceneContext(keys));
     }
 
     private static string? GetProcessPath(int processId)
@@ -559,7 +649,12 @@ public partial class FoMFilterModule : IFilterModule
 
     private string GetSceneContext(string[] keys)
     {
-        var scene = keys switch
+        var scene = GetSceneKey(keys);
+        return this.scenes.TryGetValue(scene, out var s) ? s : string.Empty;
+    }
+
+    private static string GetSceneKey(string[] keys)
+        => keys switch
         {
             ["Conversations", .., "prompts", _] => string.Join('/', keys[..^3]),
             ["Conversations", .., not "prompts", _] => string.Join('/', keys[..^1]),
@@ -568,26 +663,62 @@ public partial class FoMFilterModule : IFilterModule
             ["letters", ..] => string.Join('/', keys[..^1]),
             _ => string.Empty,
         };
-        return this.scenes.TryGetValue(scene, out var s) ? s : string.Empty;
+
+    private static string? GetTranslationCode(string targetLanguage)
+    {
+        var normalized = targetLanguage.Replace('_', '-');
+        var language = normalized.Split('-', 2)[0];
+        if (language.Equals("zh", StringComparison.OrdinalIgnoreCase))
+        {
+            return normalized.Contains("Hant", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.EndsWith("-TW", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.EndsWith("-HK", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.EndsWith("-MO", StringComparison.OrdinalIgnoreCase)
+                ? "zh-Hant"
+                : "zh-Hans";
+        }
+
+        return language.ToLowerInvariant() switch
+        {
+            "ja" => "jpn",
+            "fr" => "fra",
+            "ko" => "kor",
+            "ru" => "rus",
+            "es" => "spa",
+            _ => null,
+        };
+    }
+
+    private static string GetSpeakerName(LocInfo info)
+    {
+        if (!string.IsNullOrWhiteSpace(info.Speaker))
+        {
+            return string.Equals(info.Speaker, "player", StringComparison.OrdinalIgnoreCase) ? "Ari" : info.Speaker;
+        }
+
+        var keys = info.Key.Split('/');
+        return keys is ["Conversations", "Bank", var speaker, ..] ? speaker : string.Empty;
     }
 
     private string GetCharContext(string charName)
         => this.context.TryGetValue(charName, out var context) ? context : string.Empty;
 
-    private string GetCharContext(string[] keys)
-        => keys is ["Conversations" or "Cutscenes", _, var c, ..] ? GetCharContext(c) : string.Empty;
+    private string GetCharContext(LocInfo info)
+        => GetCharContext(GetSpeakerName(info));
 }
 
-record Localization(Dictionary<string, string> Eng, Dictionary<string, string>? Jpn);
-record LocInto(string Key, string Text);
+record Localization(
+    Dictionary<string, string> Eng,
+    Dictionary<string, string> Translation,
+    Dictionary<string, string> Speakers);
+record LocInfo(string Key, string Text, string Speaker);
 
-record CacheInfo(string[] Keys, string En, string Ja, string CharContext, string SceneContext);
+record CorrectionMatch(string En, LocInfo[] Candidates);
+record CacheInfo(string[] Keys, string En, string CharContext, string SceneContext);
 
 public class FoMOptions : IPluginParam
 {
     public bool IsEnabledCorrect { get; set; } = true;
-
-    public bool UseJpn { get; set; } = true;
 
     public string PlayerName { get; set; } = string.Empty;
 
@@ -599,12 +730,12 @@ public class FoMOptions : IPluginParam
 file static class Extentions
 {
 
-    public static string CorrenctJpn(this string s)
+    public static string CorrectTranslation(this string s, bool isJapanese)
         => s switch
         {
             "MISSING" => string.Empty,
-            "近い" => "閉じる",
-            "出口" => "終了",
+            "近い" when isJapanese => "閉じる",
+            "出口" when isJapanese => "終了",
             _ => s,
         };
 
@@ -632,14 +763,23 @@ file static class Extentions
             .Replace("^", string.Empty)
             .Replace("{}", string.Empty);
 
-    public static string Join(this IEnumerable<(string[] key, string Value)> values, string group)
-        => group.Split('/')[0] switch
+    public static string Join(this IEnumerable<(string[] key, string Value, string Speaker)> values, string group)
+    {
+        static string Dialogue((string[] key, string Value, string Speaker) item)
+            => item.key[^2] is "prompts"
+                ? $"選択肢 {item.key[^1]} : \"{item.Value}\""
+                : string.IsNullOrEmpty(item.Speaker)
+                    ? $"\"{item.Value}\""
+                    : $"{item.Speaker}: \"{item.Value}\"";
+
+        return group.Split('/')[0] switch
         {
-            "Conversations" => string.Join(Environment.NewLine, values.Select(p => p.key[^2] is "prompts" ? $"選択肢 {p.key[^1]} : \"{p.Value}\"" : $"\"{p.Value}\"")),
-            "Cutscenes" => string.Join(Environment.NewLine, values.Select(p => p.key[^2] is "prompts" ? $"選択肢 {p.key[^1]} : \"{p.Value}\"" : $"\"{p.Value}\"")),
+            "Conversations" => string.Join(Environment.NewLine, values.Select(Dialogue)),
+            "Cutscenes" => string.Join(Environment.NewLine, values.Select(Dialogue)),
             "letters" => string.Join(Environment.NewLine, values.Select(p => (p.key[^1] is "local" ? "本文: \r\n" : "件名: ") + p.Value)),
             _ => throw new InvalidOperationException(),
         };
+    }
 
     public static int Lines(this string s)
     {
