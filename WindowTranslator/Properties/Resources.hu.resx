@@ -403,6 +403,17 @@ A monitorok nem támogatottak.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>A kontextust támogató fordítási modulok használják</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Első beállítás</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Válassza ki a használni kívánt hivatalos bővítményeket. Később a Bővítmények képernyőn módosíthatja őket.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Újrapróbálkozás</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Kihagyás</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Nem található telepíthető hivatalos bővítmény.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Válassza ki a telepítendő verziót.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Néhány bővítményt nem sikerült telepíteni. Próbálja újra, vagy mentse a sikeres telepítéseket, majd lépjen ki.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>A beállítás eredményét nem sikerült menteni. Próbálja újra.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Fordítás és OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Színkinyerés</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Egyéb</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR-követés</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Pozíció és méret stabilitása</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Csökkenti a pozíció és a méret ingadozását. 1: gyors reakció, 5: nagy stabilitás (alapérték: 3). A nagy mozgások azonnal megjelennek.</value></data>
