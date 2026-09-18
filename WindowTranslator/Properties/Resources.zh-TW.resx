@@ -522,6 +522,17 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>供支援上下文的翻譯模組使用</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>首次設定</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>請選擇要使用的官方外掛程式。之後可在外掛程式頁面中變更。</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>重試</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>略過</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>找不到可安裝的官方外掛程式。</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>請選擇要安裝的版本。</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>部分外掛程式安裝失敗。請重試，或儲存已成功安裝的外掛程式後結束。</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>無法儲存設定結果。請重試。</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>翻譯和 OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>色彩擷取</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>其他</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR 追蹤</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>位置與大小穩定性</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>減少位置與大小的抖動。1：優先反應，5：優先穩定（預設：3）。大幅移動會立即反映。</value></data>

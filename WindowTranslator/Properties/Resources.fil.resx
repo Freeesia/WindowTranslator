@@ -522,6 +522,17 @@ Ang monitor ay hindi suportado.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Ginagamit ng mga module ng pagsasalin na sumusuporta sa konteksto</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Paunang pag-setup</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Piliin ang mga opisyal na plugin na gusto mong gamitin. Maaari mong baguhin ang mga ito sa screen ng Mga Plugin sa ibang pagkakataon.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Subukang muli</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Laktawan</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Walang nakitang opisyal na plugin na maaaring i-install.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Pumili ng bersyong i-install.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Hindi na-install ang ilang plugin. Subukang muli, o i-save ang mga matagumpay na pag-install at lumabas.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Hindi na-save ang resulta ng pag-setup. Subukang muli.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Pagsasalin at OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Pagkuha ng kulay</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Iba pa</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Pagsubaybay ng OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Katatagan ng posisyon at laki</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Binabawasan ang pag-uga ng posisyon at laki. 1: mabilis na pagtugon, 5: mas matatag (default: 3). Agad na inilalapat ang malalaking paggalaw.</value></data>

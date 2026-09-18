@@ -522,6 +522,17 @@ Monitore werden nicht unterstützt.
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>Wird von Übersetzungsmodulen verwendet, die Kontext unterstützen</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Ersteinrichtung</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Wählen Sie die offiziellen Plugins aus, die Sie verwenden möchten. Sie können die Auswahl später im Plugin-Bildschirm ändern.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Erneut versuchen</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Überspringen</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Keine installierbaren offiziellen Plugins gefunden.</value></data>
+  <data name="SetupSelectVersion" xml:space="preserve"><value>Wählen Sie eine zu installierende Version aus.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Einige Plugins konnten nicht installiert werden. Versuchen Sie es erneut oder speichern Sie die erfolgreichen Installationen und beenden Sie das Setup.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Das Setup-Ergebnis konnte nicht gespeichert werden. Versuchen Sie es erneut.</value></data>
+  <data name="SetupTranslationOcr" xml:space="preserve"><value>Übersetzung und OCR</value></data>
+  <data name="SetupColors" xml:space="preserve"><value>Farbextraktion</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Sonstiges</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR-Verfolgung</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Positions- und Größenstabilität</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Reduziert Schwankungen von Position und Größe. 1: schnelle Reaktion, 5: hohe Stabilität (Standard: 3). Große Bewegungen werden sofort übernommen.</value></data>
