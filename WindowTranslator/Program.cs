@@ -194,11 +194,12 @@ builder.Services.AddSingleton(sp => new NuGetPluginService(
 builder.Services.AddTransient<PluginStoreViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
-builder.Services.AddTransient<ConfigurePluginParam>();
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient<IConfigureNamedOptions<TargetSettings>, ConfigureTargetSettings>();
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
+builder.Services.AddTransient<IConfigureNamedOptions<TargetSettings>, ConfigurePluginParam>();
+builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigurePluginParam>();
 builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
 builder.Services.AddSingleton<IGitHubClient>(_ =>
@@ -261,36 +262,33 @@ static string GetPluginName(PluginNameOptions options, Type type)
     }
 }
 
-class ConfigurePluginParam(IConfiguration configuration, IProcessInfoStore store, IServiceProvider provider)
+class ConfigurePluginParam(IConfiguration configuration, IProcessInfoStore store, IEnumerable<IPluginParam> pluginParams) :
+    IConfigureNamedOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
-    private readonly IProcessInfoStore store = store;
-    private readonly IServiceProvider provider = provider;
 
-    public void Configure(IPluginParam options)
+    public void Configure(TargetSettings options)
         => Configure(Options.DefaultName, options);
 
-    public void Configure(string? name, IPluginParam options)
-        => GetTargetSection(GetTargetSection(name), options.GetType()).Bind(options);
-
-    public IEnumerable<IPluginParam> Get(string? name)
+    public void Configure(string? name, TargetSettings options)
     {
-        var section = GetTargetSection(name);
-        foreach (var options in this.provider.GetServices<IPluginParam>())
+        var section = GetTargetSection(this.configuration, store, name);
+        foreach (var pluginParam in pluginParams)
         {
-            var paramType = options.GetType();
-            yield return GetTargetSection(section, paramType).Get(paramType) as IPluginParam ?? options;
+            var paramType = pluginParam.GetType();
+            options.PluginParams[paramType.Name] =
+                GetPluginParamSection(section, paramType).Get(paramType) as IPluginParam ?? pluginParam;
         }
     }
 
-    private IConfigurationSection GetTargetSection(string? name)
+    internal static IConfigurationSection GetTargetSection(IConfiguration configuration, IProcessInfoStore store, string? name)
     {
-        name = (string.IsNullOrEmpty(name) ? this.store.Name : name) ?? string.Empty;
-        var section = this.configuration.GetSection(name);
-        return section.Exists() ? section : this.configuration.GetSection(Options.DefaultName);
+        name = (string.IsNullOrEmpty(name) ? store.Name : name) ?? string.Empty;
+        var section = configuration.GetSection(name);
+        return section.Exists() ? section : configuration.GetSection(Options.DefaultName);
     }
 
-    private static IConfigurationSection GetTargetSection(IConfigurationSection section, Type optionsType)
+    internal static IConfigurationSection GetPluginParamSection(IConfigurationSection section, Type optionsType)
     {
         section = section.GetSection(nameof(TargetSettings.PluginParams));
         // パラメータのクラス名変わったので、互換性のために一時的にBasicOcrParamをWindowsMediaOcrParamに変換する
@@ -303,25 +301,33 @@ class ConfigurePluginParam(IConfiguration configuration, IProcessInfoStore store
     }
 }
 
-class ConfigurePluginParam<TOptions>(ConfigurePluginParam configure) : IConfigureNamedOptions<TOptions>
+class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoStore store) : IConfigureNamedOptions<TOptions>
     where TOptions : class, IPluginParam
 {
-    private readonly ConfigurePluginParam configure = configure;
+    private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
 
     public void Configure(TOptions options)
-        => this.configure.Configure(options);
+        => Configure(Options.DefaultName, options);
 
     public void Configure(string? name, TOptions options)
-        => this.configure.Configure(name, options);
+        => ConfigurePluginParam.GetPluginParamSection(
+            ConfigurePluginParam.GetTargetSection(this.configuration, store, name), typeof(TOptions)).Bind(options);
 }
 
-class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store, ConfigurePluginParam pluginParams) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
 
     public void Configure(TargetSettings options)
-        => Configure(Options.DefaultName, options);
+    {
+        var section = this.configuration.GetSection(this.store.Name);
+        if (!section.Exists())
+        {
+            section = this.configuration.GetSection(Options.DefaultName);
+        }
+        section.Bind(options);
+    }
 
     public void Configure(string? name, TargetSettings options)
     {
@@ -332,10 +338,6 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
             section = this.configuration.GetSection(Options.DefaultName);
         }
         section.Bind(options);
-        foreach (var param in pluginParams.Get(name))
-        {
-            options.PluginParams[param.GetType().Name] = param;
-        }
     }
 }
 

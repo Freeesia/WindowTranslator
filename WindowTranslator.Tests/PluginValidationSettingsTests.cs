@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Stores;
+using WindowTranslator.Modules;
 
 namespace WindowTranslator.Tests;
 
@@ -56,6 +57,39 @@ public class PluginValidationSettingsTests
         Assert.Equal("game-key", param.ApiKey);
     }
 
+    [Theory]
+    [InlineData("missing", "")]
+    [InlineData("", "game")]
+    public void TargetSettingsFollowDefaultAndCurrentTarget(string name, string currentTarget)
+    {
+        using var provider = CreateProvider(new Dictionary<string, string?>
+        {
+            ["Targets::PluginParams:TestPluginParam:ApiKey"] = "default-key",
+            ["Targets:game:PluginParams:TestPluginParam:ApiKey"] = "game-key",
+        }, currentTarget);
+        using var scope = provider.CreateScope();
+        var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>();
+        var param = Assert.IsType<TestPluginParam>(options.Get(name).PluginParams[nameof(TestPluginParam)]);
+        Assert.Equal(currentTarget == "game" ? "game-key" : "default-key", param.ApiKey);
+    }
+
+    [Theory]
+    [InlineData("WindowsMediaOcrParam")]
+    [InlineData("BasicOcrParam")]
+    public void InterfaceAndConcreteOptionsUseOcrCompatibilitySection(string sectionName)
+    {
+        using var provider = CreateProvider(new Dictionary<string, string?>
+        {
+            [$"Targets:game:PluginParams:{sectionName}:Scale"] = "2",
+        });
+        using var scope = provider.CreateScope();
+        var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get("game");
+        var param = Assert.IsType<BasicOcrParam>(settings.PluginParams[nameof(BasicOcrParam)]);
+        var concrete = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<BasicOcrParam>>().Get("game");
+        Assert.Equal(2, param.Scale);
+        Assert.Equal(concrete.Scale, param.Scale);
+    }
+
     private static ServiceProvider CreateProvider(Dictionary<string, string?> values, string currentTarget = "")
     {
         var configuration = new ConfigurationBuilder()
@@ -66,11 +100,13 @@ public class PluginValidationSettingsTests
         services.AddSingleton<IConfiguration>(configuration);
         services.AddSingleton<IProcessInfoStore>(new TestProcessInfoStore(currentTarget));
         services.AddTransient<IPluginParam, TestPluginParam>();
-        services.AddTransient<global::ConfigurePluginParam>();
+        services.AddTransient<IPluginParam, BasicOcrParam>();
         services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(global::ConfigurePluginParam<>));
         services.AddTransient(typeof(IConfigureOptions<>), typeof(global::ConfigurePluginParam<>));
         services.AddTransient<IConfigureNamedOptions<TargetSettings>, global::ConfigureTargetSettings>();
         services.AddTransient<IConfigureOptions<TargetSettings>, global::ConfigureTargetSettings>();
+        services.AddTransient<IConfigureNamedOptions<TargetSettings>, global::ConfigurePluginParam>();
+        services.AddTransient<IConfigureOptions<TargetSettings>, global::ConfigurePluginParam>();
         return services.BuildServiceProvider();
     }
 
