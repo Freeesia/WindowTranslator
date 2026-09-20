@@ -22,4 +22,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>A játékban lévő japán erőforrások használata</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>Hivatalos fordítások használata angol nyelvű játék mellett (hiányzó fordítás esetén a szokásos fordítás)</value>
+  </data>
 </root>
