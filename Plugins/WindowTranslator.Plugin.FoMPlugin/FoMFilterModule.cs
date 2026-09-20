@@ -15,6 +15,7 @@ public partial class FoMFilterModule : IFilterModule
 {
     private readonly bool isEnabled;
     private readonly bool exclude;
+    private readonly bool useOfficialTranslation;
     private readonly FrozenDictionary<string, LocInfo[]> builtin = FrozenDictionary<string, LocInfo[]>.Empty;
     private readonly FrozenSet<string> untranslatedSources = FrozenSet<string>.Empty;
     private readonly FrozenDictionary<string, string> scenes = FrozenDictionary<string, string>.Empty;
@@ -223,43 +224,6 @@ public partial class FoMFilterModule : IFilterModule
                 性別はプレイヤーが選択できるので、中性的な言葉遣いをします。
                 """,
     };
-    private static readonly Dictionary<string, string> names = new()
-    {
-        ["npcs/adeline/name"] = "アデライン",
-        ["npcs/balor/name"] = "バロル",
-        ["npcs/caldarus/name"] = "カルダロス",
-        ["npcs/celine/name"] = "セリーヌ",
-        ["npcs/darcy/name"] = "ダルシー",
-        ["npcs/dell/name"] = "デル",
-        ["npcs/dozy/name"] = "ドージー",
-        ["npcs/eiland/name"] = "エイラント",
-        ["npcs/elsie/name"] = "エルシー",
-        ["npcs/errol/name"] = "エロール",
-        ["npcs/hayden/name"] = "ヘイデン",
-        ["npcs/hemlock/name"] = "ヘムロック",
-        ["npcs/henrietta/name"] = "ヘンリエッタ",
-        ["npcs/holt/name"] = "ホルト",
-        ["npcs/josephine/name"] = "ジョセフィン",
-        ["npcs/juniper/name"] = "ジュニパー",
-        ["npcs/landen/name"] = "ランデン",
-        ["npcs/louis/name"] = "ルイ",
-        ["npcs/luc/name"] = "ルーク",
-        ["npcs/maple/name"] = "メープル",
-        ["npcs/march/name"] = "マルク",
-        ["npcs/merri/name"] = "メリー",
-        ["npcs/nora/name"] = "ノラ",
-        ["npcs/olric/name"] = "オルリック",
-        ["npcs/reina/name"] = "レイナ",
-        ["npcs/ryis/name"] = "リース",
-        ["npcs/seridia/name"] = "巫女",
-        ["npcs/stillwell/name"] = "スティルウェル",
-        ["npcs/taliferro/name"] = "タリフェロ",
-        ["npcs/terithia/name"] = "テリシア",
-        ["npcs/valen/name"] = "ヴァレン",
-        ["npcs/vera/name"] = "ヴェラ",
-        ["npcs/wheedle/name"] = "ウィードル",
-        ["npcs/zorel/name"] = "ゾレル",
-    };
 
     public double Priority => -1;
 
@@ -293,10 +257,7 @@ public partial class FoMFilterModule : IFilterModule
         }
 
         this.isEnabled = true;
-        if (translationCode == "jpn" && loc.Translation.Count == 0)
-        {
-            loc = loc with { Translation = names };
-        }
+        this.useOfficialTranslation = options.Value.UseOfficialTranslation;
         var player = options.Value.PlayerName;
         var farm = options.Value.FarmName;
         this.exclude = options.Value.ExcludeUnspecifiedText;
@@ -305,7 +266,7 @@ public partial class FoMFilterModule : IFilterModule
                 en: p.Value.ReplaceToPlain(player, farm),
                 info: new LocInfo(
                     p.Key,
-                    loc.Translation.TryGetValue(p.Key, out var s) ? s.CorrectTranslation(translationCode == "jpn").ReplaceToPlain(player, farm) : string.Empty,
+                    loc.Translation.TryGetValue(p.Key, out var s) ? s.ReplaceToPlain(player, farm) : string.Empty,
                     loc.Speakers.GetValueOrDefault(p.Key, string.Empty))))
             // OCRで段落ごとに分割されている場合があるので、それを考慮する
             .SelectMany(p => SplitParagraph(p.en, p.info))
@@ -454,6 +415,11 @@ public partial class FoMFilterModule : IFilterModule
                 }
 
                 var match = CreateCacheInfo(selected, src.SourceText);
+                if (this.useOfficialTranslation && !string.IsNullOrWhiteSpace(selected.Text))
+                {
+                    yield return src with { TranslatedText = selected.Text };
+                    continue;
+                }
                 if (!string.IsNullOrEmpty(match.CharContext))
                 {
                     yield return src with { Context = match.CharContext + match.SceneContext };
@@ -478,6 +444,11 @@ public partial class FoMFilterModule : IFilterModule
                 }
 
                 var match = CreateCacheInfo(selected, correction.En);
+                if (this.useOfficialTranslation && !string.IsNullOrWhiteSpace(selected.Text))
+                {
+                    yield return src with { SourceText = correction.En, TranslatedText = selected.Text };
+                    continue;
+                }
                 if (!string.IsNullOrEmpty(match.CharContext))
                 {
                     yield return src with { SourceText = match.En, Context = match.CharContext + match.SceneContext };
@@ -488,7 +459,7 @@ public partial class FoMFilterModule : IFilterModule
                 }
                 else
                 {
-                    notContexts.Add((src, match));
+                    notContexts.Add((src with { SourceText = match.En, Context = match.SceneContext }, match));
                 }
             }
             else
@@ -532,7 +503,7 @@ public partial class FoMFilterModule : IFilterModule
             foreach (var text in texts)
             {
                 var t = DateTime.UtcNow;
-                IEnumerable<string> sources = this.untranslatedSources.Count > 0
+                IEnumerable<string> sources = !this.useOfficialTranslation && this.untranslatedSources.Count > 0
                     ? this.untranslatedSources
                     : this.builtin.Keys;
                 var (en, distance) = sources
@@ -569,7 +540,7 @@ public partial class FoMFilterModule : IFilterModule
         var preferred = candidates;
         // 翻訳先言語で英語のまま残るのは未翻訳リソースなので、同じ英文なら翻訳がない候補を優先する
         var untranslated = preferred.Where(candidate => string.IsNullOrEmpty(candidate.Text)).ToArray();
-        if (untranslated.Length > 0)
+        if (!this.useOfficialTranslation && untranslated.Length > 0)
         {
             preferred = untranslated;
         }
@@ -720,6 +691,8 @@ public class FoMOptions : IPluginParam
 {
     public bool IsEnabledCorrect { get; set; } = true;
 
+    public bool UseOfficialTranslation { get; set; }
+
     public string PlayerName { get; set; } = string.Empty;
 
     public string FarmName { get; set; } = string.Empty;
@@ -729,16 +702,6 @@ public class FoMOptions : IPluginParam
 
 file static class Extentions
 {
-
-    public static string CorrectTranslation(this string s, bool isJapanese)
-        => s switch
-        {
-            "MISSING" => string.Empty,
-            "近い" when isJapanese => "閉じる",
-            "出口" when isJapanese => "終了",
-            _ => s,
-        };
-
     public static string ReplaceToPlain(this string s, string player, string farm)
         => s.Replace("[Ari]", player)
             .Replace("[farm_name]", farm)

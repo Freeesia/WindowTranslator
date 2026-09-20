@@ -91,4 +91,9 @@ internal class Resources
     /// "ゲームに含まれている日本語リソースを利用する" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string UseJpn => ResourceManager.GetString("UseJpn", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "ゲームを英語表示にして公式翻訳を利用する（訳がない場合は通常翻訳）" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string UseOfficialTranslation => ResourceManager.GetString("UseOfficialTranslation", resourceCulture) ?? string.Empty;
 }

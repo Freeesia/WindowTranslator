@@ -15,6 +15,7 @@
 ## 設定
 
 - OCR補正の有効化
+- ゲームを英語表示にして公式翻訳を利用する（既定はオフ）。オンでは全英語原文を照合し、アプリの翻訳先の公式訳があれば利用します。公式訳が空白・未収録・`MISSING`の場合は翻訳モジュールへ渡します。ゲームの表示言語はゲーム側で英語に設定してください。
 - プレイヤー名と農場名
 - ゲームデータに存在しないテキストの除外
 
@@ -35,6 +36,7 @@ A filter plugin that adapts [WindowTranslator](https://github.com/Freeesia/Windo
 ## Configuration
 
 - Enable or disable OCR correction
+- Use official translations with the game displayed in English (off by default). Searches all English source text and uses the official translation for the app's target language when available. Blank, missing, or `MISSING` translations fall back to the translation module. Set the game's display language to English in the game settings.
 - Set the player and farm names
 - Exclude text that is not present in the game data
 
