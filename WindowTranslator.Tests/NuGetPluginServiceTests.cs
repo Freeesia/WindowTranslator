@@ -33,6 +33,62 @@ public sealed class NuGetPluginServiceTests
 {
     private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task SetupExcludesBundledOfficialPluginsAndPreservesMigrationSelection(bool hasFolder, bool hasDll)
+    {
+        var directory = CreateTestDirectory();
+        try
+        {
+            const string ocrId = "WindowTranslator.Plugin.OneOcrPlugin";
+            const string translateId = "WindowTranslator.Plugin.DeepLTranslatePlugin";
+            var bundledDirectory = Path.Combine(directory, "plugins");
+            var ocrDirectory = Path.Combine(bundledDirectory, ocrId);
+            if (hasFolder)
+            {
+                Directory.CreateDirectory(ocrDirectory);
+            }
+            if (hasDll)
+            {
+                // セットアップでDLLをロードせず、配置だけで判定できることも確認する。
+                await File.WriteAllTextAsync(Path.Combine(ocrDirectory, ocrId + ".dll"), "bundled");
+            }
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults = [.. new[] { ocrId, translateId, "Unofficial.Plugin" }.Select(id =>
+                CreatePackageSearchMetadata(id, id, null, "Freesia", null, null,
+                    owners: [id == "Unofficial.Plugin" ? "Other" : NuGetPluginService.OfficialPackageOwner]))];
+            foreach (var id in new[] { ocrId, translateId, "Unofficial.Plugin" })
+            {
+                handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));
+            }
+            using var service = CreateService(handler, Path.Combine(directory, "nuget-plugins"));
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Targets:Game:SelectedPlugins:IOcrModule"] = "OneOcr",
+                ["Targets:Game:SelectedPlugins:ITranslateModule"] = "DeepLTranslator",
+            }).Build();
+            using var viewModel = new PluginSetupViewModel(service, configuration,
+                NullLogger<PluginSetupViewModel>.Instance, bundledPluginsDirectory: bundledDirectory);
+
+            await service.RefreshPackageInformationAsync();
+
+            var packages = viewModel.Groups.SelectMany(group => group.Packages).ToArray();
+            Assert.Equal(hasDll ? 1 : 2, packages.Length);
+            Assert.All(packages, package => Assert.True(package.IsSelected));
+            Assert.Contains(packages, package => package.Package.Id == translateId);
+            Assert.Equal(!hasDll, packages.Any(package => package.Package.Id == ocrId));
+            Assert.DoesNotContain(packages, package => package.Package.Id == "Unofficial.Plugin");
+            // 通常ストアの一覧は同梱・非公式を含めて維持する。
+            Assert.Equal(3, service.PackageSnapshot.Packages.Count);
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
     [Fact]
     public async Task SetupCanSkipWhileLoadingAndCompletesOnlyOnce()
     {

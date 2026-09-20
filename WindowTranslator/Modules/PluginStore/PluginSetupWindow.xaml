@@ -35,7 +35,6 @@
         <Grid Grid.Row="1" Margin="24,8,24,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -44,15 +43,8 @@
                 <TextBlock Margin="0,0,0,8" FontSize="24" FontWeight="SemiBold" Text="{Binding [SetupTitle]}" />
                 <TextBlock Text="{Binding [SetupDescription]}" TextWrapping="Wrap" />
             </StackPanel>
-            <ProgressBar
-                Grid.Row="1"
-                Height="4"
-                Margin="0,0,0,8"
-                IsIndeterminate="{Binding IsLoading}"
-                Value="{Binding InstallProgress}"
-                Visibility="{Binding IsProgressVisible, Converter={StaticResource b2v}}" />
             <ScrollViewer
-                Grid.Row="2"
+                Grid.Row="1"
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Groups}">
@@ -113,7 +105,13 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <StackPanel Grid.Row="3" Margin="0,8,0,0">
+            <StackPanel Grid.Row="2" Margin="0,8,0,0">
+                <ProgressBar
+                    Height="4"
+                    Margin="0,0,0,8"
+                    IsIndeterminate="{Binding IsLoading}"
+                    Value="{Binding InstallProgress}"
+                    Visibility="{Binding IsProgressVisible, Converter={StaticResource b2v}}" />
                 <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
                 <ui:Button
                     Margin="0,8,0,0"
@@ -122,7 +120,7 @@
                     Content="{Binding [SetupRetry]}"
                     Visibility="{Binding HasSearchError, Converter={StaticResource b2v}}" />
             </StackPanel>
-            <StackPanel Grid.Row="4" Margin="0,20,0,0" HorizontalAlignment="Right" Orientation="Horizontal">
+            <StackPanel Grid.Row="3" Margin="0,20,0,0" HorizontalAlignment="Right" Orientation="Horizontal">
                 <ui:Button
                     MinWidth="120"
                     Margin="0,0,12,0"

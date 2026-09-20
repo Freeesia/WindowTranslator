@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,6 +16,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     private readonly IConfiguration configuration;
     private readonly ILogger<PluginSetupViewModel> logger;
     private readonly Dispatcher? dispatcher;
+    private readonly string bundledPluginsDirectory;
     private readonly List<InstalledPackageInfo> installedPackages = [];
     private bool disposed;
     private bool finishRequested;
@@ -72,12 +74,13 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
 
     public PluginSetupViewModel(
         NuGetPluginService service, IConfiguration configuration, ILogger<PluginSetupViewModel> logger,
-        Dispatcher? dispatcher = null)
+        Dispatcher? dispatcher = null, string bundledPluginsDirectory = @".\plugins")
     {
         this.service = service;
         this.configuration = configuration;
         this.logger = logger;
         this.dispatcher = dispatcher;
+        this.bundledPluginsDirectory = bundledPluginsDirectory;
         this.service.PackageInformationUpdated += OnPackageInformationUpdated;
         ApplySnapshot();
     }
@@ -105,7 +108,10 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         this.IsLoading = ReferenceEquals(snapshot, PluginStoreSnapshot.Empty);
         var previousSelections = this.Groups.SelectMany(group => group.Packages)
             .ToDictionary(package => package.Package.Id, StringComparer.OrdinalIgnoreCase);
-        var packages = snapshot.Packages.Where(package => package.IsOfficial)
+        // 公式パッケージの配布先は plugins/<PackageId>/<PackageId>.dll。
+        // 同梱版をそのまま使えるものは、初回セットアップで追加インストールしない。
+        var packages = snapshot.Packages.Where(package => package.IsOfficial
+                && !File.Exists(Path.Combine(this.bundledPluginsDirectory, package.Id, package.Id + ".dll")))
             .Select(info => new PluginSetupPackage(info, this.configuration))
             .ToArray();
         foreach (var package in packages)

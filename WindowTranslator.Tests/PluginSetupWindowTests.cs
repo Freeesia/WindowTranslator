@@ -107,7 +107,13 @@ public sealed class PluginSetupWindowTests
                         Assert.Equal(
                             HelpUriBuilder.Build("OcrModule", System.Globalization.CultureInfo.CurrentUICulture),
                             help.NavigateUri);
-                        Assert.Single(Descendants<ProgressBar>(setup));
+                        var progress = Assert.Single(Descendants<ProgressBar>(setup));
+                        var progressContainer = Assert.IsType<System.Windows.Controls.StackPanel>(
+                            VisualTreeHelper.GetParent(progress));
+                        var buttonContainer = Assert.IsType<System.Windows.Controls.StackPanel>(
+                            VisualTreeHelper.GetParent(skip));
+                        Assert.Equal(2, System.Windows.Controls.Grid.GetRow(progressContainer));
+                        Assert.Equal(3, System.Windows.Controls.Grid.GetRow(buttonContainer));
                         setup.Close();
                     }
                     catch (Exception ex)
