@@ -13,10 +13,12 @@
   </Target>
 
   <Target Name="Pack" DependsOnTargets="RestoreProjects">
+    <!-- Restore が生成した NuGet のパスプロパティを読み直すため、別のグローバルプロパティで再評価する。 -->
     <MSBuild
       Projects="@(DistributionProject)"
       Targets="Pack"
-      BuildInParallel="true" />
+      BuildInParallel="true"
+      Properties="PackageAfterRestore=true" />
   </Target>
 
   <Target Name="PublishAppBundle" DependsOnTargets="RestoreProjects">
