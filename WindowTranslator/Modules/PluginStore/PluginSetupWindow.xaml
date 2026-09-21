@@ -109,8 +109,10 @@
                                                         Header="{Binding DisplayName}"
                                                         IsExpanded="{Binding IsExpanded}">
                                                         <StackPanel Margin="0,4,0,4">
-                                                            <ProgressBar
-                                                                Height="3"
+                                                            <ui:ProgressRing
+                                                                Width="20"
+                                                                Height="20"
+                                                                HorizontalAlignment="Left"
                                                                 IsIndeterminate="True"
                                                                 Visibility="{Binding Package.IsReadmeLoading, Converter={StaticResource b2v}}" />
                                                             <md:MarkdownScrollViewer
