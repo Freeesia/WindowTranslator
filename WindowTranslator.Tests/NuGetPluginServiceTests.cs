@@ -145,6 +145,55 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task InstallKeepsPLaMoCudaRuntimeDirectoriesFromDependency()
+    {
+        var testDirectory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(
+                "Root.Plugin",
+                "1.0.0",
+                CreatePackage(
+                    "Root.Plugin",
+                    "1.0.0",
+                    [new("WindowTranslator.PLaMo.CudaRuntime", "[1.0.0]")],
+                    new Dictionary<string, byte[]>
+                    {
+                        ["lib/net10.0/Root.Plugin.dll"] = "root"u8.ToArray(),
+                    }));
+            handler.AddPackage(
+                "WindowTranslator.PLaMo.CudaRuntime",
+                "1.0.0",
+                CreatePackage(
+                    "WindowTranslator.PLaMo.CudaRuntime",
+                    "1.0.0",
+                    [],
+                    new Dictionary<string, byte[]>
+                    {
+                        [$"lib/net10.0/runtimes/{RuntimeIdentifier}/native/cuda12/llama.dll"] =
+                            "cuda"u8.ToArray(),
+                        [$"lib/net10.0/runtimes/{RuntimeIdentifier}/native/avx2/ggml-cpu.dll"] =
+                            "cpu"u8.ToArray(),
+                    }));
+
+            using var service = CreateService(handler, testDirectory);
+            await service.InstallPackageAsync("Root.Plugin", "1.0.0");
+
+            var pluginDirectory = Path.Combine(testDirectory, "Root.Plugin");
+            Assert.Equal("cuda", await File.ReadAllTextAsync(Path.Combine(
+                pluginDirectory, "runtimes", RuntimeIdentifier, "native", "cuda12", "llama.dll")));
+            Assert.Equal("cpu", await File.ReadAllTextAsync(Path.Combine(
+                pluginDirectory, "runtimes", RuntimeIdentifier, "native", "avx2", "ggml-cpu.dll")));
+            Assert.False(File.Exists(Path.Combine(pluginDirectory, "llama.dll")));
+        }
+        finally
+        {
+            DeleteTestDirectory(testDirectory);
+        }
+    }
+
+    [Fact]
     public async Task ManifestWriteFailureRestoresThePreviousPluginDirectory()
     {
         var testDirectory = CreateTestDirectory();

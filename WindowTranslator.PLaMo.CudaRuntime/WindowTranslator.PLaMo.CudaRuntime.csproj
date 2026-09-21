@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>WindowTranslator.PLaMo.CudaRuntime</PackageId>
+    <Title>PLaMo CUDA 12 Runtime</Title>
+    <Description>Windows x64 CUDA backend binaries for the WindowTranslator PLaMo plugin.</Description>
+    <PackageTags>WindowTranslator;PLaMo;CUDA</PackageTags>
+    <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LLamaSharp.Backend.Cuda12.Windows" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" PrivateAssets="all" GeneratePathProperty="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="@(Content)" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- lib 配下の階層は NuGetPackageInstaller が維持する。実行時には runtimes/win-x64/native に配置される。 -->
+    <Content Include="$(PkgLLamaSharp_Backend_Cuda12_Windows)\LLamaSharpRuntimes\win-x64\native\cuda12\llama.dll;$(PkgLLamaSharp_Backend_Cuda12_Windows)\LLamaSharpRuntimes\win-x64\native\cuda12\ggml.dll;$(PkgLLamaSharp_Backend_Cuda12_Windows)\LLamaSharpRuntimes\win-x64\native\cuda12\ggml-base.dll;$(PkgLLamaSharp_Backend_Cuda12_Windows)\LLamaSharpRuntimes\win-x64\native\cuda12\ggml-cuda.dll"
+          Pack="true" PackagePath="lib/net10.0/runtimes/win-x64/native/cuda12/" />
+    <Content Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\native\avx\ggml-cpu.dll"
+          Pack="true" PackagePath="lib/net10.0/runtimes/win-x64/native/avx/" />
+    <Content Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\native\avx2\ggml-cpu.dll"
+          Pack="true" PackagePath="lib/net10.0/runtimes/win-x64/native/avx2/" />
+    <Content Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\native\avx512\ggml-cpu.dll"
+          Pack="true" PackagePath="lib/net10.0/runtimes/win-x64/native/avx512/" />
+    <Content Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\native\noavx\ggml-cpu.dll"
+          Pack="true" PackagePath="lib/net10.0/runtimes/win-x64/native/noavx/" />
+  </ItemGroup>
+</Project>

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WindowTranslator\WindowTranslator.csproj" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.PLaMoPlugin\WindowTranslator.Plugin.PLaMoPlugin.csproj" Aliases="PLaMo" />
     <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OrcaRouterPlugin\WindowTranslator.Plugin.OrcaRouterPlugin.csproj" Aliases="OrcaRouter" />
   </ItemGroup>
 </Project>

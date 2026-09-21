@@ -56,6 +56,15 @@ public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsVal
 
         try
         {
+            await CudaRuntimeResolver.ResolveAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            return ValidateResult.Invalid("PLaMo", string.Format(Resources.CudaRuntimeDownloadFailed, ex.Message));
+        }
+
+        try
+        {
             await DownloadModelIfNotExists().ConfigureAwait(false);
             return ValidateResult.Valid;
         }

@@ -20,7 +20,12 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
     private readonly InferenceParams inferenceParams;
 
     static PLaMoTranslator()
-        => NativeLibraryConfig.LLama.WithSelectingPolicy(LLamaSharpNativeLibrarySelectingPolicy.Instance);
+    {
+        var pluginDirectory = Path.GetDirectoryName(typeof(PLaMoTranslator).Assembly.Location)!;
+        NativeLibraryConfig.LLama
+            .WithSearchDirectory(pluginDirectory)
+            .WithSelectingPolicy(LLamaSharpNativeLibrarySelectingPolicy.Instance);
+    }
 
     public PLaMoTranslator(IOptionsSnapshot<PLaMoOptions> plamoOptions, IOptionsSnapshot<LanguageOptions> langOptions, ILogger<PLaMoTranslator> logger)
     {
@@ -36,6 +41,19 @@ public sealed class PLaMoTranslator : ITranslateModule, IDisposable
         if (!File.Exists(modelPath))
         {
             throw new AppUserException(Resources.ModelFileNotFound);
+        }
+
+        var runtimeDirectory = CudaRuntimeResolver.FindExistingRuntime()
+            ?? throw new AppUserException(Resources.CudaRuntimeUnavailable);
+        try
+        {
+            CudaNativeLibraryLoader.Load(
+                runtimeDirectory,
+                Path.GetDirectoryName(typeof(PLaMoTranslator).Assembly.Location)!);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or BadImageFormatException)
+        {
+            throw new AppUserException(string.Format(Resources.CudaRuntimeLoadFailed, ex.Message));
         }
 
         if (!NativeLibraryConfig.LLama.LibraryHasLoaded)
