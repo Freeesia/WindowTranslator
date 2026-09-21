@@ -105,7 +105,6 @@ public class PluginValidationSettingsTests
         services.AddTransient(typeof(IConfigureOptions<>), typeof(global::ConfigurePluginParam<>));
         services.AddTransient<IConfigureNamedOptions<TargetSettings>, global::ConfigureTargetSettings>();
         services.AddTransient<IConfigureOptions<TargetSettings>, global::ConfigureTargetSettings>();
-        services.AddTransient<IConfigureNamedOptions<TargetSettings>, global::ConfigurePluginParam>();
         services.AddTransient<IConfigureOptions<TargetSettings>, global::ConfigurePluginParam>();
         return services.BuildServiceProvider();
     }

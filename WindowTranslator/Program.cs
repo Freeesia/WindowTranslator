@@ -198,7 +198,6 @@ builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(Configure
 builder.Services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigurePluginParam<>));
 builder.Services.AddTransient<IConfigureNamedOptions<TargetSettings>, ConfigureTargetSettings>();
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigureTargetSettings>();
-builder.Services.AddTransient<IConfigureNamedOptions<TargetSettings>, ConfigurePluginParam>();
 builder.Services.AddTransient<IConfigureOptions<TargetSettings>, ConfigurePluginParam>();
 builder.Services.AddTransient<IConfigureOptions<LanguageOptions>, ConfigureLanguageOptions>();
 builder.Services.AddSingleton(_ => (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a"))!)!);
