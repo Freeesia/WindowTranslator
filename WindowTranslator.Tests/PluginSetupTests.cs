@@ -12,7 +12,7 @@ public sealed class PluginSetupTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
 
-        var package = new PluginSetupPackage(CreatePackage("WindowTranslator.Plugin.OneOcrPlugin"), configuration);
+        var package = new PluginSetupPackage(CreatePackage("WindowTranslator.Plugin.TesseractOCRPlugin"), configuration);
 
         Assert.False(package.IsSelected);
     }
@@ -23,11 +23,11 @@ public sealed class PluginSetupTests
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Targets:Game:SelectedPlugins:IOcrModule"] = "OneOcr",
+                ["Targets:Game:SelectedPlugins:IOcrModule"] = "TesseractOcr",
             })
             .Build();
 
-        var package = new PluginSetupPackage(CreatePackage("WindowTranslator.Plugin.OneOcrPlugin"), configuration);
+        var package = new PluginSetupPackage(CreatePackage("WindowTranslator.Plugin.TesseractOCRPlugin"), configuration);
 
         Assert.True(package.IsSelected);
     }
@@ -48,12 +48,12 @@ public sealed class PluginSetupTests
     }
 
     [Theory]
-    [InlineData("WindowTranslator.Plugin.GoogleAIPlugin", "Gemini", "GoogleAITranslator", "GoogleAIOptions")]
-    [InlineData("WindowTranslator.Plugin.LLMPlugin", "LLM", "LLMTranslator", "LLMOptions")]
+    [InlineData("WindowTranslator.Plugin.GoogleAIPlugin", "GoogleAITranslator", "GoogleAIOptions")]
+    [InlineData("WindowTranslator.Plugin.LLMPlugin", "LLMTranslator", "LLMOptions")]
     public void AiPluginsAreTranslationItemsAndKeepExistingSelections(
-        string id, string name, string translator, string options)
+        string id, string translator, string options)
     {
-        var packageInfo = CreatePackage(id);
+        var packageInfo = CreatePackage(id, tags: ["translate", "filter"]);
         var selectedTranslator = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Targets:Game:SelectedPlugins:ITranslateModule"] = translator,
@@ -67,24 +67,26 @@ public sealed class PluginSetupTests
         var correction = new PluginSetupPackage(packageInfo, selectedCorrection);
 
         Assert.Equal("TranslateModule", translation.CategoryKey);
-        Assert.StartsWith(name, translation.DisplayName, StringComparison.Ordinal);
+        Assert.Equal(id, translation.Package.Title);
         Assert.True(translation.IsSelected);
         Assert.True(correction.IsSelected);
     }
 
     [Theory]
-    [InlineData("WindowTranslator.Plugin.DeepLTranslatePlugin", "TranslateModule", "DeepL")]
-    [InlineData("WindowTranslator.Plugin.OrcaRouterPlugin", "TranslateModule", "OrcaRouter")]
-    [InlineData("WindowTranslator.Plugin.TesseractOCRPlugin", "OcrModule", "Tesseract OCR")]
-    [InlineData("WindowTranslator.Plugin.FoMPlugin", "PluginCategoryFilter", "Fields of Mistria")]
-    public void SetupUsesPurposeAndConciseName(string id, string category, string name)
+    [InlineData("translate;filter", "TranslateModule")]
+    [InlineData("ocr;filter", "OcrModule")]
+    [InlineData("filter", "PluginCategoryFilter")]
+    [InlineData("other", "SetupOther")]
+    public void SetupUsesPackageTagsAndTitle(string tags, string category)
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        const string title = "Publisher-provided package title";
 
-        var package = new PluginSetupPackage(CreatePackage(id), configuration);
+        var package = new PluginSetupPackage(CreatePackage("Unknown.Plugin", title,
+            tags.Split(';')), configuration);
 
         Assert.Equal(category, package.CategoryKey);
-        Assert.Equal(name, package.DisplayName);
+        Assert.Equal(title, package.Package.Title);
     }
 
     [Theory]
@@ -116,13 +118,16 @@ public sealed class PluginSetupTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         var packages = new[] { "WindowTranslator.Plugin.GoogleAIPlugin", "WindowTranslator.Plugin.LLMPlugin" }
-            .Select(id => new PluginSetupPackage(CreatePackage(id), configuration)).ToArray();
+            .Select(id => new PluginSetupPackage(CreatePackage(id, tags: ["translate", "filter"]), configuration)).ToArray();
         var group = new PluginSetupGroup("TranslateModule", packages);
 
         Assert.All(packages, package => Assert.Equal(group.CategoryKey, package.CategoryKey));
         Assert.Contains("TranslateModule", Assert.Single(group.HelpLinks).Uri, StringComparison.Ordinal);
     }
 
-    private static NuGetPackageInfo CreatePackage(string id)
-        => new(id, id, string.Empty, "Freesia", null, null, ["1.0.0"], IsOfficial: true);
+    private static NuGetPackageInfo CreatePackage(string id, string? title = null, IReadOnlyList<string>? tags = null)
+        => new(id, title ?? id, string.Empty, "Freesia", null, null, ["1.0.0"], IsOfficial: true)
+        {
+            Tags = tags ?? [],
+        };
 }

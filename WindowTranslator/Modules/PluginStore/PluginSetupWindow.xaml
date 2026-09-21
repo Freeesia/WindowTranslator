@@ -101,12 +101,12 @@
                                                     <CheckBox
                                                         Margin="0,0,4,0"
                                                         VerticalAlignment="Top"
-                                                        AutomationProperties.Name="{Binding DisplayName}"
+                                                        AutomationProperties.Name="{Binding Package.Title}"
                                                         IsChecked="{Binding IsSelected}"
                                                         IsEnabled="{Binding DataContext.CanSelect, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" />
                                                     <Expander
                                                         Grid.Column="1"
-                                                        Header="{Binding DisplayName}"
+                                                        Header="{Binding Package.Title}"
                                                         IsExpanded="{Binding IsExpanded}">
                                                         <StackPanel Margin="0,4,0,4">
                                                             <ui:ProgressRing
@@ -128,17 +128,6 @@
                                                                     </mdp:MdXamlPlugins>
                                                                 </md:MarkdownScrollViewer.Plugins>
                                                             </md:MarkdownScrollViewer>
-                                                            <TextBlock Text="{Binding Package.Description}" TextWrapping="Wrap">
-                                                                <TextBlock.Style>
-                                                                    <Style TargetType="TextBlock">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding Package.HasReadme}" Value="True">
-                                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </TextBlock.Style>
-                                                            </TextBlock>
                                                         </StackPanel>
                                                     </Expander>
                                                 </Grid>

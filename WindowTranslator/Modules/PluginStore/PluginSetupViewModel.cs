@@ -146,7 +146,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
                 _ => 3,
             })
             .ThenBy(group => Resources.ResourceManager.GetString(group.Key, Resources.Culture))
-            .Select(group => new PluginSetupGroup(group.Key, [.. group.OrderBy(package => package.DisplayName)]))];
+            .Select(group => new PluginSetupGroup(group.Key, [.. group.OrderBy(package => package.Package.Title)]))];
         this.HasSearchError = snapshot.Error is not null;
         this.ErrorMessage = this.HasSearchError ? Resources.NuGetSearchFailed
             : !this.IsLoading && packages.Length == 0 ? this["SetupNoPackages"] : null;
@@ -174,7 +174,7 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         {
             return;
         }
-        var version = package.Package.LatestVersion;
+        var version = package.Package.LatestVersion ?? package.Package.PrereleaseVersion;
         if (version is null)
         {
             return;
@@ -418,7 +418,6 @@ internal sealed partial class PluginSetupPackage : ObservableObject
 {
     public PluginPackageViewModel Package { get; }
     public string CategoryKey { get; }
-    public string DisplayName { get; }
 
     [ObservableProperty]
     private bool isSelected;
@@ -435,9 +434,11 @@ internal sealed partial class PluginSetupPackage : ObservableObject
     public PluginSetupPackage(NuGetPackageInfo info, IConfiguration configuration)
     {
         this.Package = new(info, false, null);
-        var (categoryKey, modules, displayName) = GetDefinition(info.Id);
-        this.CategoryKey = categoryKey;
-        this.DisplayName = displayName ?? info.Title;
+        this.CategoryKey = info.Tags.Contains("translate", StringComparer.OrdinalIgnoreCase) ? "TranslateModule"
+            : info.Tags.Contains("ocr", StringComparer.OrdinalIgnoreCase) ? "OcrModule"
+            : info.Tags.Contains("filter", StringComparer.OrdinalIgnoreCase) ? "PluginCategoryFilter"
+            : "SetupOther";
+        var modules = GetMigrationModules(info.Id);
         var targets = configuration.GetSection(nameof(UserSettings.Targets)).GetChildren().ToArray();
         this.isSelected = targets.SelectMany(target => target.GetSection(nameof(TargetSettings.SelectedPlugins)).GetChildren())
             .Any(selection => modules.Contains(selection.Value, StringComparer.OrdinalIgnoreCase));
@@ -459,23 +460,17 @@ internal sealed partial class PluginSetupPackage : ObservableObject
         }
     }
 
-    private static (string CategoryKey, string[] Modules, string? DisplayName) GetDefinition(string packageId)
+    private static string[] GetMigrationModules(string packageId)
         => packageId.ToUpperInvariant() switch
         {
-            "WINDOWTRANSLATOR.PLUGIN.ONEOCRPLUGIN" => ("OcrModule", ["OneOcr"], "OneOCR"),
-            "WINDOWTRANSLATOR.PLUGIN.TESSERACTOCRPLUGIN" => ("OcrModule", ["TesseractOcr"], "Tesseract OCR"),
-            "WINDOWTRANSLATOR.PLUGIN.BERGAMOTTRANSLATORPLUGIN" => ("TranslateModule", ["BergamotTranslator"], "Bergamot"),
-            "WINDOWTRANSLATOR.PLUGIN.DEEPLTRANSLATEPLUGIN" => ("TranslateModule", ["DeepLTranslator"], "DeepL"),
-            "WINDOWTRANSLATOR.PLUGIN.GITHUBCOPILOTPLUGIN" => ("TranslateModule", ["GitHubCopilotTranslator"], "GitHub Copilot"),
-            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAPPSSCTIPTPLUGIN" => ("TranslateModule", ["GasTranslator"], "Google Apps Script"),
-            "WINDOWTRANSLATOR.PLUGIN.PLAMOPLUGIN" => ("TranslateModule", ["PLaMoTranslator"], "PLaMo"),
-            "WINDOWTRANSLATOR.PLUGIN.ORCAROUTERPLUGIN" => ("TranslateModule", ["OrcaRouterTranslator"], "OrcaRouter"),
-            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAIPLUGIN" => ("TranslateModule", ["GoogleAITranslator", "GoogleAIOcr"], "Gemini"),
-            "WINDOWTRANSLATOR.PLUGIN.LLMPLUGIN" => ("TranslateModule", ["LLMTranslator", "LLMOcr"],
-                (Resources.Culture ?? CultureInfo.CurrentUICulture).TwoLetterISOLanguageName == "ja"
-                    ? "LLM（OpenAI互換）" : "LLM (OpenAI compatible)"),
-            "WINDOWTRANSLATOR.PLUGIN.FOMPLUGIN" => ("PluginCategoryFilter", ["FoMFilterModule"], "Fields of Mistria"),
-            "WINDOWTRANSLATOR.PLUGIN.COLORTHIEFPLUGIN" => ("SetupColors", ["ColorThiefModule"], "ColorThief"),
-            _ => ("SetupOther", [], null),
+            "WINDOWTRANSLATOR.PLUGIN.TESSERACTOCRPLUGIN" => ["TesseractOcr"],
+            "WINDOWTRANSLATOR.PLUGIN.DEEPLTRANSLATEPLUGIN" => ["DeepLTranslator"],
+            "WINDOWTRANSLATOR.PLUGIN.GITHUBCOPILOTPLUGIN" => ["GitHubCopilotTranslator"],
+            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAPPSSCTIPTPLUGIN" => ["GasTranslator"],
+            "WINDOWTRANSLATOR.PLUGIN.PLAMOPLUGIN" => ["PLaMoTranslator"],
+            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAIPLUGIN" => ["GoogleAITranslator", "GoogleAIOcr"],
+            "WINDOWTRANSLATOR.PLUGIN.LLMPLUGIN" => ["LLMTranslator", "LLMOcr"],
+            "WINDOWTRANSLATOR.PLUGIN.FOMPLUGIN" => ["FoMFilterModule"],
+            _ => [],
         };
 }

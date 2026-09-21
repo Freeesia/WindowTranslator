@@ -52,7 +52,10 @@ public sealed class NuGetPluginServiceTests
             using var handler = new InMemoryNuGetHandler();
             handler.SearchResults = [.. ids.Select(id => CreatePackageSearchMetadata(
                 id, id, null, "Freesia", null, null,
-                owners: [NuGetPluginService.OfficialPackageOwner]))];
+                owners: [NuGetPluginService.OfficialPackageOwner],
+                tags: id == "WindowTranslator.Plugin.FoMPlugin" ? "filter"
+                    : id == "WindowTranslator.Plugin.TesseractOCRPlugin" ? "ocr"
+                    : "translate"))];
             foreach (var id in ids)
             {
                 handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));
@@ -67,10 +70,10 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal(["TranslateModule", "OcrModule", "PluginCategoryFilter"],
                 viewModel.Groups.Select(group => group.CategoryKey));
             Assert.Collection(viewModel.Groups[0].Packages,
-                package => Assert.Equal("Gemini", package.DisplayName),
-                package => Assert.StartsWith("LLM", package.DisplayName, StringComparison.Ordinal));
+                package => Assert.Equal("WindowTranslator.Plugin.GoogleAIPlugin", package.Package.Title),
+                package => Assert.Equal("WindowTranslator.Plugin.LLMPlugin", package.Package.Title));
             Assert.Equal("OCR", viewModel.Groups[1].Name);
-            Assert.Equal("Fields of Mistria", Assert.Single(viewModel.Groups[2].Packages).DisplayName);
+            Assert.Equal("WindowTranslator.Plugin.FoMPlugin", Assert.Single(viewModel.Groups[2].Packages).Package.Title);
             Assert.DoesNotContain(viewModel.Groups.SelectMany(group => group.Packages),
                 package => ids[4..].Contains(package.Package.Id, StringComparer.OrdinalIgnoreCase));
         }
@@ -122,8 +125,10 @@ public sealed class NuGetPluginServiceTests
         }
     }
 
-    [Fact]
-    public async Task SetupLoadsLocalizedReadmeOnlyWhenExpanded()
+    [Theory]
+    [InlineData("1.0.0")]
+    [InlineData("1.0.0-preview.1")]
+    public async Task SetupLoadsLocalizedReadmeOnlyWhenExpanded(string version)
     {
         const string id = "WindowTranslator.Plugin.LLMPlugin";
         var directory = CreateTestDirectory();
@@ -134,13 +139,13 @@ public sealed class NuGetPluginServiceTests
             using var handler = new InMemoryNuGetHandler();
             handler.SearchResults = [CreatePackageSearchMetadata(id, id, null, "Freesia", null, null,
                 owners: [NuGetPluginService.OfficialPackageOwner])];
-            handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));
-            handler.AddPackage(id, "1.0.0", CreatePackage(id, "1.0.0", [], new Dictionary<string, byte[]>
+            handler.AddMetadataVersions(id, CreatePluginVersionMetadata(version));
+            handler.AddPackage(id, version, CreatePackage(id, version, [], new Dictionary<string, byte[]>
             {
                 [$"lib/net10.0/{id}.dll"] = "plugin"u8.ToArray(),
                 ["README.md"] = "## ja\n\n# 日本語\n\n## en\n\n# English"u8.ToArray(),
             }));
-            handler.AddReadmeUrl(id, "1.0.0", "https://nuget.test/readme/windowtranslator.plugin.llmplugin/1.0.0");
+            handler.AddReadmeUrl(id, version, $"https://nuget.test/readme/windowtranslator.plugin.llmplugin/{version}");
             using var service = CreateService(handler, Path.Combine(directory, "nuget-plugins"));
             var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             using var viewModel = new PluginSetupViewModel(service, configuration,
@@ -148,7 +153,7 @@ public sealed class NuGetPluginServiceTests
 
             await service.RefreshPackageInformationAsync();
             var package = Assert.Single(Assert.Single(viewModel.Groups).Packages);
-            Assert.Equal("1.0.0", package.Package.LatestVersion);
+            Assert.Equal(version.Contains('-') ? null : version, package.Package.LatestVersion);
             Assert.Null(package.Package.ReadmeMarkdown);
             Assert.DoesNotContain(handler.RequestedPaths, path => path.Contains("/readme/", StringComparison.Ordinal));
 

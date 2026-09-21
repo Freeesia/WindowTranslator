@@ -95,18 +95,20 @@ public sealed class PluginSetupWindowTests
                         Assert.True(skip.IsEnabled);
                         Assert.InRange(skip.ActualHeight, 24, 60);
                         Assert.True(skip.TransformToAncestor(setup).Transform(new Point()).Y + skip.ActualHeight <= setup.ActualHeight);
-                        viewModel.Groups = [new("OcrModule", [new PluginSetupPackage(new(
+                        var setupPackage = new PluginSetupPackage(new(
                             "WindowTranslator.Plugin.OneOcrPlugin", "OneOCR Plugin", "WindowsのOCRエンジンを使用します。",
-                            "Freesia", null, null, ["1.0.0"], IsOfficial: true), configuration)])];
+                            "Freesia", null, null, ["1.0.0"], IsOfficial: true), configuration);
+                        setupPackage.Package.ReadmeMarkdown = "# README content";
+                        viewModel.Groups = [new("OcrModule", [setupPackage])];
                         viewModel.IsLoading = false;
                         setup.UpdateLayout();
                         Assert.True(install.IsEnabled);
                         Assert.DoesNotContain(Descendants<TextBlock>(setup), text =>
                             text.Text == "WindowsのOCRエンジンを使用します。");
                         Assert.Contains(Descendants<System.Windows.Controls.CheckBox>(setup), checkbox =>
-                            Equals(System.Windows.Automation.AutomationProperties.GetName(checkbox), "OneOCR"));
+                            Equals(System.Windows.Automation.AutomationProperties.GetName(checkbox), "OneOCR Plugin"));
                         var expander = Assert.Single(Descendants<System.Windows.Controls.Expander>(setup));
-                        Assert.Equal("OneOCR", expander.Header);
+                        Assert.Equal("OneOCR Plugin", expander.Header);
                         var packageRow = Assert.Single(Descendants<System.Windows.Controls.StackPanel>(setup), panel =>
                             panel.Children.OfType<System.Windows.Controls.Grid>().Any(grid =>
                                 grid.Children.Contains(expander)));
@@ -133,8 +135,10 @@ public sealed class PluginSetupWindowTests
                         expander.IsExpanded = true;
                         setup.UpdateLayout();
                         var details = Assert.IsType<System.Windows.Controls.StackPanel>(expander.Content);
-                        Assert.Contains(details.Children.OfType<System.Windows.Controls.TextBlock>(), text =>
+                        Assert.DoesNotContain(details.Children.OfType<System.Windows.Controls.TextBlock>(), text =>
                             text.Text == "WindowsのOCRエンジンを使用します。");
+                        Assert.Contains(details.Children.OfType<MdXaml.MarkdownScrollViewer>(), viewer =>
+                            viewer.Markdown == "# README content" && viewer.Visibility == Visibility.Visible);
                         setup.Close();
                     }
                     catch (Exception ex)
