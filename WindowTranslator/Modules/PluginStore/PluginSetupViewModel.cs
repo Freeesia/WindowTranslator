@@ -122,8 +122,15 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
             }
         }
         this.Groups = [.. packages.GroupBy(package => package.CategoryKey)
-            .OrderBy(group => Resources.ResourceManager.GetString(group.Key, Resources.Culture))
-            .Select(group => new PluginSetupGroup(group.Key, [.. group.OrderBy(package => package.Package.Title)]))];
+            .OrderBy(group => group.Key switch
+            {
+                "TranslateModule" => 0,
+                "OcrModule" => 1,
+                "PluginCategoryFilter" => 2,
+                _ => 3,
+            })
+            .ThenBy(group => Resources.ResourceManager.GetString(group.Key, Resources.Culture))
+            .Select(group => new PluginSetupGroup(group.Key, [.. group.OrderBy(package => package.DisplayName)]))];
         this.HasSearchError = snapshot.Error is not null;
         this.ErrorMessage = this.HasSearchError ? Resources.NuGetSearchFailed
             : !this.IsLoading && packages.Length == 0 ? this["SetupNoPackages"] : null;
@@ -292,12 +299,16 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
 
 internal sealed record PluginSetupGroup(string CategoryKey, IReadOnlyList<PluginSetupPackage> Packages)
 {
-    public string Name { get; } = Resources.ResourceManager.GetString(CategoryKey, Resources.Culture) ?? string.Empty;
+    public string Name { get; } = CategoryKey switch
+    {
+        "TranslateModule" => Resources.PluginCategoryTranslate,
+        "OcrModule" => "OCR",
+        _ => Resources.ResourceManager.GetString(CategoryKey, Resources.Culture) ?? string.Empty,
+    };
     public IReadOnlyList<PluginSetupHelpLink> HelpLinks { get; } = CategoryKey switch
     {
         "OcrModule" => [CreateHelpLink("OcrModule")],
         "TranslateModule" => [CreateHelpLink("TranslateModule")],
-        "SetupTranslationOcr" => [CreateHelpLink("TranslateModule"), CreateHelpLink("OcrModule")],
         _ => [],
     };
 
@@ -313,6 +324,7 @@ internal sealed partial class PluginSetupPackage : ObservableObject
 {
     public PluginPackageViewModel Package { get; }
     public string CategoryKey { get; }
+    public string DisplayName { get; }
 
     [ObservableProperty]
     private bool isSelected;
@@ -323,8 +335,9 @@ internal sealed partial class PluginSetupPackage : ObservableObject
     public PluginSetupPackage(NuGetPackageInfo info, IConfiguration configuration)
     {
         this.Package = new(info, false, null);
-        var (categoryKey, modules) = GetDefinition(info.Id);
+        var (categoryKey, modules, displayName) = GetDefinition(info.Id);
         this.CategoryKey = categoryKey;
+        this.DisplayName = displayName ?? info.Title;
         var targets = configuration.GetSection(nameof(UserSettings.Targets)).GetChildren().ToArray();
         this.isSelected = targets.SelectMany(target => target.GetSection(nameof(TargetSettings.SelectedPlugins)).GetChildren())
             .Any(selection => modules.Contains(selection.Value, StringComparer.OrdinalIgnoreCase));
@@ -346,20 +359,23 @@ internal sealed partial class PluginSetupPackage : ObservableObject
         }
     }
 
-    private static (string CategoryKey, string[] Modules) GetDefinition(string packageId)
+    private static (string CategoryKey, string[] Modules, string? DisplayName) GetDefinition(string packageId)
         => packageId.ToUpperInvariant() switch
         {
-            "WINDOWTRANSLATOR.PLUGIN.ONEOCRPLUGIN" => ("OcrModule", ["OneOcr"]),
-            "WINDOWTRANSLATOR.PLUGIN.TESSERACTOCRPLUGIN" => ("OcrModule", ["TesseractOcr"]),
-            "WINDOWTRANSLATOR.PLUGIN.BERGAMOTTRANSLATORPLUGIN" => ("TranslateModule", ["BergamotTranslator"]),
-            "WINDOWTRANSLATOR.PLUGIN.DEEPLTRANSLATEPLUGIN" => ("TranslateModule", ["DeepLTranslator"]),
-            "WINDOWTRANSLATOR.PLUGIN.GITHUBCOPILOTPLUGIN" => ("TranslateModule", ["GitHubCopilotTranslator"]),
-            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAPPSSCTIPTPLUGIN" => ("TranslateModule", ["GasTranslator"]),
-            "WINDOWTRANSLATOR.PLUGIN.PLAMOPLUGIN" => ("TranslateModule", ["PLaMoTranslator"]),
-            "WINDOWTRANSLATOR.PLUGIN.LLMPLUGIN" => ("SetupTranslationOcr", ["LLMTranslator", "LLMOcr"]),
-            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAIPLUGIN" => ("SetupTranslationOcr", ["GoogleAITranslator", "GoogleAIOcr"]),
-            "WINDOWTRANSLATOR.PLUGIN.FOMPLUGIN" => ("PluginCategoryFilter", ["FoMFilterModule"]),
-            "WINDOWTRANSLATOR.PLUGIN.COLORTHIEFPLUGIN" => ("SetupColors", ["ColorThiefModule"]),
-            _ => ("SetupOther", []),
+            "WINDOWTRANSLATOR.PLUGIN.ONEOCRPLUGIN" => ("OcrModule", ["OneOcr"], "OneOCR"),
+            "WINDOWTRANSLATOR.PLUGIN.TESSERACTOCRPLUGIN" => ("OcrModule", ["TesseractOcr"], "Tesseract OCR"),
+            "WINDOWTRANSLATOR.PLUGIN.BERGAMOTTRANSLATORPLUGIN" => ("TranslateModule", ["BergamotTranslator"], "Bergamot"),
+            "WINDOWTRANSLATOR.PLUGIN.DEEPLTRANSLATEPLUGIN" => ("TranslateModule", ["DeepLTranslator"], "DeepL"),
+            "WINDOWTRANSLATOR.PLUGIN.GITHUBCOPILOTPLUGIN" => ("TranslateModule", ["GitHubCopilotTranslator"], "GitHub Copilot"),
+            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAPPSSCTIPTPLUGIN" => ("TranslateModule", ["GasTranslator"], "Google Apps Script"),
+            "WINDOWTRANSLATOR.PLUGIN.PLAMOPLUGIN" => ("TranslateModule", ["PLaMoTranslator"], "PLaMo"),
+            "WINDOWTRANSLATOR.PLUGIN.ORCAROUTERPLUGIN" => ("TranslateModule", ["OrcaRouterTranslator"], "OrcaRouter"),
+            "WINDOWTRANSLATOR.PLUGIN.GOOGLEAIPLUGIN" => ("TranslateModule", ["GoogleAITranslator", "GoogleAIOcr"], "Gemini"),
+            "WINDOWTRANSLATOR.PLUGIN.LLMPLUGIN" => ("TranslateModule", ["LLMTranslator", "LLMOcr"],
+                (Resources.Culture ?? CultureInfo.CurrentUICulture).TwoLetterISOLanguageName == "ja"
+                    ? "LLM（OpenAI互換）" : "LLM (OpenAI compatible)"),
+            "WINDOWTRANSLATOR.PLUGIN.FOMPLUGIN" => ("PluginCategoryFilter", ["FoMFilterModule"], "Fields of Mistria"),
+            "WINDOWTRANSLATOR.PLUGIN.COLORTHIEFPLUGIN" => ("SetupColors", ["ColorThiefModule"], "ColorThief"),
+            _ => ("SetupOther", [], null),
         };
 }

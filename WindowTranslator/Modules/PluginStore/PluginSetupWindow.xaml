@@ -51,16 +51,12 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,12">
-                                <Grid Margin="0,4,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,4,0,8" Orientation="Horizontal">
                                     <TextBlock
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
                                         Text="{Binding Name}" />
-                                    <ItemsControl Grid.Column="1" ItemsSource="{Binding HelpLinks}">
+                                    <ItemsControl ItemsSource="{Binding HelpLinks}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel Orientation="Horizontal" />
@@ -69,7 +65,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <ui:HyperlinkButton
-                                                    Margin="4,0,0,0"
+                                                    Margin="6,0,0,0"
                                                     Padding="4"
                                                     CornerRadius="16"
                                                     NavigateUri="{Binding Uri}"
@@ -83,13 +79,13 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                </Grid>
+                                </StackPanel>
                                 <ItemsControl ItemsSource="{Binding Packages}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="4,0,12,12">
                                                 <CheckBox
-                                                    Content="{Binding Package.Title}"
+                                                    Content="{Binding DisplayName}"
                                                     IsChecked="{Binding IsSelected}"
                                                     IsEnabled="{Binding DataContext.CanSelect, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" />
                                                 <TextBlock

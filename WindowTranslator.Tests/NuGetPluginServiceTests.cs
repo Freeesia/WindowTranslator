@@ -33,6 +33,54 @@ public sealed class NuGetPluginServiceTests
 {
     private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
 
+    [Fact]
+    public async Task SetupGroupsOnlyInstallCandidatesInScreenOrder()
+    {
+        var directory = CreateTestDirectory();
+        try
+        {
+            string[] ids = [
+                "WindowTranslator.Plugin.FoMPlugin",
+                "WindowTranslator.Plugin.TesseractOCRPlugin",
+                "WindowTranslator.Plugin.LLMPlugin",
+                "WindowTranslator.Plugin.GoogleAIPlugin",
+                "WindowTranslator.Plugin.OrcaRouterPlugin",
+            ];
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults = [.. ids.Select(id => CreatePackageSearchMetadata(
+                id, id, null, "Freesia", null, null,
+                owners: [NuGetPluginService.OfficialPackageOwner]))];
+            foreach (var id in ids)
+            {
+                handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));
+            }
+            var bundledDirectory = Path.Combine(directory, "plugins");
+            var orcaDirectory = Path.Combine(bundledDirectory, ids[^1]);
+            Directory.CreateDirectory(orcaDirectory);
+            await File.WriteAllTextAsync(Path.Combine(orcaDirectory, ids[^1] + ".dll"), "bundled");
+            using var service = CreateService(handler, Path.Combine(directory, "nuget-plugins"));
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            using var viewModel = new PluginSetupViewModel(service, configuration,
+                NullLogger<PluginSetupViewModel>.Instance, bundledPluginsDirectory: bundledDirectory);
+
+            await service.RefreshPackageInformationAsync();
+
+            Assert.Equal(["TranslateModule", "OcrModule", "PluginCategoryFilter"],
+                viewModel.Groups.Select(group => group.CategoryKey));
+            Assert.Collection(viewModel.Groups[0].Packages,
+                package => Assert.Equal("Gemini", package.DisplayName),
+                package => Assert.StartsWith("LLM", package.DisplayName, StringComparison.Ordinal));
+            Assert.Equal("OCR", viewModel.Groups[1].Name);
+            Assert.Equal("Fields of Mistria", Assert.Single(viewModel.Groups[2].Packages).DisplayName);
+            Assert.DoesNotContain(viewModel.Groups.SelectMany(group => group.Packages),
+                package => package.Package.Id == ids[^1]);
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]

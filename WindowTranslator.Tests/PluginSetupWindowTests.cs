@@ -96,17 +96,25 @@ public sealed class PluginSetupWindowTests
                         Assert.InRange(skip.ActualHeight, 24, 60);
                         Assert.True(skip.TransformToAncestor(setup).Transform(new Point()).Y + skip.ActualHeight <= setup.ActualHeight);
                         viewModel.Groups = [new("OcrModule", [new PluginSetupPackage(new(
-                            "WindowTranslator.Plugin.OneOcrPlugin", "OneOCR", "WindowsのOCRエンジンを使用します。",
+                            "WindowTranslator.Plugin.OneOcrPlugin", "OneOCR Plugin", "WindowsのOCRエンジンを使用します。",
                             "Freesia", null, null, ["1.0.0"], IsOfficial: true), configuration)])];
                         viewModel.IsLoading = false;
                         setup.UpdateLayout();
                         Assert.True(install.IsEnabled);
                         Assert.DoesNotContain(Descendants<TextBlock>(setup), text =>
                             text.Text == "WindowsのOCRエンジンを使用します。");
+                        Assert.Contains(Descendants<System.Windows.Controls.CheckBox>(setup), checkbox =>
+                            Equals(checkbox.Content, "OneOCR"));
                         var help = Assert.Single(Descendants<HyperlinkButton>(setup));
                         Assert.Equal(
                             HelpUriBuilder.Build("OcrModule", System.Globalization.CultureInfo.CurrentUICulture),
                             help.NavigateUri);
+                        var headingPanel = Assert.Single(Descendants<System.Windows.Controls.StackPanel>(setup), panel =>
+                            panel.Orientation == System.Windows.Controls.Orientation.Horizontal
+                            && panel.Children.OfType<System.Windows.Controls.ItemsControl>().Any(items =>
+                                ReferenceEquals(items.ItemsSource, viewModel.Groups[0].HelpLinks)));
+                        var heading = Assert.Single(headingPanel.Children.OfType<System.Windows.Controls.TextBlock>());
+                        Assert.Equal("OCR", heading.Text);
                         var progress = Assert.Single(Descendants<ProgressBar>(setup));
                         var progressContainer = Assert.IsType<System.Windows.Controls.StackPanel>(
                             VisualTreeHelper.GetParent(progress));
