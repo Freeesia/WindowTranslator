@@ -104,7 +104,15 @@ public sealed class PluginSetupWindowTests
                         Assert.DoesNotContain(Descendants<TextBlock>(setup), text =>
                             text.Text == "WindowsのOCRエンジンを使用します。");
                         Assert.Contains(Descendants<System.Windows.Controls.CheckBox>(setup), checkbox =>
-                            Equals(checkbox.Content, "OneOCR"));
+                            Equals(System.Windows.Automation.AutomationProperties.GetName(checkbox), "OneOCR"));
+                        var expander = Assert.Single(Descendants<System.Windows.Controls.Expander>(setup));
+                        Assert.Equal("OneOCR", expander.Header);
+                        var packageRow = Assert.Single(Descendants<System.Windows.Controls.StackPanel>(setup), panel =>
+                            panel.Children.OfType<System.Windows.Controls.Grid>().Any(grid =>
+                                grid.Children.Contains(expander)));
+                        Assert.InRange(packageRow.ActualHeight, 24, 65);
+                        Assert.Contains(packageRow.Children.OfType<System.Windows.Controls.TextBlock>(), text =>
+                            text.Visibility == Visibility.Collapsed);
                         var help = Assert.Single(Descendants<HyperlinkButton>(setup));
                         Assert.Equal(
                             HelpUriBuilder.Build("OcrModule", System.Globalization.CultureInfo.CurrentUICulture),
@@ -122,6 +130,11 @@ public sealed class PluginSetupWindowTests
                             VisualTreeHelper.GetParent(skip));
                         Assert.Equal(2, System.Windows.Controls.Grid.GetRow(progressContainer));
                         Assert.Equal(3, System.Windows.Controls.Grid.GetRow(buttonContainer));
+                        expander.IsExpanded = true;
+                        setup.UpdateLayout();
+                        var details = Assert.IsType<System.Windows.Controls.StackPanel>(expander.Content);
+                        Assert.Contains(details.Children.OfType<System.Windows.Controls.TextBlock>(), text =>
+                            text.Text == "WindowsのOCRエンジンを使用します。");
                         setup.Close();
                     }
                     catch (Exception ex)

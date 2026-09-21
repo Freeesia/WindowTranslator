@@ -45,6 +45,9 @@ public sealed class NuGetPluginServiceTests
                 "WindowTranslator.Plugin.LLMPlugin",
                 "WindowTranslator.Plugin.GoogleAIPlugin",
                 "WindowTranslator.Plugin.OrcaRouterPlugin",
+                "WindowTranslator.Plugin.BergamotTranslatorPlugin",
+                "WindowTranslator.Plugin.OneOcrPlugin",
+                "WindowTranslator.Plugin.ColorThiefPlugin",
             ];
             using var handler = new InMemoryNuGetHandler();
             handler.SearchResults = [.. ids.Select(id => CreatePackageSearchMetadata(
@@ -54,14 +57,10 @@ public sealed class NuGetPluginServiceTests
             {
                 handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));
             }
-            var bundledDirectory = Path.Combine(directory, "plugins");
-            var orcaDirectory = Path.Combine(bundledDirectory, ids[^1]);
-            Directory.CreateDirectory(orcaDirectory);
-            await File.WriteAllTextAsync(Path.Combine(orcaDirectory, ids[^1] + ".dll"), "bundled");
             using var service = CreateService(handler, Path.Combine(directory, "nuget-plugins"));
             var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             using var viewModel = new PluginSetupViewModel(service, configuration,
-                NullLogger<PluginSetupViewModel>.Instance, bundledPluginsDirectory: bundledDirectory);
+                NullLogger<PluginSetupViewModel>.Instance);
 
             await service.RefreshPackageInformationAsync();
 
@@ -73,7 +72,7 @@ public sealed class NuGetPluginServiceTests
             Assert.Equal("OCR", viewModel.Groups[1].Name);
             Assert.Equal("Fields of Mistria", Assert.Single(viewModel.Groups[2].Packages).DisplayName);
             Assert.DoesNotContain(viewModel.Groups.SelectMany(group => group.Packages),
-                package => package.Package.Id == ids[^1]);
+                package => ids[4..].Contains(package.Package.Id, StringComparer.OrdinalIgnoreCase));
         }
         finally
         {
@@ -81,28 +80,14 @@ public sealed class NuGetPluginServiceTests
         }
     }
 
-    [Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(true, true)]
-    public async Task SetupExcludesBundledOfficialPluginsAndPreservesMigrationSelection(bool hasFolder, bool hasDll)
+    [Fact]
+    public async Task SetupExcludesBundledOfficialPluginsAndPreservesMigrationSelection()
     {
         var directory = CreateTestDirectory();
         try
         {
             const string ocrId = "WindowTranslator.Plugin.OneOcrPlugin";
             const string translateId = "WindowTranslator.Plugin.DeepLTranslatePlugin";
-            var bundledDirectory = Path.Combine(directory, "plugins");
-            var ocrDirectory = Path.Combine(bundledDirectory, ocrId);
-            if (hasFolder)
-            {
-                Directory.CreateDirectory(ocrDirectory);
-            }
-            if (hasDll)
-            {
-                // セットアップでDLLをロードせず、配置だけで判定できることも確認する。
-                await File.WriteAllTextAsync(Path.Combine(ocrDirectory, ocrId + ".dll"), "bundled");
-            }
             using var handler = new InMemoryNuGetHandler();
             handler.SearchResults = [.. new[] { ocrId, translateId, "Unofficial.Plugin" }.Select(id =>
                 CreatePackageSearchMetadata(id, id, null, "Freesia", null, null,
@@ -118,21 +103,67 @@ public sealed class NuGetPluginServiceTests
                 ["Targets:Game:SelectedPlugins:ITranslateModule"] = "DeepLTranslator",
             }).Build();
             using var viewModel = new PluginSetupViewModel(service, configuration,
-                NullLogger<PluginSetupViewModel>.Instance, bundledPluginsDirectory: bundledDirectory);
+                NullLogger<PluginSetupViewModel>.Instance);
 
             await service.RefreshPackageInformationAsync();
 
             var packages = viewModel.Groups.SelectMany(group => group.Packages).ToArray();
-            Assert.Equal(hasDll ? 1 : 2, packages.Length);
+            Assert.Single(packages);
             Assert.All(packages, package => Assert.True(package.IsSelected));
             Assert.Contains(packages, package => package.Package.Id == translateId);
-            Assert.Equal(!hasDll, packages.Any(package => package.Package.Id == ocrId));
+            Assert.DoesNotContain(packages, package => package.Package.Id == ocrId);
             Assert.DoesNotContain(packages, package => package.Package.Id == "Unofficial.Plugin");
             // 通常ストアの一覧は同梱・非公式を含めて維持する。
             Assert.Equal(3, service.PackageSnapshot.Packages.Count);
         }
         finally
         {
+            DeleteTestDirectory(directory);
+        }
+    }
+
+    [Fact]
+    public async Task SetupLoadsLocalizedReadmeOnlyWhenExpanded()
+    {
+        const string id = "WindowTranslator.Plugin.LLMPlugin";
+        var directory = CreateTestDirectory();
+        var originalCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("ja-JP");
+            using var handler = new InMemoryNuGetHandler();
+            handler.SearchResults = [CreatePackageSearchMetadata(id, id, null, "Freesia", null, null,
+                owners: [NuGetPluginService.OfficialPackageOwner])];
+            handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));
+            handler.AddPackage(id, "1.0.0", CreatePackage(id, "1.0.0", [], new Dictionary<string, byte[]>
+            {
+                [$"lib/net10.0/{id}.dll"] = "plugin"u8.ToArray(),
+                ["README.md"] = "## ja\n\n# 日本語\n\n## en\n\n# English"u8.ToArray(),
+            }));
+            handler.AddReadmeUrl(id, "1.0.0", "https://nuget.test/readme/windowtranslator.plugin.llmplugin/1.0.0");
+            using var service = CreateService(handler, Path.Combine(directory, "nuget-plugins"));
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            using var viewModel = new PluginSetupViewModel(service, configuration,
+                NullLogger<PluginSetupViewModel>.Instance);
+
+            await service.RefreshPackageInformationAsync();
+            var package = Assert.Single(Assert.Single(viewModel.Groups).Packages);
+            Assert.Equal("1.0.0", package.Package.LatestVersion);
+            Assert.Null(package.Package.ReadmeMarkdown);
+            Assert.DoesNotContain(handler.RequestedPaths, path => path.Contains("/readme/", StringComparison.Ordinal));
+
+            package.IsExpanded = true;
+            await WaitForReadmeAsync(package.Package, "# 日本語");
+            Assert.True(package.Package.HasReadme);
+            Assert.DoesNotContain("English", package.Package.ReadmeMarkdown, StringComparison.Ordinal);
+
+            package.IsExpanded = false;
+            package.IsExpanded = true;
+            Assert.Single(handler.RequestedPaths, path => path.Contains("/readme/", StringComparison.Ordinal));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = originalCulture;
             DeleteTestDirectory(directory);
         }
     }

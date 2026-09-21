@@ -1,5 +1,5 @@
+using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -16,7 +16,15 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     private readonly IConfiguration configuration;
     private readonly ILogger<PluginSetupViewModel> logger;
     private readonly Dispatcher? dispatcher;
-    private readonly string bundledPluginsDirectory;
+    // 配布時に IsPublishable=true のプラグイン。開発用出力に DLL がなくても追加候補にはしない。
+    private static readonly HashSet<string> BundledPackageIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "WindowTranslator.Plugin.BergamotTranslatorPlugin",
+        "WindowTranslator.Plugin.OneOcrPlugin",
+        "WindowTranslator.Plugin.ColorThiefPlugin",
+        "WindowTranslator.Plugin.OrcaRouterPlugin",
+    };
+    private readonly Dictionary<PluginSetupPackage, CancellationTokenSource> readmeLoads = [];
     private readonly List<InstalledPackageInfo> installedPackages = [];
     private bool disposed;
     private bool finishRequested;
@@ -74,13 +82,12 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
 
     public PluginSetupViewModel(
         NuGetPluginService service, IConfiguration configuration, ILogger<PluginSetupViewModel> logger,
-        Dispatcher? dispatcher = null, string bundledPluginsDirectory = @".\plugins")
+        Dispatcher? dispatcher = null)
     {
         this.service = service;
         this.configuration = configuration;
         this.logger = logger;
         this.dispatcher = dispatcher;
-        this.bundledPluginsDirectory = bundledPluginsDirectory;
         this.service.PackageInformationUpdated += OnPackageInformationUpdated;
         ApplySnapshot();
     }
@@ -108,10 +115,13 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         this.IsLoading = ReferenceEquals(snapshot, PluginStoreSnapshot.Empty);
         var previousSelections = this.Groups.SelectMany(group => group.Packages)
             .ToDictionary(package => package.Package.Id, StringComparer.OrdinalIgnoreCase);
-        // 公式パッケージの配布先は plugins/<PackageId>/<PackageId>.dll。
-        // 同梱版をそのまま使えるものは、初回セットアップで追加インストールしない。
+        foreach (var previous in previousSelections.Values)
+        {
+            previous.PropertyChanged -= OnPackagePropertyChanged;
+            CancelReadmeLoad(previous);
+        }
         var packages = snapshot.Packages.Where(package => package.IsOfficial
-                && !File.Exists(Path.Combine(this.bundledPluginsDirectory, package.Id, package.Id + ".dll")))
+                && !BundledPackageIds.Contains(package.Id))
             .Select(info => new PluginSetupPackage(info, this.configuration))
             .ToArray();
         foreach (var package in packages)
@@ -119,6 +129,12 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
             if (previousSelections.TryGetValue(package.Package.Id, out var previous))
             {
                 package.IsSelected = previous.IsSelected;
+                package.IsExpanded = previous.IsExpanded;
+            }
+            package.PropertyChanged += OnPackagePropertyChanged;
+            if (package.IsExpanded)
+            {
+                StartReadmeLoad(package);
             }
         }
         this.Groups = [.. packages.GroupBy(package => package.CategoryKey)
@@ -134,6 +150,79 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
         this.HasSearchError = snapshot.Error is not null;
         this.ErrorMessage = this.HasSearchError ? Resources.NuGetSearchFailed
             : !this.IsLoading && packages.Length == 0 ? this["SetupNoPackages"] : null;
+    }
+
+    private void OnPackagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not PluginSetupPackage package || e.PropertyName != nameof(PluginSetupPackage.IsExpanded))
+        {
+            return;
+        }
+        if (package.IsExpanded)
+        {
+            StartReadmeLoad(package);
+        }
+        else
+        {
+            CancelReadmeLoad(package);
+        }
+    }
+
+    private void StartReadmeLoad(PluginSetupPackage package)
+    {
+        if (this.disposed || package.Package.HasReadme || package.Package.IsReadmeLoading)
+        {
+            return;
+        }
+        var version = package.Package.LatestVersion;
+        if (version is null)
+        {
+            return;
+        }
+        var cancellation = new CancellationTokenSource();
+        this.readmeLoads.Add(package, cancellation);
+        package.Package.IsReadmeLoading = true;
+        _ = LoadReadmeAsync(package, version, cancellation);
+    }
+
+    private async Task LoadReadmeAsync(PluginSetupPackage package, string version, CancellationTokenSource cancellation)
+    {
+        try
+        {
+            var readme = await this.service.GetPackageReadmeAsync(
+                package.Package.Id, version, CultureInfo.CurrentUICulture, cancellation.Token);
+            if (this.readmeLoads.TryGetValue(package, out var current) && ReferenceEquals(current, cancellation))
+            {
+                package.Package.ReadmeMarkdown = readme;
+            }
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+            // 折りたたみ・一覧更新時のキャンセルは正常。
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning(ex, "プラグインREADMEの取得に失敗しました: {PackageId} {Version}",
+                package.Package.Id, version);
+        }
+        finally
+        {
+            if (this.readmeLoads.TryGetValue(package, out var current) && ReferenceEquals(current, cancellation))
+            {
+                this.readmeLoads.Remove(package);
+                package.Package.IsReadmeLoading = false;
+            }
+            cancellation.Dispose();
+        }
+    }
+
+    private void CancelReadmeLoad(PluginSetupPackage package)
+    {
+        if (this.readmeLoads.Remove(package, out var cancellation))
+        {
+            cancellation.Cancel();
+            package.Package.IsReadmeLoading = false;
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanReload))]
@@ -288,6 +377,11 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
     {
         this.disposed = true;
         this.service.PackageInformationUpdated -= OnPackageInformationUpdated;
+        foreach (var package in this.Groups.SelectMany(group => group.Packages))
+        {
+            package.PropertyChanged -= OnPackagePropertyChanged;
+            CancelReadmeLoad(package);
+        }
         this.Completed = null;
     }
 
@@ -330,7 +424,13 @@ internal sealed partial class PluginSetupPackage : ObservableObject
     private bool isSelected;
 
     [ObservableProperty]
+    private bool isExpanded;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     private string? errorMessage;
+
+    public bool HasError => !string.IsNullOrWhiteSpace(this.ErrorMessage);
 
     public PluginSetupPackage(NuGetPackageInfo info, IConfiguration configuration)
     {
