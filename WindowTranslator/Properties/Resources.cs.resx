@@ -411,8 +411,6 @@ Monitory nejsou podporovány.
   <data name="SetupSelectVersion" xml:space="preserve"><value>Vyberte verzi, kterou chcete nainstalovat.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Některé pluginy se nepodařilo nainstalovat. Opakujte akci nebo uložte úspěšné instalace a ukončete průvodce.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Výsledky nastavení se nepodařilo uložit. Opakujte akci.</value></data>
-  <data name="SetupTranslationOcr" xml:space="preserve"><value>Překlad a OCR</value></data>
-  <data name="SetupColors" xml:space="preserve"><value>Extrakce barev</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Ostatní</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>Sledování OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilita polohy a velikosti</value></data>
