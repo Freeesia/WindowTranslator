@@ -56,7 +56,12 @@ public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsVal
 
         try
         {
-            await CudaRuntimeResolver.ResolveAsync().ConfigureAwait(false);
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(30) };
+            await CudaRuntimeResolver.ResolveAsync(
+                httpClient,
+                (archive, progress) => this.logger.LogInformation(
+                    "Downloading PLaMo CUDA Runtime {Archive}: {Progress:P2}", archive, progress))
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {

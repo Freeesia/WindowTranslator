@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Security.Cryptography;
+using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Plugin.PLaMoPlugin;
 
@@ -7,7 +8,6 @@ internal static class CudaRuntimeResolver
 {
     private const string CudaRelease = "12.9.0";
     private const string RedistributableBaseUrl = "https://developer.download.nvidia.com/compute/cuda/redist/";
-    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromMinutes(30) };
     private static readonly SemaphoreSlim DownloadLock = new(1, 1);
     private static readonly string[] RequiredFiles =
         ["cudart64_12.dll", "cublasLt64_12.dll", "cublas64_12.dll"];
@@ -69,13 +69,17 @@ internal static class CudaRuntimeResolver
         return HasRequiredFiles(cacheDirectory) ? cacheDirectory : null;
     }
 
-    internal static Task<string> ResolveAsync(CancellationToken cancellationToken = default)
+    internal static Task<string> ResolveAsync(
+        HttpClient httpClient,
+        Action<string, float> progress,
+        CancellationToken cancellationToken = default)
         => ResolveAsync(
-            HttpClient,
+            httpClient,
             Environment.GetEnvironmentVariable("CUDA_PATH"),
             Environment.GetEnvironmentVariable("ProgramFiles"),
             CacheDirectory,
-            cancellationToken);
+            cancellationToken,
+            progress: progress);
 
     internal static async Task<string> ResolveAsync(
         HttpClient httpClient,
@@ -83,7 +87,8 @@ internal static class CudaRuntimeResolver
         string? programFiles,
         string cacheDirectory,
         CancellationToken cancellationToken = default,
-        IReadOnlyList<RuntimeArchive>? archives = null)
+        IReadOnlyList<RuntimeArchive>? archives = null,
+        Action<string, float>? progress = null)
     {
         if (!OperatingSystem.IsWindows() || !System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.Equals(
                 System.Runtime.InteropServices.Architecture.X64))
@@ -114,17 +119,12 @@ internal static class CudaRuntimeResolver
                 foreach (var archive in archives ?? Archives)
                 {
                     var archivePath = Path.Combine(stagingDirectory, "download.zip");
-                    using (var response = await httpClient.GetAsync(
-                               RedistributableBaseUrl + archive.RelativePath,
-                               HttpCompletionOption.ResponseHeadersRead,
-                               cancellationToken).ConfigureAwait(false))
-                    {
-                        response.EnsureSuccessStatusCode();
-                        await using var source = await response.Content.ReadAsStreamAsync(cancellationToken)
-                            .ConfigureAwait(false);
-                        await using var destination = File.Create(archivePath);
-                        await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
-                    }
+                    progress?.Invoke(archive.RelativePath, 0f);
+                    await httpClient.DownloadFile(
+                        RedistributableBaseUrl + archive.RelativePath,
+                        archivePath,
+                        value => progress?.Invoke(archive.RelativePath, value),
+                        cancellationToken).ConfigureAwait(false);
 
                     await using (var stream = File.OpenRead(archivePath))
                     {

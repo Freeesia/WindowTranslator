@@ -75,15 +75,20 @@ public sealed class CudaRuntimeResolverTests
             using var handler = new ArchiveHandler(cudartZip, cublasZip);
             using var client = new HttpClient(handler);
             var cache = Path.Combine(root, "cache");
+            var progress = new List<(string Archive, float Value)>();
 
             var first = await CudaRuntimeResolver.ResolveAsync(client, null, null, cache,
-                archives: archives);
+                archives: archives, progress: (archive, value) => progress.Add((archive, value)));
+            var progressCount = progress.Count;
             var second = await CudaRuntimeResolver.ResolveAsync(client, null, null, cache,
-                archives: archives);
+                archives: archives, progress: (archive, value) => progress.Add((archive, value)));
 
             Assert.Equal(cache, first);
             Assert.Equal(cache, second);
             Assert.Equal(2, handler.RequestCount);
+            Assert.Contains(progress, report => report is { Archive: "cuda_cudart.zip", Value: 1f });
+            Assert.Contains(progress, report => report is { Archive: "libcublas.zip", Value: 1f });
+            Assert.Equal(progressCount, progress.Count);
             Assert.Equal("cudart", await File.ReadAllTextAsync(Path.Combine(cache, "cudart64_12.dll")));
             Assert.Equal("cublasLt", await File.ReadAllTextAsync(Path.Combine(cache, "cublasLt64_12.dll")));
             Assert.Equal("cublas", await File.ReadAllTextAsync(Path.Combine(cache, "cublas64_12.dll")));
