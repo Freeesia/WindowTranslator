@@ -549,7 +549,6 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="SetupRetry" xml:space="preserve"><value>Retry</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Skip</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>No installable official plugins were found.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>Select a version to install.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Some plugins could not be installed. Retry, or save the successful installations and exit.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>The setup results could not be saved. Please retry.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Other</value></data>

@@ -518,7 +518,6 @@
   <data name="SetupRetry" xml:space="preserve"><value>إعادة المحاولة</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>تخطي</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>لم يتم العثور على مكونات إضافية رسمية قابلة للتثبيت.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>حدد إصدارًا لتثبيته.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>تعذر تثبيت بعض المكونات الإضافية. أعد المحاولة، أو احفظ عمليات التثبيت الناجحة ثم اخرج.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>تعذر حفظ نتائج الإعداد. يرجى إعادة المحاولة.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>أخرى</value></data>

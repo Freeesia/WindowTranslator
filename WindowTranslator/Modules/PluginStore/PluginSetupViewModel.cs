@@ -255,12 +255,6 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
             await FinishAsync();
             return;
         }
-        if (this.Groups.SelectMany(group => group.Packages)
-            .Any(package => package.IsSelected && package.Package.LatestVersion is null))
-        {
-            this.ErrorMessage = this["SetupSelectVersion"];
-            return;
-        }
         this.HasStarted = true;
         this.IsBusy = true;
         this.HasSearchError = false;
@@ -279,8 +273,9 @@ internal sealed partial class PluginSetupViewModel : ObservableObject, IDisposab
                 package.ErrorMessage = null;
                 try
                 {
-                    var version = package.Package.LatestVersion
-                        ?? throw new InvalidOperationException(this["SetupSelectVersion"]);
+                    // セットアップ画面ではバージョンを選択させない。安定版がない場合だけプレリリースを使う。
+                    var version = package.Package.LatestVersion ?? package.Package.PrereleaseVersion
+                        ?? throw new InvalidOperationException($"インストール可能なバージョンがありません: {package.Package.Id}");
                     var installed = await this.service.InstallSetupPackageAsync(
                         package.Package.Id, version,
                         new CallbackProgress<double>(value => SetInstallProgress(

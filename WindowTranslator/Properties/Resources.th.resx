@@ -527,7 +527,6 @@
   <data name="SetupRetry" xml:space="preserve"><value>ลองอีกครั้ง</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>ข้าม</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>ไม่พบปลั๊กอินอย่างเป็นทางการที่ติดตั้งได้</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>เลือกเวอร์ชันที่จะติดตั้ง</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>ไม่สามารถติดตั้งปลั๊กอินบางรายการได้ ลองอีกครั้ง หรือบันทึกรายการที่ติดตั้งสำเร็จแล้วออก</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>ไม่สามารถบันทึกผลการตั้งค่าได้ โปรดลองอีกครั้ง</value></data>
   <data name="SetupOther" xml:space="preserve"><value>อื่นๆ</value></data>

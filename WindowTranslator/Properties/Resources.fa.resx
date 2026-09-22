@@ -512,7 +512,6 @@
   <data name="SetupRetry" xml:space="preserve"><value>تلاش مجدد</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>رد کردن</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>هیچ افزونه رسمی قابل نصبی پیدا نشد.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>نسخه‌ای را برای نصب انتخاب کنید.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>نصب برخی افزونه‌ها ناموفق بود. دوباره تلاش کنید یا نصب‌های موفق را ذخیره کرده و خارج شوید.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>نتایج راه‌اندازی ذخیره نشد. دوباره تلاش کنید.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>سایر</value></data>

@@ -408,7 +408,6 @@ Monitory nejsou podporovány.
   <data name="SetupRetry" xml:space="preserve"><value>Opakovat</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Přeskočit</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Nebyly nalezeny žádné instalovatelné oficiální pluginy.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>Vyberte verzi, kterou chcete nainstalovat.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Některé pluginy se nepodařilo nainstalovat. Opakujte akci nebo uložte úspěšné instalace a ukončete průvodce.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Výsledky nastavení se nepodařilo uložit. Opakujte akci.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Ostatní</value></data>

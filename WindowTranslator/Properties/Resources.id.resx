@@ -526,7 +526,6 @@ Monitor tidak didukung.</value>
   <data name="SetupRetry" xml:space="preserve"><value>Coba lagi</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Lewati</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Tidak ditemukan plugin resmi yang dapat diinstal.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>Pilih versi yang akan diinstal.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Beberapa plugin tidak dapat diinstal. Coba lagi, atau simpan instalasi yang berhasil lalu keluar.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil penyiapan tidak dapat disimpan. Coba lagi.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Lainnya</value></data>

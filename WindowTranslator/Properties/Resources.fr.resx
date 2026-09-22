@@ -518,7 +518,6 @@
   <data name="SetupRetry" xml:space="preserve"><value>Réessayer</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Ignorer</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Aucune extension officielle installable n’a été trouvée.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>Sélectionnez une version à installer.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Certaines extensions n’ont pas pu être installées. Réessayez ou enregistrez les installations réussies et quittez.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Les résultats de la configuration n’ont pas pu être enregistrés. Réessayez.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Autres</value></data>

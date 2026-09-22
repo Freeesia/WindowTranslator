@@ -526,7 +526,6 @@ Monitor tidak disokong.</value>
   <data name="SetupRetry" xml:space="preserve"><value>Cuba lagi</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Langkau</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Tiada pemalam rasmi yang boleh dipasang ditemui.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>Pilih versi untuk dipasang.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Sesetengah pemalam gagal dipasang. Cuba lagi, atau simpan pemasangan yang berjaya dan keluar.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil persediaan tidak dapat disimpan. Cuba lagi.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Lain-lain</value></data>

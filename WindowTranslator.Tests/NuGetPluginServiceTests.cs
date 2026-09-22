@@ -172,6 +172,44 @@ public sealed class NuGetPluginServiceTests
     }
 
     [Fact]
+    public async Task SetupInstallsPrereleaseWhenNoReleaseIsAvailable()
+    {
+        const string id = "Prerelease.Plugin";
+        const string version = "1.0.0-preview.1";
+        var directory = CreateTestDirectory();
+        try
+        {
+            using var handler = new InMemoryNuGetHandler();
+            handler.AddPackage(id, version, CreateSetupPackage(id, version));
+            using var service = CreateService(handler, directory);
+            var configuration = new ConfigurationBuilder().Build();
+            using var viewModel = new PluginSetupViewModel(service, configuration,
+                NullLogger<PluginSetupViewModel>.Instance);
+            var package = new PluginSetupPackage(
+                new(id, id, string.Empty, "Freesia", null, null, [version], IsOfficial: true), configuration)
+            {
+                IsSelected = true,
+            };
+            viewModel.IsLoading = false;
+            viewModel.Groups = [new("test", [package])];
+
+            Assert.Null(package.Package.LatestVersion);
+            Assert.Equal(version, package.Package.PrereleaseVersion);
+
+            await viewModel.InstallAsync();
+
+            Assert.True(viewModel.IsCompleted);
+            var installed = Assert.Single(service.PackageSnapshot.InstalledPackages);
+            Assert.Equal(id, installed.Id);
+            Assert.Equal(version, installed.Version);
+        }
+        finally
+        {
+            DeleteTestDirectory(directory);
+        }
+    }
+
+    [Fact]
     public async Task SetupCanSkipWhileLoadingAndCompletesOnlyOnce()
     {
         var directory = CreateTestDirectory();
@@ -330,8 +368,8 @@ public sealed class NuGetPluginServiceTests
         return viewModel;
     }
 
-    private static byte[] CreateSetupPackage(string id)
-        => CreatePackage(id, "1.0.0", [], new Dictionary<string, byte[]>
+    private static byte[] CreateSetupPackage(string id, string version = "1.0.0")
+        => CreatePackage(id, version, [], new Dictionary<string, byte[]>
         {
             [$"lib/net10.0/{id}.dll"] = "plugin"u8.ToArray(),
         });

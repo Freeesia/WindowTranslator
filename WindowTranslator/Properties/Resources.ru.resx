@@ -518,7 +518,6 @@
   <data name="SetupRetry" xml:space="preserve"><value>Повторить</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Пропустить</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Не найдено официальных плагинов, доступных для установки.</value></data>
-  <data name="SetupSelectVersion" xml:space="preserve"><value>Выберите версию для установки.</value></data>
   <data name="SetupInstallFailed" xml:space="preserve"><value>Не удалось установить некоторые плагины. Повторите попытку или сохраните успешно установленные плагины и выйдите.</value></data>
   <data name="SetupSaveFailed" xml:space="preserve"><value>Не удалось сохранить результаты настройки. Повторите попытку.</value></data>
   <data name="SetupOther" xml:space="preserve"><value>Другое</value></data>
