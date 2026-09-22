@@ -155,7 +155,10 @@
                     IsIndeterminate="{Binding IsLoading}"
                     Visibility="{Binding IsProgressVisible, Converter={StaticResource b2v}}"
                     Value="{Binding InstallProgress}" />
-                <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+                <TextBlock
+                    Margin="24,0"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
                 <ui:Button
                     Margin="0,8,0,0"
                     HorizontalAlignment="Left"
