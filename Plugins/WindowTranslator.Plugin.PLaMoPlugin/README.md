@@ -15,10 +15,10 @@
 
 - 64ビット版Windows
 - 十分な空きストレージとメモリ
-- CUDAに対応するNVIDIA GPUとドライバーを推奨
-- モデルを初めて取得するときのインターネット接続
+- CUDAに対応するNVIDIA GPUとドライバー
+- モデルまたはCUDA Runtimeを初めて取得するときのインターネット接続（CUDA Toolkit導入済みの場合はRuntimeの取得不要）
 
-モデル取得後の翻訳はローカルで実行されます。用語集と追加コンテキストには対応していません。
+モデルとCUDA Runtime取得後の翻訳はローカルで実行されます。用語集と追加コンテキストには対応していません。
 
 ## en
 
@@ -35,10 +35,10 @@ A [WindowTranslator](https://github.com/Freeesia/WindowTranslator) translation p
 
 - 64-bit Windows
 - Sufficient free storage and memory
-- An NVIDIA GPU and driver with CUDA support are recommended
-- An internet connection when downloading the model for the first time
+- An NVIDIA GPU and driver with CUDA support
+- An internet connection for the first model or CUDA Runtime download (the Runtime download is skipped when a CUDA Toolkit is installed)
 
-After the model has been downloaded, translation runs locally. Glossaries and additional translation context are not supported.
+After the model and CUDA Runtime have been downloaded, translation runs locally. Glossaries and additional translation context are not supported.
 
 ## ar
 

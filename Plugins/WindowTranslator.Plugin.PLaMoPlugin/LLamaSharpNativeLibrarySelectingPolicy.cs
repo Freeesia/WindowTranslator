@@ -10,7 +10,6 @@ public class LLamaSharpNativeLibrarySelectingPolicy : INativeLibrarySelectingPol
     {
         Log(description.ToString(), LLamaLogLevel.Info, logCallback);
         yield return new NativeLibraryWithCuda(12, description.Library, description.AvxLevel, description.SkipCheck);
-        yield return new NativeLibraryWithAvx(description.Library, description.AvxLevel, description.SkipCheck);
     }
 
     private static void Log(string message, LLamaLogLevel level, NativeLogConfig.LLamaLogCallback? logCallback)

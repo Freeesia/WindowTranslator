@@ -73,6 +73,21 @@ internal class Resources
     public static string ContextSize_Desc => ResourceManager.GetString("ContextSize_Desc", resourceCulture) ?? string.Empty;
 
     /// <summary>
+    /// "CUDA 12 Runtime の取得に失敗しました。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string CudaRuntimeDownloadFailed => ResourceManager.GetString("CudaRuntimeDownloadFailed", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "CUDA 12 Runtime の読み込みに失敗しました。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string CudaRuntimeLoadFailed => ResourceManager.GetString("CudaRuntimeLoadFailed", resourceCulture) ?? string.Empty;
+
+    /// <summary>
+    /// "CUDA 12 Runtime が見つかりません。" に類似しているローカライズされた文字列を検索します。
+    /// </summary>
+    public static string CudaRuntimeUnavailable => ResourceManager.GetString("CudaRuntimeUnavailable", resourceCulture) ?? string.Empty;
+
+    /// <summary>
     /// "PLaMo モデルのダウンロードに失敗しました。&amp;#13;&amp;#10;{0}" に類似しているローカライズされた文字列を検索します。
     /// </summary>
     public static string DownloadFailed => ResourceManager.GetString("DownloadFailed", resourceCulture) ?? string.Empty;
