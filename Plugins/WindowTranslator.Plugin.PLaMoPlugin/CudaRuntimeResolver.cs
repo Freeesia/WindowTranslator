@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
 using WindowTranslator.Extensions;
 
 namespace WindowTranslator.Plugin.PLaMoPlugin;
@@ -15,28 +16,20 @@ internal static class CudaRuntimeResolver
     // NVIDIA の redistrib_12.9.0.json に記載された Windows x64 アーカイブと SHA-256。
     private static readonly RuntimeArchive[] Archives =
     [
-        new(
-            "cuda_cudart/windows-x86_64/cuda_cudart-windows-x86_64-12.9.37-archive.zip",
+        new("cuda_cudart/windows-x86_64/cuda_cudart-windows-x86_64-12.9.37-archive.zip",
             "f96afe6df898bc8510c48b44668bd9f825731efbf460f3640a922b2b8ae59ccc",
             ["cudart64_12.dll"]),
-        new(
-            "libcublas/windows-x86_64/libcublas-windows-x86_64-12.9.0.13-archive.zip",
+        new("libcublas/windows-x86_64/libcublas-windows-x86_64-12.9.0.13-archive.zip",
             "20d9c2cd3810c948b875820917b38053dacf200b23cb3b8b8a14ff3569aa1f31",
             ["cublasLt64_12.dll", "cublas64_12.dll"]),
     ];
 
-    private static string CacheDirectory => Path.Combine(
-        PathUtility.UserDir, "cache", "cuda12", CudaRelease);
+    private static string PLaMoDirectory => Path.Combine(
+        PathUtility.UserDir, "plamo", "cuda12", CudaRelease);
 
     internal static string? FindExistingRuntime()
-        => FindExistingRuntime(
-            Environment.GetEnvironmentVariable("CUDA_PATH"),
-            Environment.GetEnvironmentVariable("ProgramFiles"),
-            CacheDirectory);
-
-    internal static string? FindExistingRuntime(string? cudaPath, string? programFiles, string cacheDirectory)
     {
-        if (!string.IsNullOrWhiteSpace(cudaPath))
+        if (Environment.GetEnvironmentVariable("CUDA_PATH") is { } cudaPath)
         {
             var cudaBin = Path.Combine(cudaPath, "bin");
             if (HasRequiredFiles(cudaBin))
@@ -45,14 +38,13 @@ internal static class CudaRuntimeResolver
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(programFiles))
+        if (Environment.GetEnvironmentVariable("ProgramFiles") is { } programFiles)
         {
             var toolkitRoot = Path.Combine(programFiles, "NVIDIA GPU Computing Toolkit", "CUDA");
             if (Directory.Exists(toolkitRoot))
             {
                 var versions = Directory.EnumerateDirectories(toolkitRoot, "v12.*")
-                    .Select(path => (Path: path, Version: Version.TryParse(
-                        Path.GetFileName(path).AsSpan(1), out var version) ? version : null))
+                    .Select(path => (Path: path, Version: Version.TryParse(Path.GetFileName(path).AsSpan(1), out var version) ? version : null))
                     .Where(candidate => candidate.Version?.Major == 12)
                     .OrderByDescending(candidate => candidate.Version);
                 foreach (var candidate in versions)
@@ -66,29 +58,10 @@ internal static class CudaRuntimeResolver
             }
         }
 
-        return HasRequiredFiles(cacheDirectory) ? cacheDirectory : null;
+        return HasRequiredFiles(PLaMoDirectory) ? PLaMoDirectory : null;
     }
 
-    internal static Task<string> ResolveAsync(
-        HttpClient httpClient,
-        Action<string, float> progress,
-        CancellationToken cancellationToken = default)
-        => ResolveAsync(
-            httpClient,
-            Environment.GetEnvironmentVariable("CUDA_PATH"),
-            Environment.GetEnvironmentVariable("ProgramFiles"),
-            CacheDirectory,
-            cancellationToken,
-            progress: progress);
-
-    internal static async Task<string> ResolveAsync(
-        HttpClient httpClient,
-        string? cudaPath,
-        string? programFiles,
-        string cacheDirectory,
-        CancellationToken cancellationToken = default,
-        IReadOnlyList<RuntimeArchive>? archives = null,
-        Action<string, float>? progress = null)
+    internal static async Task<string> ResolveAsync(HttpClient httpClient, ILogger logger, CancellationToken cancellationToken = default)
     {
         if (!OperatingSystem.IsWindows() || !System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.Equals(
                 System.Runtime.InteropServices.Architecture.X64))
@@ -96,7 +69,7 @@ internal static class CudaRuntimeResolver
             throw new PlatformNotSupportedException("PLaMo CUDA は Windows x64 のみ対応しています。");
         }
 
-        var existing = FindExistingRuntime(cudaPath, programFiles, cacheDirectory);
+        var existing = FindExistingRuntime();
         if (existing is not null)
         {
             return existing;
@@ -105,31 +78,29 @@ internal static class CudaRuntimeResolver
         await DownloadLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            existing = FindExistingRuntime(cudaPath, programFiles, cacheDirectory);
+            existing = FindExistingRuntime();
             if (existing is not null)
             {
                 return existing;
             }
 
-            var stagingDirectory = Path.Combine(
-                Path.GetDirectoryName(cacheDirectory)!, $".cuda12-{Guid.NewGuid():N}");
+            var stagingDirectory = Path.Combine(Path.GetDirectoryName(PLaMoDirectory)!, $".cuda12-{Guid.NewGuid():N}");
             Directory.CreateDirectory(stagingDirectory);
             try
             {
-                foreach (var archive in archives ?? Archives)
+                foreach (var archive in Archives)
                 {
                     var archivePath = Path.Combine(stagingDirectory, "download.zip");
-                    progress?.Invoke(archive.RelativePath, 0f);
+                    logger.LogInformation("Downloading PLaMo CUDA Runtime {Archive}...", archive.RelativePath);
                     await httpClient.DownloadFile(
                         RedistributableBaseUrl + archive.RelativePath,
                         archivePath,
-                        value => progress?.Invoke(archive.RelativePath, value),
+                        p => logger.LogInformation("Downloading PLaMo CUDA Runtime {Archive}: {Progress:P2}", archive.RelativePath, p),
                         cancellationToken).ConfigureAwait(false);
 
                     await using (var stream = File.OpenRead(archivePath))
                     {
-                        var hash = Convert.ToHexString(await SHA256.HashDataAsync(stream, cancellationToken)
-                            .ConfigureAwait(false));
+                        var hash = Convert.ToHexString(await SHA256.HashDataAsync(stream, cancellationToken).ConfigureAwait(false));
                         if (!hash.Equals(archive.Sha256, StringComparison.OrdinalIgnoreCase))
                         {
                             throw new InvalidDataException($"NVIDIA CUDA Runtime の検証に失敗しました: {archive.RelativePath}");
@@ -140,9 +111,7 @@ internal static class CudaRuntimeResolver
                     {
                         foreach (var fileName in archive.Files)
                         {
-                            var entry = zip.Entries.SingleOrDefault(entry =>
-                                entry.Name.Equals(fileName, StringComparison.OrdinalIgnoreCase)
-                                && entry.FullName.Replace('\\', '/').Contains("/bin/", StringComparison.OrdinalIgnoreCase))
+                            var entry = zip.Entries.SingleOrDefault(e => e.Name.Equals(fileName, StringComparison.OrdinalIgnoreCase) && e.FullName.Replace('\\', '/').Contains("/bin/", StringComparison.OrdinalIgnoreCase))
                                 ?? throw new InvalidDataException($"NVIDIA CUDA Runtime に {fileName} がありません。");
                             entry.ExtractToFile(Path.Combine(stagingDirectory, fileName));
                         }
@@ -156,13 +125,12 @@ internal static class CudaRuntimeResolver
                     throw new InvalidDataException("NVIDIA CUDA Runtime に必要な DLL が揃っていません。");
                 }
 
-                Directory.CreateDirectory(cacheDirectory);
+                Directory.CreateDirectory(PLaMoDirectory);
                 foreach (var fileName in RequiredFiles)
                 {
-                    File.Move(Path.Combine(stagingDirectory, fileName),
-                        Path.Combine(cacheDirectory, fileName), overwrite: true);
+                    File.Move(Path.Combine(stagingDirectory, fileName), Path.Combine(PLaMoDirectory, fileName), overwrite: true);
                 }
-                return cacheDirectory;
+                return PLaMoDirectory;
             }
             finally
             {

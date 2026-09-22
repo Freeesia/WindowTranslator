@@ -54,14 +54,10 @@ public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsVal
             return ValidateResult.Valid;
         }
 
+        using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(30) };
         try
         {
-            using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(30) };
-            await CudaRuntimeResolver.ResolveAsync(
-                httpClient,
-                (archive, progress) => this.logger.LogInformation(
-                    "Downloading PLaMo CUDA Runtime {Archive}: {Progress:P2}", archive, progress))
-                .ConfigureAwait(false);
+            await CudaRuntimeResolver.ResolveAsync(httpClient, this.logger).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -70,7 +66,7 @@ public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsVal
 
         try
         {
-            await DownloadModelIfNotExists().ConfigureAwait(false);
+            await DownloadModelIfNotExists(httpClient).ConfigureAwait(false);
             return ValidateResult.Valid;
         }
         catch (Exception ex)
@@ -79,7 +75,7 @@ public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsVal
         }
     }
 
-    private async ValueTask DownloadModelIfNotExists()
+    private async ValueTask DownloadModelIfNotExists(HttpClient httpClient)
     {
         var modelPath = PLaMoOptions.ModelPath;
         // すでにモデルファイルが存在する場合は処理をスキップ
@@ -90,7 +86,6 @@ public class PLaMoValidator(ILogger<PLaMoValidator> logger) : ITargetSettingsVal
         Directory.CreateDirectory(modelDir);
 
         // モデルファイルをダウンロード
-        using var httpClient = new HttpClient();
         this.logger.LogInformation("Downloading PLaMo model...");
         await httpClient.DownloadFile(PLaMoOptions.ModelUrl, modelPath, p => this.logger.LogInformation($"Downloading PLaMo model: {p:P2}")).ConfigureAwait(false);
     }
