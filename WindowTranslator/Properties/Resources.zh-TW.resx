@@ -523,7 +523,7 @@
     <value>供支援上下文的翻譯模組使用</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>首次設定</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>請選擇要使用的官方外掛程式。之後可在外掛程式頁面中變更。</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>請選擇想要使用的擴充功能。即使不選擇，也可以使用基本功能。之後仍可新增擴充功能。</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>重試</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>略過</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>找不到可安裝的官方外掛程式。</value></data>

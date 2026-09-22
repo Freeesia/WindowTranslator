@@ -404,7 +404,7 @@ Monitory nejsou podporovány.
     <value>Používají jej překladové moduly podporující kontext</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Počáteční nastavení</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Vyberte oficiální pluginy, které chcete používat. Později je můžete změnit na obrazovce Pluginy.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Vyberte rozšíření, která chcete používat. Základní funkce můžete používat i bez výběru. Rozšíření můžete přidat později.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Opakovat</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Přeskočit</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Nebyly nalezeny žádné instalovatelné oficiální pluginy.</value></data>

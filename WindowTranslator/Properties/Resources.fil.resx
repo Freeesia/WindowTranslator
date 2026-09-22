@@ -523,7 +523,7 @@ Ang monitor ay hindi suportado.
     <value>Ginagamit ng mga module ng pagsasalin na sumusuporta sa konteksto</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Paunang pag-setup</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Piliin ang mga opisyal na plugin na gusto mong gamitin. Maaari mong baguhin ang mga ito sa screen ng Mga Plugin sa ibang pagkakataon.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Piliin ang mga extension na gusto mong gamitin. Magagamit mo ang mga pangunahing feature kahit walang piliin. Maaari kang magdagdag ng mga extension sa ibang pagkakataon.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Subukang muli</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Laktawan</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Walang nakitang opisyal na plugin na maaaring i-install.</value></data>

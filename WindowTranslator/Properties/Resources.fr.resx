@@ -514,7 +514,7 @@
     <value>Utilisé par les modules de traduction prenant en charge le contexte</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Configuration initiale</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Sélectionnez les extensions officielles à utiliser. Vous pourrez modifier ce choix plus tard dans l’écran des extensions.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Sélectionnez les extensions que vous souhaitez utiliser. Les fonctionnalités de base restent accessibles sans rien sélectionner. Vous pourrez ajouter des extensions plus tard.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Réessayer</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Ignorer</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Aucune extension officielle installable n’a été trouvée.</value></data>

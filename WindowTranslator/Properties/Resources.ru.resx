@@ -514,7 +514,7 @@
     <value>Используется модулями перевода, поддерживающими контекст</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Первоначальная настройка</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Выберите официальные плагины, которые хотите использовать. Позже их можно изменить на экране плагинов.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Выберите расширения, которые хотите использовать. Основные функции доступны и без выбора расширений. Вы сможете добавить расширения позже.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Повторить</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Пропустить</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Не найдено официальных плагинов, доступных для установки.</value></data>

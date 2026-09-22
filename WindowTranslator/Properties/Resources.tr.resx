@@ -523,7 +523,7 @@ Monitör desteklenmiyor.
     <value>Bağlamı destekleyen çeviri modülleri tarafından kullanılır</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>İlk kurulum</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Kullanmak istediğiniz resmi eklentileri seçin. Bunları daha sonra Eklentiler ekranından değiştirebilirsiniz.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Kullanmak istediğiniz uzantıları seçin. Hiçbirini seçmeseniz de temel özellikleri kullanabilirsiniz. Uzantıları daha sonra ekleyebilirsiniz.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Yeniden dene</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Atla</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Yüklenebilir resmi eklenti bulunamadı.</value></data>

@@ -523,7 +523,7 @@ Monitory nie są obsługiwane.
     <value>Używane przez moduły tłumaczeniowe obsługujące kontekst</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Konfiguracja początkowa</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Wybierz oficjalne wtyczki, których chcesz używać. Możesz je później zmienić na ekranie Wtyczki.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Wybierz rozszerzenia, z których chcesz korzystać. Podstawowe funkcje działają także bez wybierania czegokolwiek. Rozszerzenia możesz dodać później.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Ponów</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Pomiń</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Nie znaleziono oficjalnych wtyczek możliwych do zainstalowania.</value></data>

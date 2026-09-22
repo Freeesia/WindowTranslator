@@ -523,7 +523,7 @@
     <value>由支持上下文的翻译模块使用</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>首次设置</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>请选择要使用的官方插件。之后可在插件页面中更改。</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>请选择想要使用的扩展功能。即使不选择，也可以使用基本功能。之后仍可添加扩展功能。</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>重试</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>跳过</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>未找到可安装的官方插件。</value></data>

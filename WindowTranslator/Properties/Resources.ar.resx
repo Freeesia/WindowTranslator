@@ -514,7 +514,7 @@
     <value>تستخدمه وحدات الترجمة التي تدعم السياق</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>إعداد أولي</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>اختر المكونات الإضافية الرسمية التي تريد استخدامها. يمكنك تغييرها لاحقًا من شاشة المكونات الإضافية.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>اختر الإضافات التي ترغب في استخدامها. يمكنك استخدام الميزات الأساسية دون اختيار أي منها. يمكنك إضافة إضافات لاحقًا.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>إعادة المحاولة</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>تخطي</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>لم يتم العثور على مكونات إضافية رسمية قابلة للتثبيت.</value></data>

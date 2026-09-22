@@ -508,7 +508,7 @@
     <value>توسط ماژول‌های ترجمه‌ای که از زمینه پشتیبانی می‌کنند استفاده می‌شود</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>راه‌اندازی اولیه</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>افزونه‌های رسمی مورد نظر را انتخاب کنید. بعداً می‌توانید آن‌ها را در صفحه افزونه‌ها تغییر دهید.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>افزونه‌هایی را که می‌خواهید استفاده کنید انتخاب کنید. بدون انتخاب هیچ افزونه‌ای هم می‌توانید از امکانات اصلی استفاده کنید. بعداً می‌توانید افزونه‌ها را اضافه کنید.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>تلاش مجدد</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>رد کردن</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>هیچ افزونه رسمی قابل نصبی پیدا نشد.</value></data>

@@ -523,7 +523,7 @@
     <value>컨텍스트를 지원하는 번역 모듈에서 사용됩니다</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>초기 설정</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>사용할 공식 플러그인을 선택하세요. 나중에 플러그인 화면에서 변경할 수 있습니다.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>사용하려는 확장 기능을 선택하세요. 선택하지 않아도 기본 기능을 사용할 수 있습니다. 확장 기능은 나중에 추가할 수 있습니다.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>다시 시도</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>건너뛰기</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>설치 가능한 공식 플러그인을 찾지 못했습니다.</value></data>

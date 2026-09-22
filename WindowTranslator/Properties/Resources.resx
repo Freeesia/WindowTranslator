@@ -552,7 +552,7 @@
     <value>公式プラグイン</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>初回セットアップ</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>利用する公式プラグインを選択してください。設定は後からプラグイン画面で変更できます。</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>利用したい拡張機能を選択してください。選択しなくても基本的な機能は利用できます。拡張機能は後から追加できます。</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>再実行</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>スキップ</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>インストール可能な公式プラグインが見つかりませんでした。</value></data>

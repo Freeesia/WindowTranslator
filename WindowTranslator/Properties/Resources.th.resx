@@ -523,7 +523,7 @@
     <value>ใช้โดยโมดูลการแปลที่รองรับบริบท</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>การตั้งค่าครั้งแรก</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>เลือกปลั๊กอินอย่างเป็นทางการที่ต้องการใช้ คุณสามารถเปลี่ยนได้ภายหลังในหน้าปลั๊กอิน</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>เลือกส่วนขยายที่ต้องการใช้ คุณยังใช้ฟีเจอร์พื้นฐานได้แม้ไม่เลือกอะไร และสามารถเพิ่มส่วนขยายได้ภายหลัง</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>ลองอีกครั้ง</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>ข้าม</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>ไม่พบปลั๊กอินอย่างเป็นทางการที่ติดตั้งได้</value></data>

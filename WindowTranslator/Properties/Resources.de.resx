@@ -523,7 +523,7 @@ Monitore werden nicht unterstützt.
     <value>Wird von Übersetzungsmodulen verwendet, die Kontext unterstützen</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Ersteinrichtung</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Wählen Sie die offiziellen Plugins aus, die Sie verwenden möchten. Sie können die Auswahl später im Plugin-Bildschirm ändern.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Wählen Sie die Erweiterungen aus, die Sie verwenden möchten. Die grundlegenden Funktionen sind auch ohne Auswahl verfügbar. Erweiterungen können Sie später hinzufügen.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Erneut versuchen</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Überspringen</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Keine installierbaren offiziellen Plugins gefunden.</value></data>

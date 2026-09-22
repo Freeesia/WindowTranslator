@@ -516,7 +516,7 @@
     <value>संदर्भ का समर्थन करने वाले अनुवाद मॉड्यूल द्वारा उपयोग किया जाता है</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>प्रारंभिक सेटअप</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>वे आधिकारिक प्लगइन चुनें जिन्हें आप उपयोग करना चाहते हैं। आप बाद में प्लगइन स्क्रीन पर इन्हें बदल सकते हैं।</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>उपयोग करने के लिए इच्छित एक्सटेंशन चुनें। कोई भी एक्सटेंशन चुने बिना भी आप बुनियादी सुविधाओं का उपयोग कर सकते हैं। आप बाद में एक्सटेंशन जोड़ सकते हैं।</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>पुनः प्रयास करें</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>छोड़ें</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>इंस्टॉल करने योग्य कोई आधिकारिक प्लगइन नहीं मिला।</value></data>

@@ -522,7 +522,7 @@ Monitor tidak disokong.</value>
     <value>Digunakan oleh modul terjemahan yang menyokong konteks</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Persediaan awal</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Pilih pemalam rasmi yang ingin digunakan. Anda boleh mengubahnya kemudian pada skrin Pemalam.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Pilih sambungan yang ingin anda gunakan. Fungsi asas masih boleh digunakan tanpa memilih apa-apa. Anda boleh menambah sambungan kemudian.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Cuba lagi</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Langkau</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Tiada pemalam rasmi yang boleh dipasang ditemui.</value></data>

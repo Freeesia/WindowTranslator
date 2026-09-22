@@ -522,7 +522,7 @@ Monitor tidak didukung.</value>
     <value>Digunakan oleh modul terjemahan yang mendukung konteks</value>
   </data>
   <data name="SetupTitle" xml:space="preserve"><value>Penyiapan awal</value></data>
-  <data name="SetupDescription" xml:space="preserve"><value>Pilih plugin resmi yang ingin digunakan. Anda dapat mengubahnya nanti di layar Plugin.</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Pilih ekstensi yang ingin Anda gunakan. Fitur dasar tetap dapat digunakan tanpa memilih apa pun. Anda dapat menambahkan ekstensi nanti.</value></data>
   <data name="SetupRetry" xml:space="preserve"><value>Coba lagi</value></data>
   <data name="SetupSkip" xml:space="preserve"><value>Lewati</value></data>
   <data name="SetupNoPackages" xml:space="preserve"><value>Tidak ditemukan plugin resmi yang dapat diinstal.</value></data>
