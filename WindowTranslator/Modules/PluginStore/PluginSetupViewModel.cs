@@ -434,11 +434,8 @@ internal sealed partial class PluginSetupPackage : ObservableObject
     public PluginSetupPackage(NuGetPackageInfo info, IConfiguration configuration)
     {
         this.Package = new(info, false, null);
-        this.CategoryKey = info.Tags.Contains("translate", StringComparer.OrdinalIgnoreCase) ? "TranslateModule"
-            : info.Tags.Contains("ocr", StringComparer.OrdinalIgnoreCase) ? "OcrModule"
-            : info.Tags.Contains("filter", StringComparer.OrdinalIgnoreCase) ? "PluginCategoryFilter"
-            : "SetupOther";
         var modules = GetMigrationModules(info.Id);
+        this.CategoryKey = GetCategoryKey(modules, info.Tags);
         var targets = configuration.GetSection(nameof(UserSettings.Targets)).GetChildren().ToArray();
         this.isSelected = targets.SelectMany(target => target.GetSection(nameof(TargetSettings.SelectedPlugins)).GetChildren())
             .Any(selection => modules.Contains(selection.Value, StringComparer.OrdinalIgnoreCase));
@@ -458,6 +455,27 @@ internal sealed partial class PluginSetupPackage : ObservableObject
             this.isSelected |= targets.Any(target => target.Key.Equals("FieldsOfMistria", StringComparison.OrdinalIgnoreCase)
                 && !string.Equals(target["PluginParams:FoMOptions:IsEnabledCorrect"], "false", StringComparison.OrdinalIgnoreCase));
         }
+    }
+
+    private static string GetCategoryKey(string[] modules, IReadOnlyList<string> tags)
+    {
+        // 既存設定の移行に必要なモジュール名を優先し、検索結果のタグに依存せず分類する。
+        if (modules.Any(module => module.EndsWith("Translator", StringComparison.OrdinalIgnoreCase)))
+        {
+            return "TranslateModule";
+        }
+        if (modules.Any(module => module.EndsWith("Ocr", StringComparison.OrdinalIgnoreCase)))
+        {
+            return "OcrModule";
+        }
+        if (modules.Any(module => module.EndsWith("FilterModule", StringComparison.OrdinalIgnoreCase)))
+        {
+            return "PluginCategoryFilter";
+        }
+        return tags.Contains("translate", StringComparer.OrdinalIgnoreCase) ? "TranslateModule"
+            : tags.Contains("ocr", StringComparer.OrdinalIgnoreCase) ? "OcrModule"
+            : tags.Contains("filter", StringComparer.OrdinalIgnoreCase) ? "PluginCategoryFilter"
+            : "SetupOther";
     }
 
     private static string[] GetMigrationModules(string packageId)

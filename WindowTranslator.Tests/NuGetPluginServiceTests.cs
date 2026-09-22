@@ -53,9 +53,7 @@ public sealed class NuGetPluginServiceTests
             handler.SearchResults = [.. ids.Select(id => CreatePackageSearchMetadata(
                 id, id, null, "Freesia", null, null,
                 owners: [NuGetPluginService.OfficialPackageOwner],
-                tags: id == "WindowTranslator.Plugin.FoMPlugin" ? "filter"
-                    : id == "WindowTranslator.Plugin.TesseractOCRPlugin" ? "ocr"
-                    : "translate"))];
+                tags: "ocr"))];
             foreach (var id in ids)
             {
                 handler.AddMetadataVersions(id, CreatePluginVersionMetadata("1.0.0"));

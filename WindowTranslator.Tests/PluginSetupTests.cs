@@ -90,6 +90,20 @@ public sealed class PluginSetupTests
     }
 
     [Theory]
+    [InlineData("WindowTranslator.Plugin.DeepLTranslatePlugin", "TranslateModule")]
+    [InlineData("WindowTranslator.Plugin.TesseractOCRPlugin", "OcrModule")]
+    [InlineData("WindowTranslator.Plugin.FoMPlugin", "PluginCategoryFilter")]
+    [InlineData("WindowTranslator.Plugin.GoogleAIPlugin", "TranslateModule")]
+    [InlineData("WindowTranslator.Plugin.LLMPlugin", "TranslateModule")]
+    public void MigrationModulesKeepKnownPluginCategoriesWhenSearchTagsAreWrong(string id, string category)
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        var package = new PluginSetupPackage(CreatePackage(id, tags: ["ocr"]), configuration);
+
+        Assert.Equal(category, package.CategoryKey);
+    }
+
+    [Theory]
     [InlineData("ja-JP", "https://wt.studiofreesia.com/OcrModule")]
     [InlineData("en-US", "https://wt.studiofreesia.com/OcrModule.en")]
     [InlineData("zh-CN", "https://wt.studiofreesia.com/OcrModule.zh-cn")]

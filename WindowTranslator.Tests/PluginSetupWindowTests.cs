@@ -2,6 +2,7 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Kamishibai;
@@ -137,8 +138,17 @@ public sealed class PluginSetupWindowTests
                         var details = Assert.IsType<System.Windows.Controls.StackPanel>(expander.Content);
                         Assert.DoesNotContain(details.Children.OfType<System.Windows.Controls.TextBlock>(), text =>
                             text.Text == "WindowsのOCRエンジンを使用します。");
-                        Assert.Contains(details.Children.OfType<MdXaml.MarkdownScrollViewer>(), viewer =>
-                            viewer.Markdown == "# README content" && viewer.Visibility == Visibility.Visible);
+                        var markdown = Assert.Single(details.Children.OfType<MdXaml.MarkdownScrollViewer>());
+                        Assert.Equal("# README content", markdown.Markdown);
+                        Assert.Equal(Visibility.Visible, markdown.Visibility);
+                        Assert.Same(setup.FindResource("mdStyle"), markdown.MarkdownStyle);
+                        Assert.NotNull(markdown.Document);
+                        var headingParagraph = Assert.Single(markdown.Document!.Blocks.OfType<Paragraph>(),
+                            paragraph => Equals(paragraph.Tag, "Heading1"));
+                        var expectedHeadingColor = Assert.IsType<SolidColorBrush>(
+                            setup.FindResource("TextFillColorSecondaryBrush")).Color;
+                        Assert.Equal(expectedHeadingColor,
+                            Assert.IsType<SolidColorBrush>(headingParagraph.Foreground).Color);
                         setup.Close();
                     }
                     catch (Exception ex)

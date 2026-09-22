@@ -20,14 +20,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Dark" />
                 <ui:ControlsDictionary />
+                <ResourceDictionary Source="/WindowTranslator;component/Themes/DefaultStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="b2v" />
-            <Style
-                x:Key="setupMarkdownStyle"
-                BasedOn="{x:Static md:MarkdownStyle.GithubLike}"
-                TargetType="FlowDocument">
-                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-            </Style>
         </ResourceDictionary>
     </ui:FluentWindow.Resources>
     <Grid>
@@ -120,7 +115,7 @@
                                                                 Margin="0,4,0,0"
                                                                 ClickAction="OpenBrowser"
                                                                 Markdown="{Binding Package.ReadmeMarkdown}"
-                                                                MarkdownStyle="{StaticResource setupMarkdownStyle}"
+                                                                MarkdownStyle="{StaticResource mdStyle}"
                                                                 Visibility="{Binding Package.HasReadme, Converter={StaticResource b2v}}">
                                                                 <md:MarkdownScrollViewer.Plugins>
                                                                     <mdp:MdXamlPlugins>
