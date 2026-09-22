@@ -515,6 +515,14 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>संदर्भ का समर्थन करने वाले अनुवाद मॉड्यूल द्वारा उपयोग किया जाता है</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>प्रारंभिक सेटअप</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>उपयोग करने के लिए इच्छित एक्सटेंशन चुनें। कोई भी एक्सटेंशन चुने बिना भी आप बुनियादी सुविधाओं का उपयोग कर सकते हैं। आप बाद में एक्सटेंशन जोड़ सकते हैं।</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>पुनः प्रयास करें</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>छोड़ें</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>इंस्टॉल करने योग्य कोई आधिकारिक प्लगइन नहीं मिला।</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>कुछ प्लगइन इंस्टॉल नहीं हो सके। पुनः प्रयास करें, या सफल इंस्टॉलेशन सहेजकर बाहर निकलें।</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>सेटअप परिणाम सहेजे नहीं जा सके। पुनः प्रयास करें।</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>अन्य</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>OCR ट्रैकिंग</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>स्थिति और आकार की स्थिरता</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>स्थिति और आकार का कंपन कम करता है। 1: तेज़ प्रतिक्रिया, 5: अधिक स्थिरता (डिफ़ॉल्ट: 3)। बड़ी हलचल तुरंत लागू होती है।</value></data>

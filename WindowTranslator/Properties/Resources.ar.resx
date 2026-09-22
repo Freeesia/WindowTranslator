@@ -513,6 +513,14 @@
   <data name="PriorityRectKeywordDescription" xml:space="preserve">
     <value>تستخدمه وحدات الترجمة التي تدعم السياق</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve"><value>إعداد أولي</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>اختر الإضافات التي ترغب في استخدامها. يمكنك استخدام الميزات الأساسية دون اختيار أي منها. يمكنك إضافة إضافات لاحقًا.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>إعادة المحاولة</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>تخطي</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>لم يتم العثور على مكونات إضافية رسمية قابلة للتثبيت.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>تعذر تثبيت بعض المكونات الإضافية. أعد المحاولة، أو احفظ عمليات التثبيت الناجحة ثم اخرج.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>تعذر حفظ نتائج الإعداد. يرجى إعادة المحاولة.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>أخرى</value></data>
   <data name="OcrTracking" xml:space="preserve"><value>تتبّع OCR</value></data>
   <data name="OcrGeometryStability" xml:space="preserve"><value>استقرار الموضع والحجم</value></data>
   <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>يقلل اهتزاز الموضع والحجم. 1: استجابة سريعة، 5: استقرار أكبر (الافتراضي: 3). تُطبَّق الحركات الكبيرة فورًا.</value></data>
