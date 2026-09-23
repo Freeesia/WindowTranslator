@@ -157,137 +157,123 @@ public partial class OverlayMainWindow : Window
 
     private unsafe void UpdateWindowPositionAndSize()
     {
-        var sw = Stopwatch.StartNew();
-
-        // ディスプレイの場合は専用の処理
         if (this.isMonitor)
         {
-            UpdateDisplayPositionAndSize();
-            return;
-        }
-
-        var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
-        if (!GetWindowInfo(new(this.processInfo.TargetHandle), ref windowInfo))
-        {
-            this.timer.Stop();
-            this.Close();
-            return;
-        }
-
-        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
-        {
-            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
-            return;
-        }
-
-        var clientRect = windowInfo.rcClient;
-        var windowRect = windowInfo.rcWindow;
-
-        // 対象のウィンドウの中心位置が他のウィンドウによって隠れているかチェック
-        var windowAtPoint = WindowFromPoint(new((clientRect.left + clientRect.right) / 2, (clientRect.top + clientRect.bottom) / 2));
-        // ウィンドウの中心が別のウィンドウに隠されている場合は非表示にする
-        if (windowAtPoint != this.processInfo.TargetHandle && !IsChild(new(this.processInfo.TargetHandle), windowAtPoint))
-        {
-            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
-            return;
-        }
-
-        // 上記のすべてのチェックに合格した場合、オーバーレイを表示
-        this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
-
-        // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
-        var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
-        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
-
-        var monitorHandle = MonitorFromWindow(new(this.processInfo.TargetHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        var monitorInfo = default(MONITORINFOEXW);
-        monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
-        GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo);
-        var mode = default(DEVMODEW);
-        EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode);
-        var eDpiScale = GetDpiForSystem() / 96.0;
-        var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
-
-        var p = default(WINDOWPLACEMENT);
-        GetWindowPlacement(new(this.processInfo.TargetHandle), ref p);
-
-        var left = clientRect.left;
-        var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? monitorInfo.monitorInfo.rcWork.top : windowRect.top;
-        var width = clientRect.right - left;
-        var height = clientRect.bottom - top;
-
-        GetCursorPos(out var nativePos);
-        var x = (nativePos.X - left) / eDpiScale;
-        var y = (nativePos.Y - top) / eDpiScale;
-
-        this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
-        this.SetCurrentValue(MousePosProperty, new Point(x, y));
-        if (this.isEnableCapture && p.showCmd == SHOW_WINDOW_CMD.SW_SHOWMINIMIZED)
-        {
-            return;
-        }
-        this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
-        this.SetCurrentValue(LeftProperty, left / eDpiScale);
-        this.SetCurrentValue(TopProperty, top / eDpiScale);
-        this.SetCurrentValue(WidthProperty, width / eDpiScale);
-        this.SetCurrentValue(HeightProperty, height / eDpiScale);
-    }
-
-    private unsafe void UpdateDisplayPositionAndSize()
-    {
-        // モニターハンドルを取得（IntPtrとして既に持っている）
-        var monitorHandle = this.processInfo.TargetHandle;
-        var monitorInfo = default(MONITORINFOEXW);
-        monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
-
-        if (!GetMonitorInfo(new(monitorHandle), ref monitorInfo.monitorInfo))
-        {
-            this.logger.LogWarning("Failed to get monitor info");
-            return;
-        }
-
-        var left = monitorInfo.monitorInfo.rcMonitor.left;
-        var top = monitorInfo.monitorInfo.rcMonitor.top;
-        var width = monitorInfo.monitorInfo.rcMonitor.right - left;
-        var height = monitorInfo.monitorInfo.rcMonitor.bottom - top;
-
-        // モニター座標の検証
-        if (width <= 0 || height <= 0)
-        {
-            this.logger.LogWarning($"Invalid monitor dimensions: {width}x{height}");
-            return;
-        }
-
-        // モニターの解像度情報を取得
-        var mode = default(DEVMODEW);
-        var eDpiScale = GetDpiForSystem() / 96.0;
-        var rDpiScale = eDpiScale;
-
-        if (EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode))
-        {
-            // EnumDisplaySettings が成功した場合のみ rDpiScale を計算
-            if (mode.dmPelsWidth > 0)
+            var monitorInfo = default(MONITORINFOEXW);
+            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+            if (!GetMonitorInfo(new(this.processInfo.TargetHandle), ref monitorInfo.monitorInfo))
             {
-                rDpiScale = eDpiScale * mode.dmPelsWidth / width;
+                this.logger.LogWarning("Failed to get monitor info");
+                return;
             }
+
+            var left = monitorInfo.monitorInfo.rcMonitor.left;
+            var top = monitorInfo.monitorInfo.rcMonitor.top;
+            var width = monitorInfo.monitorInfo.rcMonitor.right - left;
+            var height = monitorInfo.monitorInfo.rcMonitor.bottom - top;
+            if (width <= 0 || height <= 0)
+            {
+                this.logger.LogWarning($"Invalid monitor dimensions: {width}x{height}");
+                return;
+            }
+
+            var mode = default(DEVMODEW);
+            var eDpiScale = GetDpiForSystem() / 96.0;
+            var rDpiScale = eDpiScale;
+            if (EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode))
+            {
+                if (mode.dmPelsWidth > 0)
+                {
+                    rDpiScale = eDpiScale * mode.dmPelsWidth / width;
+                }
+            }
+            else
+            {
+                this.logger.LogWarning("Failed to get display settings, using default DPI scale");
+            }
+
+            GetCursorPos(out var nativePos);
+            var x = (nativePos.X - left) / eDpiScale;
+            var y = (nativePos.Y - top) / eDpiScale;
+
+            this.logger.LogDebug($"Display: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2})");
+            this.SetCurrentValue(MousePosProperty, new Point(x, y));
+            this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
+            this.SetCurrentValue(LeftProperty, left / eDpiScale);
+            this.SetCurrentValue(TopProperty, top / eDpiScale);
+            this.SetCurrentValue(WidthProperty, width / eDpiScale);
+            this.SetCurrentValue(HeightProperty, height / eDpiScale);
         }
         else
         {
-            this.logger.LogWarning("Failed to get display settings, using default DPI scale");
+            var sw = Stopwatch.StartNew();
+            var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
+            if (!GetWindowInfo(new(this.processInfo.TargetHandle), ref windowInfo))
+            {
+                this.timer.Stop();
+                this.Close();
+                return;
+            }
+
+            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
+            {
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
+            var clientRect = windowInfo.rcClient;
+            var windowRect = windowInfo.rcWindow;
+
+            // 対象のウィンドウの中心位置が他のウィンドウによって隠れているかチェック
+            var windowAtPoint = WindowFromPoint(new((clientRect.left + clientRect.right) / 2, (clientRect.top + clientRect.bottom) / 2));
+            // ウィンドウの中心が別のウィンドウに隠されている場合は非表示にする
+            if (windowAtPoint != this.processInfo.TargetHandle && !IsChild(new(this.processInfo.TargetHandle), windowAtPoint))
+            {
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
+            // 上記のすべてのチェックに合格した場合、オーバーレイを表示
+            this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+
+            // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
+            var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
+            SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
+            var monitorHandle = MonitorFromWindow(new(this.processInfo.TargetHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+            var monitorInfo = default(MONITORINFOEXW);
+            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+            GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo);
+            var mode = default(DEVMODEW);
+            EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode);
+            var eDpiScale = GetDpiForSystem() / 96.0;
+            var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
+
+            var p = default(WINDOWPLACEMENT);
+            GetWindowPlacement(new(this.processInfo.TargetHandle), ref p);
+
+            var left = clientRect.left;
+            var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? monitorInfo.monitorInfo.rcWork.top : windowRect.top;
+            var width = clientRect.right - left;
+            var height = clientRect.bottom - top;
+
+            GetCursorPos(out var nativePos);
+            var x = (nativePos.X - left) / eDpiScale;
+            var y = (nativePos.Y - top) / eDpiScale;
+
+            this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
+            this.SetCurrentValue(MousePosProperty, new Point(x, y));
+            if (this.isEnableCapture && p.showCmd == SHOW_WINDOW_CMD.SW_SHOWMINIMIZED)
+            {
+                return;
+            }
+            this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
+            this.SetCurrentValue(LeftProperty, left / eDpiScale);
+            this.SetCurrentValue(TopProperty, top / eDpiScale);
+            this.SetCurrentValue(WidthProperty, width / eDpiScale);
+            this.SetCurrentValue(HeightProperty, height / eDpiScale);
         }
-
-        GetCursorPos(out var nativePos);
-        var x = (nativePos.X - left) / eDpiScale;
-        var y = (nativePos.Y - top) / eDpiScale;
-
-        this.logger.LogDebug($"Display: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2})");
-        this.SetCurrentValue(MousePosProperty, new Point(x, y));
-        this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
-        this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
-        this.SetCurrentValue(LeftProperty, left / eDpiScale);
-        this.SetCurrentValue(TopProperty, top / eDpiScale);
-        this.SetCurrentValue(WidthProperty, width / eDpiScale);
-        this.SetCurrentValue(HeightProperty, height / eDpiScale);
     }
 
     private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)

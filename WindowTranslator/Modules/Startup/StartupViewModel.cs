@@ -103,17 +103,14 @@ public partial class StartupViewModel
                 return;
             }
 
-            // まずウィンドウとして検索
-            p = FindProcessByWindowTitle(item.DisplayName, item.Size);
-
-            // ウィンドウが見つからない場合、ディスプレイとして処理
-            if (p is null)
+            var displayHandle = FindDisplay(item);
+            if (displayHandle is not null)
             {
-                var displayHandle = FindDisplay(item);
-                if (displayHandle is not null)
-                {
-                    p = new ProcessInfo(item.DisplayName, -1, displayHandle.Value, item.DisplayName);
-                }
+                p = new ProcessInfo(item.DisplayName, -1, displayHandle.Value, item.DisplayName);
+            }
+            else
+            {
+                p = FindProcessByWindowTitle(item.DisplayName, item.Size);
             }
 
             if (p is null)
