@@ -12,7 +12,6 @@ public sealed record GoogleAIModelItem(string Value, string DisplayName);
 
 public partial class GoogleAIOptions : ObservableObject, IPluginParam
 {
-    private readonly GoogleAIModelCatalog modelCatalog = new();
     private IReadOnlyList<GoogleAIModelItem> modelItems = GoogleAIModelCatalog.DefaultModelItems;
 
     [SelectorStyle(SelectorStyle.ComboBox)]
@@ -68,8 +67,7 @@ public partial class GoogleAIOptions : ObservableObject, IPluginParam
 
     private async Task RefreshModelItemsAsync()
     {
-        var items = await this.modelCatalog.RefreshAsync(this.ApiKey, this.Model, CancellationToken.None);
-        if (items is not null)
+        if (await GoogleAIModelCatalog.RefreshAsync(this.ApiKey, this.Model, CancellationToken.None) is { } items)
         {
             this.ModelItems = items.EnsureSelectedModel(this.Model);
         }
@@ -114,10 +112,8 @@ public class GoogleAIValidator : ITargetSettingsValidator
     }
 }
 
-internal sealed class GoogleAIModelCatalog
+file sealed class GoogleAIModelCatalog
 {
-    private int refreshVersion;
-
     public static IReadOnlyList<GoogleAIModelItem> DefaultModelItems { get; } =
     [
         // 翻訳とOCRで使う通常のコンテンツ生成モデル
@@ -157,9 +153,8 @@ internal sealed class GoogleAIModelCatalog
             _ => value,
         };
 
-    public async Task<IReadOnlyList<GoogleAIModelItem>?> RefreshAsync(string? apiKey, string selectedModel, CancellationToken cancellationToken)
+    public static async Task<IReadOnlyList<GoogleAIModelItem>?> RefreshAsync(string? apiKey, string selectedModel, CancellationToken cancellationToken)
     {
-        var currentRefreshVersion = Interlocked.Increment(ref this.refreshVersion);
         try
         {
             var items = new List<GoogleAIModelItem>(DefaultModelItems);
@@ -183,10 +178,6 @@ internal sealed class GoogleAIModelCatalog
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            if (currentRefreshVersion != Volatile.Read(ref this.refreshVersion))
-            {
-                return null;
-            }
 
             return items.EnsureSelectedModel(selectedModel)
                 .OrderBy(item => item.DisplayName, StringComparer.CurrentCulture)
