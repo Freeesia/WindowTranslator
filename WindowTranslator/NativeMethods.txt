@@ -55,3 +55,7 @@ RemoveProp
 
 // WindowsGraphicsCapture
 IsZoomed
+
+// CaptureTargetHandleExtensions
+MONITORINFO
+IsWindow

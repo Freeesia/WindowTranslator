@@ -115,10 +115,8 @@ public class PluginValidationSettingsTests
 
     private sealed class TestProcessInfoStore(string name) : IProcessInfoStore
     {
-        public IntPtr MainWindowHandle => IntPtr.Zero;
+        public IntPtr TargetHandle => IntPtr.Zero;
 
         public string Name => name;
-
-        public bool IsMonitor => name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -2,19 +2,17 @@
 
 public sealed class ProcessInfoStore : IProcessInfoStoreInternal
 {
-    public IntPtr MainWindowHandle { get; private set; }
+    public IntPtr TargetHandle { get; private set; }
     public string Name { get; private set; } = string.Empty;
-    public bool IsMonitor { get; private set; }
 
-    public void SetTargetProcess(IntPtr mainWindowHandle, string name)
+    public void SetTarget(IntPtr targetHandle, string name)
     {
-        this.MainWindowHandle = mainWindowHandle;
+        this.TargetHandle = targetHandle;
         this.Name = name;
-        this.IsMonitor = name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase);
     }
 }
 
 interface IProcessInfoStoreInternal : IProcessInfoStore
 {
-    void SetTargetProcess(IntPtr mainWindowHandle, string name);
+    void SetTarget(IntPtr targetHandle, string name);
 }

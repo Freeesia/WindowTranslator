@@ -25,6 +25,7 @@ public partial class OverlayMainWindow : Window
     private readonly OverlaySwitch overlaySwitch;
     private readonly bool isOneShotMode;
     private readonly bool isEnableCapture;
+    private readonly bool isMonitor;
     private readonly IProcessInfoStore processInfo;
     private readonly IVirtualDesktopManager desktopManager;
     private readonly DispatcherTimer timer = new();
@@ -81,6 +82,7 @@ public partial class OverlayMainWindow : Window
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.IsSwapVisibility = settings.Value.IsOverlayPointSwap;
         this.processInfo = processInfo;
+        this.isMonitor = processInfo.TargetHandle.GetCaptureTargetKind() is CaptureTargetKind.Monitor;
         this.desktopManager = desktopManager;
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
@@ -101,11 +103,11 @@ public partial class OverlayMainWindow : Window
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
         // ディスプレイの場合は仮想デスクトップチェックをスキップ
-        if (!this.processInfo.IsMonitor)
+        if (!this.isMonitor)
         {
-            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
             {
-                var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.MainWindowHandle);
+                var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.TargetHandle);
                 this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
             }
         }
@@ -158,21 +160,21 @@ public partial class OverlayMainWindow : Window
         var sw = Stopwatch.StartNew();
 
         // ディスプレイの場合は専用の処理
-        if (this.processInfo.IsMonitor)
+        if (this.isMonitor)
         {
             UpdateDisplayPositionAndSize();
             return;
         }
 
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
-        if (!GetWindowInfo(new(this.processInfo.MainWindowHandle), ref windowInfo))
+        if (!GetWindowInfo(new(this.processInfo.TargetHandle), ref windowInfo))
         {
             this.timer.Stop();
             this.Close();
             return;
         }
 
-        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
         {
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
             return;
@@ -184,7 +186,7 @@ public partial class OverlayMainWindow : Window
         // 対象のウィンドウの中心位置が他のウィンドウによって隠れているかチェック
         var windowAtPoint = WindowFromPoint(new((clientRect.left + clientRect.right) / 2, (clientRect.top + clientRect.bottom) / 2));
         // ウィンドウの中心が別のウィンドウに隠されている場合は非表示にする
-        if (windowAtPoint != this.processInfo.MainWindowHandle && !IsChild(new(this.processInfo.MainWindowHandle), windowAtPoint))
+        if (windowAtPoint != this.processInfo.TargetHandle && !IsChild(new(this.processInfo.TargetHandle), windowAtPoint))
         {
             this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
             return;
@@ -197,7 +199,7 @@ public partial class OverlayMainWindow : Window
         var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
         SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
 
-        var monitorHandle = MonitorFromWindow(new(this.processInfo.MainWindowHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        var monitorHandle = MonitorFromWindow(new(this.processInfo.TargetHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
         var monitorInfo = default(MONITORINFOEXW);
         monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
         GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo);
@@ -207,7 +209,7 @@ public partial class OverlayMainWindow : Window
         var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
 
         var p = default(WINDOWPLACEMENT);
-        GetWindowPlacement(new(this.processInfo.MainWindowHandle), ref p);
+        GetWindowPlacement(new(this.processInfo.TargetHandle), ref p);
 
         var left = clientRect.left;
         var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? monitorInfo.monitorInfo.rcWork.top : windowRect.top;
@@ -234,7 +236,7 @@ public partial class OverlayMainWindow : Window
     private unsafe void UpdateDisplayPositionAndSize()
     {
         // モニターハンドルを取得（IntPtrとして既に持っている）
-        var monitorHandle = this.processInfo.MainWindowHandle;
+        var monitorHandle = this.processInfo.TargetHandle;
         var monitorInfo = default(MONITORINFOEXW);
         monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
 

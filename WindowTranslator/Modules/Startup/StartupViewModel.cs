@@ -129,7 +129,7 @@ public partial class StartupViewModel
         }
         try
         {
-            await this.mainWindowModule.OpenTargetAsync(p.WindowHandle, p.Name);
+            await this.mainWindowModule.OpenTargetAsync(p.TargetHandle, p.Name);
             window.Close();
         }
         catch (Exception ex)
@@ -280,7 +280,7 @@ public partial class StartupViewModel
         return match;
     }
 
-    private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);
+    private record ProcessInfo(string Title, int PID, IntPtr TargetHandle, string Name);
 }
 
 public record MenuItemViewModel(string Header, ICommand? Command, IReadOnlyList<MenuItemViewModel> SubCommands);

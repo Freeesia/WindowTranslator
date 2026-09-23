@@ -103,7 +103,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.logger = logger;
         if (!this.isOneShotMode)
         {
-            this.capture.StartCapture(processInfoStore.MainWindowHandle);
+            this.capture.StartCapture(processInfoStore.TargetHandle);
             this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
         }
         var transAsm = this.translator.GetType().Assembly;
@@ -124,7 +124,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 this.ocrTextTracker.Reset();
             }
             // Start capture when overlay becomes visible
-            this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
+            this.capture.StartCapture(this.processInfoStore.TargetHandle);
         }
         else
         {

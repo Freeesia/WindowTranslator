@@ -6,17 +6,12 @@
 public interface IProcessInfoStore
 {
     /// <summary>
-    /// 対象のウィンドウハンドル
+    /// 対象のウィンドウまたはモニターのハンドル
     /// </summary>
-    IntPtr MainWindowHandle { get; }
+    IntPtr TargetHandle { get; }
 
     /// <summary>
-    /// 対象のプロセスの名前
+    /// 翻訳対象の設定名
     /// </summary>
     string Name { get; }
-
-    /// <summary>
-    /// 対象がモニター（ディスプレイ）かどうか
-    /// </summary>
-    bool IsMonitor { get; }
 }
