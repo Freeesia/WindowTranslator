@@ -1,6 +1,6 @@
 ﻿SetWindowPos
-SetWindowLong
 GetWindow
+SetWindowLong
 
 WINDOW_EX_STYLE
 WM_WINDOWPOSCHANGED

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>การตั้งค่า OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>การแปลด้วย OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>ลงชื่อเข้าใช้ / ลงชื่อออก</value></data>
+  <data name="Model" xml:space="preserve"><value>โมเดล (ราคาอินพุต / เอาต์พุตเป็น USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>สถานะการลงชื่อเข้าใช้</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>บริบทการแปล</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>เส้นทางอภิธานศัพท์</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>ลงชื่อเข้าใช้แล้ว</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>ยังไม่ได้ลงชื่อเข้าใช้</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>ลงชื่อเข้าใช้ในเบราว์เซอร์ กดปุ่มอีกครั้งเพื่อยกเลิก</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>การลงชื่อเข้าใช้ถูกยกเลิกหรือหมดเวลา</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>ลงชื่อเข้าใช้ไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>กลับไปที่ WindowTranslator เพื่อตรวจสอบผลลัพธ์ คุณสามารถปิดแท็บนี้ได้</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>แตกต่างกันตามโมเดล</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>ไม่มีข้อมูลราคา</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>ลงชื่อเข้าใช้จากการตั้งค่า OrcaRouter แล้วบันทึกการตั้งค่า</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>เครดิต OrcaRouter ไม่เพียงพอหรือถึงขีดจำกัดการใช้งานแล้ว หากต้องการใช้งานฟรี ให้เลือก “OrcaRouter Free” เป็นโมเดล</value></data>
+</root>

@@ -77,4 +77,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>Use recursos japoneses incluídos no jogo</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>Usar traduções oficiais com o jogo em inglês (traduzir normalmente quando não houver tradução)</value>
+  </data>
 </root>

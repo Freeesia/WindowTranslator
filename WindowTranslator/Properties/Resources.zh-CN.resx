@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>翻译结果显示模式</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>自动翻译目标</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>一旦一个进程被选中进行翻译，它将在启动时自动进行翻译</value>
+    <value>应用启动时自动翻译</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>总体设置</value>
@@ -306,11 +303,14 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>显示忙碌图标</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>仅在启用覆盖层时翻译</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>仅在鼠标指针位置的文本上显示覆盖翻译</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>鼠标指针命中检测边距</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>为鼠标指针命中检测区域增加的像素数</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>覆盖层背景不透明度</value>
@@ -435,5 +435,113 @@
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>不再显示</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **保存这些设置将无法工作。**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: 设置验证错误</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>按原样运行</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **按原样运行可能无法正常工作**
+***
+
+</value>
+  </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>预发行版</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>安装</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>卸载</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>确定要卸载 {0} 吗？</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>有更新</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>已安装版本</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>最新版本</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>无法从 NuGet 获取插件列表。请检查您的网络连接。</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>立即重启</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>请重启 WindowTranslator 以应用插件更改。</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>重启</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>项目页面</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>许可证信息</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>插件是通过 NuGet 分发的第三方包。每个包的许可证由其所有者授予；WindowTranslator 不保证其内容、行为或安全性。请仅安装你信任的包。</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>官方插件</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>添加范围</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>由支持上下文的翻译模块使用</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>首次设置</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>请选择想要使用的扩展功能。即使不选择，也可以使用基本功能。之后仍可添加扩展功能。</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>重试</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>跳过</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>未找到可安装的官方插件。</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>部分插件安装失败。请重试，或保存已成功安装的插件后退出。</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>无法保存设置结果。请重试。</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>其他</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR 跟踪</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>位置和大小稳定性</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>减少位置和大小的抖动。1：优先响应，5：优先稳定（默认：3）。大幅移动会立即反映。</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>识别结果稳定性</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>减少文字及区域拆分、合并的临时变化。1：优先响应，5：优先稳定（默认：3）。</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>临时消失保留</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>连续识别缺失时保持显示的次数。0：首次缺失即移除，最多：7次，默认：3次。单位为次数，而非秒数。</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>翻译</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>过滤器</value>
   </data>
 </root>

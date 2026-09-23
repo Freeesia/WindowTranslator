@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Tetapan OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Terjemahan OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Log masuk / Log keluar</value></data>
+  <data name="Model" xml:space="preserve"><value>Model (harga input / output dalam USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Status log masuk</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Konteks terjemahan</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Laluan glosari</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Telah log masuk</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Belum log masuk</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Log masuk dalam pelayar anda. Tekan butang sekali lagi untuk membatalkan.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Log masuk dibatalkan atau tamat masa.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Log masuk gagal. Semak sambungan anda dan cuba lagi.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Kembali ke WindowTranslator untuk menyemak hasil log masuk. Anda boleh menutup tab ini.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>berbeza mengikut model</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>maklumat harga tidak tersedia</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Log masuk melalui tetapan OrcaRouter dan simpan tetapan anda.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Kredit OrcaRouter tidak mencukupi atau had penggunaan telah dicapai. Untuk menggunakan perkhidmatan secara percuma, pilih “OrcaRouter Free” sebagai model.</value></data>
+</root>

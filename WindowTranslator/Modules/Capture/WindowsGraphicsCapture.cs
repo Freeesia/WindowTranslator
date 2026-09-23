@@ -43,10 +43,10 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
     {
         this.logger.LogDebug("StartCapture");
         this.targetWindow = targetWindow;
-        
+
         // ディスプレイかウィンドウかを判定
         this.isMonitor = this.processInfo.IsMonitor;
-        
+
         GraphicsCaptureItem? item;
         if (this.isMonitor)
         {
@@ -58,12 +58,12 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
             this.logger.LogDebug("Creating capture item for window");
             item = CaptureHelper.CreateItemForWindow(targetWindow);
         }
-        
+
         if (item is null)
         {
             throw new InvalidOperationException("Failed to create capture item");
         }
-        
+
         this.lastSize = item.Size;
         this.lastMaximized = this.isMonitor ? false : IsZoomed(new(targetWindow));
         this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);

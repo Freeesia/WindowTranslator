@@ -1,6 +1,8 @@
 using System.Runtime.Versioning;
 using System.Windows;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("WindowTranslator.Tests")]
+
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
                                      //(used if a resource is not found in the page,

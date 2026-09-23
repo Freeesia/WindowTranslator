@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter 设置</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter 翻译</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>登录 / 退出登录</value></data>
+  <data name="Model" xml:space="preserve"><value>模型（输入 / 输出价格，美元）</value></data>
+  <data name="Status" xml:space="preserve"><value>登录状态</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>翻译上下文</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>术语表路径</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>已登录</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>未登录</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>请在浏览器中登录。再次按下按钮可取消。</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>登录已取消或超时。</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>登录失败。请检查连接后重试。</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>请返回 WindowTranslator 查看登录结果。可以关闭此标签页。</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>因模型而异</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>无价格信息</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>请在 OrcaRouter 设置中登录并保存设置。</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>OrcaRouter 余额不足或已达到使用限额。若要免费使用，请选择“OrcaRouter Free”模型。</value></data>
+</root>

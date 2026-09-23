@@ -13,6 +13,7 @@ public class LLMOptions : IPluginParam
 
     public bool WaitCorrect { get; set; }
 
+    [EditableItemsSource]
     public string? Model { get; set; } = "gpt-4o-mini";
 
     [DataType(DataType.Password)]

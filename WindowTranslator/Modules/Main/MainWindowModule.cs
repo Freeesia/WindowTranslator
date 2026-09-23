@@ -1,10 +1,9 @@
-﻿using Kamishibai;
+﻿using System.Collections.ObjectModel;
+using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
-using System.Collections.ObjectModel;
-using WindowTranslator.Extensions;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui.Extensions;
@@ -23,17 +22,20 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
     public Task OpenTargetAsync(IntPtr targetWindowHandle, string name)
         => this.app.Dispatcher.Invoke(() => OpenTargetWindowCoreAsync(targetWindowHandle, name));
 
+    public bool IsTargetOpened(IntPtr targetWindowHandle)
+        => this.app.Dispatcher.Invoke(() => this.OpenedWindows.Any(w => w.Target == targetWindowHandle));
+
     private async ValueTask<TargetSettings?> GetSettingsAsync(string name)
     {
         using var scope = provider.CreateScope();
         var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
         var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<UserSettings>>();
         // 対象の設定を取得
-        if (options.Value.Targets.TryGetValue(name, out var settings))
+        if (options.Value.Targets.ContainsKey(name))
         {
+            var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get(name);
             // 設定を検証
-            var validators = scope.ServiceProvider.GetRequiredService<IEnumerable<ITargetSettingsValidator>>();
-            var validationResults = await validators.ValidateAsync(settings);
+            var validationResults = await presentationService.OpenValidateAsync(settings);
             if (validationResults.IsEmpty())
             {
                 this.logger.LogInformation($"Settings for target '{name}' are valid.");
@@ -41,7 +43,9 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             }
 
             // 検証エラーがある場合、エラーダイアログを表示
-            var result = await presentationService.ShowMessageAsync(new(string.Format(Resources.InvalidSettings, name), string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")))
+            var result = await presentationService.ShowMessageAsync(new(
+                string.Format(Resources.InvalidSettings, name),
+                Resources.InvalidSettingsContent + string.Join("\n\n", validationResults.Select(r => $"### {r.Title}\n{r.Message}")))
             {
                 PrimaryButtonText = Resources.Settings,
                 SecondaryButtonText = Resources.RunAsIs,
@@ -80,7 +84,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             return;
         }
 
-        var scope = provider.CreateScope();
+        var scope = provider.CreateAsyncScope();
         try
         {
             var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<CommonSettings>>();
@@ -97,14 +101,14 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             var info = new WindowInfo(name, targetWindowHandle, window);
             window.Closed += (_, _) =>
             {
-                scope.Dispose();
+                scope.DisposeAsync().AsTask().Forget();
                 this.OpenedWindows.Remove(info);
             };
             this.OpenedWindows.Add(info);
         }
         catch (Exception)
         {
-            scope.Dispose();
+            await scope.DisposeAsync();
             throw;
         }
     }
@@ -116,6 +120,8 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
 public interface IMainWindowModule
 {
     ObservableCollection<WindowInfo> OpenedWindows { get; }
+
+    bool IsTargetOpened(IntPtr targetWindowHandle);
 
     Task OpenTargetAsync(IntPtr targetWindowHandle, string name);
 }

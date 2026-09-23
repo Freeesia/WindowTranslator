@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Chế độ hiển thị kết quả dịch</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Mục tiêu dịch tự động</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Dịch tự động khi quá trình đã chọn được bắt đầu sau khi nó được chọn để dịch.</value>
+    <value>Tự động dịch khi ứng dụng khởi động</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Cài đặt tổng thể</value>
@@ -306,11 +303,14 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Hiển thị biểu tượng bận</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Chỉ dịch khi lớp phủ được kích hoạt</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Chỉ hiển thị bản dịch lớp phủ cho văn bản tại vị trí con trỏ chuột</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Vùng đệm kiểm tra trỏ chuột</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Số pixel bổ sung quanh vùng kiểm tra của con trỏ chuột</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Độ mờ nền lớp phủ</value>
@@ -435,5 +435,113 @@
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Không hiển thị lại</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Lưu các cài đặt này sẽ không hoạt động.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Lỗi xác thực cài đặt</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Chạy như hiện tại</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Chạy như hiện tại có thể không hoạt động đúng cách**
+***
+
+</value>
+  </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Bản phát hành trước</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Đã cài đặt</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Cập nhật</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Gỡ cài đặt</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Bạn có chắc muốn gỡ cài đặt {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Có cập nhật</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Phiên bản đã cài</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Phiên bản mới nhất</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Không thể lấy danh sách plugin từ NuGet. Vui lòng kiểm tra kết nối mạng.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Cài đặt hoàn tất</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Cài đặt thất bại</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Khởi động lại ngay</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Vui lòng khởi động lại WindowTranslator để áp dụng thay đổi plugin.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Khởi động lại</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Trang dự án</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Thông tin giấy phép</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugin là các gói của bên thứ ba được phân phối qua NuGet. Giấy phép của mỗi gói do chủ sở hữu cung cấp; WindowTranslator không đảm bảo nội dung, hoạt động hoặc độ an toàn của gói. Chỉ cài đặt các gói bạn tin cậy.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Plugin chính thức</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Thêm vùng</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Được sử dụng bởi các mô-đun dịch hỗ trợ ngữ cảnh</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Thiết lập lần đầu</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Chọn các tiện ích mở rộng bạn muốn sử dụng. Bạn vẫn có thể sử dụng các tính năng cơ bản mà không cần chọn mục nào. Bạn có thể thêm tiện ích mở rộng sau.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Thử lại</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Bỏ qua</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Không tìm thấy plugin chính thức nào có thể cài đặt.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Không thể cài đặt một số plugin. Hãy thử lại hoặc lưu các plugin đã cài đặt thành công rồi thoát.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Không thể lưu kết quả thiết lập. Hãy thử lại.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Khác</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>Theo dõi OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Độ ổn định vị trí và kích thước</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Giảm rung vị trí và kích thước. 1: phản hồi nhanh, 5: ưu tiên ổn định (mặc định: 3). Chuyển động lớn được áp dụng ngay.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Độ ổn định nhận dạng</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Giảm thay đổi tạm thời của văn bản và việc tách hoặc gộp vùng. 1: phản hồi nhanh, 5: ưu tiên ổn định (mặc định: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Giữ hiển thị khi tạm biến mất</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Số lần liên tiếp không nhận dạng được mà vẫn giữ hiển thị. 0: xóa ngay lần đầu, tối đa: 7, mặc định: 3. Tính theo số lần, không phải giây.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Tất cả</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Dịch thuật</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Bộ lọc</value>
   </data>
 </root>

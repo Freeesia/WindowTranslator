@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="CorrectMode_Image" xml:space="preserve">
+    <value>Javítás képfelismeréssel</value>
+  </data>
+  <data name="CorrectMode_None" xml:space="preserve">
+    <value>Javítás nélkül</value>
+  </data>
+  <data name="CorrectMode_Text" xml:space="preserve">
+    <value>Csak szöveges javítás</value>
+  </data>
+  <data name="Gemini20FlashLite" xml:space="preserve">
+    <value>Gemini 2.0 Flash Lite</value>
+  </data>
+  <data name="Gemini20Flash" xml:space="preserve">
+    <value>Gemini 2.0 Flash</value>
+  </data>
+  <data name="PreviewModel" xml:space="preserve">
+    <value>Használandó előnézeti modell</value>
+  </data>
+  <data name="PreviewModel_Desc" xml:space="preserve">
+    <value>Ha modellnevet ad meg, az elsőbbséget élvez a „Használandó modell" felett</value>
+  </data>
+  <data name="CorrectSample" xml:space="preserve">
+    <value>Javítási minta</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API kulcs</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Hozzáférési pont</value>
+  </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Szószedet elérési útja</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Használandó modell</value>
+  </data>
+  <data name="TranslateContext" xml:space="preserve">
+    <value>Fordítás során használandó kontextuális információk</value>
+  </data>
+  <data name="CorrectMode" xml:space="preserve">
+    <value>Felismerési javítás</value>
+  </data>
+  <data name="GoogleAIOptions" xml:space="preserve">
+    <value>Gemini beállítások</value>
+  </data>
+  <data name="GoogleAITranslator" xml:space="preserve">
+    <value>Gemini fordítás</value>
+  </data>
+  <data name="WaitCorrect" xml:space="preserve">
+    <value>Fordítás előtt megvárja a javítás befejezését</value>
+  </data>
+  <data name="Gemini25Flash" xml:space="preserve">
+    <value>Gemini 2.5 Flash</value>
+  </data>
+  <data name="Gemini25Pro" xml:space="preserve">
+    <value>Gemini 2.5 Pro</value>
+  </data>
+  <data name="Gemini25FlashLite" xml:space="preserve">
+    <value>Gemini 2.5 Flash Lite</value>
+  </data>
+  <data name="GeminiNotInitialized" xml:space="preserve">
+    <value>A Gemini funkció nincs inicializálva. Kérjük, konfigurálja a Google AI beállításokat a beállítások párbeszédpanelből</value>
+  </data>
+  <data name="InvalidApiKey" xml:space="preserve">
+    <value>A Gemini API kulcs érvénytelen. Kérjük, konfigurálja a Google AI beállításokat a beállítások párbeszédpanelből</value>
+  </data>
+</root>

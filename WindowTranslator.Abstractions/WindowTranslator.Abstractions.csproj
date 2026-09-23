@@ -4,6 +4,7 @@
     <TargetFrameworks>net10.0;net10.0-windows10.0.20348.0</TargetFrameworks>
     <RootNamespace>WindowTranslator</RootNamespace>
     <IsPackable>true</IsPackable>
+    <IsPublishable>false</IsPublishable>
     <PackageIcon>wt.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -12,6 +13,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AnalysisMode>Recommended</AnalysisMode>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
@@ -21,6 +23,10 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.CsWin32">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PropertyTools" PrivateAssets="all" />
   </ItemGroup>

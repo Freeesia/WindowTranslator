@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="OneOcr" xml:space="preserve">
+    <value>Új Windows karakterfelismerés (Beta)</value>
+  </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>Függő modulok nem találhatók. Ebben a környezetben nem érhető el.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>Az OneOcr DLL másolása sikertelen. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>Az OCR inicializálási beállítások létrehozása sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>Az OCR modell lusta betöltésének beállítása sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>Az OCR folyamat létrehozása sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>Az OCR folyamat beállításainak létrehozása sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>Az OCR maximális felismerési sorainak számának beállítása sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>Az OCR folyamat futtatása sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>Az OCR sorainak számának lekérése sikertelen. Hibakód: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>Az OCR sor lekérése sikertelen. Sor száma: {0}, Hibakód: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>Az OCR sor szövegtartalmának lekérése sikertelen. Sor száma: {0}, Hibakód: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>Az OCR sor határoló mezőjének lekérése sikertelen. Sor száma: {0}, Hibakód: {1}</value>
+  </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>Függő modulok nem találhatók. Ebben a környezetben nem érhető el. {0}</value>
+  </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>Kivágó eszköz frissítése</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>Az OneOcr használatához frissítenie kell a „Kivágó eszköz" alkalmazást.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>Áruház megnyitása</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>Ne frissítsen</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>Frissítések keresése...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>A „Kivágó eszköz" frissítéseinek keresése...</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>Megszakítás</value>
+  </data>
+</root>

@@ -40,11 +40,6 @@ public class CommonSettings
     /// オーバレイのポインター挙動を逆にするか
     /// </summary>
     public bool IsOverlayPointSwap { get; set; }
-
-    /// <summary>
-    /// 自動的に翻訳を発動するか
-    /// </summary>
-    public bool IsEnableAutoTarget { get; set; }
 }
 
 /// <summary>
@@ -52,6 +47,11 @@ public class CommonSettings
 /// </summary>
 public class TargetSettings
 {
+    /// <summary>
+    /// 対象のウィンドウを検出したときに自動的に翻訳を開始するか
+    /// </summary>
+    public bool IsEnableAutoTarget { get; set; }
+
     /// <summary>
     /// 翻訳言語のオプション
     /// </summary>
@@ -83,9 +83,29 @@ public class TargetSettings
     public bool DisplayBusy { get; set; } = true;
 
     /// <summary>
-    /// ワンショットモードを有効にするか（ユーザー操作の初回のみ処理）
+    /// ホットキーが押されたときだけOCRと翻訳を行うか
     /// </summary>
     public bool IsOneShotMode { get; set; }
+
+    /// <summary>
+    /// マウスポインター判定の余白（WPF上のピクセル値）
+    /// </summary>
+    public double MousePointerHitTestPadding { get; set; }
+
+    /// <summary>
+    /// OCR矩形の位置・サイズの安定性（1: 追従重視、5: 安定重視）
+    /// </summary>
+    public int OcrGeometryStability { get; set => field = Math.Clamp(value, 1, 5); } = 3;
+
+    /// <summary>
+    /// OCR文字列と分割・統合・復元の安定性（1: 追従重視、5: 安定重視）
+    /// </summary>
+    public int OcrRecognitionStability { get; set => field = Math.Clamp(value, 1, 5); } = 3;
+
+    /// <summary>
+    /// 表示を保持する連続OCR欠落回数（0～7回）
+    /// </summary>
+    public int OcrMissingFrameRetention { get; set => field = Math.Clamp(value, 0, 7); } = 3;
 
     /// <summary>
     /// プラグインの選択

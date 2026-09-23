@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="OneOcr" xml:space="preserve">
+    <value>تشخیص جدید ویندوز (آزمایشی)</value>
+  </data>
+  <data name="NotFoundModule" xml:space="preserve">
+    <value>ماژول وابسته یافت نشد. در این محیط در دسترس نیست.</value>
+  </data>
+  <data name="CopyFaild" xml:space="preserve">
+    <value>کپی DLL OneOcr ناموفق بود. {0}</value>
+  </data>
+  <data name="InitFaild" xml:space="preserve">
+    <value>ایجاد گزینه‌های مقداردهی OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="SetLazyLoadFaild" xml:space="preserve">
+    <value>تنظیم بارگذاری تنبل مدل OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="CreatePipelineFaild" xml:space="preserve">
+    <value>ایجاد خط لوله OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="CreateProcessOptionsFaild" xml:space="preserve">
+    <value>ایجاد گزینه‌های پردازش OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="SetMaxRecognitionLineCountFaild" xml:space="preserve">
+    <value>تنظیم حداکثر تعداد خطوط OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="RunPipelineFaild" xml:space="preserve">
+    <value>اجرای خط لوله OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="GetLineCountFaild" xml:space="preserve">
+    <value>دریافت تعداد خطوط OCR ناموفق بود. کد خطا: {0}</value>
+  </data>
+  <data name="GetLineFaild" xml:space="preserve">
+    <value>دریافت خط OCR ناموفق بود. شماره خط: {0}، کد خطا: {1}</value>
+  </data>
+  <data name="GetLineContentFaild" xml:space="preserve">
+    <value>دریافت محتوای متن خط OCR ناموفق بود. شماره خط: {0}، کد خطا: {1}</value>
+  </data>
+  <data name="GetLineBoundingBoxFaild" xml:space="preserve">
+    <value>دریافت کادر محدود خط OCR ناموفق بود. شماره خط: {0}، کد خطا: {1}</value>
+  </data>
+  <data name="NotFoundModuleWithVersion" xml:space="preserve">
+    <value>ماژول وابسته یافت نشد. در این محیط در دسترس نیست. {0}</value>
+  </data>
+  <data name="UpdateDialogTitle" xml:space="preserve">
+    <value>به‌روزرسانی Snipping Tool</value>
+  </data>
+  <data name="UpdateDialogContent" xml:space="preserve">
+    <value>برای استفاده از OneOcr، به‌روزرسانی برنامه Snipping Tool لازم است.</value>
+  </data>
+  <data name="OpenStoreButton" xml:space="preserve">
+    <value>باز کردن فروشگاه</value>
+  </data>
+  <data name="DoNotUpdateButton" xml:space="preserve">
+    <value>به‌روزرسانی نکن</value>
+  </data>
+  <data name="CheckingUpdateTitle" xml:space="preserve">
+    <value>در حال بررسی به‌روزرسانی‌ها...</value>
+  </data>
+  <data name="CheckingUpdateContent" xml:space="preserve">
+    <value>در حال بررسی به‌روزرسانی‌های Snipping Tool...</value>
+  </data>
+  <data name="AbortButton" xml:space="preserve">
+    <value>لغو</value>
+  </data>
+</root>

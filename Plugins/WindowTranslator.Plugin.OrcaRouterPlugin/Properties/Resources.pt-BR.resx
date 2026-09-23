@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Configurações do OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Tradução do OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Entrar / Sair</value></data>
+  <data name="Model" xml:space="preserve"><value>Modelo (preço de entrada / saída em USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Status de acesso</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Contexto da tradução</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Caminho do glossário</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Conectado</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Não conectado</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Entre pelo navegador. Pressione o botão novamente para cancelar.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>O acesso foi cancelado ou expirou.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Falha ao entrar. Verifique sua conexão e tente novamente.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Volte ao WindowTranslator para verificar o resultado. Você pode fechar esta guia.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>varia conforme o modelo</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>preço indisponível</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Entre nas configurações do OrcaRouter e salve as configurações.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>O crédito do OrcaRouter é insuficiente ou um limite de uso foi atingido. Para usar o serviço gratuitamente, selecione “OrcaRouter Free” como modelo.</value></data>
+</root>

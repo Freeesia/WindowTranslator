@@ -135,4 +135,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>ゲームに含まれている日本語リソースを利用する</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>ゲームを英語表示にして公式翻訳を利用する（訳がない場合は通常翻訳）</value>
+  </data>
 </root>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Ustawienia OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Tłumaczenie OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Zaloguj / Wyloguj</value></data>
+  <data name="Model" xml:space="preserve"><value>Model (cena wejścia / wyjścia w USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Stan logowania</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Kontekst tłumaczenia</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Ścieżka glosariusza</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Zalogowano</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Nie zalogowano</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Zaloguj się w przeglądarce. Naciśnij przycisk ponownie, aby anulować.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Logowanie anulowano lub upłynął limit czasu.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Logowanie nie powiodło się. Sprawdź połączenie i spróbuj ponownie.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Wróć do WindowTranslator, aby sprawdzić wynik. Możesz zamknąć tę kartę.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>zależy od modelu</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>brak informacji o cenie</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Zaloguj się w ustawieniach OrcaRouter i zapisz ustawienia.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Środki OrcaRouter są niewystarczające lub osiągnięto limit użycia. Aby korzystać bezpłatnie, wybierz model „OrcaRouter Free”.</value></data>
+</root>

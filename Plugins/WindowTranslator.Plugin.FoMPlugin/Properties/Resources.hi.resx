@@ -77,4 +77,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>गेम में शामिल जापानी संसाधनों का उपयोग करें</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>गेम अंग्रेज़ी में दिखने पर आधिकारिक अनुवाद का उपयोग करें (उपलब्ध न होने पर सामान्य अनुवाद करें)</value>
+  </data>
 </root>

@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Anzeigemodus für das Übersetzungsergebnis</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Ziel der automatischen Übersetzung</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Sobald ein Prozess zur Übersetzung ausgewählt wurde, wird er automatisch übersetzt, wenn er gestartet wird</value>
+    <value>Automatisch übersetzen, wenn die App gestartet wird</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Allgemeine Einstellung</value>
@@ -306,11 +303,14 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>Zeige das Beschäftigt-Symbol</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>Nur übersetzen, wenn Overlay aktiviert ist</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Overlay-Übersetzung nur für Text an der Mauszeiger-Position anzeigen</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Trefferbereichspuffer des Mauszeigers</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Zusätzliche Pixel um den Trefferbereich des Mauszeigers</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay-Hintergrund-Deckkraft</value>
@@ -435,5 +435,113 @@
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Nie wieder anzeigen</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Das Speichern dieser Einstellungen funktioniert nicht.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Einstellungsvalidierungsfehler</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Wie es ist ausführen</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Die Ausführung ohne Änderungen funktioniert möglicherweise nicht ordnungsgemäß**
+***
+
+</value>
+  </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Vorabversion</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Installieren</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installiert</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Deinstallieren</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Möchten Sie {0} wirklich deinstallieren?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update verfügbar</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Installierte Version</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Neueste Version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Fehler beim Abrufen der Plugin-Liste von NuGet. Bitte überprüfen Sie Ihre Netzwerkverbindung.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation abgeschlossen</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Installation fehlgeschlagen</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Jetzt neu starten</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Bitte starten Sie WindowTranslator neu, um Plugin-Änderungen anzuwenden.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Neu starten</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Projektseite</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Lizenzinformationen</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugins sind Drittanbieterpakete, die über NuGet verteilt werden. Die Lizenz jedes Pakets wird vom jeweiligen Eigentümer gewährt; WindowTranslator übernimmt keine Gewähr für Inhalt, Verhalten oder Sicherheit. Installieren Sie nur vertrauenswürdige Pakete.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Offizielles Plugin</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Bereich hinzufügen</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Wird von Übersetzungsmodulen verwendet, die Kontext unterstützen</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Ersteinrichtung</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Wählen Sie die Erweiterungen aus, die Sie verwenden möchten. Die grundlegenden Funktionen sind auch ohne Auswahl verfügbar. Erweiterungen können Sie später hinzufügen.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Erneut versuchen</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Überspringen</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Keine installierbaren offiziellen Plugins gefunden.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Einige Plugins konnten nicht installiert werden. Versuchen Sie es erneut oder speichern Sie die erfolgreichen Installationen und beenden Sie das Setup.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Das Setup-Ergebnis konnte nicht gespeichert werden. Versuchen Sie es erneut.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Sonstiges</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR-Verfolgung</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Positions- und Größenstabilität</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Reduziert Schwankungen von Position und Größe. 1: schnelle Reaktion, 5: hohe Stabilität (Standard: 3). Große Bewegungen werden sofort übernommen.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Erkennungsstabilität</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduziert vorübergehende Änderungen am Text sowie das Aufteilen oder Zusammenführen von Bereichen. 1: schnelle Reaktion, 5: hohe Stabilität (Standard: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Anzeige bei vorübergehendem Verschwinden</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Anzahl aufeinanderfolgender fehlender Erkennungen, während der Text sichtbar bleibt. 0: beim ersten Fehlen entfernen, Maximum: 7, Standard: 3. Gezählt werden Ausfälle, keine Sekunden.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Übersetzung</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filter</value>
   </data>
 </root>

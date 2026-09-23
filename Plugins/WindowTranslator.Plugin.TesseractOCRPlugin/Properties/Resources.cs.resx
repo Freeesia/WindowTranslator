@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Install" xml:space="preserve">
+    <value>Instalovat</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <data name="ConfirmInstall" xml:space="preserve">
+    <value>Pro použití TesseractOcr je vyžadován Visual C++ Redistributable.  
+Chcete jej nainstalovat?
+
+> #### Možnosti
+> [Stáhnout a nainstalovat ručně](https://aka.ms/vs/17/release/vc_redist.x64.exe) </value>
+  </data>
+  <data name="InstallingTitle" xml:space="preserve">
+    <value>Instaluje se Visual C++ Redistributable...</value>
+  </data>
+  <data name="InstallingMessage" xml:space="preserve">
+    <value>Instaluje se Visual C++ Redistributable...
+To může trvat několik minut.
+
+> #### Pokud se instalace nedokončí
+> Zkuste prosím ruční instalaci.
+> [Stáhnout a nainstalovat ručně](https://aka.ms/vs/17/release/vc_redist.x64.exe)</value>
+  </data>
+  <data name="NotInstalledVcRedist" xml:space="preserve">
+    <value>Visual C++ Redistributable není nainstalován</value>
+  </data>
+</root>

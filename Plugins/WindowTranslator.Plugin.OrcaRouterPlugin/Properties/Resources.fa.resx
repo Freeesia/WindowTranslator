@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>تنظیمات OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>ترجمه با OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>ورود / خروج</value></data>
+  <data name="Model" xml:space="preserve"><value>مدل (هزینه ورودی / خروجی به دلار)</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت ورود</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>زمینه ترجمه</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>مسیر واژه‌نامه</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>وارد شده</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>وارد نشده</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>در مرورگر وارد شوید. برای لغو دوباره دکمه را فشار دهید.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>ورود لغو شد یا زمان آن پایان یافت.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>ورود ناموفق بود. اتصال را بررسی و دوباره تلاش کنید.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>برای بررسی نتیجه به WindowTranslator برگردید. می‌توانید این برگه را ببندید.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>بسته به مدل متفاوت است</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>اطلاعات قیمت در دسترس نیست</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>از تنظیمات OrcaRouter وارد شوید و تنظیمات را ذخیره کنید.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>اعتبار OrcaRouter کافی نیست یا به سقف استفاده رسیده‌اید. برای استفاده رایگان، مدل «OrcaRouter Free» را انتخاب کنید.</value></data>
+</root>

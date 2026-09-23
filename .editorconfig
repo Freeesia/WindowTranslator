@@ -159,6 +159,9 @@ csharp_prefer_static_anonymous_function = true:suggestion
 csharp_style_prefer_readonly_struct = true:suggestion
 csharp_style_prefer_readonly_struct_member = true:suggestion
 
+# CA1873: 潜在的に高価なログを避ける
+dotnet_diagnostic.CA1873.severity = none
+
 [*.{csproj,props}]
 charset = utf-8-bom
 indent_size = 2

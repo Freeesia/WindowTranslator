@@ -134,7 +134,7 @@
   </data>
   <data name="CreatePipelineFaild" xml:space="preserve">
     <value>Failed to create OCR pipeline. Error code: {0}
-Please try updating "Snipping Tool" or "Microsoft Photos" app.</value>
+Please try updating "Snipping Tool" app.</value>
   </data>
   <data name="CreateProcessOptionsFaild" xml:space="preserve">
     <value>Failed to create OCR process options. Error code: {0}</value>

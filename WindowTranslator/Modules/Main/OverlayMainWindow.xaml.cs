@@ -23,6 +23,7 @@ namespace WindowTranslator.Modules.Main;
 public partial class OverlayMainWindow : Window
 {
     private readonly OverlaySwitch overlaySwitch;
+    private readonly bool isOneShotMode;
     private readonly bool isEnableCapture;
     private readonly IProcessInfoStore processInfo;
     private readonly IVirtualDesktopManager desktopManager;
@@ -72,6 +73,11 @@ public partial class OverlayMainWindow : Window
     {
         InitializeComponent();
         this.overlaySwitch = settings.Value.OverlaySwitch;
+        this.isOneShotMode = targetSettings.Value.IsOneShotMode;
+        if (this.isOneShotMode)
+        {
+            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        }
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.IsSwapVisibility = settings.Value.IsOverlayPointSwap;
         this.processInfo = processInfo;
@@ -109,7 +115,7 @@ public partial class OverlayMainWindow : Window
         {
             extendedStyle |= WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
         }
-        var r = SetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, extendedStyle);
+        var r = ((HWND)this.windowHandle).SetExtendedStyle(extendedStyle);
         if (r == 0)
         {
             this.logger.LogError($"SetWindowLong failed. {Marshal.GetLastWin32Error()}");
@@ -150,14 +156,14 @@ public partial class OverlayMainWindow : Window
     private unsafe void UpdateWindowPositionAndSize()
     {
         var sw = Stopwatch.StartNew();
-        
+
         // ディスプレイの場合は専用の処理
         if (this.processInfo.IsMonitor)
         {
             UpdateDisplayPositionAndSize();
             return;
         }
-        
+
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
         if (!GetWindowInfo(new(this.processInfo.MainWindowHandle), ref windowInfo))
         {
@@ -231,30 +237,30 @@ public partial class OverlayMainWindow : Window
         var monitorHandle = this.processInfo.MainWindowHandle;
         var monitorInfo = default(MONITORINFOEXW);
         monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
-        
-        if (!GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo))
+
+        if (!GetMonitorInfo(new(monitorHandle), ref monitorInfo.monitorInfo))
         {
             this.logger.LogWarning("Failed to get monitor info");
             return;
         }
-        
+
         var left = monitorInfo.monitorInfo.rcMonitor.left;
         var top = monitorInfo.monitorInfo.rcMonitor.top;
         var width = monitorInfo.monitorInfo.rcMonitor.right - left;
         var height = monitorInfo.monitorInfo.rcMonitor.bottom - top;
-        
+
         // モニター座標の検証
         if (width <= 0 || height <= 0)
         {
             this.logger.LogWarning($"Invalid monitor dimensions: {width}x{height}");
             return;
         }
-        
+
         // モニターの解像度情報を取得
         var mode = default(DEVMODEW);
         var eDpiScale = GetDpiForSystem() / 96.0;
         var rDpiScale = eDpiScale;
-        
+
         if (EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode))
         {
             // EnumDisplaySettings が成功した場合のみ rDpiScale を計算
@@ -267,11 +273,11 @@ public partial class OverlayMainWindow : Window
         {
             this.logger.LogWarning("Failed to get display settings, using default DPI scale");
         }
-        
+
         GetCursorPos(out var nativePos);
         var x = (nativePos.X - left) / eDpiScale;
         var y = (nativePos.Y - top) / eDpiScale;
-        
+
         this.logger.LogDebug($"Display: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2})");
         this.SetCurrentValue(MousePosProperty, new Point(x, y));
         this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
@@ -302,11 +308,11 @@ public partial class OverlayMainWindow : Window
     private async void HoldHideOverlay()
     {
         var current = Interlocked.Increment(ref this.overlayHiddenCount);
-        this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+        this.overlay.SetCurrentValue(VisibilityProperty, this.isOneShotMode ? Visibility.Visible : Visibility.Hidden);
         await Task.Delay(500);
         if (Interlocked.CompareExchange(ref this.overlayHiddenCount, 0, current) == current)
         {
-            this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            this.overlay.SetCurrentValue(VisibilityProperty, this.isOneShotMode ? Visibility.Hidden : Visibility.Visible);
         }
     }
 }

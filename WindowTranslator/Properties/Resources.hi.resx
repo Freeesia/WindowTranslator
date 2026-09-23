@@ -1,52 +1,110 @@
-<?xml version='1.0' encoding='utf-8'?>
-<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
-  <xs:schema id="root">
-    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xs:element name="root" ns1:IsDataSet="true">
-      <xs:complexType>
-        <xs:choice maxOccurs="unbounded">
-          <xs:element name="metadata">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
-              <xs:attribute name="name" use="required" type="xsd:string" />
-              <xs:attribute name="type" type="xsd:string" />
-              <xs:attribute name="mimetype" type="xsd:string" />
-              <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="assembly">
-            <xs:complexType>
-              <xs:attribute name="alias" type="xsd:string" />
-              <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="data">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
-              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
-              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
-              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
-              <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="resheader">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
-              <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -74,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>अनुवाद परिणाम प्रदर्शन मोड</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>स्वचालित अनुवाद लक्ष्य</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>अनुवाद के लिए चुने जाने पर एक बार प्रक्रिया लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
+    <value>ऐप लॉन्च होने पर स्वचालित रूप से अनुवाद करें</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>समग्र सेटिंग</value>
@@ -248,9 +303,6 @@
   <data name="DisplayBusy" xml:space="preserve">
     <value>व्यस्त आइकन दिखाएं</value>
   </data>
-  <data name="IsOneShotMode" xml:space="preserve">
-    <value>केवल तब अनुवाद करें जब ओवरले सक्षम हो</value>
-  </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>केवल माउस पॉइंटर स्थिति पर टेक्स्ट के लिए ओवरले अनुवाद प्रदर्शित करें</value>
   </data>
@@ -374,5 +426,116 @@
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>फिर कभी न दिखाएं</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **इन सेटिंग्स को सहेजने से काम नहीं चलेगा।**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: सेटिंग्स सत्यापन त्रुटि</value>
+  </data>
+  <data name="OcrLanguageNotAvailable" xml:space="preserve">
+    <value>{0} के लिए OCR कार्यक्षमता उपलब्ध नहीं है। कृपया लक्ष्य भाषा सुविधा स्थापित करें</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>जैसा है चलाएं</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **जैसा है चलाने से यह ठीक से काम नहीं कर सकता**
+***
+
+</value>
+  </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>प्लगइन</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>प्रीरिलीज़</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>इंस्टॉल करें</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>इंस्टॉल है</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>अपडेट करें</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>अनइंस्टॉल करें</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>क्या आप {0} को अनइंस्टॉल करना चाहते हैं?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>अपडेट उपलब्ध</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>इंस्टॉल किया गया संस्करण</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>नवीनतम संस्करण</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>NuGet से प्लगइन सूची प्राप्त करने में विफल। कृपया अपना नेटवर्क कनेक्शन जांचें।</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>इंस्टॉलेशन पूर्ण</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>इंस्टॉलेशन विफल</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>अभी पुनः आरंभ करें</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>प्लगइन परिवर्तन लागू करने के लिए कृपया WindowTranslator को पुनः आरंभ करें।</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>पुनः आरंभ करें</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>प्रोजेक्ट पेज</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>लाइसेंस जानकारी</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>प्लगइन NuGet के माध्यम से वितरित तृतीय-पक्ष पैकेज हैं। प्रत्येक पैकेज का लाइसेंस उसके स्वामी द्वारा दिया जाता है; WindowTranslator उसकी सामग्री, व्यवहार या सुरक्षा की गारंटी नहीं देता। केवल विश्वसनीय पैकेज इंस्टॉल करें।</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>आधिकारिक प्लगइन</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>क्षेत्र जोड़ें</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>संदर्भ का समर्थन करने वाले अनुवाद मॉड्यूल द्वारा उपयोग किया जाता है</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>प्रारंभिक सेटअप</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>उपयोग करने के लिए इच्छित एक्सटेंशन चुनें। कोई भी एक्सटेंशन चुने बिना भी आप बुनियादी सुविधाओं का उपयोग कर सकते हैं। आप बाद में एक्सटेंशन जोड़ सकते हैं।</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>पुनः प्रयास करें</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>छोड़ें</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>इंस्टॉल करने योग्य कोई आधिकारिक प्लगइन नहीं मिला।</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>कुछ प्लगइन इंस्टॉल नहीं हो सके। पुनः प्रयास करें, या सफल इंस्टॉलेशन सहेजकर बाहर निकलें।</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>सेटअप परिणाम सहेजे नहीं जा सके। पुनः प्रयास करें।</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>अन्य</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR ट्रैकिंग</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>स्थिति और आकार की स्थिरता</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>स्थिति और आकार का कंपन कम करता है। 1: तेज़ प्रतिक्रिया, 5: अधिक स्थिरता (डिफ़ॉल्ट: 3)। बड़ी हलचल तुरंत लागू होती है।</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>पहचान की स्थिरता</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>पाठ और क्षेत्रों के विभाजन या विलय में अस्थायी बदलाव कम करता है। 1: तेज़ प्रतिक्रिया, 5: अधिक स्थिरता (डिफ़ॉल्ट: 3)।</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>अस्थायी रूप से गायब होने पर बनाए रखना</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>लगातार कितनी बार पहचान विफल होने तक पाठ दिखाई देता रहे। 0: पहली विफलता पर हटाएँ, अधिकतम: 7, डिफ़ॉल्ट: 3। यह विफलताओं की गिनती है, सेकंड नहीं।</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>सभी</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>अनुवाद</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>फ़िल्टर</value>
   </data>
 </root>

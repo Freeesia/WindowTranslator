@@ -12,6 +12,7 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 
+#if DEBUG
 namespace WindowTranslator.Plugin.LLMPlugin;
 
 [Experimental("WT0001")]
@@ -69,10 +70,9 @@ public sealed class LLMOcr : IOcrModule
     {
         var options = llmOptions.Value;
         this.logger = logger;
-
         if (string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.Model))
         {
-            throw new InvalidOperationException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
+            throw new AppUserException("LLM機能が初期化されていません。設定ダイアログからLLMオプションを設定してください");
         }
 
         this.system = ChatMessage.CreateSystemMessage($$"""
@@ -105,7 +105,10 @@ public sealed class LLMOcr : IOcrModule
             clientOptions);
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
+        => OcrUtility.RecognizeRegionsAsync(input, (bitmap, _) => RecognizeRegionAsync(bitmap));
+
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
     {
         var bytes = await bitmap.EncodeToJpegBytes().ConfigureAwait(false);
         var image = BinaryData.FromBytes(bytes);
@@ -147,7 +150,8 @@ public sealed class LLMOcr : IOcrModule
                     var widthPx = xMaxPx - xMinPx;
                     var heightPx = yMaxPx - yMinPx;
                     return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
-                });
+                })
+                .ToArray();
         }
         catch (Exception ex)
         {
@@ -159,3 +163,4 @@ public sealed class LLMOcr : IOcrModule
     private record Rect([property: JsonPropertyName("box_2d")] int[] Box2d, string Text);
     private record RecognizedTexts(Rect[] Texts);
 }
+#endif

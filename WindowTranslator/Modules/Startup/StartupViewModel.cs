@@ -103,20 +103,20 @@ public partial class StartupViewModel
                 }
                 return;
             }
-            
+
             // まずウィンドウとして検索
             p = FindProcessByWindowTitle(item.DisplayName, item.Size);
-            
+
             // ウィンドウが見つからない場合、ディスプレイとして処理
             if (p is null)
             {
-                var displayInfo = FindDisplayBySize(item.Size);
+                var displayInfo = FindDisplay(item);
                 if (displayInfo is not null)
                 {
                     p = new ProcessInfo(item.DisplayName, -1, displayInfo.Value.MonitorHandle, $"DISPLAY__{displayInfo.Value.Index}");
                 }
             }
-            
+
             if (p is null)
             {
                 this.presentationService.ShowMessage(string.Format(Resources.UnknownWindow, item.DisplayName), icon: Kamishibai.MessageBoxImage.Error, owner: window);
@@ -175,18 +175,18 @@ public partial class StartupViewModel
 
         EnumWindows((hWnd, _) =>
         {
-            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
+            if (hWnd.ShouldIgnore() || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
             {
                 return true;
             }
 
-            var windowTitle = GetWindowText(hWnd);
+            var windowTitle = hWnd.GetText();
             if (windowTitle != targetTitle)
             {
                 return true;
             }
 
-            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            if (!hWnd.TryGetProcessId(out var processId))
             {
                 return true;
             }
@@ -202,7 +202,7 @@ public partial class StartupViewModel
             }
 
             // ウィンドウサイズを取得
-            var (width, height) = GetWindowSizeForWgcCompare(hWnd);
+            var (width, height) = hWnd.GetSizeForWgcCompare();
             // サイズが完全一致する場合は即座に結果を設定して終了
             if (width == targetSize.Width && height == targetSize.Height)
             {
@@ -220,37 +220,64 @@ public partial class StartupViewModel
         return result ?? candidate;
     }
 
-    private (IntPtr MonitorHandle, int Index)? FindDisplayBySize(Windows.Graphics.SizeInt32 targetSize)
+    private static unsafe (IntPtr MonitorHandle, int Index)? FindDisplay(GraphicsCaptureItem item)
     {
         var monitors = new List<(IntPtr Handle, int Width, int Height)>();
-        
+
         // モニターを列挙
-        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
+        EnumDisplayMonitors(default, null, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
         {
             var monitorInfo = new MONITORINFOEXW();
             monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
-            
+
             if (GetMonitorInfo(hMonitor, ref monitorInfo.monitorInfo))
             {
                 var width = monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left;
                 var height = monitorInfo.monitorInfo.rcMonitor.bottom - monitorInfo.monitorInfo.rcMonitor.top;
                 monitors.Add((hMonitor, width, height));
             }
-            
+
             return true;
         }, IntPtr.Zero);
 
-        // サイズが一致するモニターを探す
+        var candidates = new List<(IntPtr Handle, int Index)>();
         for (int i = 0; i < monitors.Count; i++)
         {
             var (handle, width, height) = monitors[i];
-            if (width == targetSize.Width && height == targetSize.Height)
+            if (width == item.Size.Width && height == item.Size.Height)
             {
-                return (handle, i);
+                candidates.Add((handle, i));
             }
         }
 
-        return null;
+        if (candidates.Count == 1)
+        {
+            return candidates[0];
+        }
+
+        // 同じ解像度のモニターはキャプチャ対象の表示名で区別する
+        (IntPtr Handle, int Index)? match = null;
+        foreach (var candidate in candidates)
+        {
+            try
+            {
+                if (CaptureHelper.CreateItemForMonitor(candidate.Handle)?.DisplayName != item.DisplayName)
+                {
+                    continue;
+                }
+            }
+            catch (COMException)
+            {
+                continue;
+            }
+
+            if (match is not null)
+            {
+                return null;
+            }
+            match = candidate;
+        }
+        return match;
     }
 
     private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);

@@ -30,25 +30,42 @@ public sealed partial class WindowsMediaOcr(
     private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
+    private readonly int brightness = ocrParam.Value.Brightness;
+    private readonly int contrast = ocrParam.Value.Contrast;
     private readonly OcrEngine ocr = OcrEngine.TryCreateFromLanguage(new(ConvertLanguage(langOptions.Value.Source)))
             ?? throw new AppUserException(string.Format(Properties.Resources.OcrLanguageNotAvailable, langOptions.Value.Source));
     private readonly ILogger<WindowsMediaOcr> logger = logger;
     private readonly InMemoryRandomAccessStream resizeStream = new();
     private readonly CancellationTokenSource cts = new();
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
     {
-        var newWidth = (uint)(bitmap.PixelWidth * scale);
-        var newHeight = (uint)(bitmap.PixelHeight * scale);
-        if (newWidth > OcrEngine.MaxImageDimension || newHeight > OcrEngine.MaxImageDimension)
+        foreach (var region in input.Regions)
         {
-            throw new InvalidOperationException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({newWidth},{newHeight}), max:{OcrEngine.MaxImageDimension}");
+            var width = (uint)(region.Bounds.Width * this.scale);
+            var height = (uint)(region.Bounds.Height * this.scale);
+            if (width > OcrEngine.MaxImageDimension || height > OcrEngine.MaxImageDimension)
+            {
+                throw new AppUserException($"ウィンドウサイズが大きすぎます。対象ウィンドウのサイズを小さくするか、認識設定の拡大率を下げてください。actual:({width},{height}), max:{OcrEngine.MaxImageDimension}");
+            }
         }
 
-        // 拡大率に基づくリサイズ処理
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale, this.cts.Token);
-        this.cts.Token.ThrowIfCancellationRequested();
+        return OcrUtility.RecognizeRegionsAsync(
+            input,
+            RecognizeRegionAsync,
+            this.scale,
+            this.brightness,
+            this.contrast,
+            this.cts.Token);
+    }
 
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="sourceSize">拡大後の全体画像サイズ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap workingBitmap, System.Drawing.Size sourceSize)
+    {
         var t = this.logger.LogDebugTime("OCR Recognize");
         var rawResults = await ocr.RecognizeAsync(workingBitmap);
         this.cts.Token.ThrowIfCancellationRequested();
@@ -80,7 +97,7 @@ public sealed partial class WindowsMediaOcr(
             .Lines
             .Select(line => CalcRect(line, angle, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
-            .Where(w => w.Height < workingBitmap.PixelHeight * 0.1)
+            .Where(w => w.Height < sourceSize.Height * 0.1)
             .ToArray();
 
         if (lineResults.IsEmpty())
@@ -88,8 +105,8 @@ public sealed partial class WindowsMediaOcr(
             return lineResults;
         }
 
-        var xt = xPosThrethold * workingBitmap.PixelWidth;
-        var yt = yPosThrethold * workingBitmap.PixelHeight;
+        var xt = xPosThrethold * sourceSize.Width;
+        var yt = yPosThrethold * sourceSize.Height;
 
         var results = new List<TempMergeRect>(lineResults.Length);
         {
@@ -125,12 +142,7 @@ public sealed partial class WindowsMediaOcr(
             }
         }
 
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
-        }
-
-        return results.Select(r => ToTextRect(r, this.scale, angle))
+        return results.Select(r => ToTextRect(r, angle))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
@@ -273,16 +285,10 @@ public sealed partial class WindowsMediaOcr(
         }
     }
 
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double scale, double angle)
+    private static TextRect ToTextRect(TempMergeRect combinedRect, double angle)
     {
         var (x, y, width, height, fontSize, _) = combinedRect;
         var text = combinedRect.Text;
-        // 元の画像座標に変換
-        x /= scale;
-        y /= scale;
-        width /= scale;
-        height /= scale;
-        fontSize /= scale;
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         // または、
         // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
@@ -296,7 +302,7 @@ public sealed partial class WindowsMediaOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
@@ -379,11 +385,17 @@ file static class Utility
     }
     public static WordRect CorrectWord(OcrWord word, double angle, double centerX, double centerY)
     {
-        // 文字種類の取得
-        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(word.Text);
-
         // 矩形の回転補正
         var (x, y, width, height) = RotateRect(word.BoundingRect, angle, centerX, centerY);
+
+        // CJK文字を含む単語にはラテン文字向けの位置・高さ補正を適用しない
+        if (WindowsMediaOcrUtility.ContainsCjk(word.Text))
+        {
+            return new(word.Text, x, y, width, height);
+        }
+
+        // 文字種類の取得
+        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(word.Text);
 
         // 文字種類による位置補正
         y -= (hasAcent, hasHarfAcent) switch

@@ -84,7 +84,7 @@ public static class ColorThief
         var numUsedPixels = 0;
 
         // 元画像の範囲を超えないようにクリップ
-        var top = Math.Clamp(rect.Top, 0, bmp.PixelWidth);
+        var top = Math.Clamp(rect.Top, 0, bmp.PixelHeight);
         var bottom = Math.Clamp(rect.Bottom, 0, bmp.PixelHeight);
         var left = Math.Clamp(rect.Left, 0, bmp.PixelWidth);
         var width = Math.Clamp(rect.Right - left, 0, bmp.PixelWidth - left);

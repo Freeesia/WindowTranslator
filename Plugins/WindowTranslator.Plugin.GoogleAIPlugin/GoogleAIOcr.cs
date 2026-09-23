@@ -9,6 +9,7 @@ using Windows.Graphics.Imaging;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules;
 
+#if DEBUG
 namespace WindowTranslator.Plugin.GoogleAIPlugin;
 
 [Experimental("WT0001")]
@@ -51,7 +52,10 @@ public sealed class GoogleAIOcr : IOcrModule
             systemInstruction: system);
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
+        => OcrUtility.RecognizeRegionsAsync(input, (bitmap, _) => RecognizeRegionAsync(bitmap));
+
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
     {
         var base64 = await bitmap.EncodeToJpegBase64().ConfigureAwait(false);
         var req = new GenerateContentRequest();
@@ -71,8 +75,10 @@ public sealed class GoogleAIOcr : IOcrModule
                 var widthPx = xMaxPx - xMinPx;
                 var heightPx = yMaxPx - yMinPx;
                 return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
-            });
+            })
+            .ToArray();
     }
 
     private record Rect(int[] Box2d, string Text);
 }
+#endif

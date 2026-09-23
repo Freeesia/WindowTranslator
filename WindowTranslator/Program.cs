@@ -1,17 +1,23 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using System.Xml.Linq;
 using Kamishibai;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using Octokit;
 using Sentry.Extensions.Logging;
 using Weikio.PluginFramework.Abstractions;
@@ -26,36 +32,35 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.ErrorReport;
 using WindowTranslator.Modules.LogView;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.Ocr;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Modules.Settings;
 using WindowTranslator.Modules.Startup;
+using WindowTranslator.Modules.Validate;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui;
-using MessageBoxImage = Kamishibai.MessageBoxImage;
 
 //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("it");
 
-#if DEBUG
+args = ApplicationRestart.WaitForPreviousProcess(args);
+
+#if NO_MUTEX
 var createdNew = true;
 #else
 using var mutex = new Mutex(true, @"Global\WindowTranslator", out var createdNew);
 #endif
 if (!createdNew)
 {
-    new MessageDialog()
-    {
-        Caption = "WindowTranslator",
-        Icon = MessageBoxImage.Error,
-        Text = Resources.MutexError,
-    }.Show();
+    _ = SingleInstanceWindowActivator.TryActivateExistingInstance();
     return;
 }
-var d = SplashWindow.ShowSplash();
-
-
 var exeDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])!;
 Directory.SetCurrentDirectory(exeDir);
+
+var setupShown = PluginSetup.ShowIfRequired(args);
+var d = SplashWindow.ShowSplash();
 
 var builder = KamishibaiApplication<App, StartupDialog>.CreateBuilder();
 
@@ -112,24 +117,38 @@ builder.Services.AddPluginFramework()
     .AddPluginType<ITargetSettingsValidator>()
     .AddPluginType<IPluginParam>();
 
+var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
+var nugetPluginsDir = Path.Combine(PathUtility.UserDir, "nuget-plugins");
+var hostPackageVersions = NuGetPluginService.CreateHostPackageVersions();
+IPluginCatalog pluginFolderCatalog = new NuGetPluginCatalog(
+    nugetPluginsDir,
+    AppInfo.Instance.Version.Major,
+    hostPackageVersions[NuGetPluginService.AbstractionsPackageId],
+    new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } });
 var appPluginDir = @".\plugins";
 if (Directory.Exists(appPluginDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    pluginFolderCatalog = new PrioritizedPluginCatalog(
+        pluginFolderCatalog,
+        new FolderPluginCatalog(appPluginDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
 }
-
-var userPluginsDir = Path.Combine(PathUtility.UserDir, "plugins");
 if (Directory.Exists(userPluginsDir))
 {
-    builder.Services.AddPluginCatalog(new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }));
+    pluginFolderCatalog = new PrioritizedPluginCatalog(
+        new FolderPluginCatalog(userPluginsDir, options: new() { PluginNameOptions = { PluginNameGenerator = GetPluginName } }),
+        pluginFolderCatalog);
 }
 
+builder.Services.AddPluginCatalog(pluginFolderCatalog);
 builder.Configuration
     .AddCommandLine(args)
     .AddJsonFile(PathUtility.UserSettings, true, true);
 
 builder.Services.AddSingleton<IMainWindowModule, MainWindowModule>();
-builder.Services.AddSingleton<IAutoTargetStore, AutoTargetStore>();
+builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
+builder.Services.AddScoped<IOcrTextTracker>(sp => new OcrTextTracker(
+    sp.GetRequiredService<ILogger<OcrTextTracker>>(),
+    sp.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Value));
 builder.Services.AddHostedService<WindowMonitor>();
 if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
 {
@@ -155,8 +174,26 @@ builder.Services.AddPresentation<OverlayMainWindow, OverlayMainViewModel>();
 builder.Services.AddPresentation<AllSettingsDialog, AllSettingsViewModel>();
 builder.Services.AddPresentation<ErrorReportDialog, ErrorReportViewModel>();
 builder.Services.AddPresentation<LogWindow, LogViewModel>();
+builder.Services.AddPresentation<ValidateDialog, ValidateViewModel>();
 builder.Services.AddSingleton<IContentDialogService, ContentDialogService>();
 builder.Services.AddSingleton<ISnackbarService, SnackbarService>();
+builder.Services.AddHttpClient(NuGetPluginService.HttpClientName, client =>
+    client.Timeout = TimeSpan.FromSeconds(30))
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All,
+    });
+builder.Services.AddSingleton<SourceRepository>(_ =>
+    NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3(NuGetPluginService.NuGetServiceIndexUrl));
+builder.Services.AddSingleton(sp => new NuGetPluginService(
+        sp.GetRequiredService<ILogger<NuGetPluginService>>(),
+        sp.GetRequiredService<IHttpClientFactory>(),
+        sp.GetRequiredService<SourceRepository>(),
+        nugetPluginsDir,
+        hostPackageVersions,
+        AppInfo.Instance.Version.Major))
+    .AddHostedService(sp => sp.GetRequiredService<NuGetPluginService>());
+builder.Services.AddTransient<PluginStoreViewModel>();
 builder.Services.Configure<UserSettings>(builder.Configuration, op => op.ErrorOnUnknownConfiguration = false);
 builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection(nameof(UserSettings.Common)));
 builder.Services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigurePluginParam<>));
@@ -177,6 +214,10 @@ builder.Services.AddSingleton<IGitHubClient>(_ =>
 var app = builder.Build();
 app.Loaded += (_, e) =>
 {
+    if (setupShown)
+    {
+        PluginSetup.AttachApplicationTheme();
+    }
     d.Dispose();
     e.Window.Activate();
 };
@@ -232,14 +273,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
     private readonly IProcessInfoStore store = store;
 
     public void Configure(TOptions options)
-    {
-        var section = this.configuration.GetSection(this.store.Name);
-        if (!section.Exists())
-        {
-            section = this.configuration.GetSection(Options.DefaultName);
-        }
-        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
-    }
+        => Configure(null, options);
 
     public void Configure(string? name, TOptions options)
     {
@@ -249,36 +283,20 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        GetTargetSection(section, typeof(TOptions).Name).Bind(options);
-    }
-
-    private static IConfigurationSection GetTargetSection(IConfigurationSection section, string name)
-    {
-        section = section.GetSection(nameof(TargetSettings.PluginParams));
-        // パラメータのクラス名変わったので、互換性のために一時的にBasicOcrParamをWindowsMediaOcrParamに変換する
-        if (typeof(TOptions) == typeof(BasicOcrParam))
-        {
-            var tmp = section.GetSection(typeof(TOptions).Name);
-            return tmp.Exists() ? tmp : section.GetSection("WindowsMediaOcrParam");
-        }
-        return section.GetSection(typeof(TOptions).Name);
+        section.GetRequiredSection(nameof(TargetSettings.PluginParams))
+            .GetSection(typeof(TOptions).Name)
+            .Bind(options);
     }
 }
 
-class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
+class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore store, IServiceProvider sp) : IConfigureOptions<TargetSettings>, IConfigureNamedOptions<TargetSettings>
 {
     private readonly IConfiguration configuration = configuration.GetSection(nameof(UserSettings.Targets));
     private readonly IProcessInfoStore store = store;
+    private readonly IServiceProvider sp = sp;
 
     public void Configure(TargetSettings options)
-    {
-        var section = this.configuration.GetSection(this.store.Name);
-        if (!section.Exists())
-        {
-            section = this.configuration.GetSection(Options.DefaultName);
-        }
-        section.Bind(options);
-    }
+        => Configure(null, options);
 
     public void Configure(string? name, TargetSettings options)
     {
@@ -289,6 +307,10 @@ class ConfigureTargetSettings(IConfiguration configuration, IProcessInfoStore st
             section = this.configuration.GetSection(Options.DefaultName);
         }
         section.Bind(options);
+        foreach (var param in this.sp.GetParams(name))
+        {
+            options.PluginParams[param.GetType().Name] = param;
+        }
     }
 }
 
@@ -348,4 +370,17 @@ static class ServiceCollectionExtensions
         configureDefault?.Invoke(defaultPluginOption);
         return defaultPluginOption;
     }
+
+    private static readonly ConcurrentDictionary<Type, MethodInfo> paramFactoryCache = new();
+
+    public static IEnumerable<IPluginParam> GetParams(this IServiceProvider sp, string name)
+        => sp.GetRequiredService<PluginProvider>()
+            .GetPlugins()
+            .Where(p => typeof(IPluginParam).IsAssignableFrom(p.Type))
+            .Select(p =>
+            {
+                var factoryType = typeof(IOptionsFactory<>).MakeGenericType(p.Type);
+                var factoryMethod = paramFactoryCache.GetOrAdd(p.Type, _ => factoryType.GetMethod(nameof(IOptionsFactory<>.Create))!);
+                return (IPluginParam)factoryMethod.Invoke(sp.GetRequiredService(factoryType), [name])!;
+            });
 }

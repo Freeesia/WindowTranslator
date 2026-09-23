@@ -116,7 +116,7 @@ public class LLMTranslator : ITranslateModule
     {
         if (this.client is null)
         {
-            throw new InvalidOperationException(Resources.NeedSettings);
+            throw new AppUserException(Resources.NeedSettings);
         }
         var glossary = this.glossary.Where(kv => srcTexts.Any(s => s.SourceText.Contains(kv.Key))).ToArray();
         var common = this.common.Where(c => srcTexts.Any(s => s.SourceText.Contains(c))).ToArray();
@@ -155,7 +155,7 @@ public class LLMTranslator : ITranslateModule
 
     private async ValueTask<string[]> TranslateFromOpenAi(string system, IEnumerable<TextInfo> srcs)
     {
-        var client = this.client ?? throw new InvalidOperationException(Resources.NeedSettings);
+        var client = this.client ?? throw new AppUserException(Resources.NeedSettings);
         ChatCompletion completion = await client.CompleteChatAsync([
                 ChatMessage.CreateSystemMessage(system),
                 ChatMessage.CreateUserMessage(JsonSerializer.Serialize(srcs.Select(s => new { s.SourceText, s.Context }).ToArray(), jsonOptions)),
@@ -167,7 +167,7 @@ public class LLMTranslator : ITranslateModule
 
     private async ValueTask<string[]> TranslateFromOther(string system, IEnumerable<TextInfo> srcs)
     {
-        var client = this.client ?? throw new InvalidOperationException(Resources.NeedSettings);
+        var client = this.client ?? throw new AppUserException(Resources.NeedSettings);
         var retry = 0;
         while (true)
         {

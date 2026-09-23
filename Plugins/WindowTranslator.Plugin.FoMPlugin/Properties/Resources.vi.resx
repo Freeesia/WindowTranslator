@@ -135,4 +135,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>ゲームに含まれている日本語リソースを利用する</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>Sử dụng bản dịch chính thức khi trò chơi hiển thị bằng tiếng Anh (dịch thông thường nếu chưa có bản dịch)</value>
+  </data>
 </root>

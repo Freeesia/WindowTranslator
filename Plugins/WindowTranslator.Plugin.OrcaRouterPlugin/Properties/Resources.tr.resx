@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter ayarları</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter çevirisi</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Oturum aç / Oturumu kapat</value></data>
+  <data name="Model" xml:space="preserve"><value>Model (USD cinsinden giriş / çıkış fiyatı)</value></data>
+  <data name="Status" xml:space="preserve"><value>Oturum durumu</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Çeviri bağlamı</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Sözlük yolu</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Oturum açıldı</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Oturum açılmadı</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Tarayıcınızda oturum açın. İptal etmek için düğmeye yeniden basın.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Oturum açma iptal edildi veya zaman aşımına uğradı.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Oturum açılamadı. Bağlantınızı kontrol edip yeniden deneyin.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Sonucu kontrol etmek için WindowTranslator'a dönün. Bu sekmeyi kapatabilirsiniz.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>modele göre değişir</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>fiyat bilgisi yok</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>OrcaRouter ayarlarından oturum açın ve ayarları kaydedin.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>OrcaRouter kredisi yetersiz veya kullanım sınırına ulaşıldı. Ücretsiz kullanmak için model olarak “OrcaRouter Free” seçin.</value></data>
+</root>

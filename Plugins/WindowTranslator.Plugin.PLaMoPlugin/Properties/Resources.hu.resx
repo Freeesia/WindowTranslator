@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ModelFileNotFound" xml:space="preserve">
+    <value>A PLaMo modellfájl nem található.</value>
+  </data>
+  <data name="ModelNotInitialized" xml:space="preserve">
+    <value>A PLaMo modell nincs inicializálva.</value>
+  </data>
+  <data name="ContextSize_Desc" xml:space="preserve">
+    <value>A nagyobb értékek lehetővé teszik hosszabb szövegek fordítását.</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>A PLaMo modell letöltése sikertelen.</value>
+  </data>
+  <data name="VRAM" xml:space="preserve">
+    <value>VRAM használat</value>
+  </data>
+  <data name="VRAM_Desc" xml:space="preserve">
+    <value>A használandó GPU memória mennyisége. -1: Csak GPU. 0: Csak CPU. (Egység: GB)</value>
+  </data>
+  <data name="ContextSize" xml:space="preserve">
+    <value>Kontextus hossza</value>
+  </data>
+  <data name="PLaMoOptions" xml:space="preserve">
+    <value>PLaMo</value>
+  </data>
+  <data name="PLaMoTranslator" xml:space="preserve">
+    <value>PLaMo fordítás</value>
+  </data>
+</root>

@@ -148,7 +148,6 @@ public partial class ErrorReportViewModel([Inject] IContentDialogService dialogS
             sb.AppendLine(CultureInfo.CurrentCulture, $"OverlayShortcut: {value.OverlayShortcut ?? "N/A"}");
             sb.AppendLine(CultureInfo.CurrentCulture, $"OverlayOpacity: {value.OverlayOpacity}");
             sb.AppendLine(CultureInfo.CurrentCulture, $"DisplayBusy: {value.DisplayBusy}");
-            sb.AppendLine(CultureInfo.CurrentCulture, $"IsOneShotMode: {value.IsOneShotMode}");
 
             if (value.SelectedPlugins?.Count > 0)
             {

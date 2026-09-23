@@ -1,9 +1,7 @@
 ﻿namespace WindowTranslator.Stores;
 
-public sealed class ProcessInfoStore(IAutoTargetStore targetStore) : IProcessInfoStoreInternal, IDisposable
+public sealed class ProcessInfoStore : IProcessInfoStoreInternal
 {
-    private readonly IAutoTargetStore targetStore = targetStore;
-
     public IntPtr MainWindowHandle { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public bool IsMonitor { get; private set; }
@@ -13,11 +11,7 @@ public sealed class ProcessInfoStore(IAutoTargetStore targetStore) : IProcessInf
         this.MainWindowHandle = mainWindowHandle;
         this.Name = name;
         this.IsMonitor = name.StartsWith("DISPLAY__", StringComparison.OrdinalIgnoreCase);
-        this.targetStore.AddTarget(mainWindowHandle, name);
     }
-
-    public void Dispose()
-        => this.targetStore.RemoveTarget(this.MainWindowHandle);
 }
 
 interface IProcessInfoStoreInternal : IProcessInfoStore

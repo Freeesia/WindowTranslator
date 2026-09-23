@@ -1,0 +1,5 @@
+[windows]
+sandbox = "unelevated"
+
+sandbox_mode = "workspace-write"
+approval_policy = "untrusted"

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Cài đặt OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Dịch bằng OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Đăng nhập / Đăng xuất</value></data>
+  <data name="Model" xml:space="preserve"><value>Mô hình (giá đầu vào / đầu ra bằng USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Trạng thái đăng nhập</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Ngữ cảnh dịch</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Đường dẫn bảng thuật ngữ</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Đã đăng nhập</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Chưa đăng nhập</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Hãy đăng nhập trong trình duyệt. Nhấn lại nút để hủy.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Đăng nhập đã bị hủy hoặc hết thời gian chờ.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Đăng nhập thất bại. Hãy kiểm tra kết nối và thử lại.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Quay lại WindowTranslator để kiểm tra kết quả đăng nhập. Bạn có thể đóng thẻ này.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>thay đổi theo mô hình</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>không có thông tin giá</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Đăng nhập từ cài đặt OrcaRouter rồi lưu cài đặt.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Tín dụng OrcaRouter không đủ hoặc đã đạt giới hạn sử dụng. Để sử dụng miễn phí, hãy chọn “OrcaRouter Free” làm mô hình.</value></data>
+</root>

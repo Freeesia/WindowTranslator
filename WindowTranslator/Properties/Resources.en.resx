@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Translation result display mode</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Automatic translation target</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Translate automatically when a process is launched once selected for translation</value>
+    <value>Automatically translate when the app launches</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Overall setting</value>
@@ -307,10 +304,16 @@
     <value>Show busy icon</value>
   </data>
   <data name="IsOneShotMode" xml:space="preserve">
-    <value>Translate only when overlay is enabled</value>
+    <value>Run OCR and translation only when the hotkey is pressed</value>
   </data>
   <data name="IsOverlayPointSwap" xml:space="preserve">
     <value>Display overlay translation only for text at mouse pointer position</value>
+  </data>
+  <data name="MousePointerHitTestPadding" xml:space="preserve">
+    <value>Mouse pointer hit test padding</value>
+  </data>
+  <data name="MousePointerHitTestPadding_Desc" xml:space="preserve">
+    <value>Additional pixels added around the mouse pointer hit test area</value>
   </data>
   <data name="OverlayOpacity" xml:space="preserve">
     <value>Overlay background opacity</value>
@@ -435,5 +438,132 @@
   </data>
   <data name="ReviewNeverShowAgain" xml:space="preserve">
     <value>Never Show Again</value>
+  </data>
+  <data name="SettingInvalidContent" xml:space="preserve">
+    <value>:tired-face: **Saving these settings will not work.**
+***
+
+</value>
+  </data>
+  <data name="InvalidSettings" xml:space="preserve">
+    <value>{0}: Settings validation error</value>
+  </data>
+  <data name="RunAsIs" xml:space="preserve">
+    <value>Run as is</value>
+  </data>
+  <data name="InvalidSettingsContent" xml:space="preserve">
+    <value>:tired-face: **Running as-is may not work properly**
+***
+
+</value>
+  </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prerelease</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Are you sure you want to uninstall {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Installed version</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Latest version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Failed to retrieve plugin list from NuGet. Please check your network connection.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation complete</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Installation failed</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Restart now</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Please restart WindowTranslator to apply plugin changes.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Project page</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>License information</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugins are third-party packages distributed through NuGet. Each package is licensed by its owner; WindowTranslator does not guarantee its content, behavior, or safety. Install only packages you trust.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Official plugin</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Add range</value>
+  </data>
+  <data name="PriorityRectKeyword" xml:space="preserve">
+    <value>Keyword</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Used by translation modules that support context</value>
+  </data>
+  <data name="PriorityRectSelecting" xml:space="preserve">
+    <value>Selecting</value>
+  </data>
+  <data name="PriorityRectSelection" xml:space="preserve">
+    <value>Rectangle Selection</value>
+  </data>
+  <data name="PriorityRectSelectionGuide" xml:space="preserve">
+    <value>Drag to select a rectangle (press Esc to cancel)
+Select a slightly wider area so that text is not cut off</value>
+  </data>
+  <data name="PriorityRectTargetNotFound" xml:space="preserve">
+    <value>No window is being translated, so a rectangle cannot be selected. Start translating the target window before configuring.</value>
+  </data>
+  <data name="PriorityRectTooSmall" xml:space="preserve">
+    <value>The rectangle is too small. Please select again.</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>First-time setup</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Select the extensions you want to use. You can use the basic features without selecting any. You can add extensions later.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Retry</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Skip</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>No installable official plugins were found.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Some plugins could not be installed. Retry, or save the successful installations and exit.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>The setup results could not be saved. Please retry.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Other</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR tracking</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Position and size stability</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Reduces position and size jitter. 1: responsive, 5: stable (default: 3). Large movements are applied immediately.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Recognition stability</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduces temporary changes in text and region splitting or merging. 1: responsive, 5: stable (default: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Temporary disappearance retention</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Number of consecutive missed recognitions to keep displaying text. 0: remove on the first miss, maximum: 7, default: 3. Counted in misses, not seconds.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Translation</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filters</value>
   </data>
 </root>
