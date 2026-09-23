@@ -6,43 +6,8 @@ using WindowTranslator.Modules;
 
 namespace WindowTranslator.Tests;
 
-public class PluginValidationSettingsTests
+public class ConfigurePluginParamOptionsTests
 {
-    [Fact]
-    public void NamedTargetSettingsUsesConfiguredPluginParams()
-    {
-        using var provider = CreateProvider(new Dictionary<string, string?>
-        {
-            ["Targets:other:PluginParams:TestPluginParam:ApiKey"] = "other-key",
-            ["Targets:game:PluginParams:TestPluginParam:ApiKey"] = "game-key",
-        });
-        using var scope = provider.CreateScope();
-
-        var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get("game");
-
-        var param = Assert.IsType<TestPluginParam>(settings.PluginParams[nameof(TestPluginParam)]);
-        Assert.Equal("game-key", param.ApiKey);
-    }
-
-    [Fact]
-    public void NamedTargetSettingsDoNotSharePluginParams()
-    {
-        using var provider = CreateProvider(new Dictionary<string, string?>
-        {
-            ["Targets:first:PluginParams:TestPluginParam:ApiKey"] = "first-key",
-            ["Targets:second:PluginParams:TestPluginParam:ApiKey"] = "second-key",
-        });
-        using var scope = provider.CreateScope();
-        var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>();
-
-        var first = Assert.IsType<TestPluginParam>(options.Get("first").PluginParams[nameof(TestPluginParam)]);
-        var second = Assert.IsType<TestPluginParam>(options.Get("second").PluginParams[nameof(TestPluginParam)]);
-
-        Assert.Equal("first-key", first.ApiKey);
-        Assert.Equal("second-key", second.ApiKey);
-        Assert.NotSame(first, second);
-    }
-
     [Fact]
     public void ConcretePluginOptionsUseTheSameNamedConfiguration()
     {
@@ -52,15 +17,16 @@ public class PluginValidationSettingsTests
         }, "game");
         using var scope = provider.CreateScope();
 
-        var param = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TestPluginParam>>().Value;
+        var param = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TestPluginParam>>().Get("game");
 
         Assert.Equal("game-key", param.ApiKey);
     }
 
     [Theory]
-    [InlineData("missing", "")]
-    [InlineData("", "game")]
-    public void TargetSettingsFollowDefaultAndCurrentTarget(string name, string currentTarget)
+    [InlineData("missing", "", "default-key")]
+    [InlineData("", "game", "game-key")]
+    public void ConcretePluginOptionsUseDefaultOrCurrentTarget(
+        string name, string currentTarget, string expectedApiKey)
     {
         using var provider = CreateProvider(new Dictionary<string, string?>
         {
@@ -68,26 +34,8 @@ public class PluginValidationSettingsTests
             ["Targets:game:PluginParams:TestPluginParam:ApiKey"] = "game-key",
         }, currentTarget);
         using var scope = provider.CreateScope();
-        var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>();
-        var param = Assert.IsType<TestPluginParam>(options.Get(name).PluginParams[nameof(TestPluginParam)]);
-        Assert.Equal(currentTarget == "game" ? "game-key" : "default-key", param.ApiKey);
-    }
-
-    [Theory]
-    [InlineData("WindowsMediaOcrParam")]
-    [InlineData("BasicOcrParam")]
-    public void InterfaceAndConcreteOptionsUseOcrCompatibilitySection(string sectionName)
-    {
-        using var provider = CreateProvider(new Dictionary<string, string?>
-        {
-            [$"Targets:game:PluginParams:{sectionName}:Scale"] = "2",
-        });
-        using var scope = provider.CreateScope();
-        var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get("game");
-        var param = Assert.IsType<BasicOcrParam>(settings.PluginParams[nameof(BasicOcrParam)]);
-        var concrete = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<BasicOcrParam>>().Get("game");
-        Assert.Equal(2, param.Scale);
-        Assert.Equal(concrete.Scale, param.Scale);
+        var param = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TestPluginParam>>().Get(name);
+        Assert.Equal(expectedApiKey, param.ApiKey);
     }
 
     private static ServiceProvider CreateProvider(Dictionary<string, string?> values, string currentTarget = "")
@@ -99,13 +47,8 @@ public class PluginValidationSettingsTests
         services.AddOptions();
         services.AddSingleton<IConfiguration>(configuration);
         services.AddSingleton<IProcessInfoStore>(new TestProcessInfoStore(currentTarget));
-        services.AddTransient<IPluginParam, TestPluginParam>();
-        services.AddTransient<IPluginParam, BasicOcrParam>();
         services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(global::ConfigurePluginParam<>));
         services.AddTransient(typeof(IConfigureOptions<>), typeof(global::ConfigurePluginParam<>));
-        services.AddTransient<IConfigureNamedOptions<TargetSettings>, global::ConfigureTargetSettings>();
-        services.AddTransient<IConfigureOptions<TargetSettings>, global::ConfigureTargetSettings>();
-        services.AddTransient<IConfigureOptions<TargetSettings>, global::ConfigurePluginParam>();
         return services.BuildServiceProvider();
     }
 
