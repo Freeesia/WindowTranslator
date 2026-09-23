@@ -385,11 +385,17 @@ file static class Utility
     }
     public static WordRect CorrectWord(OcrWord word, double angle, double centerX, double centerY)
     {
-        // 文字種類の取得
-        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(word.Text);
-
         // 矩形の回転補正
         var (x, y, width, height) = RotateRect(word.BoundingRect, angle, centerX, centerY);
+
+        // CJK文字を含む単語にはラテン文字向けの位置・高さ補正を適用しない
+        if (WindowsMediaOcrUtility.ContainsCjk(word.Text))
+        {
+            return new(word.Text, x, y, width, height);
+        }
+
+        // 文字種類の取得
+        var (isxHeight, hasAcent, hasHarfAcent, hasDecent) = GetTextType(word.Text);
 
         // 文字種類による位置補正
         y -= (hasAcent, hasHarfAcent) switch
