@@ -1,10 +1,8 @@
 using System.Drawing;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using WindowTranslator.Modules.Ocr;
-using WindowTranslator.Modules.Settings;
 
 namespace WindowTranslator.Tests;
 
@@ -270,13 +268,11 @@ public class OcrTextTrackerSettingsTests
             },
         };
         UserSettings restored = JsonSerializer.Deserialize<UserSettings>(JsonSerializer.Serialize(settings))!;
-        using ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         foreach (var (name, target) in restored.Targets)
         {
-            TargetSettingsViewModel viewModel = new(name, services, target, [], [], []);
             TargetSettings expected = settings.Targets[name];
             Assert.Equal((expected.OcrGeometryStability, expected.OcrRecognitionStability, expected.OcrMissingFrameRetention),
-                (viewModel.OcrGeometryStability, viewModel.OcrRecognitionStability, viewModel.OcrMissingFrameRetention));
+                (target.OcrGeometryStability, target.OcrRecognitionStability, target.OcrMissingFrameRetention));
         }
     }
 

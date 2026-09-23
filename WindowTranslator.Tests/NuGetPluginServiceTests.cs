@@ -887,9 +887,6 @@ public sealed class NuGetPluginServiceTests
                 await File.ReadAllTextAsync(Path.Combine(
                     testDirectory,
                     "Root.Plugin",
-                    "runtimes",
-                    RuntimeIdentifier,
-                    "native",
                     "compatible.dll")));
         }
         finally
