@@ -9,6 +9,7 @@
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" ExcludeAssets="runtime" />
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="Google_GenerativeAI" />
   </ItemGroup>

@@ -59,7 +59,7 @@ public class GoogleAITranslator : ITranslateModule
         }
         var googleAI = new GoogleAi(apiKey, logger: logger);
         this.client = googleAI.CreateGenerativeModel(
-            string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
+            options.Model,
             safetyRatings: [
                 new(){ Category = HarmCategory.HARM_CATEGORY_HARASSMENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 new(){ Category = HarmCategory.HARM_CATEGORY_HATE_SPEECH, Threshold =HarmBlockThreshold.BLOCK_NONE},
@@ -94,7 +94,7 @@ public class GoogleAITranslator : ITranslateModule
             sb.AppendLine($"""
             翻訳する際に以下の用語集を参照して、一貫した翻訳を行ってください。
             <用語集>
-            {string.Join(Environment.NewLine, glossary.Select(kv => $"<用語>{kv.Key}</用語><翻訳>{kv.Value}</翻訳>"))}
+            {string.Join(System.Environment.NewLine, glossary.Select(kv => $"<用語>{kv.Key}</用語><翻訳>{kv.Value}</翻訳>"))}
             </用語集>
 
             """);
@@ -104,13 +104,13 @@ public class GoogleAITranslator : ITranslateModule
             sb.AppendLine($"""
             翻訳するテキストに以下の共通の用語が含まれている場合は、その用語のみは必ず翻訳せずにそのままの表記を利用してください。
             <共通の用語>
-            {string.Join(Environment.NewLine, common)}
+            {string.Join(System.Environment.NewLine, common)}
             </共通の用語>
 
             """);
         }
 
-        var system = string.Join(Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
+        var system = string.Join(System.Environment.NewLine, [this.preSystem, this.context, sb, this.userContext, this.postSystem]);
         var content = JsonSerializer.Serialize(srcTexts.Select(s => new { s.SourceText, s.Context }).ToArray(), DefaultSerializerOptions.GenerateObjectJsonOptions);
         this.logger.LogDebug($"""
             System:
