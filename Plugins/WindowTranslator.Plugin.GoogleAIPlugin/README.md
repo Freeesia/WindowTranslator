@@ -16,7 +16,7 @@ AI OCRとOCR補正は実験的な機能です。
 ## 必要条件と設定
 
 - Google AI APIキー
-- 利用するGeminiモデル。必要に応じてプレビュー版モデル名も指定できます。
+- 利用するGeminiモデルは一覧から選択します。APIキーを設定すると、APIから取得したモデルも候補に追加されます。
 - OCR補正を使う場合は、補正方法と待機動作を選択します。
 - 用語集はヘッダーなしの`原文,訳文`形式のCSVファイルです。
 
@@ -38,7 +38,7 @@ AI OCR and OCR correction are experimental features.
 ## Requirements and configuration
 
 - A Google AI API key
-- The Gemini model to use; a preview model name can also be specified when necessary
+- Select the Gemini model from the list. Models discovered through the API are added when an API key is configured.
 - When using OCR correction, select the correction method and waiting behavior
 - Glossaries use a headerless CSV file in `source,target` format
 
