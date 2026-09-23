@@ -44,6 +44,13 @@ on:
     tags: [v*.*.*]
   pull_request:
     branches: [master]
+  workflow_dispatch:
+    inputs:
+      upload_store:
+        description: Upload MSIX to the Microsoft Store package flight
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   docs:
@@ -165,7 +172,7 @@ jobs:
         with:
           environment: production
   installer:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.upload_store) }}
     needs: build
     runs-on: windows-latest
     steps:
@@ -189,10 +196,109 @@ jobs:
           dotnet wix extension -g add WixToolset.Util.wixext/5.0.2 WixToolset.UI.wixext/5.0.2
           dotnet run -c Release
         working-directory: WindowTranslator.Wix
+      - name: Generate MSIX for Microsoft Store
+        shell: pwsh
+        env:
+          MSIX_VERSION: ${{ needs.build.outputs.version }}
+          PACKAGE_IDENTITY_NAME: ${{ vars.MSSTORE_PACKAGE_IDENTITY_NAME }}
+          PACKAGE_PUBLISHER: ${{ vars.MSSTORE_PACKAGE_PUBLISHER }}
+        run: |
+          if ($env:MSIX_VERSION -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+            throw 'MSIX version must have four numeric components.'
+          }
+          if ([string]::IsNullOrWhiteSpace($env:PACKAGE_IDENTITY_NAME) -or
+              [string]::IsNullOrWhiteSpace($env:PACKAGE_PUBLISHER)) {
+            throw 'MSSTORE_PACKAGE_IDENTITY_NAME and MSSTORE_PACKAGE_PUBLISHER must be configured.'
+          }
+
+          $makeappx = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin' -Filter makeappx.exe -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1 -ExpandProperty FullName
+          if (-not $makeappx) {
+            throw 'makeappx.exe was not found in the Windows SDK.'
+          }
+
+          New-Item -ItemType Directory -Force -Path 'msix-staging\Images', 'publish' | Out-Null
+          Copy-Item 'artifacts\*' 'msix-staging\' -Recurse -Force
+          Copy-Item 'WindowTranslator.Package\Images\*' 'msix-staging\Images\' -Force
+
+          [xml]$manifest = Get-Content 'WindowTranslator.Package\AppxManifest.xml' -Raw -Encoding UTF8
+          $namespaces = [System.Xml.XmlNamespaceManager]::new($manifest.NameTable)
+          $namespaces.AddNamespace('appx', 'http://schemas.microsoft.com/appx/manifest/foundation/windows10')
+          $identity = $manifest.SelectSingleNode('/appx:Package/appx:Identity', $namespaces)
+          $identity.SetAttribute('Name', $env:PACKAGE_IDENTITY_NAME)
+          $identity.SetAttribute('Publisher', $env:PACKAGE_PUBLISHER)
+          $identity.SetAttribute('Version', $env:MSIX_VERSION)
+          $manifest.Save((Join-Path $PWD 'msix-staging\AppxManifest.xml'))
+
+          $msixPath = "publish\WindowTranslator-$env:MSIX_VERSION.msix"
+          & $makeappx pack /d 'msix-staging' /p $msixPath /nv
+          if ($LASTEXITCODE -ne 0) {
+            throw "makeappx failed with exit code $LASTEXITCODE"
+          }
       - uses: actions/upload-artifact@v7
         with:
           name: WindowTranslator-${{ needs.build.outputs.version }}.msi
-          path: publish\
+          path: publish\*.msi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: store-msix
+          path: publish\*.msix
+          if-no-files-found: error
+  store-upload:
+    name: Upload MSIX to Microsoft Store package flight
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.upload_store) }}
+    needs: installer
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: store-msix
+          path: store-msix
+      - uses: microsoft/microsoft-store-apppublisher@v1.4
+      - name: Configure Partner Center authentication
+        shell: pwsh
+        env:
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+          AZURE_AD_APPLICATION_CLIENT_ID: ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
+          AZURE_AD_APPLICATION_SECRET: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
+          SELLER_ID: ${{ secrets.SELLER_ID }}
+        run: |
+          foreach ($name in @('AZURE_AD_TENANT_ID', 'AZURE_AD_APPLICATION_CLIENT_ID', 'AZURE_AD_APPLICATION_SECRET', 'SELLER_ID')) {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
+              throw "$name must be configured as a repository secret."
+            }
+          }
+          msstore reconfigure `
+            --tenantId $env:AZURE_AD_TENANT_ID `
+            --clientId $env:AZURE_AD_APPLICATION_CLIENT_ID `
+            --clientSecret $env:AZURE_AD_APPLICATION_SECRET `
+            --sellerId $env:SELLER_ID
+          if ($LASTEXITCODE -ne 0) {
+            throw "msstore reconfigure failed with exit code $LASTEXITCODE"
+          }
+      - name: Publish package flight submission
+        shell: pwsh
+        env:
+          MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
+          MSSTORE_FLIGHT_ID: ${{ vars.MSSTORE_FLIGHT_ID }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:MSSTORE_PRODUCT_ID) -or
+              [string]::IsNullOrWhiteSpace($env:MSSTORE_FLIGHT_ID)) {
+            throw 'MSSTORE_PRODUCT_ID and MSSTORE_FLIGHT_ID must be configured as repository variables.'
+          }
+          $msixPath = Get-ChildItem 'store-msix' -Filter '*.msix' -File |
+            Select-Object -First 1 -ExpandProperty FullName
+          if (-not $msixPath) {
+            throw 'The installer job did not produce a Store MSIX.'
+          }
+          msstore publish $msixPath -id $env:MSSTORE_PRODUCT_ID -f $env:MSSTORE_FLIGHT_ID
+          if ($LASTEXITCODE -ne 0) {
+            throw "msstore publish failed with exit code $LASTEXITCODE"
+          }
   release:
     if: ${{ success() && startsWith(github.ref, 'refs/tags/') }}
     needs:
@@ -204,6 +310,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/download-artifact@v8
+        with:
+          pattern: WindowTranslator-*
       - run: |
           for dir in WindowTranslator-*/; do
             base=$(basename "$dir")

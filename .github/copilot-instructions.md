@@ -106,6 +106,7 @@ dotnet nuget-license -t -ignore ignore-packages.json -override package-informati
 * 各`docs/README.*.md`ファイルに新規言語へのリンクを記載する
 * `.github/copilot-instructions.md`に翻訳先言語として追記
 * `TargetSettingsViewModel.Languages`に新規言語カルチャーを追加
+* `WindowTranslator.Package/AppxManifest.xml`の`<Resources>`に新規言語カルチャーを追加し、MSIX生成時にマニフェストを検証する
 * `store/store_info.csv`に新規言語列を追加し`ja`列から翻訳する
   * `ja`列がURLなら他の言語列も同じURLを利用する
   * `ja`列が`False`なら他の言語列も同じ`False`を利用する

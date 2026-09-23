@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="rescap">
+
+  <!-- CI では Store の登録値とビルド番号を Identity に設定する -->
+  <Identity
+    Name="StudioFreesia.WindowTranslator"
+    Publisher="CN=C2D29EED-29D7-4F36-AEC7-317709A7150C"
+    Version="0.0.0.0"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>WindowTranslator</DisplayName>
+    <PublisherDisplayName>StudioFreesia</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22621.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="ar" />
+    <Resource Language="cs" />
+    <Resource Language="de" />
+    <Resource Language="en" />
+    <Resource Language="es" />
+    <Resource Language="fa" />
+    <Resource Language="fil" />
+    <Resource Language="fr" />
+    <Resource Language="hi" />
+    <Resource Language="hu" />
+    <Resource Language="id" />
+    <Resource Language="ja-JP" />
+    <Resource Language="ko" />
+    <Resource Language="ms" />
+    <Resource Language="pl" />
+    <Resource Language="pt-BR" />
+    <Resource Language="ru" />
+    <Resource Language="th" />
+    <Resource Language="tr" />
+    <Resource Language="vi" />
+    <Resource Language="zh-CN" />
+    <Resource Language="zh-TW" />
+  </Resources>
+
+  <Applications>
+    <Application Id="WindowTranslator" Executable="WindowTranslator.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="WindowTranslator"
+        Description="画面上のテキストを翻訳する"
+        BackgroundColor="transparent"
+        Square150x150Logo="Images\Square150x150Logo.png"
+        Square44x44Logo="Images\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>
