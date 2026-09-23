@@ -109,10 +109,10 @@ public partial class StartupViewModel
             // ウィンドウが見つからない場合、ディスプレイとして処理
             if (p is null)
             {
-                var displayInfo = FindDisplay(item);
-                if (displayInfo is not null)
+                var displayHandle = FindDisplay(item);
+                if (displayHandle is not null)
                 {
-                    p = new ProcessInfo(item.DisplayName, -1, displayInfo.Value.MonitorHandle, $"DISPLAY__{displayInfo.Value.Index}");
+                    p = new ProcessInfo(item.DisplayName, -1, displayHandle.Value, item.DisplayName);
                 }
             }
 
@@ -219,16 +219,14 @@ public partial class StartupViewModel
         return result ?? candidate;
     }
 
-    private static unsafe (IntPtr MonitorHandle, int Index)? FindDisplay(GraphicsCaptureItem item)
+    private static unsafe IntPtr? FindDisplay(GraphicsCaptureItem item)
     {
-        var candidates = new List<(IntPtr MonitorHandle, int Index)>();
-        var index = 0;
+        var candidates = new List<IntPtr>();
         var targetSize = item.Size;
         var targetName = item.DisplayName;
         // 解像度だけでは特定せず、全モニターのキャプチャー項目と照合する
         var enumerated = EnumDisplayMonitors(default, null, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
         {
-            var currentIndex = index++;
             try
             {
                 var monitorItem = CaptureHelper.CreateItemForMonitor(hMonitor);
@@ -237,7 +235,7 @@ public partial class StartupViewModel
                     monitorItem.Size.Width == targetSize.Width &&
                     monitorItem.Size.Height == targetSize.Height)
                 {
-                    candidates.Add((hMonitor, currentIndex));
+                    candidates.Add(hMonitor);
                 }
             }
             catch (COMException)
