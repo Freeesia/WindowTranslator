@@ -11,7 +11,6 @@ using Composition.WindowsRuntimeHelpers;
 using Kamishibai;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.Graphics.Capture;
-using Windows.Win32.Graphics.Gdi;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
 using WindowTranslator.Properties;
@@ -222,62 +221,34 @@ public partial class StartupViewModel
 
     private static unsafe (IntPtr MonitorHandle, int Index)? FindDisplay(GraphicsCaptureItem item)
     {
-        var monitors = new List<(IntPtr Handle, int Width, int Height)>();
-
-        // モニターを列挙
-        EnumDisplayMonitors(default, null, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
+        var candidates = new List<(IntPtr MonitorHandle, int Index)>();
+        var index = 0;
+        var targetSize = item.Size;
+        var targetName = item.DisplayName;
+        // 解像度だけでは特定せず、全モニターのキャプチャー項目と照合する
+        var enumerated = EnumDisplayMonitors(default, null, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
         {
-            var monitorInfo = new MONITORINFOEXW();
-            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
-
-            if (GetMonitorInfo(hMonitor, ref monitorInfo.monitorInfo))
+            var currentIndex = index++;
+            try
             {
-                var width = monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left;
-                var height = monitorInfo.monitorInfo.rcMonitor.bottom - monitorInfo.monitorInfo.rcMonitor.top;
-                monitors.Add((hMonitor, width, height));
+                var monitorItem = CaptureHelper.CreateItemForMonitor(hMonitor);
+                if (monitorItem is not null &&
+                    monitorItem.DisplayName == targetName &&
+                    monitorItem.Size.Width == targetSize.Width &&
+                    monitorItem.Size.Height == targetSize.Height)
+                {
+                    candidates.Add((hMonitor, currentIndex));
+                }
+            }
+            catch (COMException)
+            {
+                // キャプチャー項目を作れない候補は除外する
             }
 
             return true;
         }, IntPtr.Zero);
 
-        var candidates = new List<(IntPtr Handle, int Index)>();
-        for (int i = 0; i < monitors.Count; i++)
-        {
-            var (handle, width, height) = monitors[i];
-            if (width == item.Size.Width && height == item.Size.Height)
-            {
-                candidates.Add((handle, i));
-            }
-        }
-
-        if (candidates.Count == 1)
-        {
-            return candidates[0];
-        }
-
-        // 同じ解像度のモニターはキャプチャ対象の表示名で区別する
-        (IntPtr Handle, int Index)? match = null;
-        foreach (var candidate in candidates)
-        {
-            try
-            {
-                if (CaptureHelper.CreateItemForMonitor(candidate.Handle)?.DisplayName != item.DisplayName)
-                {
-                    continue;
-                }
-            }
-            catch (COMException)
-            {
-                continue;
-            }
-
-            if (match is not null)
-            {
-                return null;
-            }
-            match = candidate;
-        }
-        return match;
+        return enumerated && candidates.Count == 1 ? candidates[0] : null;
     }
 
     private record ProcessInfo(string Title, int PID, IntPtr TargetHandle, string Name);
