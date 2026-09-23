@@ -42,7 +42,7 @@ public sealed class GoogleAIOcr : IOcrModule
         this.logger = logger;
         var googleAI = new GoogleAi(options.ApiKey, logger: logger);
         this.client = googleAI.CreateGenerativeModel(
-            string.IsNullOrEmpty(options.PreviewModel) ? options.Model.GetName() : options.PreviewModel,
+            options.Model,
             safetyRatings: [
                 new(){ Category = HarmCategory.HARM_CATEGORY_HARASSMENT, Threshold =HarmBlockThreshold.BLOCK_NONE},
                 new(){ Category = HarmCategory.HARM_CATEGORY_HATE_SPEECH, Threshold =HarmBlockThreshold.BLOCK_NONE},
