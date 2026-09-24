@@ -42,7 +42,7 @@ public static class LanguageUtility
     /// <param name="lang">言語コード</param>
     /// <returns>スペースを含む場合は true、それ以外の場合は false</returns>
     public static bool IsSpaceLang(string lang)
-        => lang[..2] is not "ja" or "zh";
+        => lang[..2] is not ("ja" or "zh");
 
     /// <summary>
     /// 指定された言語が特殊なグリフの言語かどうかを判断します。
