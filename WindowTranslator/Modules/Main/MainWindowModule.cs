@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
+using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
 using Wpf.Ui.Extensions;
@@ -90,6 +91,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<CommonSettings>>();
             var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
             var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
+            var ocrTraceRecorder = scope.ServiceProvider.GetRequiredService<OcrTraceRecorder>();
             processInfo.SetTargetProcess(targetWindowHandle, name);
 
             var window = options.Value.ViewMode switch
@@ -98,7 +100,10 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
                 ViewMode.Overlay => await presentationService.OpenOverlayMainWindowAsync(),
                 _ => throw new NotSupportedException(),
             };
-            var info = new WindowInfo(name, targetWindowHandle, window);
+            var info = new WindowInfo(name, targetWindowHandle, window)
+            {
+                OcrTraceRecorder = ocrTraceRecorder,
+            };
             window.Closed += (_, _) =>
             {
                 scope.DisposeAsync().AsTask().Forget();
@@ -126,4 +131,7 @@ public interface IMainWindowModule
     Task OpenTargetAsync(IntPtr targetWindowHandle, string name);
 }
 
-public record WindowInfo(string Name, IntPtr Target, IWindow Window);
+public record WindowInfo(string Name, IntPtr Target, IWindow Window)
+{
+    public required OcrTraceRecorder OcrTraceRecorder { get; init; }
+}

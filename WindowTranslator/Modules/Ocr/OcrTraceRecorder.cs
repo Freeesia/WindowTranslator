@@ -1,149 +1,215 @@
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
 namespace WindowTranslator.Modules.Ocr;
 
-public sealed class OcrTraceOptions
-{
-    public bool Enabled { get; set; }
-
-    public string? Directory { get; set; }
-}
-
 /// <summary>
-/// OCRの呼び出し元を待たせず、フレームを別スレッドで追記する。
+/// OCR の呼び出し元からフレームを受け取り、一定間隔で JSON Lines に追記する。
 /// </summary>
 public sealed class OcrTraceRecorder : IAsyncDisposable
 {
-    private const int QueueCapacity = 256;
-    private readonly Channel<OcrTraceFrame>? channel;
-    private readonly Task? writerTask;
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+    };
+
+    private readonly object gate = new();
     private readonly ILogger<OcrTraceRecorder> logger;
     private readonly string directory;
-    private readonly TimeSpan origin = CurrentTimestamp();
-    private long frameNumber;
-    private long droppedFrames;
-    private int active;
+    private readonly TimeSpan flushInterval;
+    private readonly List<Task> writerTasks = [];
+    private RecordingSession? current;
+    private bool disposed;
 
-    public bool IsEnabled => Volatile.Read(ref this.active) == 1;
+    public bool IsEnabled => Volatile.Read(ref this.current) is not null;
 
-    public OcrTraceRecorder(OcrTraceOptions options, ILogger<OcrTraceRecorder> logger)
+    public OcrTraceRecorder(ILogger<OcrTraceRecorder> logger)
+        : this(logger, Path.Combine(PathUtility.UserDir, "ocr-traces"), TimeSpan.FromSeconds(1))
     {
+    }
+
+    internal OcrTraceRecorder(ILogger<OcrTraceRecorder> logger, string directory, TimeSpan flushInterval)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentException.ThrowIfNullOrWhiteSpace(directory);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(flushInterval, TimeSpan.Zero);
+
         this.logger = logger;
-        this.directory = string.IsNullOrWhiteSpace(options.Directory)
-            ? Path.Combine(PathUtility.UserDir, "ocr-traces")
-            : options.Directory;
-        if (!options.Enabled)
-        {
-            return;
-        }
-        this.channel = Channel.CreateBounded<OcrTraceFrame>(new BoundedChannelOptions(QueueCapacity)
-        {
-            SingleReader = true,
-            SingleWriter = true,
-            FullMode = BoundedChannelFullMode.Wait,
-        });
-        this.active = 1;
-        this.writerTask = Task.Run(WriteAsync);
+        this.directory = directory;
+        this.flushInterval = flushInterval;
     }
 
-    public void Record(IReadOnlyList<TextRect> observations, Size imageSize)
+    public void Start()
     {
-        if (!this.IsEnabled || this.channel is null)
+        lock (this.gate)
         {
-            return;
-        }
-
-        try
-        {
-            TimeSpan timestamp = CurrentTimestamp();
-            OcrTraceFrame frame = new(
-                OcrTraceFrame.CurrentVersion,
-                Interlocked.Increment(ref this.frameNumber),
-                (timestamp - this.origin).Ticks,
-                imageSize.Width,
-                imageSize.Height,
-                observations.Select(OcrTraceRect.FromTextRect).ToArray());
-            if (!this.channel.Writer.TryWrite(frame))
-            {
-                Interlocked.Increment(ref this.droppedFrames);
-            }
-        }
-        catch (Exception error)
-        {
-            this.logger.LogWarning(error, "OCR trace frame could not be queued.");
-        }
-
-    }
-
-    private async Task WriteAsync()
-    {
-        if (this.channel is null)
-        {
-            return;
-        }
-
-        try
-        {
-            await using var enumerator = this.channel.Reader.ReadAllAsync().GetAsyncEnumerator();
-            if (!await enumerator.MoveNextAsync())
+            ObjectDisposedException.ThrowIf(this.disposed, this);
+            if (this.current is not null)
             {
                 return;
             }
 
-            Directory.CreateDirectory(this.directory);
-            string path = Path.Combine(this.directory,
-                $"ocr-{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}-{Guid.NewGuid():N}.jsonl");
-            await using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write,
-                FileShare.Read, 4096, FileOptions.Asynchronous);
-            await using var writer = new StreamWriter(stream, new UTF8Encoding(false))
-            {
-                AutoFlush = true,
-            };
-            this.logger.LogInformation("OCR trace recording to {Path}. OCR text and geometry are saved; images are not saved. Review the file before sharing it.", path);
+            var session = new RecordingSession(Path.Combine(this.directory, $"ocr-{Guid.NewGuid():N}.jsonl"));
+            Volatile.Write(ref this.current, session);
+            this.writerTasks.Add(Task.Run(() => WriteAsync(session)));
+            this.logger.LogInformation(
+                "OCR trace recording started: {Path}. OCR text and geometry are saved; images are not saved. Review the file before sharing it.",
+                session.Path);
+        }
+    }
 
-            do
+    public void Stop()
+    {
+        lock (this.gate)
+        {
+            RecordingSession? session = this.current;
+            Volatile.Write(ref this.current, null);
+            session?.Frames.Writer.TryComplete();
+        }
+    }
+
+    public void Record(IReadOnlyList<TextRect> observations, Size imageSize)
+    {
+        if (!this.IsEnabled)
+        {
+            return;
+        }
+
+        try
+        {
+            lock (this.gate)
             {
-                await writer.WriteLineAsync(JsonSerializer.Serialize(enumerator.Current));
+                RecordingSession? session = this.current;
+                if (session is null)
+                {
+                    return;
+                }
+
+                OcrTraceFrame frame = new(
+                    imageSize.Width,
+                    imageSize.Height,
+                    observations.Select(OcrTraceRect.FromTextRect).ToArray());
+                if (!session.Frames.Writer.TryWrite(frame))
+                {
+                    throw new InvalidOperationException("OCR trace writer was closed while recording.");
+                }
             }
-            while (await enumerator.MoveNextAsync());
         }
         catch (Exception error)
         {
-            Volatile.Write(ref this.active, 0);
-            this.channel.Writer.TryComplete();
-            while (this.channel.Reader.TryRead(out _))
-            {
-            }
-            this.logger.LogWarning(error, "OCR trace recording stopped. OCR and translation will continue.");
+            this.logger.LogError(error, "OCR trace frame could not be queued.");
         }
-        finally
+    }
+
+    private async Task WriteAsync(RecordingSession session)
+    {
+        using var timer = new PeriodicTimer(this.flushInterval);
+        List<OcrTraceFrame> pending = [];
+        bool loggedFailure = false;
+
+        while (await timer.WaitForNextTickAsync().ConfigureAwait(false))
         {
-            long dropped = Interlocked.Read(ref this.droppedFrames);
-            if (dropped > 0)
+            if (pending.Count == 0)
             {
-                this.logger.LogWarning("OCR trace omitted {Count} frames because the writer could not keep up or recording stopped.", dropped);
+                while (session.Frames.Reader.TryRead(out OcrTraceFrame? frame))
+                {
+                    pending.Add(frame);
+                }
+            }
+
+            if (pending.Count > 0)
+            {
+                try
+                {
+                    byte[] chunk = BuildChunk(pending, session.CommittedLength == 0);
+                    session.CommittedLength = await AppendChunkAsync(session.Path, session.CommittedLength, chunk)
+                        .ConfigureAwait(false);
+                    pending.Clear();
+                    if (loggedFailure)
+                    {
+                        this.logger.LogInformation("OCR trace recording resumed: {Path}", session.Path);
+                        loggedFailure = false;
+                    }
+                }
+                catch (Exception error)
+                {
+                    if (!loggedFailure)
+                    {
+                        this.logger.LogError(error, "OCR trace write failed; retrying: {Path}", session.Path);
+                        loggedFailure = true;
+                    }
+                }
+            }
+
+            if (session.Frames.Reader.Completion.IsCompleted && pending.Count == 0)
+            {
+                return;
             }
         }
+    }
+
+    private static byte[] BuildChunk(IReadOnlyList<OcrTraceFrame> pending, bool includeHeader)
+    {
+        StringBuilder lines = new();
+        if (includeHeader)
+        {
+            lines.AppendLine(JsonSerializer.Serialize(new OcrTraceHeader(OcrTraceHeader.CurrentVersion)));
+        }
+        foreach (OcrTraceFrame frame in pending)
+        {
+            lines.AppendLine(JsonSerializer.Serialize(frame, JsonOptions));
+        }
+        return Encoding.UTF8.GetBytes(lines.ToString());
+    }
+
+    private async Task<long> AppendChunkAsync(string path, long committedLength, byte[] chunk)
+    {
+        Directory.CreateDirectory(this.directory);
+        await using FileStream stream = new(path, FileMode.OpenOrCreate, FileAccess.ReadWrite,
+            FileShare.Read, 4096, FileOptions.Asynchronous);
+        if (stream.Length < committedLength)
+        {
+            throw new IOException("OCR trace file was shortened while recording.");
+        }
+        if (stream.Length > committedLength)
+        {
+            stream.SetLength(committedLength);
+        }
+        stream.Position = committedLength;
+        await stream.WriteAsync(chunk).ConfigureAwait(false);
+        await stream.FlushAsync().ConfigureAwait(false);
+        return stream.Position;
     }
 
     public async ValueTask DisposeAsync()
     {
-        Volatile.Write(ref this.active, 0);
-        this.channel?.Writer.TryComplete();
-        if (this.writerTask is not null)
+        Task[] tasks;
+        lock (this.gate)
         {
-#pragma warning disable VSTHRD003 // Task.Runで開始した専用ライターの終了を待つ
-            await this.writerTask.ConfigureAwait(false);
-#pragma warning restore VSTHRD003
+            this.disposed = true;
+            RecordingSession? session = this.current;
+            Volatile.Write(ref this.current, null);
+            session?.Frames.Writer.TryComplete();
+            tasks = this.writerTasks.ToArray();
         }
+
+#pragma warning disable VSTHRD003 // 専用ライターの残りのフレームを待つ
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+#pragma warning restore VSTHRD003
     }
 
-    private static TimeSpan CurrentTimestamp()
-        => TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency);
+    private sealed class RecordingSession(string path)
+    {
+        public string Path { get; } = path;
+
+        public Channel<OcrTraceFrame> Frames { get; } = Channel.CreateUnbounded<OcrTraceFrame>(
+            new UnboundedChannelOptions { SingleReader = true });
+
+        public long CommittedLength { get; set; }
+    }
 }

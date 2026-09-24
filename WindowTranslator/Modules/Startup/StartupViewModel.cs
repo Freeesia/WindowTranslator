@@ -58,23 +58,48 @@ public partial class StartupViewModel
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
-                foreach (var item in e.OldItems!.OfType<WindowInfo>())
+                for (int index = 0; index < e.OldItems!.Count; index++)
                 {
-                    var menu = this.attachingWindows.FirstOrDefault(x => x.Header == item.Name);
-                    if (menu is not null)
-                    {
-                        this.attachingWindows.Remove(menu);
-                    }
+                    this.attachingWindows.RemoveAt(e.OldStartingIndex);
                 }
                 break;
         }
     }
 
     private MenuItemViewModel CreateMenu(WindowInfo item)
-        => new(item.Name, null, [
-                new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
-                new(Resources.Detach, new RelayCommand(item.Window.Close), []),
-            ]);
+    {
+        List<MenuItemViewModel> commands =
+        [
+            new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
+        ];
+#if DEBUG
+        commands.Add(new(
+            item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始",
+            new RelayCommand(() => ToggleOcrTrace(item)), []));
+#endif
+        commands.Add(new(Resources.Detach, new RelayCommand(item.Window.Close), []));
+        return new(item.Name, null, commands);
+    }
+
+#if DEBUG
+    private void ToggleOcrTrace(WindowInfo item)
+    {
+        if (item.OcrTraceRecorder.IsEnabled)
+        {
+            item.OcrTraceRecorder.Stop();
+        }
+        else
+        {
+            item.OcrTraceRecorder.Start();
+        }
+
+        int index = this.mainWindowModule.OpenedWindows.IndexOf(item);
+        if (index >= 0)
+        {
+            this.attachingWindows[index] = CreateMenu(item);
+        }
+    }
+#endif
 
     [RelayCommand]
     public async Task RunAsync()
