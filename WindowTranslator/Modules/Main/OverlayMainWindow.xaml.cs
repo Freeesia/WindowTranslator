@@ -34,6 +34,7 @@ public partial class OverlayMainWindow : Window
     private readonly int shortcutKey;
     private IntPtr windowHandle;
     private int overlayHiddenCount;
+    private bool isHiddenByVirtualDesktopSwitch;
 
     public Point MousePos
     {
@@ -102,7 +103,7 @@ public partial class OverlayMainWindow : Window
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
-        // ディスプレイの場合は仮想デスクトップチェックをスキップ
+        // モニターのハンドルにはウィンドウの仮想デスクトップ判定を適用しない
         if (!this.isMonitor)
         {
             if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
@@ -159,6 +160,18 @@ public partial class OverlayMainWindow : Window
     {
         if (this.isMonitor)
         {
+            // 切り替え後は元のデスクトップに戻っても再表示しない
+            if (this.isHiddenByVirtualDesktopSwitch)
+            {
+                return;
+            }
+            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.windowHandle))
+            {
+                this.isHiddenByVirtualDesktopSwitch = true;
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
             var monitorInfo = default(MONITORINFOEXW);
             monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
             if (!GetMonitorInfo(new(this.processInfo.TargetHandle), ref monitorInfo.monitorInfo))
