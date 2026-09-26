@@ -34,6 +34,9 @@ GetWindowText
 GetWindowTextLength
 GetClassName
 DwmGetWindowAttribute
+EnumDisplayMonitors
+GetMonitorInfo
+MonitorFromPoint
 
 
 // WindowMonitor
@@ -52,3 +55,7 @@ RemoveProp
 
 // WindowsGraphicsCapture
 IsZoomed
+
+// CaptureTargetHandleExtensions
+MONITORINFO
+IsWindow

@@ -19,11 +19,11 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
 
     public ObservableCollection<WindowInfo> OpenedWindows { get; } = new();
 
-    public Task OpenTargetAsync(IntPtr targetWindowHandle, string name)
-        => this.app.Dispatcher.Invoke(() => OpenTargetWindowCoreAsync(targetWindowHandle, name));
+    public Task OpenTargetAsync(IntPtr targetHandle, string name)
+        => this.app.Dispatcher.Invoke(() => OpenTargetWindowCoreAsync(targetHandle, name));
 
-    public bool IsTargetOpened(IntPtr targetWindowHandle)
-        => this.app.Dispatcher.Invoke(() => this.OpenedWindows.Any(w => w.Target == targetWindowHandle));
+    public bool IsTargetOpened(IntPtr targetHandle)
+        => this.app.Dispatcher.Invoke(() => this.OpenedWindows.Any(w => w.Target == targetHandle));
 
     private async ValueTask<TargetSettings?> GetSettingsAsync(string name)
     {
@@ -75,7 +75,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
         return scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Get(name);
     }
 
-    private async Task OpenTargetWindowCoreAsync(IntPtr targetWindowHandle, string name)
+    private async Task OpenTargetWindowCoreAsync(IntPtr targetHandle, string name)
     {
         using var l = await this.asyncLock.EnterAsync();
         var settings = await GetSettingsAsync(name);
@@ -90,7 +90,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
             var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<CommonSettings>>();
             var presentationService = scope.ServiceProvider.GetRequiredService<IPresentationService>();
             var processInfo = scope.ServiceProvider.GetRequiredService<IProcessInfoStoreInternal>();
-            processInfo.SetTargetProcess(targetWindowHandle, name);
+            processInfo.SetTarget(targetHandle, name);
 
             var window = options.Value.ViewMode switch
             {
@@ -98,7 +98,7 @@ public sealed class MainWindowModule(App app, IServiceProvider provider, ILogger
                 ViewMode.Overlay => await presentationService.OpenOverlayMainWindowAsync(),
                 _ => throw new NotSupportedException(),
             };
-            var info = new WindowInfo(name, targetWindowHandle, window);
+            var info = new WindowInfo(name, targetHandle, window);
             window.Closed += (_, _) =>
             {
                 scope.DisposeAsync().AsTask().Forget();
@@ -121,9 +121,9 @@ public interface IMainWindowModule
 {
     ObservableCollection<WindowInfo> OpenedWindows { get; }
 
-    bool IsTargetOpened(IntPtr targetWindowHandle);
+    bool IsTargetOpened(IntPtr targetHandle);
 
-    Task OpenTargetAsync(IntPtr targetWindowHandle, string name);
+    Task OpenTargetAsync(IntPtr targetHandle, string name);
 }
 
 public record WindowInfo(string Name, IntPtr Target, IWindow Window);

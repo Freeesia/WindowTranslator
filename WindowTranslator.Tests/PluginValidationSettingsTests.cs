@@ -59,7 +59,7 @@ public class ConfigurePluginParamOptionsTests
 
     private sealed class TestProcessInfoStore(string name) : IProcessInfoStore
     {
-        public IntPtr MainWindowHandle => IntPtr.Zero;
+        public IntPtr TargetHandle => IntPtr.Zero;
 
         public string Name => name;
     }

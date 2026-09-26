@@ -386,9 +386,7 @@
     <value>Lütfen WindowTranslator dışında bir pencere seçin</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Seçilen pencere "{0}" işlemi belirleyemez bu nedenle yakalama mümkün değil.
-Monitör desteklenmiyor.
-</value>
+    <value>Seçilen pencere "{0}" işlemi belirleyemez bu nedenle yakalama mümkün değil.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Ayar doğrulama hatası</value>

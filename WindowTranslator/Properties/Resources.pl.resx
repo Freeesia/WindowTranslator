@@ -386,9 +386,7 @@
     <value>Proszę wybrać okno inne niż WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Wybrane okno "{0}" nie może określić procesu i nie może zostać przechwycone.
-Monitory nie są obsługiwane.
-</value>
+    <value>Wybrane okno "{0}" nie może określić procesu i nie może zostać przechwycone.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Błąd weryfikacji ustawień</value>

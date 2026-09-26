@@ -386,9 +386,7 @@
     <value>Pakipili ng window maliban sa WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Ang napiling window "{0}" ay hindi makilala ang proseso kaya hindi ma-capture.
-Ang monitor ay hindi suportado.
-</value>
+    <value>Ang napiling window "{0}" ay hindi makilala ang proseso kaya hindi ma-capture.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Error sa pagpapatunay ng setting</value>
