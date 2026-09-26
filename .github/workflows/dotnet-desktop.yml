@@ -54,7 +54,7 @@ on:
 
 jobs:
   docs:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.upload_store) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
