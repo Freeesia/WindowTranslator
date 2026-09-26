@@ -172,8 +172,16 @@ jobs:
         with:
           environment: production
   installer:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.upload_store) }}
-    needs: build
+    # 手動実行では docs がスキップされるため、依存ジョブの成功を明示的に確認する
+    if: >-
+      ${{
+      !cancelled() &&
+      needs.build.result == 'success' &&
+      needs.license.result == 'success' &&
+      (!startsWith(github.ref, 'refs/tags/') || needs.docs.result == 'success') &&
+      (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.upload_store))
+      }}
+    needs: [docs, license, build]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
@@ -248,7 +256,12 @@ jobs:
           if-no-files-found: error
   store-upload:
     name: Upload MSIX to Microsoft Store package flight
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.upload_store) }}
+    if: >-
+      ${{
+      !cancelled() &&
+      needs.installer.result == 'success' &&
+      (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.upload_store))
+      }}
     needs: installer
     runs-on: windows-latest
     permissions:
