@@ -18,6 +18,7 @@ WindowTranslator là công cụ để dịch cửa sổ của các ứng dụng 
     - [Phiên bản Microsoft Store ](#phiên-bản-microsoft-store-)
     - [Phiên bản cài đặt](#phiên-bản-cài-đặt)
     - [Phiên bản di động](#phiên-bản-di-động)
+  - [Cách hoạt động và giới hạn](#cách-hoạt-động-và-giới-hạn)
   - [Cách sử dụng](#cách-sử-dụng)
     - [Bergamot ](#bergamot-)
   - [Các tính năng khác](#các-tính-năng-khác)
@@ -39,6 +40,14 @@ Video hướng dẫn cài đặt ở đây⬇️
 Tải xuống tệp zip từ [trang Releases trên GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) và giải nén vào thư mục bạn muốn.  
 - `WindowTranslator-(phiên bản).zip` : Cần môi trường .NET  
 - `WindowTranslator-full-(phiên bản).zip` : Không phụ thuộc .NET
+
+## Cách hoạt động và giới hạn
+
+WindowTranslator chụp cửa sổ trò chơi hoặc ứng dụng đã chọn bằng Windows.Graphics.Capture, nhận dạng chữ trên màn hình bằng OCR, dịch và hiển thị kết quả trong một lớp phủ riêng.
+
+Ứng dụng không sửa tệp hay tiến trình trò chơi và không chèn DLL hoặc mã khác vào tiến trình đó. Hãy kiểm tra điều khoản sử dụng và chính sách chống gian lận của từng trò chơi trước khi dùng. Không thể bảo đảm trò chơi cho phép sử dụng hoặc sẽ không có hình phạt.
+
+Nếu DRM hoặc cơ chế bảo vệ chụp màn hình ngăn Windows chụp cửa sổ, nội dung đó có thể không được dịch.
 
 ## Cách sử dụng
 

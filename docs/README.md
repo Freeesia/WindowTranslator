@@ -18,6 +18,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
     - [Microsoft Store版 ](#microsoft-store版-)
     - [インストール版](#インストール版)
     - [ポータブル版](#ポータブル版)
+  - [動作方式と制約](#動作方式と制約)
   - [使い方](#使い方)
     - [Bergamot ](#bergamot-)
   - [その他の機能](#その他の機能)
@@ -39,6 +40,14 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からzipファイルをダウンロードして任意のフォルダに展開してください。  
 - `WindowTranslator-(バージョン).zip` : .NET環境が必要  
 - `WindowTranslator-full-(バージョン).zip` : .NET非依存
+
+## 動作方式と制約
+
+WindowTranslator は、選択したゲームやアプリのウィンドウを Windows.Graphics.Capture で取得し、OCR で画面内の文字を認識して翻訳し、訳文を別のオーバーレイに表示します。
+
+ゲームファイルやゲームプロセスを書き換えず、ゲームプロセスへの DLL やコードの注入も行いません。利用前に各ゲームの利用規約とアンチチートのポリシーを確認してください。使用が認められることやペナルティがないことは保証できません。
+
+DRM や画面キャプチャ保護によって Windows がウィンドウを取得できない場合、その画面は翻訳できないことがあります。
 
 ## 使い方
 
