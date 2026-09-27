@@ -18,6 +18,7 @@ WindowTranslator는 Windows 애플리케이션의 창을 번역하는 도구입�
     - [Microsoft Store 버전 ](#microsoft-store-버전-)
     - [설치 버전](#설치-버전)
     - [포터블 버전](#포터블-버전)
+  - [작동 방식과 제한 사항](#작동-방식과-제한-사항)
   - [사용법](#사용법)
     - [Bergamot ](#bergamot-)
   - [기타 기능](#기타-기능)
@@ -39,6 +40,14 @@ WindowTranslator는 Windows 애플리케이션의 창을 번역하는 도구입�
 [GitHub 릴리스 페이지](https://github.com/Freeesia/WindowTranslator/releases/latest)에서 zip 파일을 다운로드하여 원하는 폴더에 압축을 해제하세요.  
 - `WindowTranslator-(버전).zip` : .NET 환경 필요  
 - `WindowTranslator-full-(버전).zip` : .NET 독립
+
+## 작동 방식과 제한 사항
+
+WindowTranslator는 Windows.Graphics.Capture로 선택한 게임 또는 앱 창을 캡처하고, OCR로 화면의 글자를 인식해 번역한 뒤 별도의 오버레이에 결과를 표시합니다.
+
+게임 파일이나 게임 프로세스를 수정하지 않으며, 해당 프로세스에 DLL이나 다른 코드를 주입하지 않습니다. 사용하기 전에 각 게임의 이용 약관과 안티치트 정책을 확인하세요. 사용 허용 여부나 제재가 없을지는 보장할 수 없습니다.
+
+DRM이나 화면 캡처 보호 때문에 Windows가 창을 캡처할 수 없는 경우 해당 화면을 번역하지 못할 수 있습니다.
 
 ## 사용법
 

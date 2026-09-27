@@ -76,6 +76,7 @@ dotnet nuget-license -t -ignore ignore-packages.json -override package-informati
 
 - 原文は `WindowTranslator/Properties/Resources.resx` と `docs/README.md` を参照し、対応する `Resources.*.resx` と `docs/README.*.md` を追加する。各言語の README に新しい言語へのリンクを追加する。
 - `WindowTranslator/Modules/Settings/AllSettingsViewModel.cs` の `TargetSettingsViewModel.Languages` にカルチャーを追加する。
+- `WindowTranslator.Package/AppxManifest.xml` の `<Resources>` にカルチャーを追加し、MSIX 生成時にマニフェストを検証する。
 - `store/store_info.csv` に新言語の列を追加し、`ja` 列から翻訳する。`ja` が URL または `False` の場合は同じ値を使う。`SearchTerm` は各行 40 文字以内、合計 21 単語以内に収める。
 
 ## コード実装
