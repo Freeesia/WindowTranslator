@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -67,19 +68,13 @@ public partial class StartupViewModel
     }
 
     private MenuItemViewModel CreateMenu(WindowInfo item)
-    {
-        List<MenuItemViewModel> commands =
-        [
+    => new(item.Name, null, [
             new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
-        ];
 #if DEBUG
-        commands.Add(new(
-            item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始",
-            new RelayCommand(() => ToggleOcrTrace(item)), []));
+            new(item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始", new RelayCommand(() => ToggleOcrTrace(item)), []),
 #endif
-        commands.Add(new(Resources.Detach, new RelayCommand(item.Window.Close), []));
-        return new(item.Name, null, commands);
-    }
+            new(Resources.Detach, new RelayCommand(item.Window.Close), []),
+        ]);
 
 #if DEBUG
     private void ToggleOcrTrace(WindowInfo item)
