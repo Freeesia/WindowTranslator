@@ -68,7 +68,7 @@ public partial class StartupViewModel
     }
 
     private MenuItemViewModel CreateMenu(WindowInfo item)
-    => new(item.Name, null, [
+        => new(item.Name, null, [
             new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
 #if DEBUG
             new(item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始", new RelayCommand(() => ToggleOcrTrace(item)), []),
