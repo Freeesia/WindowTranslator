@@ -102,14 +102,10 @@ public partial class OverlayMainWindow : Window
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
-        // ディスプレイの場合は仮想デスクトップチェックをスキップ
-        if (!this.isMonitor)
+        if (!this.isMonitor && !this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
         {
-            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
-            {
-                var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.TargetHandle);
-                this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
-            }
+            var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.TargetHandle);
+            this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
         }
 
         var extendedStyle = (WINDOW_EX_STYLE)GetWindowLong(new(windowHandle), WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE) | WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
