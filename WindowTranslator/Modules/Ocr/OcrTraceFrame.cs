@@ -11,7 +11,11 @@ internal sealed record OcrTraceHeader(int Version)
 /// <summary>
 /// 追跡処理に渡す前の統合済みOCR結果。ヘッダー以降は1行を1フレームとして保存する。
 /// </summary>
-internal sealed record OcrTraceFrame(int ImageWidth, int ImageHeight, IReadOnlyList<OcrTraceRect> Observations);
+internal sealed record OcrTraceFrame(
+    long RelativeTimeTicks,
+    int ImageWidth,
+    int ImageHeight,
+    IReadOnlyList<OcrTraceRect> Observations);
 
 /// <summary>
 /// 再生に必要な情報だけを保存し、画像や翻訳結果は含めない。

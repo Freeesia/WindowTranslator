@@ -231,13 +231,24 @@ public abstract partial class MainViewModelBase : IDisposable
 
                 var observations = await this.ocr.RecognizeAsync(new(sbmp, regions));
                 var imageSize = new System.Drawing.Size(sbmp.PixelWidth, sbmp.PixelHeight);
+                TimeSpan? traceTimestamp = null;
                 if (this.ocrTraceRecorder.IsEnabled)
                 {
-                    this.ocrTraceRecorder.Record(observations, imageSize);
+                    traceTimestamp = OcrTraceRecorder.CurrentTimestamp();
+                    this.ocrTraceRecorder.Record(observations, imageSize, traceTimestamp.Value);
                 }
-                texts = this.isOneShotMode
-                    ? observations
-                    : this.ocrTextTracker.Update(observations, imageSize);
+                if (this.isOneShotMode)
+                {
+                    texts = observations;
+                }
+                else if (traceTimestamp is { } timestamp && this.ocrTextTracker is OcrTextTracker tracker)
+                {
+                    texts = tracker.Update(observations, imageSize, timestamp);
+                }
+                else
+                {
+                    texts = this.ocrTextTracker.Update(observations, imageSize);
+                }
             }
             catch (ObjectDisposedException)
             {
