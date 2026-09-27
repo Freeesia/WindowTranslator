@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Win32;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Win32.Foundation;
@@ -34,6 +35,9 @@ public partial class OverlayMainWindow : Window
     private readonly int shortcutKey;
     private IntPtr windowHandle;
     private int overlayHiddenCount;
+    private Guid? captureVirtualDesktopId;
+    private bool isOnCaptureVirtualDesktop = true;
+    private long nextVirtualDesktopCheck;
 
     public Point MousePos
     {
@@ -102,6 +106,11 @@ public partial class OverlayMainWindow : Window
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
+        if (this.isMonitor)
+        {
+            this.captureVirtualDesktopId = GetCurrentVirtualDesktopId();
+        }
+
         if (!this.isMonitor && !this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
         {
             var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.TargetHandle);
@@ -155,6 +164,23 @@ public partial class OverlayMainWindow : Window
     {
         if (this.isMonitor)
         {
+            if (Environment.TickCount64 >= this.nextVirtualDesktopCheck)
+            {
+                this.nextVirtualDesktopCheck = Environment.TickCount64 + 100;
+                // 起動時に ID がなかった場合、最初に作られたデスクトップを元のデスクトップとする。
+                this.captureVirtualDesktopId ??= GetPrimaryVirtualDesktopId();
+                if (this.captureVirtualDesktopId is { } captureDesktopId && GetCurrentVirtualDesktopId() is { } currentDesktopId)
+                {
+                    this.isOnCaptureVirtualDesktop = captureDesktopId == currentDesktopId;
+                }
+            }
+
+            if (!this.isOnCaptureVirtualDesktop)
+            {
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
             var monitorInfo = default(MONITORINFOEXW);
             monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
             if (!GetMonitorInfo(new(this.processInfo.TargetHandle), ref monitorInfo.monitorInfo))
@@ -271,6 +297,32 @@ public partial class OverlayMainWindow : Window
             this.SetCurrentValue(HeightProperty, height / eDpiScale);
         }
     }
+
+    private static Guid? GetCurrentVirtualDesktopId()
+    {
+        const string keyPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops";
+        using var desktops = Registry.CurrentUser.OpenSubKey(keyPath);
+        if (GetGuid(desktops?.GetValue("CurrentVirtualDesktop")) is { } currentId)
+        {
+            return currentId;
+        }
+
+        using var process = Process.GetCurrentProcess();
+        using var session = Registry.CurrentUser.OpenSubKey(
+            $@"Software\Microsoft\Windows\CurrentVersion\Explorer\SessionInfo\{process.SessionId}\VirtualDesktops");
+        return GetGuid(session?.GetValue("CurrentVirtualDesktop"))
+            ?? GetGuid(desktops?.GetValue("VirtualDesktopIDs"));
+    }
+
+    private static Guid? GetPrimaryVirtualDesktopId()
+    {
+        using var desktops = Registry.CurrentUser.OpenSubKey(
+            @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops");
+        return GetGuid(desktops?.GetValue("VirtualDesktopIDs"));
+    }
+
+    private static Guid? GetGuid(object? value)
+        => value is byte[] { Length: >= 16 } bytes ? new Guid(bytes.AsSpan(0, 16)) : null;
 
     private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
     {
