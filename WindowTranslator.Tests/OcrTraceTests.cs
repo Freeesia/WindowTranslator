@@ -2,7 +2,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using WindowTranslator.Modules.Ocr;
@@ -11,11 +10,6 @@ namespace WindowTranslator.Tests;
 
 public class OcrTraceTests
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-    };
-
     [Fact]
     public async Task RecorderAppendsDuringRecordingAndPreservesOrderAndEachImageSize()
     {
@@ -26,20 +20,15 @@ public class OcrTraceTests
                 NullLogger<OcrTraceRecorder>.Instance, directory, TimeSpan.FromMilliseconds(20));
             Assert.False(recorder.IsEnabled);
             recorder.Start();
-            OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
             TextRect observation = new("秘密", 11, 22, 33, 44, 15, true) { Angle = 12.5 };
-            TimeSpan firstTime = OcrTraceRecorder.CurrentTimestamp();
-            recorder.Record([observation], new Size(800, 600), firstTime);
-            IReadOnlyList<TextRect> originalFirst = tracker.Update([observation], new Size(800, 600), firstTime);
+            recorder.Record([observation], new Size(800, 600));
 
             string path = await WaitForTraceAsync(directory);
             await using var sharedReader = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             OcrTraceFrame[] firstRead = await ReadFramesAsync(sharedReader);
             Assert.Single(firstRead);
 
-            TimeSpan secondTime = OcrTraceRecorder.CurrentTimestamp();
-            recorder.Record([], new Size(1024, 768), secondTime);
-            IReadOnlyList<TextRect> originalSecond = tracker.Update([], new Size(1024, 768), secondTime);
+            recorder.Record([], new Size(1024, 768));
             recorder.Stop();
             await recorder.DisposeAsync();
 
@@ -47,20 +36,13 @@ public class OcrTraceTests
             OcrTraceFrame[] frames = await ReadFramesAsync(sharedReader);
             Assert.Equal(2, frames.Length);
             Assert.True(frames[0].RelativeTimeTicks >= 0);
-            Assert.Equal((secondTime - firstTime).Ticks,
-                frames[1].RelativeTimeTicks - frames[0].RelativeTimeTicks);
+            Assert.True(frames[1].RelativeTimeTicks > frames[0].RelativeTimeTicks);
             Assert.Equal((800, 600), (frames[0].ImageWidth, frames[0].ImageHeight));
             Assert.Equal((1024, 768), (frames[1].ImageWidth, frames[1].ImageHeight));
             Assert.Equal(new OcrTraceRect("秘密", 11, 22, 33, 44, 15, 12.5, true),
                 Assert.Single(frames[0].Observations));
             Assert.Empty(frames[1].Observations);
             Assert.Single(Directory.GetFiles(directory, "*.jsonl"));
-
-            OcrTextTracker replayTracker = new(NullLogger<OcrTextTracker>.Instance);
-            IReadOnlyList<TextRect> replayFirst = ReplayFrame(replayTracker, frames[0]);
-            IReadOnlyList<TextRect> replaySecond = ReplayFrame(replayTracker, frames[1]);
-            Assert.Equal(originalFirst.ToArray(), replayFirst.ToArray());
-            Assert.Equal(originalSecond.ToArray(), replaySecond.ToArray());
         }
         finally
         {
@@ -104,45 +86,9 @@ public class OcrTraceTests
         {
             Assert.False(recorder.IsEnabled);
             recorder.Record([new TextRect("Menu", 0, 0, 10, 10, 8, false)],
-                new Size(100, 100), TimeSpan.Zero);
+                new Size(100, 100));
         }
         Assert.False(Directory.Exists(directory));
-    }
-
-    [Fact]
-    public async Task RestartWritesEachSessionToItsOwnFile()
-    {
-        string directory = NewTemporaryDirectory();
-        try
-        {
-            await using var recorder = new OcrTraceRecorder(
-                NullLogger<OcrTraceRecorder>.Instance, directory, TimeSpan.FromMilliseconds(20));
-            recorder.Start();
-            recorder.Record([new TextRect("First", 0, 0, 10, 10, 8, false)],
-                new Size(100, 100), OcrTraceRecorder.CurrentTimestamp());
-            recorder.Stop();
-
-            recorder.Start();
-            recorder.Record([new TextRect("Second", 0, 0, 20, 20, 8, false)],
-                new Size(200, 200), OcrTraceRecorder.CurrentTimestamp());
-            recorder.Stop();
-            await recorder.DisposeAsync();
-
-            string[] paths = Directory.GetFiles(directory, "*.jsonl");
-            Assert.Equal(2, paths.Length);
-            List<string> texts = [];
-            foreach (string path in paths)
-            {
-                await using var stream = File.OpenRead(path);
-                OcrTraceFrame frame = Assert.Single(await ReadFramesAsync(stream));
-                texts.Add(Assert.Single(frame.Observations).SourceText);
-            }
-            Assert.Equal(["First", "Second"], texts.OrderBy(text => text).ToArray());
-        }
-        finally
-        {
-            if (Directory.Exists(directory)) Directory.Delete(directory, recursive: true);
-        }
     }
 
     [Fact]
@@ -159,14 +105,14 @@ public class OcrTraceTests
         {
             TextRect observation = new("Menu", 0, 0, 10, 10, 8, false);
             recorder.Start();
-            recorder.Record([observation], new Size(100, 100), OcrTraceRecorder.CurrentTimestamp());
+            recorder.Record([observation], new Size(100, 100));
             await logger.FirstError.Task.WaitAsync(TimeSpan.FromSeconds(5));
             Assert.True(recorder.IsEnabled);
             Assert.Equal("Menu", Assert.Single(new OcrTextTracker(
                 NullLogger<OcrTextTracker>.Instance).Update([observation], new Size(100, 100))).SourceText);
 
             File.Delete(directory);
-            recorder.Record([], new Size(120, 100), OcrTraceRecorder.CurrentTimestamp());
+            recorder.Record([], new Size(120, 100));
             recorder.Stop();
             await recorder.DisposeAsync();
 
@@ -200,11 +146,6 @@ public class OcrTraceTests
         await using var incompatibleStream = new MemoryStream(Encoding.UTF8.GetBytes(incompatible));
         await Assert.ThrowsAsync<NotSupportedException>(() => ReadFramesAsync(incompatibleStream));
 
-        const string oldInlineVersion = """
-            {"Version":1,"FrameNumber":1,"RelativeTimeTicks":0,"ImageWidth":100,"ImageHeight":100,"Observations":[]}
-            """;
-        await using var oldStream = new MemoryStream(Encoding.UTF8.GetBytes(oldInlineVersion));
-        await Assert.ThrowsAsync<InvalidDataException>(() => ReadFramesAsync(oldStream));
     }
 
     private static async Task<OcrTraceFrame[]> ReadFramesAsync(Stream stream)
@@ -214,11 +155,6 @@ public class OcrTraceTests
             ?? throw new InvalidDataException("OCR trace header is missing.");
         OcrTraceHeader header = JsonSerializer.Deserialize<OcrTraceHeader>(headerLine)
             ?? throw new InvalidDataException("OCR trace header is invalid.");
-        using JsonDocument headerJson = JsonDocument.Parse(headerLine);
-        if (headerJson.RootElement.TryGetProperty("Observations", out _))
-        {
-            throw new InvalidDataException("The first line is a frame, not an OCR trace header.");
-        }
         if (header.Version != OcrTraceHeader.CurrentVersion)
         {
             throw new NotSupportedException($"Unsupported OCR trace version: {header.Version}.");
@@ -227,7 +163,7 @@ public class OcrTraceTests
         List<OcrTraceFrame> frames = [];
         while (await reader.ReadLineAsync() is { } line)
         {
-            frames.Add(JsonSerializer.Deserialize<OcrTraceFrame>(line, JsonOptions)
+            frames.Add(JsonSerializer.Deserialize<OcrTraceFrame>(line)
                 ?? throw new InvalidDataException("OCR trace frame is invalid."));
         }
         return frames.ToArray();

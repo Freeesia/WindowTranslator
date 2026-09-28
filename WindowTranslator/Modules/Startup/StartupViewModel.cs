@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -59,9 +58,13 @@ public partial class StartupViewModel
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
-                for (int index = 0; index < e.OldItems!.Count; index++)
+                foreach (var item in e.OldItems!.OfType<WindowInfo>())
                 {
-                    this.attachingWindows.RemoveAt(e.OldStartingIndex);
+                    var menu = this.attachingWindows.FirstOrDefault(x => x.Header == item.Name);
+                    if (menu is not null)
+                    {
+                        this.attachingWindows.Remove(menu);
+                    }
                 }
                 break;
         }
@@ -69,12 +72,12 @@ public partial class StartupViewModel
 
     private MenuItemViewModel CreateMenu(WindowInfo item)
         => new(item.Name, null, [
-            new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
+                new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
 #if DEBUG
-            new(item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始", new RelayCommand(() => ToggleOcrTrace(item)), []),
+                new(item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始", new RelayCommand(() => ToggleOcrTrace(item)), []),
 #endif
-            new(Resources.Detach, new RelayCommand(item.Window.Close), []),
-        ]);
+                new(Resources.Detach, new RelayCommand(item.Window.Close), []),
+            ]);
 
 #if DEBUG
     private void ToggleOcrTrace(WindowInfo item)

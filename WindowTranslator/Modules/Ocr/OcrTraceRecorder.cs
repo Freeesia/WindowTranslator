@@ -3,33 +3,27 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
 namespace WindowTranslator.Modules.Ocr;
 
-/// <summary>
-/// OCR の呼び出し元からフレームを受け取り、一定間隔で JSON Lines に追記する。
-/// </summary>
 public sealed class OcrTraceRecorder : IAsyncDisposable
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-    };
-
     private readonly object gate = new();
     private readonly ILogger<OcrTraceRecorder> logger;
     private readonly string directory;
+    private readonly string path;
     private readonly TimeSpan flushInterval;
-    private readonly Channel<RecordingSession> sessions = Channel.CreateUnbounded<RecordingSession>(
+    private readonly Channel<OcrTraceFrame> frames = Channel.CreateUnbounded<OcrTraceFrame>(
         new UnboundedChannelOptions { SingleReader = true });
-    private RecordingSession? current;
     private Task? writerTask;
+    private long originTimestamp;
+    private long committedLength;
+    private bool enabled;
     private bool disposed;
 
-    public bool IsEnabled => Volatile.Read(ref this.current) is not null;
+    public bool IsEnabled => Volatile.Read(ref this.enabled);
 
     public OcrTraceRecorder(ILogger<OcrTraceRecorder> logger)
         : this(logger, Path.Combine(PathUtility.UserDir, "ocr-traces"), TimeSpan.FromSeconds(1))
@@ -38,12 +32,9 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
 
     internal OcrTraceRecorder(ILogger<OcrTraceRecorder> logger, string directory, TimeSpan flushInterval)
     {
-        ArgumentNullException.ThrowIfNull(logger);
-        ArgumentException.ThrowIfNullOrWhiteSpace(directory);
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(flushInterval, TimeSpan.Zero);
-
         this.logger = logger;
         this.directory = directory;
+        this.path = Path.Combine(directory, $"ocr-{Guid.NewGuid():N}.jsonl");
         this.flushInterval = flushInterval;
     }
 
@@ -52,22 +43,17 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
         lock (this.gate)
         {
             ObjectDisposedException.ThrowIf(this.disposed, this);
-            if (this.current is not null)
+            if (this.enabled)
             {
                 return;
             }
-
-            var session = new RecordingSession(
-                Path.Combine(this.directory, $"ocr-{Guid.NewGuid():N}.jsonl"), CurrentTimestamp());
-            if (!this.sessions.Writer.TryWrite(session))
+            if (this.writerTask is null)
             {
-                throw new InvalidOperationException("OCR trace writer was closed while starting a recording.");
+                this.originTimestamp = Stopwatch.GetTimestamp();
+                this.writerTask = this.WriteAsync();
             }
-            this.writerTask ??= Task.Run(this.WriteAsync);
-            Volatile.Write(ref this.current, session);
-            this.logger.LogInformation(
-                "OCR trace recording started: {Path}. OCR text and geometry are saved; images are not saved. Review the file before sharing it.",
-                session.Path);
+            Volatile.Write(ref this.enabled, true);
+            this.logger.LogInformation("OCR trace recording started: {Path}", this.path);
         }
     }
 
@@ -75,13 +61,11 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
     {
         lock (this.gate)
         {
-            RecordingSession? session = this.current;
-            Volatile.Write(ref this.current, null);
-            session?.Frames.Writer.TryComplete();
+            Volatile.Write(ref this.enabled, false);
         }
     }
 
-    public void Record(IReadOnlyList<TextRect> observations, Size imageSize, TimeSpan timestamp)
+    public void Record(IReadOnlyList<TextRect> observations, Size imageSize)
     {
         if (!this.IsEnabled)
         {
@@ -90,23 +74,14 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
 
         try
         {
-            lock (this.gate)
+            OcrTraceRect[] rects = observations.Select(OcrTraceRect.FromTextRect).ToArray();
+            if (this.IsEnabled)
             {
-                RecordingSession? session = this.current;
-                if (session is null)
-                {
-                    return;
-                }
-
-                OcrTraceFrame frame = new(
-                    (timestamp - session.OriginTime).Ticks,
+                this.frames.Writer.TryWrite(new(
+                    Stopwatch.GetElapsedTime(this.originTimestamp).Ticks,
                     imageSize.Width,
                     imageSize.Height,
-                    observations.Select(OcrTraceRect.FromTextRect).ToArray());
-                if (!session.Frames.Writer.TryWrite(frame))
-                {
-                    throw new InvalidOperationException("OCR trace writer was closed while recording.");
-                }
+                    rects));
             }
         }
         catch (Exception error)
@@ -118,145 +93,96 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
     private async Task WriteAsync()
     {
         using var timer = new PeriodicTimer(this.flushInterval);
-        List<RecordingSession> active = [];
-        while (await timer.WaitForNextTickAsync().ConfigureAwait(false))
+        List<OcrTraceFrame> pending = [];
+        StreamWriter? writer = null;
+        try
         {
-            while (this.sessions.Reader.TryRead(out RecordingSession? session))
+            while (await timer.WaitForNextTickAsync().ConfigureAwait(false))
             {
-                active.Add(session);
-            }
-            for (int index = 0; index < active.Count;)
-            {
-                if (await this.FlushSessionAsync(active[index]).ConfigureAwait(false))
+                while (this.frames.Reader.TryRead(out OcrTraceFrame? frame))
                 {
-                    active.RemoveAt(index);
+                    pending.Add(frame);
                 }
-                else
+                if (pending.Count == 0)
                 {
-                    index++;
+                    if (this.frames.Reader.Completion.IsCompleted)
+                    {
+                        return;
+                    }
+                    continue;
                 }
-            }
-            if (this.sessions.Reader.Completion.IsCompleted && active.Count == 0)
-            {
-                return;
-            }
-        }
-    }
 
-    private async Task<bool> FlushSessionAsync(RecordingSession session)
-    {
-        if (session.Pending.Count == 0)
-        {
-            while (session.Frames.Reader.TryRead(out OcrTraceFrame? frame))
-            {
-                session.Pending.Add(frame);
-            }
-        }
-
-        if (session.Pending.Count > 0)
-        {
-            try
-            {
-                await this.AppendChunkAsync(session, session.Pending).ConfigureAwait(false);
-                session.Pending.Clear();
-                if (session.LoggedFailure)
-                {
-                    this.logger.LogInformation("OCR trace recording resumed: {Path}", session.Path);
-                    session.LoggedFailure = false;
-                }
-            }
-            catch (Exception error)
-            {
-                if (!session.LoggedFailure)
-                {
-                    this.logger.LogError(error, "OCR trace write failed; retrying: {Path}", session.Path);
-                    session.LoggedFailure = true;
-                }
                 try
                 {
-                    await CloseWriterAsync(session).ConfigureAwait(false);
-                }
-                catch (Exception closeError)
-                {
-                    this.logger.LogError(closeError, "OCR trace writer could not be closed: {Path}", session.Path);
-                }
-            }
-        }
+                    if (writer is null)
+                    {
+                        Directory.CreateDirectory(this.directory);
+                        FileStream stream = new(this.path, FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                            FileShare.Read, 4096, FileOptions.Asynchronous);
+                        try
+                        {
+                            stream.SetLength(this.committedLength);
+                            stream.Position = this.committedLength;
+                            writer = new StreamWriter(stream, new UTF8Encoding(false));
+                        }
+                        catch
+                        {
+                            await stream.DisposeAsync().ConfigureAwait(false);
+                            throw;
+                        }
+                    }
 
-        if (session.Frames.Reader.Completion.IsCompleted && session.Pending.Count == 0)
-        {
-            try
-            {
-                await CloseWriterAsync(session).ConfigureAwait(false);
+                    StringBuilder chunk = new();
+                    if (this.committedLength == 0)
+                    {
+                        chunk.AppendLine(JsonSerializer.Serialize(new OcrTraceHeader(OcrTraceHeader.CurrentVersion)));
+                    }
+                    foreach (OcrTraceFrame frame in pending)
+                    {
+                        chunk.AppendLine(JsonSerializer.Serialize(frame));
+                    }
+                    await writer.WriteAsync(chunk.ToString()).ConfigureAwait(false);
+                    await writer.FlushAsync().ConfigureAwait(false);
+                    this.committedLength = writer.BaseStream.Position;
+                    pending.Clear();
+                }
+                catch (Exception error)
+                {
+                    this.logger.LogError(error, "OCR trace write failed; retrying: {Path}", this.path);
+                    if (writer is not null)
+                    {
+                        await this.CloseWriterAsync(writer).ConfigureAwait(false);
+                        writer = null;
+                    }
+                }
             }
-            catch (Exception error)
-            {
-                this.logger.LogError(error, "OCR trace writer could not be closed: {Path}", session.Path);
-            }
-            return true;
         }
-        return false;
+        finally
+        {
+            if (writer is not null)
+            {
+                await this.CloseWriterAsync(writer).ConfigureAwait(false);
+            }
+        }
     }
 
-    private async Task AppendChunkAsync(RecordingSession session, IReadOnlyList<OcrTraceFrame> pending)
+    private async ValueTask CloseWriterAsync(StreamWriter writer)
     {
-        StringBuilder lines = new();
-        if (session.CommittedLength == 0)
-        {
-            lines.AppendLine(JsonSerializer.Serialize(new OcrTraceHeader(OcrTraceHeader.CurrentVersion)));
-        }
-        foreach (OcrTraceFrame frame in pending)
-        {
-            lines.AppendLine(JsonSerializer.Serialize(frame, JsonOptions));
-        }
-
-        if (session.Writer is null)
-        {
-            Directory.CreateDirectory(this.directory);
-            FileStream stream = new(session.Path, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                FileShare.Read, 4096, FileOptions.Asynchronous);
-            try
-            {
-                if (stream.Length < session.CommittedLength)
-                {
-                    throw new IOException("OCR trace file was shortened while recording.");
-                }
-                if (stream.Length > session.CommittedLength)
-                {
-                    stream.SetLength(session.CommittedLength);
-                }
-                stream.Position = session.CommittedLength;
-                session.Writer = new StreamWriter(stream, new UTF8Encoding(false));
-            }
-            catch
-            {
-                await stream.DisposeAsync().ConfigureAwait(false);
-                throw;
-            }
-        }
-
-        await session.Writer.WriteAsync(lines.ToString()).ConfigureAwait(false);
-        await session.Writer.FlushAsync().ConfigureAwait(false);
-        session.CommittedLength = session.Writer.BaseStream.Position;
-    }
-
-    private static async ValueTask CloseWriterAsync(RecordingSession session)
-    {
-        StreamWriter? writer = session.Writer;
-        session.Writer = null;
-        if (writer is null)
-        {
-            return;
-        }
-
-        Stream stream = writer.BaseStream;
         try
         {
             await writer.DisposeAsync().ConfigureAwait(false);
         }
-        finally
+        catch (Exception error)
         {
-            await stream.DisposeAsync().ConfigureAwait(false);
+            this.logger.LogError(error, "OCR trace writer could not be closed: {Path}", this.path);
+            try
+            {
+                await writer.BaseStream.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (Exception closeError)
+            {
+                this.logger.LogError(closeError, "OCR trace stream could not be closed: {Path}", this.path);
+            }
         }
     }
 
@@ -266,10 +192,8 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
         lock (this.gate)
         {
             this.disposed = true;
-            RecordingSession? session = this.current;
-            Volatile.Write(ref this.current, null);
-            session?.Frames.Writer.TryComplete();
-            this.sessions.Writer.TryComplete();
+            Volatile.Write(ref this.enabled, false);
+            this.frames.Writer.TryComplete();
             task = this.writerTask;
         }
 
@@ -279,26 +203,5 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
             await task.ConfigureAwait(false);
         }
 #pragma warning restore VSTHRD003
-    }
-
-    internal static TimeSpan CurrentTimestamp()
-        => TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency);
-
-    private sealed class RecordingSession(string path, TimeSpan originTime)
-    {
-        public string Path { get; } = path;
-
-        public TimeSpan OriginTime { get; } = originTime;
-
-        public Channel<OcrTraceFrame> Frames { get; } = Channel.CreateUnbounded<OcrTraceFrame>(
-            new UnboundedChannelOptions { SingleReader = true });
-
-        public List<OcrTraceFrame> Pending { get; } = [];
-
-        public StreamWriter? Writer { get; set; }
-
-        public bool LoggedFailure { get; set; }
-
-        public long CommittedLength { get; set; }
     }
 }
