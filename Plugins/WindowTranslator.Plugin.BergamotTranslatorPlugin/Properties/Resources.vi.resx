@@ -77,4 +77,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Không tìm thấy dữ liệu mô hình có thể dịch từ {0} sang {1}. Bản dịch cho cặp ngôn ngữ này không khả dụng.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Đường dẫn từ điển thuật ngữ</value>
+  </data>
 </root>

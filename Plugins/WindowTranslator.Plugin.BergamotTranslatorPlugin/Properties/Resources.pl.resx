@@ -77,4 +77,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Nie znaleziono danych modelu tłumaczenia z {0} na {1}. Tłumaczenie dla tej pary językowej jest niedostępne.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Ścieżka słownika</value>
+  </data>
 </root>

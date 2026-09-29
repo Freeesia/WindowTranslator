@@ -77,4 +77,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Données de modèle pour la traduction de {0} vers {1} introuvables.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Chemin du glossaire</value>
+  </data>
 </root>
