@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,6 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
         new UnboundedChannelOptions { SingleReader = true });
     private Task? writerTask;
     private long originTimestamp;
-    private long committedLength;
     private bool enabled;
     private bool disposed;
 
@@ -72,21 +70,14 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
             return;
         }
 
-        try
+        OcrTraceRect[] rects = observations.Select(OcrTraceRect.FromTextRect).ToArray();
+        if (this.IsEnabled)
         {
-            OcrTraceRect[] rects = observations.Select(OcrTraceRect.FromTextRect).ToArray();
-            if (this.IsEnabled)
-            {
-                this.frames.Writer.TryWrite(new(
-                    Stopwatch.GetElapsedTime(this.originTimestamp).Ticks,
-                    imageSize.Width,
-                    imageSize.Height,
-                    rects));
-            }
-        }
-        catch (Exception error)
-        {
-            this.logger.LogError(error, "OCR trace frame could not be queued.");
+            this.frames.Writer.TryWrite(new(
+                Stopwatch.GetElapsedTime(this.originTimestamp).Ticks,
+                imageSize.Width,
+                imageSize.Height,
+                rects));
         }
     }
 
@@ -95,6 +86,7 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
         using var timer = new PeriodicTimer(this.flushInterval);
         List<OcrTraceFrame> pending = [];
         StreamWriter? writer = null;
+        long flushedPosition = 0;
         try
         {
             while (await timer.WaitForNextTickAsync().ConfigureAwait(false))
@@ -117,33 +109,23 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
                     if (writer is null)
                     {
                         Directory.CreateDirectory(this.directory);
-                        FileStream stream = new(this.path, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                            FileShare.Read, 4096, FileOptions.Asynchronous);
-                        try
-                        {
-                            stream.SetLength(this.committedLength);
-                            stream.Position = this.committedLength;
-                            writer = new StreamWriter(stream, new UTF8Encoding(false));
-                        }
-                        catch
-                        {
-                            await stream.DisposeAsync().ConfigureAwait(false);
-                            throw;
-                        }
+                        writer = new StreamWriter(new FileStream(this.path, FileMode.OpenOrCreate,
+                            FileAccess.Write, FileShare.Read, 4096, FileOptions.Asynchronous));
+                        writer.BaseStream.SetLength(flushedPosition);
+                        writer.BaseStream.Position = flushedPosition;
                     }
 
-                    StringBuilder chunk = new();
-                    if (this.committedLength == 0)
+                    if (flushedPosition == 0)
                     {
-                        chunk.AppendLine(JsonSerializer.Serialize(new OcrTraceHeader(OcrTraceHeader.CurrentVersion)));
+                        await writer.WriteLineAsync(JsonSerializer.Serialize(new OcrTraceHeader(OcrTraceHeader.CurrentVersion)))
+                            .ConfigureAwait(false);
                     }
                     foreach (OcrTraceFrame frame in pending)
                     {
-                        chunk.AppendLine(JsonSerializer.Serialize(frame));
+                        await writer.WriteLineAsync(JsonSerializer.Serialize(frame)).ConfigureAwait(false);
                     }
-                    await writer.WriteAsync(chunk.ToString()).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
-                    this.committedLength = writer.BaseStream.Position;
+                    flushedPosition = writer.BaseStream.Position;
                     pending.Clear();
                 }
                 catch (Exception error)
@@ -151,7 +133,15 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
                     this.logger.LogError(error, "OCR trace write failed; retrying: {Path}", this.path);
                     if (writer is not null)
                     {
-                        await this.CloseWriterAsync(writer).ConfigureAwait(false);
+                        // 書きかけのバッファは流さず、次回は最後にフラッシュできた位置から書き直す。
+                        try
+                        {
+                            await writer.BaseStream.DisposeAsync().ConfigureAwait(false);
+                        }
+                        catch (Exception closeError)
+                        {
+                            this.logger.LogError(closeError, "OCR trace stream close failed: {Path}", this.path);
+                        }
                         writer = null;
                     }
                 }
@@ -161,27 +151,7 @@ public sealed class OcrTraceRecorder : IAsyncDisposable
         {
             if (writer is not null)
             {
-                await this.CloseWriterAsync(writer).ConfigureAwait(false);
-            }
-        }
-    }
-
-    private async ValueTask CloseWriterAsync(StreamWriter writer)
-    {
-        try
-        {
-            await writer.DisposeAsync().ConfigureAwait(false);
-        }
-        catch (Exception error)
-        {
-            this.logger.LogError(error, "OCR trace writer could not be closed: {Path}", this.path);
-            try
-            {
-                await writer.BaseStream.DisposeAsync().ConfigureAwait(false);
-            }
-            catch (Exception closeError)
-            {
-                this.logger.LogError(closeError, "OCR trace stream could not be closed: {Path}", this.path);
+                await writer.DisposeAsync().ConfigureAwait(false);
             }
         }
     }
