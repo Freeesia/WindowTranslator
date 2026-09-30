@@ -136,4 +136,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>{0} dilinden {1} diline çeviri yapabilen model verileri bulunamadı. Bu dil çifti için çeviri mevcut değil.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Sözlük Yolu</value>
+  </data>
 </root>

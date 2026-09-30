@@ -77,4 +77,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Tiada data model terjemahan dari {0} ke {1} dijumpai. Terjemahan untuk pasangan bahasa ini tidak tersedia.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Laluan Glosari</value>
+  </data>
 </root>

@@ -23,4 +23,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Nebyla nalezena data modelu umožňující překlad z {0} do {1}. Překlad pro tuto jazykovou dvojici není dostupný.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Cesta ke glosáři</value>
+  </data>
 </root>

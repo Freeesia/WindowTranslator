@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="BergamotTranslatorSharp" />
+    <PackageReference Include="CsvHelper" />
     <PackageReference Include="Google.Cloud.Storage.V1" />
   </ItemGroup>
 

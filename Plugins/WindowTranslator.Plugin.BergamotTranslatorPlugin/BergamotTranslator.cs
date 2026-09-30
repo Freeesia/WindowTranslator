@@ -3,6 +3,8 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Text.Json;
 using BergamotTranslatorSharp;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,8 +19,9 @@ namespace WindowTranslator.Plugin.BergamotTranslatorPlugin;
 public sealed class BergamotTranslator : ITranslateModule, IDisposable
 {
     private readonly BlockingService service;
+    private readonly Dictionary<string, string> glossary = new();
 
-    public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions)
+    public BergamotTranslator(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BergamotOptions> options)
     {
         var src = langOptions.Value.Source[..2];
         var dst = langOptions.Value.Target[..2];
@@ -26,17 +29,33 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         if (File.Exists(path))
         {
             this.service = new(path);
-            return;
         }
-        var path1 = Path.Combine(SystemUtility.ModelsPath, $"{src}en", "config.yml");
-        var path2 = Path.Combine(SystemUtility.ModelsPath, $"en{dst}", "config.yml");
-        if (File.Exists(path1) && File.Exists(path2))
+        else
         {
-            this.service = new(path1, path2);
-            return;
+            var path1 = Path.Combine(SystemUtility.ModelsPath, $"{src}en", "config.yml");
+            var path2 = Path.Combine(SystemUtility.ModelsPath, $"en{dst}", "config.yml");
+            if (File.Exists(path1) && File.Exists(path2))
+            {
+                this.service = new(path1, path2);
+            }
+            else
+            {
+                throw new AppUserException(Resources.ModelNotFound);
+            }
         }
-        throw new AppUserException(Resources.ModelNotFound);
+
+        if (File.Exists(options.Value.GlossaryPath))
+        {
+            using var reader = new StreamReader(options.Value.GlossaryPath);
+            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
+            foreach (var (source, target) in csv.GetRecords<Glossary>())
+            {
+                this.glossary[source] = target;
+            }
+        }
     }
+
+    private record Glossary(string Source, string Target);
 
     public void Dispose()
         => this.service?.Dispose();
@@ -45,7 +64,16 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
         => await Task.Run(() => Translate(srcTexts)).ConfigureAwait(false);
 
     private string[] Translate(TextInfo[] srcTexts)
-        => this.service.Translate([.. srcTexts.Select(t => t.SourceText)]);
+        => this.service.Translate([.. srcTexts.Select(t => t.SourceText)], this.glossary);
+
+    public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
+    {
+        foreach (var (key, value) in glossary)
+        {
+            this.glossary.TryAdd(key.ReplaceLineEndings(string.Empty), value.ReplaceLineEndings(string.Empty));
+        }
+        return default;
+    }
 }
 
 public class BergamotValidator(ILogger<BergamotValidator> logger) : ITargetSettingsValidator
