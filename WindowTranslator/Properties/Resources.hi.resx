@@ -539,4 +539,6 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>फ़िल्टर</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>कैप्चर अंतराल (सेकंड)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>कैप्चर और पाठ पहचान के बाद प्रतीक्षा करने के सेकंड। 0: कोई प्रतीक्षा नहीं (डिफ़ॉल्ट)। हॉटकी से शुरू किया गया एकल कैप्चर तुरंत शुरू होता है।</value></data>
 </root>

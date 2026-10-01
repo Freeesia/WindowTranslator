@@ -531,4 +531,6 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>فیلترها</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>فاصلهٔ ثبت تصویر (ثانیه)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>زمان انتظار به ثانیه پس از ثبت تصویر و تشخیص متن. ۰: بدون انتظار (پیش‌فرض). ثبت تکی با کلید میان‌بر بلافاصله آغاز می‌شود.</value></data>
 </root>

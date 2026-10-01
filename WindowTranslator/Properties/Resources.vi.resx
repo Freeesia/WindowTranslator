@@ -546,4 +546,6 @@ Màn hình không được hỗ trợ.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Bộ lọc</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Khoảng chụp (giây)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Số giây chờ sau khi chụp và nhận dạng văn bản. 0: không chờ (mặc định). Chụp một lần bằng phím tắt bắt đầu ngay lập tức.</value></data>
 </root>

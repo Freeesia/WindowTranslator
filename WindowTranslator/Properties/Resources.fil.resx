@@ -546,4 +546,6 @@ Ang monitor ay hindi suportado.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Mga filter</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Pagitan ng pagkuha (segundo)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Mga segundong hihintayin pagkatapos ng pagkuha at pagkilala ng teksto. 0: walang paghihintay (default). Agad na magsisimula ang isang pagkuha gamit ang hotkey.</value></data>
 </root>

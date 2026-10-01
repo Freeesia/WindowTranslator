@@ -546,4 +546,6 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>过滤器</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>捕获间隔（秒）</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>指定捕获和 OCR 处理后等待的秒数。0：不等待（默认）。通过快捷键触发的单次捕获会立即开始。</value></data>
 </root>

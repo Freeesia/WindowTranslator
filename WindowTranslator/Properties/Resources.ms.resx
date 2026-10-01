@@ -545,4 +545,6 @@ Monitor tidak disokong.</value>
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Penapis</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Selang tangkapan (saat)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Masa menunggu dalam saat selepas tangkapan dan pengecaman teks. 0: tiada menunggu (lalai). Tangkapan tunggal melalui kekunci pintasan bermula serta-merta.</value></data>
 </root>
