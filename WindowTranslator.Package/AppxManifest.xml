@@ -3,8 +3,10 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap6="http://schemas.microsoft.com/appx/manifest/uap/windows10/6"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap6 rescap">
+  IgnorableNamespaces="uap6 desktop com rescap">
 
   <!-- CI では Store の登録値とビルド番号を Identity に設定する -->
   <Identity
@@ -58,6 +60,19 @@
         Square44x44Logo="Images\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
       </uap:VisualElements>
+      <Extensions>
+        <!-- レビュー依頼通知と COM アクティベーターを同じ CLSID で登録する -->
+        <desktop:Extension Category="windows.toastNotificationActivation">
+          <desktop:ToastNotificationActivation ToastActivatorCLSID="40E46BAB-FB4F-4A51-ABA7-FFBA4C0FD907" />
+        </desktop:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="WindowTranslator.exe" Arguments="-ToastActivated" DisplayName="WindowTranslator">
+              <com:Class Id="40E46BAB-FB4F-4A51-ABA7-FFBA4C0FD907" DisplayName="WindowTranslator" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+      </Extensions>
     </Application>
   </Applications>
 
