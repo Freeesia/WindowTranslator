@@ -41,6 +41,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly double overlayOpacity;
     private readonly double mousePointerHitTestPadding;
     private readonly bool isOneShotMode;
+    private readonly CaptureIntervalController captureInterval;
     private TextRect[]? lastRequested;
 
     [ObservableProperty]
@@ -90,6 +91,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
         this.isOneShotMode = options.Value.IsOneShotMode;
+        this.captureInterval = new(options.Value.CaptureInterval);
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
@@ -114,6 +116,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         if (value)
         {
+            this.captureInterval.Reset();
             this.OcrTexts.Clear();
             if (this.isOneShotMode)
             {
@@ -146,7 +149,7 @@ public abstract partial class MainViewModelBase : IDisposable
             this.capture.StopCapture();
         }
 
-        if (this.analyzing.CurrentCount == 0)
+        if (this.analyzing.CurrentCount == 0 || !this.isOneShotMode && !this.captureInterval.CanStart)
         {
             return;
         }
@@ -160,6 +163,10 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task CreateTextOverlayAsync()
     {
+        if (!this.isOneShotMode && !this.captureInterval.CanStart)
+        {
+            return;
+        }
         if (!await this.analyzing.WaitAsync(0))
         {
             return;
@@ -191,6 +198,14 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             return;
         }
+
+        using var interval = new DisposeAction(() =>
+        {
+            if (!this.isOneShotMode)
+            {
+                this.captureInterval.Complete();
+            }
+        });
 
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())

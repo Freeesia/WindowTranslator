@@ -546,4 +546,6 @@ Monitore werden nicht unterstützt.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filter</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Aufnahmeintervall (Sekunden)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Wartezeit in Sekunden nach Aufnahme und Texterkennung. 0: keine Wartezeit (Standard). Einzelaufnahmen per Tastenkürzel starten sofort.</value></data>
 </root>

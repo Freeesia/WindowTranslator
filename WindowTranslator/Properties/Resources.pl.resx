@@ -546,4 +546,6 @@ Monitory nie są obsługiwane.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtry</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Odstęp przechwytywania (sekundy)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Czas oczekiwania w sekundach po przechwyceniu i rozpoznaniu tekstu. 0: bez oczekiwania (domyślnie). Pojedyncze przechwycenie uruchomione skrótem klawiszowym rozpoczyna się natychmiast.</value></data>
 </root>

@@ -568,4 +568,6 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>フィルター</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>キャプチャ間隔（秒）</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>キャプチャ・OCRの処理後に待機する秒数を指定します。0: 待機なし（既定）。ホットキーによる単発実行はすぐに開始します。</value></data>
 </root>

@@ -252,6 +252,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
                 IsOneShotMode = t.IsOneShotMode,
+                CaptureInterval = t.CaptureInterval,
                 OverlayOpacity = t.OverlayOpacity,
                 MousePointerHitTestPadding = t.MousePointerHitTestPadding,
                 OcrGeometryStability = t.OcrGeometryStability,
@@ -484,6 +485,11 @@ public partial class TargetSettingsViewModel(
     [property: Slidable(0, 100, 1, 10, true, 1)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
+
+    [Category("SettingsViewModel|Misc")]
+    [LocalizedDescription(typeof(Resources), $"{nameof(CaptureInterval)}_Desc")]
+    [Spinnable(0.1, 1, 0, double.MaxValue)]
+    public double CaptureInterval { get; set; } = settings.CaptureInterval;
 
     [Category("SettingsViewModel|Misc")]
     public bool IsEnableAutoTarget { get; set; } = settings.IsEnableAutoTarget;

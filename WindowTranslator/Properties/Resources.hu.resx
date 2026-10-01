@@ -427,4 +427,6 @@ A monitorok nem támogatottak.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Szűrők</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Rögzítési időköz (másodperc)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Várakozási idő másodpercben a rögzítés és szövegfelismerés után. 0: nincs várakozás (alapértelmezett). A gyorsbillentyűvel indított egyszeri rögzítés azonnal elindul.</value></data>
 </root>

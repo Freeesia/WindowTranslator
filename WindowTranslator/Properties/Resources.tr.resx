@@ -546,4 +546,6 @@ Monitör desteklenmiyor.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtreler</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Yakalama aralığı (saniye)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Yakalama ve metin tanıma işleminden sonra beklenecek saniye sayısı. 0: bekleme yok (varsayılan). Kısayol tuşuyla başlatılan tek yakalama hemen başlar.</value></data>
 </root>

@@ -568,4 +568,6 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filters</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Capture interval (seconds)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Seconds to wait after capture and OCR processing. 0: no wait (default). Single captures triggered by the hotkey start immediately.</value></data>
 </root>

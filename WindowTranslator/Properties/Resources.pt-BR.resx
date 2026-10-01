@@ -545,4 +545,6 @@ Monitor tidak didukung.</value>
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtros</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Intervalo de captura (segundos)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Tempo de espera em segundos após a captura e o reconhecimento de texto. 0: sem espera (padrão). Capturas únicas acionadas pelo atalho de teclado começam imediatamente.</value></data>
 </root>

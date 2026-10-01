@@ -537,4 +537,6 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtres</value>
   </data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Intervalle de capture (secondes)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Temps d’attente en secondes après la capture et la reconnaissance de texte. 0 : aucune attente (par défaut). Les captures uniques déclenchées par le raccourci clavier démarrent immédiatement.</value></data>
 </root>
