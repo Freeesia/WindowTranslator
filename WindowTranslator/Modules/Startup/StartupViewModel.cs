@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -101,7 +102,17 @@ public partial class StartupViewModel
                 }
                 return;
             }
-            p = FindProcessByWindowTitle(item.DisplayName, item.Size);
+
+            var displayHandle = FindDisplay(item);
+            if (displayHandle is not null)
+            {
+                p = new ProcessInfo(item.DisplayName, -1, displayHandle.Value, item.DisplayName);
+            }
+            else
+            {
+                p = FindProcessByWindowTitle(item.DisplayName, item.Size);
+            }
+
             if (p is null)
             {
                 this.presentationService.ShowMessage(string.Format(Resources.UnknownWindow, item.DisplayName), icon: Kamishibai.MessageBoxImage.Error, owner: window);
@@ -114,7 +125,7 @@ public partial class StartupViewModel
         }
         try
         {
-            await this.mainWindowModule.OpenTargetAsync(p.WindowHandle, p.Name);
+            await this.mainWindowModule.OpenTargetAsync(p.TargetHandle, p.Name);
             window.Close();
         }
         catch (Exception ex)
@@ -205,7 +216,37 @@ public partial class StartupViewModel
         return result ?? candidate;
     }
 
-    private record ProcessInfo(string Title, int PID, IntPtr WindowHandle, string Name);
+    private static unsafe IntPtr? FindDisplay(GraphicsCaptureItem item)
+    {
+        var candidates = new List<IntPtr>();
+        var targetSize = item.Size;
+        var targetName = item.DisplayName;
+        // 解像度だけでは特定せず、全モニターのキャプチャー項目と照合する
+        var enumerated = EnumDisplayMonitors(default, null, (hMonitor, hdcMonitor, lprcMonitor, dwData) =>
+        {
+            try
+            {
+                var monitorItem = CaptureHelper.CreateItemForMonitor(hMonitor);
+                if (monitorItem is not null &&
+                    monitorItem.DisplayName == targetName &&
+                    monitorItem.Size.Width == targetSize.Width &&
+                    monitorItem.Size.Height == targetSize.Height)
+                {
+                    candidates.Add(hMonitor);
+                }
+            }
+            catch (COMException)
+            {
+                // キャプチャー項目を作れない候補は除外する
+            }
+
+            return true;
+        }, IntPtr.Zero);
+
+        return enumerated && candidates.Count == 1 ? candidates[0] : null;
+    }
+
+    private record ProcessInfo(string Title, int PID, IntPtr TargetHandle, string Name);
 }
 
 public record MenuItemViewModel(string Header, ICommand? Command, IReadOnlyList<MenuItemViewModel> SubCommands);

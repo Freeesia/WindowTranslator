@@ -20,6 +20,7 @@ public partial class CaptureMainWindow
 {
     private readonly OverlaySwitch overlaySwitch;
     private readonly bool isOneShotMode;
+    private readonly bool isMonitor;
     private readonly IProcessInfoStore processInfo;
     private readonly DispatcherTimer timer = new();
     private readonly HOT_KEY_MODIFIERS shortcutModifiers;
@@ -40,6 +41,7 @@ public partial class CaptureMainWindow
             this.overlay.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
         }
         this.processInfo = processInfo;
+        this.isMonitor = processInfo.TargetHandle.GetCaptureTargetKind() is CaptureTargetKind.Monitor;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
         this.timer.Tick += (s, e) => CheckTargetWindow();
         (this.shortcutModifiers, this.shortcutKey) = targetSettings.Value.OverlayShortcut.ToHotKey();
@@ -56,8 +58,14 @@ public partial class CaptureMainWindow
 
     private void CheckTargetWindow()
     {
+        // ディスプレイの場合はウィンドウチェックをスキップ
+        if (this.isMonitor)
+        {
+            return;
+        }
+
         var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
-        if (!GetWindowInfo((HWND)this.processInfo.MainWindowHandle, ref windowInfo))
+        if (!GetWindowInfo((HWND)this.processInfo.TargetHandle, ref windowInfo))
         {
             this.Close();
             return;

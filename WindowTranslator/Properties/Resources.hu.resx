@@ -267,9 +267,7 @@
     <value>Kérjük, válasszon más ablakot, mint a WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>A kiválasztott "{0}" ablak folyamata nem határozható meg, és nem rögzíthető.
-A monitorok nem támogatottak.
-</value>
+    <value>A kiválasztott "{0}" ablak folyamata nem határozható meg, és nem rögzíthető.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Beállítások érvényesítési hiba</value>

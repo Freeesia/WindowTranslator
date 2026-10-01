@@ -267,9 +267,7 @@
     <value>Vyberte prosím jiné okno než WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>U vybraného okna "{0}" nelze určit proces a nelze jej zachytit.
-Monitory nejsou podporovány.
-</value>
+    <value>U vybraného okna "{0}" nelze určit proces a nelze jej zachytit.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Chyba ověření nastavení</value>

@@ -243,7 +243,7 @@ public partial class FoMFilterModule : IFilterModule
         }, Dropped);
         this.logger = logger;
         if (!options.Value.IsEnabledCorrect ||
-            !WindowUtility.TryGetProcessId(processInfo.MainWindowHandle, out var processId) ||
+            !WindowUtility.TryGetProcessId(processInfo.TargetHandle, out var processId) ||
             !(GetProcessPath(processId) is { } exePath) ||
             Path.GetFileName(exePath) != "FieldsOfMistria.exe")
         {

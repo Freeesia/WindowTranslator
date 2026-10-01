@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Win32;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Win32.Foundation;
@@ -25,6 +26,7 @@ public partial class OverlayMainWindow : Window
     private readonly OverlaySwitch overlaySwitch;
     private readonly bool isOneShotMode;
     private readonly bool isEnableCapture;
+    private readonly bool isMonitor;
     private readonly IProcessInfoStore processInfo;
     private readonly IVirtualDesktopManager desktopManager;
     private readonly DispatcherTimer timer = new();
@@ -33,6 +35,9 @@ public partial class OverlayMainWindow : Window
     private readonly int shortcutKey;
     private IntPtr windowHandle;
     private int overlayHiddenCount;
+    private Guid? captureVirtualDesktopId;
+    private bool isOnCaptureVirtualDesktop = true;
+    private long nextVirtualDesktopCheck;
 
     public Point MousePos
     {
@@ -81,6 +86,7 @@ public partial class OverlayMainWindow : Window
         this.isEnableCapture = settings.Value.IsEnableCaptureOverlay;
         this.IsSwapVisibility = settings.Value.IsOverlayPointSwap;
         this.processInfo = processInfo;
+        this.isMonitor = processInfo.TargetHandle.GetCaptureTargetKind() is CaptureTargetKind.Monitor;
         this.desktopManager = desktopManager;
         this.logger = logger;
         this.timer.Interval = TimeSpan.FromMilliseconds(10);
@@ -100,9 +106,14 @@ public partial class OverlayMainWindow : Window
     {
         this.windowHandle = new WindowInteropHelper(this).Handle;
 
-        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+        if (this.isMonitor)
         {
-            var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.MainWindowHandle);
+            this.captureVirtualDesktopId = GetCurrentVirtualDesktopId();
+        }
+
+        if (!this.isMonitor && !this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
+        {
+            var targetDesktop = this.desktopManager.GetWindowDesktopId(this.processInfo.TargetHandle);
             this.desktopManager.MoveWindowToDesktop(this.windowHandle, ref targetDesktop);
         }
 
@@ -151,73 +162,167 @@ public partial class OverlayMainWindow : Window
 
     private unsafe void UpdateWindowPositionAndSize()
     {
-        var sw = Stopwatch.StartNew();
-        var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
-        if (!GetWindowInfo(new(this.processInfo.MainWindowHandle), ref windowInfo))
+        if (this.isMonitor)
         {
-            this.timer.Stop();
-            this.Close();
-            return;
-        }
+            if (Environment.TickCount64 >= this.nextVirtualDesktopCheck)
+            {
+                this.nextVirtualDesktopCheck = Environment.TickCount64 + 100;
+                // 起動時に ID がなかった場合、最初に作られたデスクトップを元のデスクトップとする。
+                this.captureVirtualDesktopId ??= GetPrimaryVirtualDesktopId();
+                if (this.captureVirtualDesktopId is { } captureDesktopId && GetCurrentVirtualDesktopId() is { } currentDesktopId)
+                {
+                    this.isOnCaptureVirtualDesktop = captureDesktopId == currentDesktopId;
+                }
+            }
 
-        if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.MainWindowHandle))
+            if (!this.isOnCaptureVirtualDesktop)
+            {
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
+            var monitorInfo = default(MONITORINFOEXW);
+            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+            if (!GetMonitorInfo(new(this.processInfo.TargetHandle), ref monitorInfo.monitorInfo))
+            {
+                this.logger.LogWarning("Failed to get monitor info");
+                return;
+            }
+
+            var left = monitorInfo.monitorInfo.rcMonitor.left;
+            var top = monitorInfo.monitorInfo.rcMonitor.top;
+            var width = monitorInfo.monitorInfo.rcMonitor.right - left;
+            var height = monitorInfo.monitorInfo.rcMonitor.bottom - top;
+            if (width <= 0 || height <= 0)
+            {
+                this.logger.LogWarning($"Invalid monitor dimensions: {width}x{height}");
+                return;
+            }
+
+            var mode = default(DEVMODEW);
+            var eDpiScale = GetDpiForSystem() / 96.0;
+            var rDpiScale = eDpiScale;
+            if (EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode))
+            {
+                if (mode.dmPelsWidth > 0)
+                {
+                    rDpiScale = eDpiScale * mode.dmPelsWidth / width;
+                }
+            }
+            else
+            {
+                this.logger.LogWarning("Failed to get display settings, using default DPI scale");
+            }
+
+            GetCursorPos(out var nativePos);
+            var x = (nativePos.X - left) / eDpiScale;
+            var y = (nativePos.Y - top) / eDpiScale;
+
+            this.logger.LogDebug($"Display: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2})");
+            this.SetCurrentValue(MousePosProperty, new Point(x, y));
+            this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
+            this.SetCurrentValue(LeftProperty, left / eDpiScale);
+            this.SetCurrentValue(TopProperty, top / eDpiScale);
+            this.SetCurrentValue(WidthProperty, width / eDpiScale);
+            this.SetCurrentValue(HeightProperty, height / eDpiScale);
+        }
+        else
         {
-            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
-            return;
+            var sw = Stopwatch.StartNew();
+            var windowInfo = new WINDOWINFO() { cbSize = (uint)Marshal.SizeOf<WINDOWINFO>() };
+            if (!GetWindowInfo(new(this.processInfo.TargetHandle), ref windowInfo))
+            {
+                this.timer.Stop();
+                this.Close();
+                return;
+            }
+
+            if (!this.desktopManager.IsWindowOnCurrentVirtualDesktop(this.processInfo.TargetHandle))
+            {
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
+            var clientRect = windowInfo.rcClient;
+            var windowRect = windowInfo.rcWindow;
+
+            // 対象のウィンドウの中心位置が他のウィンドウによって隠れているかチェック
+            var windowAtPoint = WindowFromPoint(new((clientRect.left + clientRect.right) / 2, (clientRect.top + clientRect.bottom) / 2));
+            // ウィンドウの中心が別のウィンドウに隠されている場合は非表示にする
+            if (windowAtPoint != this.processInfo.TargetHandle && !IsChild(new(this.processInfo.TargetHandle), windowAtPoint))
+            {
+                this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
+                return;
+            }
+
+            // 上記のすべてのチェックに合格した場合、オーバーレイを表示
+            this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+
+            // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
+            var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
+            SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
+            var monitorHandle = MonitorFromWindow(new(this.processInfo.TargetHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+            var monitorInfo = default(MONITORINFOEXW);
+            monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
+            GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo);
+            var mode = default(DEVMODEW);
+            EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode);
+            var eDpiScale = GetDpiForSystem() / 96.0;
+            var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
+
+            var p = default(WINDOWPLACEMENT);
+            GetWindowPlacement(new(this.processInfo.TargetHandle), ref p);
+
+            var left = clientRect.left;
+            var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? monitorInfo.monitorInfo.rcWork.top : windowRect.top;
+            var width = clientRect.right - left;
+            var height = clientRect.bottom - top;
+
+            GetCursorPos(out var nativePos);
+            var x = (nativePos.X - left) / eDpiScale;
+            var y = (nativePos.Y - top) / eDpiScale;
+
+            this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
+            this.SetCurrentValue(MousePosProperty, new Point(x, y));
+            if (this.isEnableCapture && p.showCmd == SHOW_WINDOW_CMD.SW_SHOWMINIMIZED)
+            {
+                return;
+            }
+            this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
+            this.SetCurrentValue(LeftProperty, left / eDpiScale);
+            this.SetCurrentValue(TopProperty, top / eDpiScale);
+            this.SetCurrentValue(WidthProperty, width / eDpiScale);
+            this.SetCurrentValue(HeightProperty, height / eDpiScale);
         }
-
-        var clientRect = windowInfo.rcClient;
-        var windowRect = windowInfo.rcWindow;
-
-        // 対象のウィンドウの中心位置が他のウィンドウによって隠れているかチェック
-        var windowAtPoint = WindowFromPoint(new((clientRect.left + clientRect.right) / 2, (clientRect.top + clientRect.bottom) / 2));
-        // ウィンドウの中心が別のウィンドウに隠されている場合は非表示にする
-        if (windowAtPoint != this.processInfo.MainWindowHandle && !IsChild(new(this.processInfo.MainWindowHandle), windowAtPoint))
-        {
-            this.SetCurrentValue(VisibilityProperty, Visibility.Hidden);
-            return;
-        }
-
-        // 上記のすべてのチェックに合格した場合、オーバーレイを表示
-        this.SetCurrentValue(VisibilityProperty, Visibility.Visible);
-
-        // 本気のフルスクリーンだと何かの拍子に裏側に行ってしまうので、定期的に最前面に持ってくる
-        var hWndHiddenOwner = Windows.Win32.PInvoke.GetWindow(new(this.windowHandle), GET_WINDOW_CMD.GW_OWNER);
-        SetWindowPos(hWndHiddenOwner, new(-1), 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
-
-        var monitorHandle = MonitorFromWindow(new(this.processInfo.MainWindowHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        var monitorInfo = default(MONITORINFOEXW);
-        monitorInfo.monitorInfo.cbSize = (uint)Marshal.SizeOf<MONITORINFOEXW>();
-        GetMonitorInfo(monitorHandle, ref monitorInfo.monitorInfo);
-        var mode = default(DEVMODEW);
-        EnumDisplaySettings(monitorInfo.szDevice.ToString(), ENUM_DISPLAY_SETTINGS_MODE.ENUM_CURRENT_SETTINGS, ref mode);
-        var eDpiScale = GetDpiForSystem() / 96.0;
-        var rDpiScale = eDpiScale * mode.dmPelsWidth / (monitorInfo.monitorInfo.rcMonitor.right - monitorInfo.monitorInfo.rcMonitor.left);
-
-        var p = default(WINDOWPLACEMENT);
-        GetWindowPlacement(new(this.processInfo.MainWindowHandle), ref p);
-
-        var left = clientRect.left;
-        var top = p.showCmd.HasFlag(SHOW_WINDOW_CMD.SW_MAXIMIZE) ? monitorInfo.monitorInfo.rcWork.top : windowRect.top;
-        var width = clientRect.right - left;
-        var height = clientRect.bottom - top;
-
-        GetCursorPos(out var nativePos);
-        var x = (nativePos.X - left) / eDpiScale;
-        var y = (nativePos.Y - top) / eDpiScale;
-
-        this.logger.LogDebug($"Window: (x:{left:f2}, y:{top:f2}, w:{width:f2}, h:{height:f2}), マウス位置：({x:f2}, {y:f2} {sw.Elapsed}");
-        this.SetCurrentValue(MousePosProperty, new Point(x, y));
-        if (this.isEnableCapture && p.showCmd == SHOW_WINDOW_CMD.SW_SHOWMINIMIZED)
-        {
-            return;
-        }
-        this.SetCurrentValue(ScaleProperty, 1 / rDpiScale);
-        this.SetCurrentValue(LeftProperty, left / eDpiScale);
-        this.SetCurrentValue(TopProperty, top / eDpiScale);
-        this.SetCurrentValue(WidthProperty, width / eDpiScale);
-        this.SetCurrentValue(HeightProperty, height / eDpiScale);
     }
+
+    private static Guid? GetCurrentVirtualDesktopId()
+    {
+        const string keyPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops";
+        using var desktops = Registry.CurrentUser.OpenSubKey(keyPath);
+        if (GetGuid(desktops?.GetValue("CurrentVirtualDesktop")) is { } currentId)
+        {
+            return currentId;
+        }
+
+        using var process = Process.GetCurrentProcess();
+        using var session = Registry.CurrentUser.OpenSubKey(
+            $@"Software\Microsoft\Windows\CurrentVersion\Explorer\SessionInfo\{process.SessionId}\VirtualDesktops");
+        return GetGuid(session?.GetValue("CurrentVirtualDesktop"))
+            ?? GetGuid(desktops?.GetValue("VirtualDesktopIDs"));
+    }
+
+    private static Guid? GetPrimaryVirtualDesktopId()
+    {
+        using var desktops = Registry.CurrentUser.OpenSubKey(
+            @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops");
+        return GetGuid(desktops?.GetValue("VirtualDesktopIDs"));
+    }
+
+    private static Guid? GetGuid(object? value)
+        => value is byte[] { Length: >= 16 } bytes ? new Guid(bytes.AsSpan(0, 16)) : null;
 
     private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
     {
