@@ -90,7 +90,7 @@ public class TargetSettings
     /// <summary>
     /// キャプチャ・OCRの処理後に待機する秒数（0: 待機なし）
     /// </summary>
-    public double CaptureInterval { get; set => field = Math.Max(value, 0); }
+    public double CaptureInterval { get; set => field = Math.Clamp(value, 0, (uint.MaxValue - 1) / 1000d); }
 
     /// <summary>
     /// マウスポインター判定の余白（WPF上のピクセル値）

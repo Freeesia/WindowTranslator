@@ -488,7 +488,7 @@ public partial class TargetSettingsViewModel(
 
     [Category("SettingsViewModel|Misc")]
     [LocalizedDescription(typeof(Resources), $"{nameof(CaptureInterval)}_Desc")]
-    [Spinnable(0.1, 1, 0, double.MaxValue)]
+    [Spinnable(0.1, 1, 0, (uint.MaxValue - 1) / 1000d)]
     public double CaptureInterval { get; set; } = settings.CaptureInterval;
 
     [Category("SettingsViewModel|Misc")]
