@@ -8,6 +8,25 @@ namespace WindowTranslator.Tests;
 
 public class ConfigurePluginParamOptionsTests
 {
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("game")]
+    public void MissingPluginConfigurationUsesPluginDefaults(string? target)
+    {
+        var values = new Dictionary<string, string?>();
+        if (target is not null)
+        {
+            values[$"Targets:{target}:SelectedPlugins:ITranslateModule"] = "TestTranslator";
+        }
+        using var provider = CreateProvider(values, target ?? "");
+        using var scope = provider.CreateScope();
+
+        var param = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TestPluginParam>>().Get(target ?? "");
+
+        Assert.Equal("initial-key", param.ApiKey);
+    }
+
     [Fact]
     public void ConcretePluginOptionsUseTheSameNamedConfiguration()
     {
@@ -54,7 +73,7 @@ public class ConfigurePluginParamOptionsTests
 
     private sealed class TestPluginParam : IPluginParam
     {
-        public string? ApiKey { get; set; }
+        public string? ApiKey { get; set; } = "initial-key";
     }
 
     private sealed class TestProcessInfoStore(string name) : IProcessInfoStore
