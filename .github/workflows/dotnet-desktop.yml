@@ -88,21 +88,6 @@ jobs:
       - run: |
           dotnet tool restore
           dotnet restore
-          # 旧ライセンスURLが利用できないパッケージは、同梱の本文を使用する。
-          $bundledLicenses = @{
-            'microsoft.netcore.platforms/1.1.0' = 'dotnet_library_license.txt'
-            'netstandard.library/1.6.1' = 'dotnet_library_license.txt'
-            'system.componentmodel.annotations/4.6.0' = 'LICENSE.TXT'
-          }
-          foreach ($package in $bundledLicenses.GetEnumerator()) {
-            $nuspecPath = Join-Path "$env:USERPROFILE/.nuget/packages/$($package.Key)" "$($package.Key.Split('/')[0]).nuspec"
-            [xml]$nuspec = Get-Content -LiteralPath $nuspecPath
-            $license = $nuspec.CreateElement('license', $nuspec.DocumentElement.NamespaceURI)
-            $license.SetAttribute('type', 'file')
-            $license.InnerText = $package.Value
-            $nuspec.package.metadata.ReplaceChild($license, $nuspec.package.metadata['licenseUrl']) | Out-Null
-            $nuspec.Save($nuspecPath)
-          }
           dotnet nuget-license -t `
             -ignore ignore-packages.json `
             -override package-information.json `
