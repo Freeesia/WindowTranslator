@@ -386,9 +386,7 @@
     <value>โปรดเลือกหน้าต่างอื่นที่ไม่ใช่ WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>ไม่สามารถแคปเจอร์หน้าต่างที่เลือก「{0}」เนื่องจากไม่สามารถระบุกระบวนการได้
-มอนิเตอร์ไม่ได้รับการสนับสนุน
-</value>
+    <value>ไม่สามารถแคปเจอร์หน้าต่างที่เลือก「{0}」เนื่องจากไม่สามารถระบุกระบวนการได้</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>ข้อผิดพลาดในการตรวจสอบการตั้งค่า</value>

@@ -47,16 +47,16 @@ public class ProcessWindowPresenter : HwndHostPresenter
                             WINDOW_STYLE.WS_CLIPCHILDREN |
                             WINDOW_STYLE.WS_VISIBLE |
                             WINDOW_STYLE.WS_MAXIMIZE;
-            this.beforeStyle = GetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
-            _ = ((HWND)this.process.MainWindowHandle).SetStyle(childStyle);
-            SetParent((HWND)this.process.MainWindowHandle, (HWND)hwndParent.Handle);
-            return new HandleRef(this, this.process.MainWindowHandle);
+            this.beforeStyle = GetWindowLong((HWND)this.process.TargetHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            _ = ((HWND)this.process.TargetHandle).SetStyle(childStyle);
+            SetParent((HWND)this.process.TargetHandle, (HWND)hwndParent.Handle);
+            return new HandleRef(this, this.process.TargetHandle);
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            SetParent((HWND)this.process.MainWindowHandle, HWND.Null);
-            _ = SetWindowLong((HWND)this.process.MainWindowHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, this.beforeStyle);
+            SetParent((HWND)this.process.TargetHandle, HWND.Null);
+            _ = SetWindowLong((HWND)this.process.TargetHandle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, this.beforeStyle);
             DestroyWindow((HWND)hwnd.Handle);
         }
     }

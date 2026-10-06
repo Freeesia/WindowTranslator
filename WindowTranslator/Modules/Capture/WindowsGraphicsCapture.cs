@@ -8,6 +8,7 @@ using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
 using WindowTranslator.ComponentModel;
+using WindowTranslator.Extensions;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator.Modules.Capture;
@@ -20,7 +21,8 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
     private readonly SemaphoreSlim processing = new(1, 1);
     private readonly ILogger<WindowsGraphicsCapture> logger = logger;
     private readonly CancellationTokenSource cts = new();
-    private nint targetWindow;
+    private nint targetHandle;
+    private bool isMonitor;
     private Direct3D11CaptureFramePool? framePool;
     private GraphicsCaptureSession? session;
     private SizeInt32 lastSize = new(1000, 1000);
@@ -36,13 +38,23 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
         this.framePool?.Dispose();
     }
 
-    public void StartCapture(IntPtr targetWindow)
+    public void StartCapture(IntPtr targetHandle)
     {
         this.logger.LogDebug("StartCapture");
-        this.targetWindow = targetWindow;
-        var item = CaptureHelper.CreateItemForWindow(targetWindow)!;
+        this.targetHandle = targetHandle;
+
+        this.isMonitor = targetHandle.GetCaptureTargetKind() is CaptureTargetKind.Monitor;
+        GraphicsCaptureItem? item = this.isMonitor
+            ? CaptureHelper.CreateItemForMonitor(targetHandle)
+            : CaptureHelper.CreateItemForWindow(targetHandle);
+
+        if (item is null)
+        {
+            throw new InvalidOperationException("Failed to create capture item");
+        }
+
         this.lastSize = item.Size;
-        this.lastMaximized = IsZoomed(new(targetWindow));
+        this.lastMaximized = !this.isMonitor && IsZoomed(new(targetHandle));
         this.framePool = Direct3D11CaptureFramePool.Create(device, DirectXPixelFormat.B8G8R8A8UIntNormalized, 1, lastSize);
         this.framePool.FrameArrived += FramePool_FrameArrived;
         this.session = this.framePool.CreateCaptureSession(item);
@@ -78,12 +90,13 @@ public sealed class WindowsGraphicsCapture(ILogger<WindowsGraphicsCapture> logge
             {
                 return;
             }
-            if (this.lastMaximized != IsZoomed(new(targetWindow)))
+            // モニターの場合は最大化チェックをスキップ
+            if (!this.isMonitor && this.lastMaximized != IsZoomed(new(targetHandle)))
             {
                 this.lastMaximized = !this.lastMaximized;
                 this.logger.LogDebug("セッション再作成");
                 StopCapture();
-                StartCapture(targetWindow);
+                StartCapture(targetHandle);
                 return;
             }
             this.cts.Token.ThrowIfCancellationRequested();

@@ -379,7 +379,7 @@
     <value>Пожалуйста выберите окно отличное от WindowTranslator</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>Выбранное окно {0} не может определить процесс поэтому захват невозможен. Монитор не поддерживается.</value>
+    <value>Выбранное окно {0} не может определить процесс поэтому захват невозможен.</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>Ошибка проверки настроек</value>

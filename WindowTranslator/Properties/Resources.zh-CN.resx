@@ -386,9 +386,7 @@
     <value>请选择WindowTranslator以外的窗口</value>
   </data>
   <data name="UnknownWindow" xml:space="preserve">
-    <value>选择的窗口"{0}"无法确定进程,无法捕获。
-不支持显示器。
-</value>
+    <value>选择的窗口"{0}"无法确定进程,无法捕获。</value>
   </data>
   <data name="SettingsInvalid" xml:space="preserve">
     <value>设置验证错误</value>
