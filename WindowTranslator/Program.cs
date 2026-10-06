@@ -283,7 +283,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.GetRequiredSection(nameof(TargetSettings.PluginParams))
+        section.GetSection(nameof(TargetSettings.PluginParams))
             .GetSection(typeof(TOptions).Name)
             .Bind(options);
     }
