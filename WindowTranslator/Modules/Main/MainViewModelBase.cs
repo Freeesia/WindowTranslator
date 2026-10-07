@@ -159,12 +159,9 @@ public abstract partial class MainViewModelBase : IDisposable
             .ObserveOn(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
             .SubscribeAwait(async (_, ct) =>
             {
-                await CreateTextOverlayAsync(ct);
-                if (!this.isOneShotMode)
+                if (await CreateTextOverlayAsync(ct) && !this.isOneShotMode)
                 {
                     await Observable.Timer(this.captureInterval, CancellationToken.None).WaitAsync(ct);
-                    ct.ThrowIfCancellationRequested();
-                    this.captureRequests.OnNext(default);
                 }
             }, AwaitOperation.ThrottleFirstLast);
         this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
@@ -196,7 +193,7 @@ public abstract partial class MainViewModelBase : IDisposable
         sbmp?.Dispose();
     }
 
-    private async Task CreateTextOverlayAsync(CancellationToken cancellationToken = default)
+    private async Task<bool> CreateTextOverlayAsync(CancellationToken cancellationToken = default)
     {
         await this.analyzing.WaitAsync(cancellationToken);
         using var to = this.logger.LogDebugTime("TextOverlay");
@@ -207,26 +204,19 @@ public abstract partial class MainViewModelBase : IDisposable
         var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
         if (sbmp is null)
         {
-            sbmp = this.analyzingBmp;
+            return false;
         }
-        else
+        this.latestFrame = null;
+        if (this.analyzingBmp is { } previousBmp)
         {
-            this.latestFrame = null;
-            if (this.analyzingBmp is { } previousBmp)
+            if (!this.isOneShotMode
+                && (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight))
             {
-                if (!this.isOneShotMode
-                    && (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight))
-                {
-                    this.ocrTextTracker.Reset();
-                }
-                previousBmp.Dispose();
+                this.ocrTextTracker.Reset();
             }
-            this.analyzingBmp = sbmp;
+            previousBmp.Dispose();
         }
-        if (sbmp is null)
-        {
-            return;
-        }
+        this.analyzingBmp = sbmp;
 
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
@@ -272,14 +262,14 @@ public abstract partial class MainViewModelBase : IDisposable
                 // すでに破棄されている場合は何もしない
                 this.captureLoop?.Dispose();
                 this.capture.StopCapture();
-                return;
+                return false;
             }
             catch (OperationCanceledException)
             {
                 // キャンセルされた場合は何もしない
                 this.captureLoop?.Dispose();
                 this.capture.StopCapture();
-                return;
+                return false;
             }
             catch (Exception e)
             {
@@ -289,7 +279,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 await sbmp.TrySaveImage(path);
                 await this.presentationService.OpenErrorDialogAsync(Resources.FaildOcr, e, this.name, path);
                 StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-                return;
+                return false;
             }
         }
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
@@ -318,6 +308,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.latestFrame = (texts.ToArray(), context);
         this.translationRequests.OnNext(this.latestFrame.Value.Texts);
         await UpdateDisplayedTextsAsync(cancellationToken);
+        return true;
     }
 
     private async Task UpdateDisplayedTextsAsync(CancellationToken cancellationToken)
