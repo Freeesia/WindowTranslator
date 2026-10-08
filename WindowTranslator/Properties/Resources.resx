@@ -570,7 +570,7 @@
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>言語と翻訳</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>文字認識</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>表示</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>表示と動作</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>動作</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>キャッシュ</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>認識エンジン</value></data>

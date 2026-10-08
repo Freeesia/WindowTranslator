@@ -548,7 +548,7 @@
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>语言与翻译</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>文字识别</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>显示</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>显示与行为</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>行为</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>缓存</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>识别引擎</value></data>

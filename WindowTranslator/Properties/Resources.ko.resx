@@ -548,7 +548,7 @@
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>언어 및 번역</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>문자 인식</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>표시</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>표시 및 동작</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>동작</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>캐시</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>인식 엔진</value></data>

@@ -533,7 +533,7 @@
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>زبان و ترجمه</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>تشخیص متن</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>نمایش</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>نمایش و رفتار</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>رفتار</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>حافظهٔ نهان</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>موتور تشخیص</value></data>

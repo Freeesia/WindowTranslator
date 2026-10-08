@@ -539,7 +539,7 @@
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Язык и перевод</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Распознавание текста</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>Отображение</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Отображение и поведение</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>Поведение</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Кэш</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Движок распознавания</value></data>

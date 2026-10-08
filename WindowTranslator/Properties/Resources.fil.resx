@@ -548,7 +548,7 @@ Ang monitor ay hindi suportado.
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Wika at pagsasalin</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Pagkilala ng teksto</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>Pagpapakita</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Pagpapakita at gawi</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>Gawi</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Engine ng pagkilala</value></data>

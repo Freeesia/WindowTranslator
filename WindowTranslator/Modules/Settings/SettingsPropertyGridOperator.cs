@@ -41,7 +41,7 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
             return tabs;
         }
 
-        string[] pageKeys = ["SettingsLanguageTranslation", "SettingsRecognition", "SettingsDisplay", "SettingsBehavior", "SettingsCache"];
+        string[] pageKeys = ["SettingsLanguageTranslation", "SettingsRecognition", "SettingsDisplayBehavior", "SettingsCache"];
         var pageHeaders = pageKeys.Select(key => GetLocalizedString(key, typeof(TargetSettingsViewModel))).ToArray();
         return tabs.OrderBy(tab =>
         {

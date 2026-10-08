@@ -539,7 +539,7 @@
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>اللغة والترجمة</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>التعرف على النص</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>العرض</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>العرض والسلوك</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>السلوك</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>ذاكرة التخزين المؤقت</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>محرك التعرف</value></data>

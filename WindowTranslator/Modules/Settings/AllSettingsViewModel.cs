@@ -446,13 +446,13 @@ public partial class TargetSettingsViewModel(
             nameof(ICacheModule),
             cacheModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsDisplay|Font")]
+    [Category("SettingsDisplayBehavior|Font")]
     [SortIndex(10)]
     [FontFamilySelector]
     [FontPreview(18)]
     public string Font { get; set; } = settings.Font;
 
-    [property: Category("SettingsDisplay|Font")]
+    [property: Category("SettingsDisplayBehavior|Font")]
     [property: SortIndex(20)]
     [property: Slidable(0.1, 5, 0.1, 1.0, true, 0.1)]
     [property: FormatString("F2")]
@@ -480,33 +480,33 @@ public partial class TargetSettingsViewModel(
     [ObservableProperty]
     private int ocrMissingFrameRetention = settings.OcrMissingFrameRetention;
 
-    [Category("SettingsBehavior|")]
-    [SortIndex(10)]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(60)]
     public string OverlayShortcut { get; set; } = settings.OverlayShortcut;
 
-    [property: Category("SettingsDisplay|Overlay")]
+    [property: Category("SettingsDisplayBehavior|Overlay")]
     [property: SortIndex(30)]
     [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
     [property: FormatString("P1")]
     [ObservableProperty]
     private double overlayOpacity = settings.OverlayOpacity;
 
-    [Category("SettingsBehavior|")]
-    [SortIndex(20)]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(70)]
     public bool IsOneShotMode { get; set; } = settings.IsOneShotMode;
 
-    [property: Category("SettingsDisplay|Overlay")]
+    [property: Category("SettingsDisplayBehavior|Overlay")]
     [property: SortIndex(40)]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
     [property: Slidable(0, 100, 1, 10, true, 1)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
-    [Category("SettingsBehavior|")]
-    [SortIndex(30)]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(80)]
     public bool IsEnableAutoTarget { get; set; } = settings.IsEnableAutoTarget;
 
-    [Category("SettingsDisplay|Overlay")]
+    [Category("SettingsDisplayBehavior|Overlay")]
     [SortIndex(50)]
     public bool DisplayBusy { get; set; } = settings.DisplayBusy;
 

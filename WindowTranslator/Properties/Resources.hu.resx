@@ -429,7 +429,7 @@ A monitorok nem támogatottak.
   </data>
   <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Nyelv és fordítás</value></data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Szövegfelismerés</value></data>
-  <data name="SettingsDisplay" xml:space="preserve"><value>Megjelenítés</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Megjelenítés és működés</value></data>
   <data name="SettingsBehavior" xml:space="preserve"><value>Működés</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Gyorsítótár</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Felismerőmotor</value></data>
