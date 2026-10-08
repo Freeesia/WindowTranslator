@@ -546,6 +546,12 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>过滤器</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>语言与翻译</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>文字识别</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>显示与行为</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>行为</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>缓存</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>识别引擎</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>捕获间隔（秒）</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>指定捕获和 OCR 处理后等待的秒数。0：不等待（默认）。通过快捷键触发的单次捕获会立即开始。</value></data>
 </root>

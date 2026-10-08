@@ -546,6 +546,12 @@ Ang monitor ay hindi suportado.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Mga filter</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Wika at pagsasalin</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Pagkilala ng teksto</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Pagpapakita at gawi</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Gawi</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Engine ng pagkilala</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Pagitan ng pagkuha (segundo)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>Mga segundong hihintayin pagkatapos ng pagkuha at pagkilala ng teksto. 0: walang paghihintay (default). Agad na magsisimula ang isang pagkuha gamit ang hotkey.</value></data>
 </root>

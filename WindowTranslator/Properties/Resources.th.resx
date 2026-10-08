@@ -546,6 +546,12 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>ตัวกรอง</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>ภาษาและการแปล</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>การรู้จำข้อความ</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>การแสดงผลและการทำงาน</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>การทำงาน</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>แคช</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>เอนจินการรู้จำ</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>ช่วงเวลาจับภาพ (วินาที)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>จำนวนวินาทีที่รอหลังการจับภาพและการอ่านข้อความ 0: ไม่รอ (ค่าเริ่มต้น) การจับภาพครั้งเดียวด้วยปุ่มลัดจะเริ่มทันที</value></data>
 </root>

@@ -546,6 +546,12 @@ Monitör desteklenmiyor.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtreler</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Dil ve çeviri</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Metin tanıma</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Görünüm ve davranış</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Davranış</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Önbellek</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Tanıma motoru</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Yakalama aralığı (saniye)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>Yakalama ve metin tanıma işleminden sonra beklenecek saniye sayısı. 0: bekleme yok (varsayılan). Kısayol tuşuyla başlatılan tek yakalama hemen başlar.</value></data>
 </root>

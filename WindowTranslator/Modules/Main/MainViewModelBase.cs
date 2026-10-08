@@ -32,6 +32,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IOcrModule ocr;
     private readonly List<PriorityRect> priorityRects;
     private readonly IOcrTextTracker ocrTextTracker;
+    private readonly OcrTraceRecorder ocrTraceRecorder;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
     private readonly IColorModule color;
@@ -79,6 +80,7 @@ public abstract partial class MainViewModelBase : IDisposable
         IOcrModule ocr,
         IOptionsSnapshot<BasicOcrParam> ocrParam,
         IOcrTextTracker ocrTextTracker,
+        OcrTraceRecorder ocrTraceRecorder,
         ITranslateModule translator,
         ICacheModule cache,
         IColorModule color,
@@ -100,6 +102,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
         this.priorityRects = ocrParam.Value.PriorityRects ?? [];
         this.ocrTextTracker = ocrTextTracker ?? throw new ArgumentNullException(nameof(ocrTextTracker));
+        this.ocrTraceRecorder = ocrTraceRecorder ?? throw new ArgumentNullException(nameof(ocrTraceRecorder));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
@@ -272,6 +275,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 }
 
                 var observations = await this.ocr.RecognizeAsync(new(sbmp, regions));
+                this.ocrTraceRecorder.Record(observations, new(sbmp.PixelWidth, sbmp.PixelHeight));
                 texts = this.isOneShotMode
                     ? observations
                     : this.ocrTextTracker.Update(observations, new(sbmp.PixelWidth, sbmp.PixelHeight));
@@ -449,12 +453,13 @@ public sealed class CaptureMainViewModel(
     [Inject] IOcrModule ocr,
     [Inject] IOptionsSnapshot<BasicOcrParam> ocrParam,
     [Inject] IOcrTextTracker ocrTextTracker,
+    [Inject] OcrTraceRecorder ocrTraceRecorder,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, ocrTraceRecorder, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
@@ -468,11 +473,12 @@ public sealed class OverlayMainViewModel(
     [Inject] IOcrModule ocr,
     [Inject] IOptionsSnapshot<BasicOcrParam> ocrParam,
     [Inject] IOcrTextTracker ocrTextTracker,
+    [Inject] OcrTraceRecorder ocrTraceRecorder,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, ocrTraceRecorder, translator, cache, color, filters, logger)
 {
 }

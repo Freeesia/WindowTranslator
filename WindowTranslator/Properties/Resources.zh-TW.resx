@@ -546,6 +546,12 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>篩選器</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>語言與翻譯</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>文字辨識</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>顯示與動作</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>動作</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>快取</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>辨識引擎</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>擷取間隔（秒）</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>指定擷取和 OCR 處理後等待的秒數。0：不等待（預設）。透過快速鍵觸發的單次擷取會立即開始。</value></data>
 </root>

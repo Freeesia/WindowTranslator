@@ -546,6 +546,12 @@ Màn hình không được hỗ trợ.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Bộ lọc</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Ngôn ngữ và bản dịch</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Nhận dạng văn bản</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Hiển thị và hành vi</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Hành vi</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Bộ nhớ đệm</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Bộ máy nhận dạng</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Khoảng chụp (giây)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>Số giây chờ sau khi chụp và nhận dạng văn bản. 0: không chờ (mặc định). Chụp một lần bằng phím tắt bắt đầu ngay lập tức.</value></data>
 </root>

@@ -539,6 +539,12 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>फ़िल्टर</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>भाषा और अनुवाद</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>पाठ पहचान</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>प्रदर्शन और व्यवहार</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>व्यवहार</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>कैश</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>पहचान इंजन</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>कैप्चर अंतराल (सेकंड)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>कैप्चर और पाठ पहचान के बाद प्रतीक्षा करने के सेकंड। 0: कोई प्रतीक्षा नहीं (डिफ़ॉल्ट)। हॉटकी से शुरू किया गया एकल कैप्चर तुरंत शुरू होता है।</value></data>
 </root>

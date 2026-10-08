@@ -214,7 +214,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     [RelayCommand(CanExecute = nameof(CanDeleteTargetSetting))]
     public void DeleteTargetSetting(TargetSettingsViewModel item)
-        => this.Targets.Remove(item);
+    {
+        if (this.SelectedTarget == item)
+        {
+            this.SelectedTarget = this.Targets.First(target => string.IsNullOrEmpty(target.Name));
+        }
+        this.Targets.Remove(item);
+    }
 
     public static bool CanDeleteTargetSetting(TargetSettingsViewModel item)
         => !string.IsNullOrEmpty(item?.Name);
@@ -395,19 +401,23 @@ public partial class TargetSettingsViewModel(
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; } = cacheModules;
 
-    [Category("SettingsViewModel|Language")]
+    // SortIndexはタブの生成順にも使われるため、共通タブの先頭項目を負値で先に並べる。
+    [Category("SettingsLanguageTranslation|Language")]
+    [SortIndex(-40)]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Source { get; set; } = settings.Language.Source;
 
-    [Category("SettingsViewModel|Language")]
+    [Category("SettingsLanguageTranslation|Language")]
+    [SortIndex(20)]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Target { get; set; } = settings.Language.Target;
 
-    [Category("SettingsViewModel|Plugin")]
+    [Category("SettingsRecognition|RecognitionEngine")]
+    [SortIndex(-30)]
     [ItemsSourceProperty(nameof(OcrModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -417,7 +427,8 @@ public partial class TargetSettingsViewModel(
             nameof(IOcrModule),
             ocrModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsViewModel|Plugin")]
+    [Category("SettingsLanguageTranslation|")]
+    [SortIndex(30)]
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -427,7 +438,8 @@ public partial class TargetSettingsViewModel(
             nameof(ITranslateModule),
             translateModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsViewModel|Plugin")]
+    [Category("SettingsCache|")]
+    [SortIndex(-10)]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -436,57 +448,64 @@ public partial class TargetSettingsViewModel(
             nameof(ICacheModule),
             cacheModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsViewModel|Font")]
+    [Category("SettingsDisplayBehavior|Font")]
+    [SortIndex(-20)]
     [FontFamilySelector]
     [FontPreview(18)]
     public string Font { get; set; } = settings.Font;
 
-    [property: Category("SettingsViewModel|Font")]
+    [property: Category("SettingsDisplayBehavior|Font")]
+    [property: SortIndex(20)]
     [property: Slidable(0.1, 5, 0.1, 1.0, true, 0.1)]
     [property: FormatString("F2")]
     [ObservableProperty]
     private double fontScale = settings.FontScale;
 
-    [property: Category("SettingsViewModel|OcrTracking")]
+    [property: Category("SettingsRecognition|OcrTracking")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrGeometryStability)}_Desc")]
     [property: Slidable(1, 5, 1, 1, true, 1)]
-    [property: SortIndex(1)]
+    [property: SortIndex(40)]
     [ObservableProperty]
     private int ocrGeometryStability = settings.OcrGeometryStability;
 
-    [property: Category("SettingsViewModel|OcrTracking")]
+    [property: Category("SettingsRecognition|OcrTracking")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrRecognitionStability)}_Desc")]
     [property: Slidable(1, 5, 1, 1, true, 1)]
-    [property: SortIndex(2)]
+    [property: SortIndex(41)]
     [ObservableProperty]
     private int ocrRecognitionStability = settings.OcrRecognitionStability;
 
-    [property: Category("SettingsViewModel|OcrTracking")]
+    [property: Category("SettingsRecognition|OcrTracking")]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrMissingFrameRetention)}_Desc")]
     [property: Slidable(0, 7, 1, 1, true, 1)]
-    [property: SortIndex(3)]
+    [property: SortIndex(42)]
     [ObservableProperty]
     private int ocrMissingFrameRetention = settings.OcrMissingFrameRetention;
 
-    [Category("SettingsViewModel|Overlay")]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(60)]
     public string OverlayShortcut { get; set; } = settings.OverlayShortcut;
 
-    [property: Category("SettingsViewModel|Overlay")]
+    [property: Category("SettingsDisplayBehavior|Overlay")]
+    [property: SortIndex(30)]
     [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
     [property: FormatString("P1")]
     [ObservableProperty]
     private double overlayOpacity = settings.OverlayOpacity;
 
-    [Category("SettingsViewModel|Overlay")]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(70)]
     public bool IsOneShotMode { get; set; } = settings.IsOneShotMode;
 
-    [property: Category("SettingsViewModel|Overlay")]
+    [property: Category("SettingsDisplayBehavior|Overlay")]
+    [property: SortIndex(40)]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
     [property: Slidable(0, 100, 1, 10, true, 1)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
-    [Category("SettingsViewModel|Misc")]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(80)]
     [LocalizedDescription(typeof(Resources), $"{nameof(CaptureInterval)}_Desc")]
     [Spinnable(0.1, 1, 0, (uint.MaxValue - 1) / 1000d)]
     public double CaptureInterval { get; set; } = settings.CaptureInterval;
@@ -494,7 +513,8 @@ public partial class TargetSettingsViewModel(
     [Category("SettingsViewModel|Misc")]
     public bool IsEnableAutoTarget { get; set; } = settings.IsEnableAutoTarget;
 
-    [Category("SettingsViewModel|Misc")]
+    [Category("SettingsDisplayBehavior|Overlay")]
+    [SortIndex(50)]
     public bool DisplayBusy { get; set; } = settings.DisplayBusy;
 
     public IReadOnlyList<IPluginParam> Params { get; } = sp.GetParams(name).ToArray();

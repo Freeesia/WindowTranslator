@@ -149,6 +149,7 @@ builder.Services.AddSingleton<IModelHistoryStore, ModelHistoryStore>();
 builder.Services.AddScoped<IOcrTextTracker>(sp => new OcrTextTracker(
     sp.GetRequiredService<ILogger<OcrTextTracker>>(),
     sp.GetRequiredService<IOptionsSnapshot<TargetSettings>>().Value));
+builder.Services.AddScoped<OcrTraceRecorder>();
 builder.Services.AddHostedService<WindowMonitor>();
 if (builder.Configuration.GetValue<bool>("IgnoreUpdate"))
 {
@@ -283,7 +284,7 @@ class ConfigurePluginParam<TOptions>(IConfiguration configuration, IProcessInfoS
         {
             section = this.configuration.GetSection(Options.DefaultName);
         }
-        section.GetRequiredSection(nameof(TargetSettings.PluginParams))
+        section.GetSection(nameof(TargetSettings.PluginParams))
             .GetSection(typeof(TOptions).Name)
             .Bind(options);
     }

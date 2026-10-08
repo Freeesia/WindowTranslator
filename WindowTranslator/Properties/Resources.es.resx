@@ -537,6 +537,12 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtros</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Idioma y traducción</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Reconocimiento de texto</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Visualización y comportamiento</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Comportamiento</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Caché</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Motor de reconocimiento</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Intervalo de captura (segundos)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>Segundos de espera después de la captura y el reconocimiento de texto. 0: sin espera (predeterminado). Las capturas únicas mediante el atajo de teclado comienzan inmediatamente.</value></data>
 </root>

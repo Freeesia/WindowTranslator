@@ -546,6 +546,12 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>필터</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>언어 및 번역</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>문자 인식</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>표시 및 동작</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>동작</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>캐시</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>인식 엔진</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>캡처 간격(초)</value></data>
   <data name="CaptureInterval_Desc" xml:space="preserve"><value>캡처와 OCR 처리 후 대기할 초 수를 지정합니다. 0: 대기 없음(기본값). 단축키를 통한 단일 캡처는 즉시 시작합니다.</value></data>
 </root>
