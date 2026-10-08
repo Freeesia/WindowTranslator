@@ -545,4 +545,10 @@ Monitor tidak didukung.</value>
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filter</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Bahasa dan terjemahan</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Pengenalan teks</value></data>
+  <data name="SettingsDisplay" xml:space="preserve"><value>Tampilan</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Perilaku</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Mesin pengenalan</value></data>
 </root>

@@ -546,4 +546,10 @@ Monitore werden nicht unterstützt.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filter</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Sprache und Übersetzung</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Texterkennung</value></data>
+  <data name="SettingsDisplay" xml:space="preserve"><value>Anzeige</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Verhalten</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Erkennungsmodul</value></data>
 </root>

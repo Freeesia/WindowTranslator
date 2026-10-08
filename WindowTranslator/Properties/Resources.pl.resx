@@ -546,4 +546,10 @@ Monitory nie są obsługiwane.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filtry</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Język i tłumaczenie</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Rozpoznawanie tekstu</value></data>
+  <data name="SettingsDisplay" xml:space="preserve"><value>Wyświetlanie</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Działanie</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Pamięć podręczna</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Silnik rozpoznawania</value></data>
 </root>

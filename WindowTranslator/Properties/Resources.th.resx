@@ -546,4 +546,10 @@
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>ตัวกรอง</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>ภาษาและการแปล</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>การรู้จำข้อความ</value></data>
+  <data name="SettingsDisplay" xml:space="preserve"><value>การแสดงผล</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>การทำงาน</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>แคช</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>เอนจินการรู้จำ</value></data>
 </root>

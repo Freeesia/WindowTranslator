@@ -546,4 +546,10 @@ Màn hình không được hỗ trợ.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Bộ lọc</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Ngôn ngữ và bản dịch</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Nhận dạng văn bản</value></data>
+  <data name="SettingsDisplay" xml:space="preserve"><value>Hiển thị</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Hành vi</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Bộ nhớ đệm</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Bộ máy nhận dạng</value></data>
 </root>

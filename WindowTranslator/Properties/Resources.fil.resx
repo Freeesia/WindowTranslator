@@ -546,4 +546,10 @@ Ang monitor ay hindi suportado.
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Mga filter</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Wika at pagsasalin</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Pagkilala ng teksto</value></data>
+  <data name="SettingsDisplay" xml:space="preserve"><value>Pagpapakita</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Gawi</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Engine ng pagkilala</value></data>
 </root>
