@@ -400,8 +400,9 @@ public partial class TargetSettingsViewModel(
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; } = cacheModules;
 
+    // SortIndexはタブの生成順にも使われるため、共通タブの先頭項目を負値で先に並べる。
     [Category("SettingsLanguageTranslation|Language")]
-    [SortIndex(10)]
+    [SortIndex(-40)]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
@@ -415,7 +416,7 @@ public partial class TargetSettingsViewModel(
     public string Target { get; set; } = settings.Language.Target;
 
     [Category("SettingsRecognition|RecognitionEngine")]
-    [SortIndex(10)]
+    [SortIndex(-30)]
     [ItemsSourceProperty(nameof(OcrModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -437,7 +438,7 @@ public partial class TargetSettingsViewModel(
             translateModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
     [Category("SettingsCache|")]
-    [SortIndex(10)]
+    [SortIndex(-10)]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -447,7 +448,7 @@ public partial class TargetSettingsViewModel(
             cacheModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
     [Category("SettingsDisplayBehavior|Font")]
-    [SortIndex(10)]
+    [SortIndex(-20)]
     [FontFamilySelector]
     [FontPreview(18)]
     public string Font { get; set; } = settings.Font;

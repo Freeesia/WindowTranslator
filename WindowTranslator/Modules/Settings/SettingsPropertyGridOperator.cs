@@ -33,23 +33,6 @@ internal class SettingsPropertyGridOperator : PropertyGridOperator
     protected override string GetLocalizedString(string key, Type declaringType)
         => declaringType?.GetResourceManager()?.GetString(key, CultureInfo.CurrentUICulture) ?? base.GetLocalizedString(key, declaringType);
 
-    public override IEnumerable<Tab> CreateModel(object instance, bool isEnumerable, IPropertyGridOptions options)
-    {
-        var tabs = base.CreateModel(instance, isEnumerable, options);
-        if (instance is not TargetSettingsViewModel)
-        {
-            return tabs;
-        }
-
-        string[] pageKeys = ["SettingsLanguageTranslation", "SettingsRecognition", "SettingsDisplayBehavior", "SettingsCache"];
-        var pageHeaders = pageKeys.Select(key => GetLocalizedString(key, typeof(TargetSettingsViewModel))).ToArray();
-        return tabs.OrderBy(tab =>
-        {
-            var index = Array.IndexOf(pageHeaders, tab.Header);
-            return index >= 0 ? index : pageHeaders.Length;
-        });
-    }
-
     protected override IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
     {
         var instanceType = instance.GetType();
