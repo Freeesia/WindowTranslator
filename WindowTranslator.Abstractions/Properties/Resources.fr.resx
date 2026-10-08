@@ -116,4 +116,6 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Zones d’OCR</value>
   </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Reconnaissance de texte</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Réglages de l’image</value></data>
 </root>

@@ -124,6 +124,7 @@ public class DeepLTranslator : ITranslateModule
 [DisplayName("DeepL")]
 public partial class DeepLOptions : ObservableObject, IPluginParam
 {
+    [property: PropertyTools.DataAnnotations.Category("DeepL|")]
     [property: Display(Order = 0)]
     [property: AutoUpdateText]
     [property: DataType(DataType.Password)]
@@ -131,16 +132,19 @@ public partial class DeepLOptions : ObservableObject, IPluginParam
     [ObservableProperty]
     private string authKey = string.Empty;
 
+    [PropertyTools.DataAnnotations.Category("DeepL|")]
     [Display(Order = 3)]
     [FileExtensions(Extensions = ".csv")]
     [InputFilePath(".csv", "CSV |*.csv")]
     public string? GlossaryPath { get; set; }
 
+    [PropertyTools.DataAnnotations.Category("DeepL|")]
     [Display(Order = 4)]
     [JsonIgnore]
     [Comment]
     public string Comment { get; } = "Translated by DeepL.(https://www.deepl.com/)";
 
+    [property: PropertyTools.DataAnnotations.Category("DeepL|")]
     [property: Display(Order = 1)]
     [property: JsonIgnore]
     [property: ReadOnly(true)]
@@ -151,6 +155,7 @@ public partial class DeepLOptions : ObservableObject, IPluginParam
     /// 使用量をチェックします
     /// </summary>
     /// <returns>使用量情報</returns>
+    [property: PropertyTools.DataAnnotations.Category("DeepL|")]
     [property: Display(Order = 2)]
     [property: JsonIgnore]
     [RelayCommand(CanExecute = nameof(CanCheckUsage))]
@@ -198,7 +203,7 @@ public class DeepLValidator : ITargetSettingsValidator
             翻訳モジュールにDeepLが選択されています。
             DeepLの利用にはAPIキーが必要です。
 
-            「対象ごとの設定」→「DeepLOptions」タブのAPIキーを設定してください。
+            「対象ごとの設定」→「DeepL」タブのAPIキーを設定してください。
             APIキーはDeepLの[アカウントページ](https://www.deepl.com/ja/your-account/keys)から取得できます。
 
             [こちら](https://youtu.be/D7Yb6rIVPI0)の動画でDeepLのアカウント登録からAPIキーの設定までの手順を解説しています。

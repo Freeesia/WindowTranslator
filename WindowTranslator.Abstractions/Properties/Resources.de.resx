@@ -174,4 +174,6 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR-Bereiche</value>
   </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Texterkennung</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Bildanpassungen</value></data>
 </root>

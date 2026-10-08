@@ -568,4 +568,10 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="PluginCategoryFilter" xml:space="preserve">
     <value>Filters</value>
   </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Language and translation</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Text recognition</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Display and behavior</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Behavior</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Recognition engine</value></data>
 </root>

@@ -73,4 +73,6 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR-területek</value>
   </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Szövegfelismerés</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Képbeállítások</value></data>
 </root>

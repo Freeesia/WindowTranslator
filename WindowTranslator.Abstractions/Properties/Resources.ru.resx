@@ -128,4 +128,6 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>Области OCR</value>
   </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Распознавание текста</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Настройки изображения</value></data>
 </root>

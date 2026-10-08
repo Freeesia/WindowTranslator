@@ -174,4 +174,6 @@
   <data name="PriorityRects" xml:space="preserve">
     <value>OCR 영역</value>
   </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>문자 인식</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>이미지 조정</value></data>
 </root>
