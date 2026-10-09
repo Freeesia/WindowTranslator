@@ -505,12 +505,13 @@ public partial class TargetSettingsViewModel(
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
     [Category("SettingsDisplayBehavior|SettingsBehavior")]
-    [SortIndex(80)]
+    [SortIndex(75)]
     [LocalizedDescription(typeof(Resources), $"{nameof(CaptureInterval)}_Desc")]
     [Spinnable(0.1, 1, 0, (uint.MaxValue - 1) / 1000d)]
     public double CaptureInterval { get; set; } = settings.CaptureInterval;
 
-    [Category("SettingsViewModel|Misc")]
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(80)]
     public bool IsEnableAutoTarget { get; set; } = settings.IsEnableAutoTarget;
 
     [Category("SettingsDisplayBehavior|Overlay")]

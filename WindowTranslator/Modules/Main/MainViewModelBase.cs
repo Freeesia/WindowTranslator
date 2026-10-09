@@ -25,7 +25,7 @@ public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Subject<SoftwareBitmap> captureRequests = new();
     private readonly Subject<(TextRect[] Texts, FilterContext Context)> translationRequests = new();
-    private readonly Subject<(TextRect[]? Texts, System.Drawing.Size? ImageSize, BusyScope? Busy, bool IsBusy)> uiRequests = new();
+    private readonly Subject<(TextRect[]? Texts, System.Drawing.Size? ImageSize)> uiRequests = new();
     private IDisposable? captureLoop;
     private readonly IDisposable translationLoop;
     private readonly IDisposable uiLoop;
@@ -38,6 +38,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IColorModule color;
     private readonly IEnumerable<IFilterModule> filters;
     private readonly ILogger logger;
+    // 再購読時のOCRの重複と、共有フィルターの同時実行を防ぐ。
     private readonly SemaphoreSlim analyzing = new(1, 1);
     private readonly string name;
     private readonly IPresentationService presentationService;
@@ -121,10 +122,6 @@ public abstract partial class MainViewModelBase : IDisposable
                     this.Width = size.Width;
                     this.Height = size.Height;
                 }
-                if (request.Busy is { } busy)
-                {
-                    busy.IsBusy = request.IsBusy;
-                }
             });
         this.translationLoop = this.translationRequests
             .ObserveOnThreadPool()
@@ -141,7 +138,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         if (value)
         {
-            this.uiRequests.OnNext(([], null, null, false));
+            this.uiRequests.OnNext(([], null));
             if (this.isOneShotMode)
             {
                 this.isFirstCapture = true;
@@ -191,16 +188,10 @@ public abstract partial class MainViewModelBase : IDisposable
         await TranslateAsync(request.Texts);
         await this.analyzing.WaitAsync(cancellationToken);
         using var rel = new DisposeAction(() => this.analyzing.Release());
-        using var busy = EnterBusy(this.Filtering);
+        using var busy = this.Filtering.EnterBusy();
         var displayedTexts = await CreateDisplayedTextsAsync(request.Texts, request.Context, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext((displayedTexts, null, null, false));
-    }
-
-    private DisposeAction EnterBusy(BusyScope scope)
-    {
-        this.uiRequests.OnNext((null, null, scope, true));
-        return new DisposeAction(() => this.uiRequests.OnNext((null, null, scope, false)));
+        this.uiRequests.OnNext((displayedTexts, null));
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -226,7 +217,7 @@ public abstract partial class MainViewModelBase : IDisposable
             bitmap.Dispose();
             return;
         }
-        this.uiRequests.OnNext((null, new(bitmap.PixelWidth, bitmap.PixelHeight), null, false));
+        this.uiRequests.OnNext((null, new(bitmap.PixelWidth, bitmap.PixelHeight)));
         this.captureRequests.OnNext(bitmap);
     }
 
@@ -241,7 +232,7 @@ public abstract partial class MainViewModelBase : IDisposable
             this.analyzing.Release();
         });
         IEnumerable<TextRect> texts;
-        using (EnterBusy(this.Recognizing))
+        using (this.Recognizing.EnterBusy())
         {
             try
             {
@@ -309,7 +300,7 @@ public abstract partial class MainViewModelBase : IDisposable
         // フィルター&翻訳処理は必ず通す
         FilterContext context;
         TextRect[] displayedTexts;
-        using (EnterBusy(this.Filtering))
+        using (this.Filtering.EnterBusy())
         {
             texts = await this.color.ConvertColorAsync(sbmp, texts);
             context = new()
@@ -329,7 +320,7 @@ public abstract partial class MainViewModelBase : IDisposable
             displayedTexts = await CreateDisplayedTextsAsync(texts, context, cancellationToken);
         }
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext((displayedTexts, null, null, false));
+        this.uiRequests.OnNext((displayedTexts, null));
         if (this.disposedValue)
         {
             return false;
