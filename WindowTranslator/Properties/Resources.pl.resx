@@ -552,4 +552,6 @@ Monitory nie są obsługiwane.
   <data name="SettingsBehavior" xml:space="preserve"><value>Działanie</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Pamięć podręczna</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Silnik rozpoznawania</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Odstęp przechwytywania (sekundy)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Interwał przechwytywania i rozpoznawania tekstu w sekundach. 0: bez ograniczenia interwału (domyślnie). Pojedyncze przechwycenie uruchomione skrótem klawiszowym rozpoczyna się natychmiast.</value></data>
 </root>

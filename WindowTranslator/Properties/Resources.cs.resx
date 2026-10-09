@@ -433,4 +433,6 @@ Monitory nejsou podporovány.
   <data name="SettingsBehavior" xml:space="preserve"><value>Chování</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Mezipaměť</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Modul rozpoznávání</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Interval snímání (sekundy)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Interval snímání a rozpoznávání textu v sekundách. 0: bez omezení intervalu (výchozí). Jednorázové snímání vyvolané klávesovou zkratkou začne ihned.</value></data>
 </root>

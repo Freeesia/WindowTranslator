@@ -552,4 +552,6 @@
   <data name="SettingsBehavior" xml:space="preserve"><value>동작</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>캐시</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>인식 엔진</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>캡처 간격(초)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>캡처와 OCR 처리 간격을 초 단위로 지정합니다. 0: 간격 제한 없음(기본값). 단축키를 통한 단일 캡처는 즉시 시작합니다.</value></data>
 </root>

@@ -545,4 +545,6 @@
   <data name="SettingsBehavior" xml:space="preserve"><value>व्यवहार</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>कैश</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>पहचान इंजन</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>कैप्चर अंतराल (सेकंड)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>कैप्चर और पाठ पहचान का अंतराल सेकंड में। 0: अंतराल की कोई सीमा नहीं (डिफ़ॉल्ट)। हॉटकी से शुरू किया गया एकल कैप्चर तुरंत शुरू होता है।</value></data>
 </root>

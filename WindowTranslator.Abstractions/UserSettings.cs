@@ -88,6 +88,11 @@ public class TargetSettings
     public bool IsOneShotMode { get; set; }
 
     /// <summary>
+    /// キャプチャ・OCRの間隔（秒、0: 間隔の制限なし）
+    /// </summary>
+    public double CaptureInterval { get; set => field = Math.Clamp(value, 0, (uint.MaxValue - 1) / 1000d); }
+
+    /// <summary>
     /// マウスポインター判定の余白（WPF上のピクセル値）
     /// </summary>
     public double MousePointerHitTestPadding { get; set; }

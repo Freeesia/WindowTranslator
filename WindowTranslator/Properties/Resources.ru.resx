@@ -543,4 +543,6 @@
   <data name="SettingsBehavior" xml:space="preserve"><value>Поведение</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Кэш</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Движок распознавания</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Интервал захвата (секунды)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Интервал захвата и распознавания текста в секундах. 0: без ограничения интервала (по умолчанию). Однократный захват по горячей клавише начинается сразу.</value></data>
 </root>

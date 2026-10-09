@@ -552,4 +552,6 @@
   <data name="SettingsBehavior" xml:space="preserve"><value>行为</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>缓存</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>识别引擎</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>捕获间隔（秒）</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>以秒为单位指定捕获和 OCR 的间隔。0：不限制间隔（默认）。通过快捷键触发的单次捕获会立即开始。</value></data>
 </root>

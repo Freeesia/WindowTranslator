@@ -552,4 +552,6 @@
   <data name="SettingsBehavior" xml:space="preserve"><value>การทำงาน</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>แคช</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>เอนจินการรู้จำ</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>ช่วงเวลาจับภาพ (วินาที)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>กำหนดช่วงเวลาจับภาพและอ่านข้อความเป็นวินาที 0: ไม่จำกัดช่วงเวลา (ค่าเริ่มต้น) การจับภาพครั้งเดียวด้วยปุ่มลัดจะเริ่มทันที</value></data>
 </root>

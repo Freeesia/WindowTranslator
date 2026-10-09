@@ -433,4 +433,6 @@ A monitorok nem támogatottak.
   <data name="SettingsBehavior" xml:space="preserve"><value>Működés</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Gyorsítótár</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Felismerőmotor</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Rögzítési időköz (másodperc)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>A rögzítés és szövegfelismerés időköze másodpercben. 0: nincs időköz-korlátozás (alapértelmezett). A gyorsbillentyűvel indított egyszeri rögzítés azonnal elindul.</value></data>
 </root>
