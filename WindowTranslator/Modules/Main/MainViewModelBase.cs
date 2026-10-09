@@ -25,7 +25,7 @@ public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Subject<SoftwareBitmap> captureRequests = new();
     private readonly Subject<(TextRect[] Texts, FilterContext Context)> translationRequests = new();
-    private readonly Subject<(TextRect[]? Texts, System.Drawing.Size? ImageSize)> uiRequests = new();
+    private readonly Subject<TextRect[]> uiRequests = new();
     private IDisposable? captureLoop;
     private readonly IDisposable translationLoop;
     private readonly IDisposable uiLoop;
@@ -111,18 +111,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.logger = logger;
         this.uiLoop = this.uiRequests
             .ObserveOn(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
-            .Subscribe(request =>
-            {
-                if (request.Texts is { } texts)
-                {
-                    UpdateOcrTexts(texts);
-                }
-                if (request.ImageSize is { } size)
-                {
-                    this.Width = size.Width;
-                    this.Height = size.Height;
-                }
-            });
+            .Subscribe(UpdateOcrTexts);
         this.translationLoop = this.translationRequests
             .ObserveOnThreadPool()
             .SubscribeAwait(ProcessTranslationAsync, AwaitOperation.ThrottleFirstLast, configureAwait: false);
@@ -138,7 +127,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         if (value)
         {
-            this.uiRequests.OnNext(([], null));
+            this.uiRequests.OnNext([]);
             if (this.isOneShotMode)
             {
                 this.isFirstCapture = true;
@@ -191,7 +180,7 @@ public abstract partial class MainViewModelBase : IDisposable
         using var busy = this.Filtering.EnterBusy();
         var displayedTexts = await CreateDisplayedTextsAsync(request.Texts, request.Context, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext((displayedTexts, null));
+        this.uiRequests.OnNext(displayedTexts);
     }
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
@@ -217,7 +206,8 @@ public abstract partial class MainViewModelBase : IDisposable
             bitmap.Dispose();
             return;
         }
-        this.uiRequests.OnNext((null, new(bitmap.PixelWidth, bitmap.PixelHeight)));
+        this.Width = bitmap.PixelWidth;
+        this.Height = bitmap.PixelHeight;
         this.captureRequests.OnNext(bitmap);
     }
 
@@ -320,7 +310,7 @@ public abstract partial class MainViewModelBase : IDisposable
             displayedTexts = await CreateDisplayedTextsAsync(texts, context, cancellationToken);
         }
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext((displayedTexts, null));
+        this.uiRequests.OnNext(displayedTexts);
         if (this.disposedValue)
         {
             return false;
