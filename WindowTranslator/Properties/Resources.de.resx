@@ -553,5 +553,5 @@ Monitore werden nicht unterstützt.
   <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Erkennungsmodul</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Aufnahmeintervall (Sekunden)</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Wartezeit in Sekunden nach Aufnahme und Texterkennung. 0: keine Wartezeit (Standard). Einzelaufnahmen per Tastenkürzel starten sofort.</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Intervall für Aufnahme und Texterkennung in Sekunden. 0: keine Intervallbegrenzung (Standard). Einzelaufnahmen per Tastenkürzel starten sofort.</value></data>
 </root>

@@ -552,5 +552,5 @@ Monitor tidak didukung.</value>
   <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Mecanismo de reconhecimento</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Intervalo de captura (segundos)</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Tempo de espera em segundos após a captura e o reconhecimento de texto. 0: sem espera (padrão). Capturas únicas acionadas pelo atalho de teclado começam imediatamente.</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Intervalo em segundos para captura e reconhecimento de texto. 0: sem limite de intervalo (padrão). Capturas únicas acionadas pelo atalho de teclado começam imediatamente.</value></data>
 </root>

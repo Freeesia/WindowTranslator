@@ -88,7 +88,7 @@ public class TargetSettings
     public bool IsOneShotMode { get; set; }
 
     /// <summary>
-    /// キャプチャ・OCRの処理後に待機する秒数（0: 待機なし）
+    /// キャプチャ・OCRの間隔（秒、0: 間隔の制限なし）
     /// </summary>
     public double CaptureInterval { get; set => field = Math.Clamp(value, 0, (uint.MaxValue - 1) / 1000d); }
 

@@ -544,5 +544,5 @@
   <data name="SettingsCache" xml:space="preserve"><value>Caché</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Motor de reconocimiento</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Intervalo de captura (segundos)</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Segundos de espera después de la captura y el reconocimiento de texto. 0: sin espera (predeterminado). Las capturas únicas mediante el atajo de teclado comienzan inmediatamente.</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Intervalo en segundos para la captura y el reconocimiento de texto. 0: sin límite de intervalo (predeterminado). Las capturas únicas mediante el atajo de teclado comienzan inmediatamente.</value></data>
 </root>

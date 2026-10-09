@@ -538,5 +538,5 @@
   <data name="SettingsCache" xml:space="preserve"><value>حافظهٔ نهان</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>موتور تشخیص</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>فاصلهٔ ثبت تصویر (ثانیه)</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>زمان انتظار به ثانیه پس از ثبت تصویر و تشخیص متن. ۰: بدون انتظار (پیش‌فرض). ثبت تکی با کلید میان‌بر بلافاصله آغاز می‌شود.</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>فاصلهٔ ثبت تصویر و تشخیص متن به ثانیه. ۰: بدون محدودیت فاصله (پیش‌فرض). ثبت تکی با کلید میان‌بر بلافاصله آغاز می‌شود.</value></data>
 </root>

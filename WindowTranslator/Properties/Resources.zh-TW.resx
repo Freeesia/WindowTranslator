@@ -553,5 +553,5 @@
   <data name="SettingsCache" xml:space="preserve"><value>快取</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>辨識引擎</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>擷取間隔（秒）</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>指定擷取和 OCR 處理後等待的秒數。0：不等待（預設）。透過快速鍵觸發的單次擷取會立即開始。</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>以秒為單位指定擷取和 OCR 的間隔。0：不限制間隔（預設）。透過快速鍵觸發的單次擷取會立即開始。</value></data>
 </root>

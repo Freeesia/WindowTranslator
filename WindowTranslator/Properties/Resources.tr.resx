@@ -553,5 +553,5 @@ Monitör desteklenmiyor.
   <data name="SettingsCache" xml:space="preserve"><value>Önbellek</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Tanıma motoru</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>Yakalama aralığı (saniye)</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Yakalama ve metin tanıma işleminden sonra beklenecek saniye sayısı. 0: bekleme yok (varsayılan). Kısayol tuşuyla başlatılan tek yakalama hemen başlar.</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Yakalama ve metin tanıma aralığı (saniye). 0: aralık sınırı yok (varsayılan). Kısayol tuşuyla başlatılan tek yakalama hemen başlar.</value></data>
 </root>

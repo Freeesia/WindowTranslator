@@ -544,5 +544,5 @@
   <data name="SettingsCache" xml:space="preserve"><value>ذاكرة التخزين المؤقت</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>محرك التعرف</value></data>
   <data name="CaptureInterval" xml:space="preserve"><value>الفاصل بين عمليات الالتقاط (بالثواني)</value></data>
-  <data name="CaptureInterval_Desc" xml:space="preserve"><value>عدد الثواني للانتظار بعد الالتقاط والتعرف على النص. 0: دون انتظار (الافتراضي). يبدأ الالتقاط الفردي عبر مفتاح الاختصار فورًا.</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>الفاصل بالثواني لالتقاط الصور والتعرف على النص. 0: دون حد للفاصل الزمني (الافتراضي). يبدأ الالتقاط الفردي عبر مفتاح الاختصار فورًا.</value></data>
 </root>

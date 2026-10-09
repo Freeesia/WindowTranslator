@@ -46,7 +46,6 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly double overlayOpacity;
     private readonly double mousePointerHitTestPadding;
     private readonly bool isOneShotMode;
-    private readonly TimeSpan captureInterval;
 
     [ObservableProperty]
     private string title;
@@ -94,7 +93,6 @@ public abstract partial class MainViewModelBase : IDisposable
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
         this.isOneShotMode = options.Value.IsOneShotMode;
-        this.captureInterval = TimeSpan.FromSeconds(options.Value.CaptureInterval);
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
@@ -110,8 +108,12 @@ public abstract partial class MainViewModelBase : IDisposable
         this.uiLoop = this.uiRequests
             .ObserveOn(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
             .Subscribe(UpdateOcrTexts);
+        var captureInterval = TimeSpan.FromSeconds(options.Value.CaptureInterval);
+        var captures = !this.isOneShotMode && captureInterval > TimeSpan.Zero
+            ? this.captureRequests.ThrottleLast(captureInterval)
+            : this.captureRequests;
         var previousSize = default(System.Drawing.Size);
-        this.captureLoop = this.captureRequests
+        this.captureLoop = captures
             .ObserveOnThreadPool()
             .SubscribeAwait(async (bitmap, ct) =>
             {
@@ -121,10 +123,7 @@ public abstract partial class MainViewModelBase : IDisposable
                     this.ocrTextTracker.Reset();
                 }
                 previousSize = size;
-                if (await ProcessCaptureAsync(bitmap, ct) && !this.isOneShotMode && this.captureInterval > TimeSpan.Zero)
-                {
-                    await Observable.Timer(this.captureInterval, CancellationToken.None).WaitAsync(ct);
-                }
+                await ProcessCaptureAsync(bitmap, ct);
             }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         this.translationLoop = this.translationRequests
             .ObserveOnThreadPool()
@@ -184,7 +183,7 @@ public abstract partial class MainViewModelBase : IDisposable
         }
 
         // フレームの寿命はイベント処理中だけなので、コピーの完了まで待つ。
-        var bitmap = await Task.Run(async () => await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface)).ConfigureAwait(false);
+        var bitmap = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
         if (this.disposedValue)
         {
             bitmap.Dispose();
@@ -195,7 +194,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.captureRequests.OnNext(bitmap);
     }
 
-    private async Task<bool> ProcessCaptureAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
+    private async ValueTask ProcessCaptureAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
         SoftwareBitmap? sbmp = capturedBitmap;
         using var bitmap = new DisposeAction(() => sbmp?.Dispose());
@@ -245,14 +244,14 @@ public abstract partial class MainViewModelBase : IDisposable
                 // すでに破棄されている場合は何もしない
                 this.captureLoop.Dispose();
                 await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
-                return false;
+                return;
             }
             catch (OperationCanceledException)
             {
                 // キャンセルされた場合は何もしない
                 this.captureLoop.Dispose();
                 await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
-                return false;
+                return;
             }
             catch (Exception e)
             {
@@ -261,7 +260,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                 await sbmp.TrySaveImage(path);
                 await ShowErrorAsync(Resources.FaildOcr, e, path);
-                return false;
+                return;
             }
         }
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
@@ -292,11 +291,10 @@ public abstract partial class MainViewModelBase : IDisposable
         this.uiRequests.OnNext(displayedTexts);
         if (this.disposedValue)
         {
-            return false;
+            return;
         }
         this.translationRequests.OnNext((texts.ToArray(), context));
         sbmp = null;
-        return true;
     }
 
     private async Task<TextRect[]> CreateDisplayedTextsAsync(IEnumerable<TextRect> texts, FilterContext context, CancellationToken cancellationToken)
