@@ -23,8 +23,8 @@ namespace WindowTranslator.Modules.Main;
 public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Subject<SoftwareBitmap> captureRequests = new();
-    private readonly Subject<(TextRect[] Texts, FilterContext Context)> translationRequests = new();
-    private readonly Subject<TextRect[]> uiRequests = new();
+    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> translationRequests = new();
+    private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
     private readonly IDisposable captureLoop;
     private readonly IDisposable translationLoop;
     private readonly IDisposable uiLoop;
@@ -270,13 +270,12 @@ public abstract partial class MainViewModelBase : IDisposable
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
         }).ToArray();
-        var displayedTexts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
-        this.uiRequests.OnNext(displayedTexts);
-        this.translationRequests.OnNext((texts.ToArray(), context));
+        this.uiRequests.OnNext(texts);
+        this.translationRequests.OnNext((texts, context));
         sbmp = null;
     }
 
-    private async ValueTask ProcessTranslationAsync((TextRect[] Texts, FilterContext Context) request, CancellationToken cancellationToken)
+    private async ValueTask ProcessTranslationAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
@@ -329,7 +328,6 @@ public abstract partial class MainViewModelBase : IDisposable
             await ShowErrorAsync(Resources.FaildOverlay, e, string.Empty);
             return;
         }
-        TextRect[] displayedTexts;
         using (this.Filtering.EnterBusy())
         {
             var tmp = texts.ToAsyncEnumerable();
@@ -339,16 +337,15 @@ public abstract partial class MainViewModelBase : IDisposable
             }
             using var t = this.logger.LogDebugTime("翻訳後処理");
             texts = await tmp.ToArrayAsync(cancellationToken);
-            displayedTexts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
         }
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext(displayedTexts);
+        this.uiRequests.OnNext(texts);
     }
 
     private void UpdateOcrTexts(IEnumerable<TextRect> texts)
     {
         this.logger.LogDebug("UI適用");
-        var hash = texts.ToHashSet();
+        var hash = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToHashSet();
         foreach (var text in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
         {
             this.OcrTexts.Remove(text);
