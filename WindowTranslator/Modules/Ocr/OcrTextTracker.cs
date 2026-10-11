@@ -2370,7 +2370,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     this.consecutiveCount = 1;
                 }
 
-                if (IsProgressiveTextChange(this.MostProgressed.Normalized, current.Normalized))
+                // 誤認識を挟んでも、直近の候補から文字送りが続いていれば進行とみなす。
+                if (current.Normalized.Length > this.MostProgressed.Normalized.Length
+                    && this.history.Any(candidate => IsProgressiveTextChange(candidate.Normalized, current.Normalized)))
                 {
                     this.MostProgressed = current;
                     this.lastProgressTime = timestamp;

@@ -551,4 +551,6 @@ Monitor tidak didukung.</value>
   <data name="SettingsBehavior" xml:space="preserve"><value>Perilaku</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Mesin pengenalan</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Interval pengambilan (detik)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Interval pengambilan dan pengenalan teks dalam detik. 0: tanpa batas interval (default). Pengambilan sekali dengan tombol pintasan langsung dimulai.</value></data>
 </root>
