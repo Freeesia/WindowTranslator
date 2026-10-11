@@ -536,7 +536,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>识别结果稳定性</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>减少文字及区域拆分、合并的临时变化。1：优先响应，5：优先稳定（默认：3）。</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>临时消失保留</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>识别缺失后区域保持显示的时间，以100毫秒为单位。0：首次缺失即移除，最长：0.7秒，默认：0.3秒。不受捕获间隔影响。</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>设置识别缺失后区域保持显示的程度。0：首次缺失即移除，最大：7（约2.1秒），默认：3（约0.9秒）。不受捕获间隔影响。</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>全部</value>
   </data>

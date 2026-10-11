@@ -558,7 +558,7 @@ Select a slightly wider area so that text is not cut off</value>
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Recognition stability</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduces temporary changes in text and region splitting or merging. 1: responsive, 5: stable (default: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Temporary disappearance retention</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>How long to keep displaying a region after recognition is lost, in 100 ms units. 0: remove on the first miss, maximum: 0.7 seconds, default: 0.3 seconds. Independent of the capture interval.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Controls how long a region remains visible after recognition is lost. 0: remove on the first miss, maximum: 7 (about 2.1 seconds), default: 3 (about 0.9 seconds). Independent of the capture interval.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>All</value>
   </data>

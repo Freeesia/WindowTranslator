@@ -417,7 +417,7 @@ Monitory nejsou podporovány.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilita rozpoznávání</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Omezuje dočasné změny textu a rozdělování nebo slučování oblastí. 1: rychlá odezva, 5: vysoká stabilita (výchozí: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Zachování při dočasném zmizení</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Doba zobrazení oblasti po ztrátě rozpoznání v jednotkách 100 ms. 0: odstranit při prvním výpadku, maximum: 0,7 sekundy, výchozí: 0,3 sekundy. Nezávisí na intervalu snímání.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Určuje, jak dlouho oblast zůstane zobrazená po ztrátě rozpoznání. 0: odstranit při prvním výpadku, maximum: 7 (přibližně 2,1 sekundy), výchozí: 3 (přibližně 0,9 sekundy). Nezávisí na intervalu snímání.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Vše</value>
   </data>

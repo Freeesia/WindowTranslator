@@ -536,7 +536,7 @@ Màn hình không được hỗ trợ.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Độ ổn định nhận dạng</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Giảm thay đổi tạm thời của văn bản và việc tách hoặc gộp vùng. 1: phản hồi nhanh, 5: ưu tiên ổn định (mặc định: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Giữ hiển thị khi tạm biến mất</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Thời gian giữ hiển thị vùng sau khi không còn nhận dạng được, theo đơn vị 100 ms. 0: xóa ngay lần đầu, tối đa: 0,7 giây, mặc định: 0,3 giây. Không phụ thuộc vào khoảng thời gian chụp.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Quy định thời gian vùng vẫn hiển thị sau khi không còn nhận dạng được. 0: xóa ngay lần đầu, tối đa: 7 (khoảng 2,1 giây), mặc định: 3 (khoảng 0,9 giây). Không phụ thuộc vào khoảng thời gian chụp.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Tất cả</value>
   </data>

@@ -536,7 +536,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>인식 결과 안정성</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>문자열이나 영역의 분할·병합에 따른 일시적인 변동을 줄입니다. 1: 빠른 반응, 5: 높은 안정성(기본값: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>일시적 사라짐 유지</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>인식이 누락된 영역의 표시 유지 시간을 100ms 단위로 지정합니다. 0: 첫 누락 시 제거, 최대: 0.7초, 기본값: 0.3초. 캡처 간격과 무관합니다.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>인식이 누락된 영역의 표시 유지 정도를 지정합니다. 0: 첫 누락 시 제거, 최대: 7 (약 2.1초), 기본값: 3 (약 0.9초). 캡처 간격과 무관합니다.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>전체</value>
   </data>

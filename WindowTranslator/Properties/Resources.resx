@@ -490,7 +490,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>認識結果の安定性</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>文字列や領域の分割・統合の一時的な変動を抑えます。1: 追従重視、5: 安定重視（既定: 3）。</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>一時消失の保持</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>認識できなくなった領域の表示保持時間を100ミリ秒単位で指定します。0: 最初の欠落で除去、最大: 0.7秒、既定: 0.3秒。キャプチャ間隔には依存しません。</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>認識できなくなった領域の表示を保持する強さを指定します。0: 最初の欠落で除去、最大: 7（約2.1秒）、既定: 3（約0.9秒）。キャプチャ間隔には依存しません。</value></data>
   <data name="PluginStore" xml:space="preserve">
     <value>プラグイン</value>
   </data>

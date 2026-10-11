@@ -12,8 +12,9 @@ namespace WindowTranslator.Modules.Ocr;
 /// </summary>
 public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSettings? settings = null) : IOcrTextTracker
 {
-    private static readonly TimeSpan ProcessingInterval = TimeSpan.FromMilliseconds(100);
-    private static readonly TimeSpan assignmentRecency = ProcessingInterval * 4;
+    // 旧方式で測定したOCR間隔（約280ms）を参考に、設定の段階を時間へ換算する。
+    private static readonly TimeSpan ReferenceInterval = TimeSpan.FromMilliseconds(300);
+    private static readonly TimeSpan assignmentRecency = ReferenceInterval * 4;
     private const int MaxStructureCandidates = 6;
     private const int MaxStructureSelectionStates = 1024;
     private const int MaxOneToOneCandidatesPerResource = 3;
@@ -1928,11 +1929,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 _ => (2, 2, 1.5, 5),
             };
             return new(
-                ProcessingInterval * (geometry - 1),
-                ProcessingInterval * (microGeometry - 1),
-                ProcessingInterval * (structure - 1),
+                ReferenceInterval * (geometry - 1),
+                ReferenceInterval * (microGeometry - 1),
+                ReferenceInterval * (structure - 1),
                 votes, threshold, history,
-                ProcessingInterval * settings.OcrMissingFrameRetention);
+                ReferenceInterval * settings.OcrMissingFrameRetention);
         }
     }
 
@@ -2074,7 +2075,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 return;
             }
 
-            if (this.textVotes.Count > 0 && timestamp - this.textVotes[^1].Timestamp < ProcessingInterval)
+            if (this.textVotes.Count > 0 && timestamp - this.textVotes[^1].Timestamp < ReferenceInterval)
             {
                 this.textVotes[^1] = new(normalizedCurrent, current, this.textVotes[^1].Timestamp);
             }
@@ -2088,7 +2089,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
 
             (string normalized, int count, double weight)? winner = this.textVotes
-                .Select(vote => (vote, age: (timestamp - vote.Timestamp) / ProcessingInterval))
+                .Select(vote => (vote, age: (timestamp - vote.Timestamp) / ReferenceInterval))
                 .GroupBy(item => item.vote.Normalized)
                 .Select(group => (
                     normalized: group.Key,
@@ -2108,7 +2109,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 return;
             }
 
-            if (timestamp - this.textVotes[0].Timestamp >= ProcessingInterval * (profile.TextVoteHistorySize - 1))
+            if (timestamp - this.textVotes[0].Timestamp >= ReferenceInterval * (profile.TextVoteHistorySize - 1))
             {
                 TextVote latest = this.textVotes[^1];
                 this.ConfirmedText = latest.Original;
