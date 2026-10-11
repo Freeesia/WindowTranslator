@@ -122,7 +122,7 @@ public abstract partial class MainViewModelBase : IDisposable
                     this.ocrTextTracker.Reset();
                 }
                 previousSize = size;
-                await ProcessCaptureAsync(bitmap, ct);
+                await RecognizeAsync(bitmap, ct);
             }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         this.translationLoop = this.translationRequests
             .ObserveOnThreadPool()
@@ -183,7 +183,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.captureRequests.OnNext(bitmap);
     }
 
-    private async ValueTask ProcessCaptureAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
+    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
         SoftwareBitmap? sbmp = capturedBitmap;
         using var bitmap = new DisposeAction(() => sbmp?.Dispose());
@@ -254,34 +254,16 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
 
-        // フィルター&翻訳処理は必ず通す
-        FilterContext context;
-        TextRect[] displayedTexts;
-        using (this.Filtering.EnterBusy())
-        {
-            texts = await this.color.ConvertColorAsync(sbmp, texts);
-            context = new()
-            {
-                SoftwareBitmap = sbmp,
-                ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
-            };
-            {
-                var tmp = texts.ToAsyncEnumerable();
-                foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
-                {
-                    tmp = filter.ExecutePreTranslate(tmp, context);
-                }
-                using var t = this.logger.LogDebugTime("翻訳前処理");
-                texts = await tmp.ToArrayAsync(cancellationToken);
-            }
-            displayedTexts = await CreateDisplayedTextsAsync(texts, context, cancellationToken);
-        }
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext(displayedTexts);
         if (this.disposedValue)
         {
             return;
         }
+        var context = new FilterContext
+        {
+            SoftwareBitmap = sbmp,
+            ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
+        };
         this.translationRequests.OnNext((texts.ToArray(), context));
         sbmp = null;
     }
@@ -290,25 +272,39 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
+        IEnumerable<TextRect> texts;
+        using (this.Filtering.EnterBusy())
+        {
+            texts = await this.color.ConvertColorAsync(bitmap, request.Texts);
+            var tmp = texts.ToAsyncEnumerable();
+            foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
+            {
+                tmp = filter.ExecutePreTranslate(tmp, request.Context);
+            }
+            using var t = this.logger.LogDebugTime("翻訳前処理");
+            texts = await tmp.ToArrayAsync(cancellationToken);
+        }
         try
         {
-            var requests = request.Texts
+            var requests = texts
                 .Where(t => t.TranslatedText is null)
                 .Where(t => !this.cache.Contains(t.SourceText))
                 .ToArray();
-            if (!requests.Any())
-            {
-                this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳処理終了");
-                return;
-            }
             if (this.disposedValue)
             {
                 this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
                 return;
             }
-            using var t = this.logger.LogDebugTime("翻訳");
-            var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
-            this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
+            if (requests.Length > 0)
+            {
+                using var t = this.logger.LogDebugTime("翻訳");
+                var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
+                this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
+            }
+            else
+            {
+                this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳を省略");
+            }
         }
         catch (OperationCanceledException)
         {
@@ -321,27 +317,27 @@ public abstract partial class MainViewModelBase : IDisposable
             await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
             this.translationLoop.Dispose();
             await ShowErrorAsync(Resources.FaildOverlay, e, string.Empty);
+            return;
         }
-        var displayedTexts = await CreateDisplayedTextsAsync(request.Texts, request.Context, cancellationToken);
+        TextRect[] displayedTexts;
+        using (this.Filtering.EnterBusy())
+        {
+            texts = texts.Select(t => t switch
+            {
+                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+                _ => t,
+            }).ToArray();
+            var tmp = texts.ToAsyncEnumerable();
+            foreach (var filter in this.filters.OrderBy(f => f.Priority))
+            {
+                tmp = filter.ExecutePostTranslate(tmp, request.Context);
+            }
+            using var t = this.logger.LogDebugTime("翻訳後処理");
+            texts = await tmp.ToArrayAsync(cancellationToken);
+            displayedTexts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+        }
         cancellationToken.ThrowIfCancellationRequested();
         this.uiRequests.OnNext(displayedTexts);
-    }
-
-    private async Task<TextRect[]> CreateDisplayedTextsAsync(IEnumerable<TextRect> texts, FilterContext context, CancellationToken cancellationToken)
-    {
-        texts = texts.Select(t => t switch
-        {
-            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
-            _ => t,
-        }).ToArray();
-        var tmp = texts.ToAsyncEnumerable();
-        foreach (var filter in this.filters.OrderBy(f => f.Priority))
-        {
-            tmp = filter.ExecutePostTranslate(tmp, context);
-        }
-        using var t = this.logger.LogDebugTime("翻訳後処理");
-        texts = await tmp.ToArrayAsync(cancellationToken);
-        return texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
     }
 
     private void UpdateOcrTexts(IEnumerable<TextRect> texts)
