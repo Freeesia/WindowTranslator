@@ -20,6 +20,7 @@
                     <ComboBoxItem Content="Raw OCR" />
                     <ComboBoxItem Content="Tracked" />
                     <ComboBoxItem Content="左右比較" />
+                    <ComboBoxItem Content="重ね合わせ" />
                 </ComboBox>
                 <TextBlock x:Name="FileText" Margin="12,0" VerticalAlignment="Center"
                            Text="JSON Lines 形式の OCR トレースを開いてください。" TextTrimming="CharacterEllipsis" />
@@ -67,7 +68,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="Raw OCR" FontWeight="SemiBold" Margin="0,0,0,6" />
+                <TextBlock x:Name="RawLabel" Text="Raw OCR" FontWeight="SemiBold" Margin="0,0,0,6" />
                 <local:OcrDrawingSurface x:Name="RawSurface" Grid.Row="1" />
             </Grid>
             <Grid x:Name="TrackedPanel" Grid.Column="1" Margin="6,0,0,0">
@@ -91,11 +92,6 @@
                     <Button x:Name="PlayButton" Content="再生" Width="90" Padding="10,6" Margin="0,0,8,0"
                             IsEnabled="False" Click="Play_Click" />
                     <Button x:Name="NextButton" Content="次フレーム" Padding="10,6" IsEnabled="False" Click="Next_Click" />
-                </StackPanel>
-                <StackPanel DockPanel.Dock="Right" Width="200" Margin="12,0,0,0">
-                    <TextBlock Text="{Binding Value, ElementName=FpsSlider, StringFormat=表示 FPS: {0:0}}" />
-                    <Slider x:Name="FpsSlider" Minimum="1" Maximum="120" Value="30" TickFrequency="1"
-                            IsSnapToTickEnabled="True" ValueChanged="Fps_Changed" />
                 </StackPanel>
             </DockPanel>
             <TextBlock x:Name="FrameText" Text="フレーム 0 / 0" Margin="0,8,0,0" TextWrapping="Wrap" />
