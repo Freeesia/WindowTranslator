@@ -265,13 +265,14 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
-        var displayedTexts = texts.Select(t => t switch
+        var recognizedTexts = texts.Select(t => t switch
         {
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
-        }).Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+        }).ToArray();
+        var displayedTexts = recognizedTexts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
         this.uiRequests.OnNext(displayedTexts);
-        this.translationRequests.OnNext((texts.ToArray(), context));
+        this.translationRequests.OnNext((recognizedTexts, context));
         sbmp = null;
     }
 
@@ -279,7 +280,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
-        IEnumerable<TextRect> texts;
+        TextRect[] texts;
         using (this.Filtering.EnterBusy())
         {
             var tmp = request.Texts.ToAsyncEnumerable();
@@ -293,8 +294,8 @@ public abstract partial class MainViewModelBase : IDisposable
         try
         {
             var requests = texts
-                .Where(t => t.TranslatedText is null)
-                .Where(t => !this.cache.Contains(t.SourceText))
+                .Select((text, index) => (Text: text, Index: index))
+                .Where(t => t.Text.TranslatedText is null)
                 .ToArray();
             if (this.disposedValue)
             {
@@ -304,8 +305,12 @@ public abstract partial class MainViewModelBase : IDisposable
             if (requests.Length > 0)
             {
                 using var t = this.logger.LogDebugTime("翻訳");
-                var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
-                this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
+                var translated = await this.translator.TranslateAsync(requests.Select(t => t.Text).ToArray()).ConfigureAwait(false);
+                this.cache.AddRange(requests.Select(t => t.Text.SourceText).Zip(translated));
+                foreach (var (target, translatedText) in requests.Zip(translated))
+                {
+                    texts[target.Index] = target.Text with { TranslatedText = translatedText };
+                }
             }
             else
             {
@@ -328,11 +333,6 @@ public abstract partial class MainViewModelBase : IDisposable
         TextRect[] displayedTexts;
         using (this.Filtering.EnterBusy())
         {
-            texts = texts.Select(t => t switch
-            {
-                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
-                _ => t,
-            }).ToArray();
             var tmp = texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderBy(f => f.Priority))
             {
