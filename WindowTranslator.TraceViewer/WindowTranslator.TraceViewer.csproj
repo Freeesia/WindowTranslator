@@ -12,12 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\WindowTranslator\Modules\Ocr\OcrTextTracker.cs" Link="Ocr\OcrTextTracker.cs" />
     <Compile Include="..\WindowTranslator\Modules\Ocr\IOcrTextTracker.cs" Link="Ocr\IOcrTextTracker.cs" />
     <Compile Include="..\WindowTranslator\Modules\Ocr\OcrTraceFrame.cs" Link="Ocr\OcrTraceFrame.cs" />
-    <Compile Include="..\WindowTranslator.Abstractions\TextRect.cs" Link="Abstractions\TextRect.cs" />
-    <Compile Include="..\WindowTranslator.Abstractions\UserSettings.cs" Link="Abstractions\UserSettings.cs" />
-    <Compile Include="..\WindowTranslator.Abstractions\LanguageOptions.cs" Link="Abstractions\LanguageOptions.cs" />
-    <Compile Include="..\WindowTranslator.Abstractions\IPluginParam.cs" Link="Abstractions\IPluginParam.cs" />
   </ItemGroup>
 </Project>
