@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -19,11 +19,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Režim zobrazení výsledku překladu</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Cíl automatického překladu</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Automaticky překládat, když se spustí proces, který byl jednou vybrán k překladu</value>
+    <value>Automaticky přeložit při spuštění aplikace</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Celkové nastavení</value>
@@ -340,4 +337,100 @@ Monitory nejsou podporovány.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Pluginy</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Předběžná verze</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Nainstalovat</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Nainstalováno</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualizovat</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Odinstalovat</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Opravdu chcete odinstalovat {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Dostupná aktualizace</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Nainstalovaná verze</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Nejnovější verze</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Nepodařilo se načíst seznam pluginů z NuGet. Zkontrolujte připojení k síti.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalace dokončena</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Instalace se nezdařila</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Restartovat nyní</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Restartujte WindowTranslator, aby se změny pluginu projevily.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Restartovat</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Stránka projektu</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informace o licenci</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Pluginy jsou balíčky třetích stran distribuované prostřednictvím NuGet. Licenci ke každému balíčku uděluje jeho vlastník; WindowTranslator nezaručuje jeho obsah, chování ani bezpečnost. Instalujte pouze balíčky, kterým důvěřujete.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Oficiální plugin</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Přidat oblast</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Používají jej překladové moduly podporující kontext</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Počáteční nastavení</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Vyberte rozšíření, která chcete používat. Základní funkce můžete používat i bez výběru. Rozšíření můžete přidat později.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Opakovat</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Přeskočit</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Nebyly nalezeny žádné instalovatelné oficiální pluginy.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Některé pluginy se nepodařilo nainstalovat. Opakujte akci nebo uložte úspěšné instalace a ukončete průvodce.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Výsledky nastavení se nepodařilo uložit. Opakujte akci.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Ostatní</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>Sledování OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilita polohy a velikosti</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Omezuje kolísání polohy a velikosti. 1: rychlá odezva, 5: vysoká stabilita (výchozí: 3). Velké pohyby se projeví okamžitě.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilita rozpoznávání</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Omezuje dočasné změny textu a rozdělování nebo slučování oblastí. 1: rychlá odezva, 5: vysoká stabilita (výchozí: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Zachování při dočasném zmizení</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Počet po sobě jdoucích neúspěšných rozpoznání, při nichž text zůstane zobrazený. 0: odstranit při prvním výpadku, maximum: 7, výchozí: 3. Jde o počet výpadků, nikoli sekund.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Vše</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Překlad</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtry</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Jazyk a překlad</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Rozpoznávání textu</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Zobrazení a chování</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Chování</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Mezipaměť</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Modul rozpoznávání</value></data>
 </root>

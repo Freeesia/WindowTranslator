@@ -32,7 +32,6 @@ CreateWindowEx
 FindWindowEx
 GetWindowText
 GetWindowTextLength
-GetWindowThreadProcessId
 GetClassName
 DwmGetWindowAttribute
 
@@ -40,6 +39,16 @@ DwmGetWindowAttribute
 // WindowMonitor
 EnumWindows
 IsWindowVisible
+
+// SingleInstanceWindowActivator
+GetProp
+RegisterWindowMessage
+AllowSetForegroundWindow
+PostMessage
+
+// StartupDialog
+SetProp
+RemoveProp
 
 // WindowsGraphicsCapture
 IsZoomed

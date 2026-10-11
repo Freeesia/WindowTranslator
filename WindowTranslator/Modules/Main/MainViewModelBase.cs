@@ -22,9 +22,11 @@ namespace WindowTranslator.Modules.Main;
 [ObservableObject]
 public abstract partial class MainViewModelBase : IDisposable
 {
-    private readonly Timer timer;
+    private readonly Timer? timer;
     private readonly IOcrModule ocr;
+    private readonly List<PriorityRect> priorityRects;
     private readonly IOcrTextTracker ocrTextTracker;
+    private readonly OcrTraceRecorder ocrTraceRecorder;
     private readonly ITranslateModule translator;
     private readonly ICacheModule cache;
     private readonly IColorModule color;
@@ -39,6 +41,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly double fontScale;
     private readonly double overlayOpacity;
     private readonly double mousePointerHitTestPadding;
+    private readonly bool isOneShotMode;
     private TextRect[]? lastRequested;
 
     [ObservableProperty]
@@ -59,6 +62,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private SoftwareBitmap? capturedBmp;
     private SoftwareBitmap? analyzingBmp;
+    private bool isFirstCapture;
     private bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -71,7 +75,9 @@ public abstract partial class MainViewModelBase : IDisposable
         IProcessInfoStore processInfoStore,
         ICaptureModule capture,
         IOcrModule ocr,
+        IOptionsSnapshot<BasicOcrParam> ocrParam,
         IOcrTextTracker ocrTextTracker,
+        OcrTraceRecorder ocrTraceRecorder,
         ITranslateModule translator,
         ICacheModule cache,
         IColorModule color,
@@ -85,18 +91,24 @@ public abstract partial class MainViewModelBase : IDisposable
         this.fontScale = options.Value.FontScale;
         this.overlayOpacity = options.Value.OverlayOpacity;
         this.mousePointerHitTestPadding = options.Value.MousePointerHitTestPadding;
+        this.isOneShotMode = options.Value.IsOneShotMode;
         this.DisplayBusy = options.Value.DisplayBusy;
         this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
         this.capture.Captured += Capture_CapturedAsync;
         this.ocr = ocr ?? throw new ArgumentNullException(nameof(ocr));
+        this.priorityRects = ocrParam.Value.PriorityRects ?? [];
         this.ocrTextTracker = ocrTextTracker ?? throw new ArgumentNullException(nameof(ocrTextTracker));
+        this.ocrTraceRecorder = ocrTraceRecorder ?? throw new ArgumentNullException(nameof(ocrTraceRecorder));
         this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
-        this.capture.StartCapture(processInfoStore.MainWindowHandle);
-        this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
+        if (!this.isOneShotMode)
+        {
+            this.capture.StartCapture(processInfoStore.MainWindowHandle);
+            this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
+        }
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
     }
@@ -106,7 +118,14 @@ public abstract partial class MainViewModelBase : IDisposable
         if (value)
         {
             this.OcrTexts.Clear();
-            this.ocrTextTracker.Reset();
+            if (this.isOneShotMode)
+            {
+                this.isFirstCapture = true;
+            }
+            else
+            {
+                this.ocrTextTracker.Reset();
+            }
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
         }
@@ -120,6 +139,16 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
+        if (this.isOneShotMode)
+        {
+            if (!this.isFirstCapture)
+            {
+                return;
+            }
+            this.isFirstCapture = false;
+            this.capture.StopCapture();
+        }
+
         if (this.analyzing.CurrentCount == 0)
         {
             return;
@@ -150,7 +179,15 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         else
         {
-            this.analyzingBmp?.Dispose();
+            if (this.analyzingBmp is { } previousBmp)
+            {
+                if (!this.isOneShotMode
+                    && (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight))
+                {
+                    this.ocrTextTracker.Reset();
+                }
+                previousBmp.Dispose();
+            }
             this.analyzingBmp = sbmp;
         }
         if (sbmp is null)
@@ -163,26 +200,58 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             try
             {
-                texts = await this.ocr.RecognizeAsync(sbmp);
-                texts = this.ocrTextTracker.Update(texts, new(sbmp.PixelWidth, sbmp.PixelHeight));
+                var regions = new List<OcrRegionInput>();
+                if (this.priorityRects.Count == 0)
+                {
+                    regions.Add(new(new(0, 0, sbmp.PixelWidth, sbmp.PixelHeight)));
+                }
+                else
+                {
+                    foreach (var priorityRect in this.priorityRects)
+                    {
+                        var rect = priorityRect.ToAbsoluteRect(sbmp.PixelWidth, sbmp.PixelHeight);
+                        var left = Math.Clamp(rect.Left, 0, sbmp.PixelWidth);
+                        var top = Math.Clamp(rect.Top, 0, sbmp.PixelHeight);
+                        var right = Math.Clamp(rect.Right, 0, sbmp.PixelWidth);
+                        var bottom = Math.Clamp(rect.Bottom, 0, sbmp.PixelHeight);
+                        if (right - left < 1 || bottom - top < 1)
+                        {
+                            continue;
+                        }
+
+                        var pixelLeft = Math.Floor(left);
+                        var pixelTop = Math.Floor(top);
+                        var pixelRight = Math.Ceiling(right);
+                        var pixelBottom = Math.Ceiling(bottom);
+                        regions.Add(new(
+                            new(pixelLeft, pixelTop, pixelRight - pixelLeft, pixelBottom - pixelTop),
+                            priorityRect.Keyword));
+                    }
+                }
+
+                var observations = await this.ocr.RecognizeAsync(new(sbmp, regions));
+                this.ocrTraceRecorder.Record(observations, new(sbmp.PixelWidth, sbmp.PixelHeight));
+                texts = this.isOneShotMode
+                    ? observations
+                    : this.ocrTextTracker.Update(observations, new(sbmp.PixelWidth, sbmp.PixelHeight));
             }
             catch (ObjectDisposedException)
             {
                 // すでに破棄されている場合は何もしない
-                this.timer.DisposeAsync().Forget();
+                await DisposeTimerAsync();
                 this.capture.StopCapture();
                 return;
             }
             catch (OperationCanceledException)
             {
                 // キャンセルされた場合は何もしない
-                this.timer.DisposeAsync().Forget();
+                await DisposeTimerAsync();
                 this.capture.StopCapture();
                 return;
             }
             catch (Exception e)
             {
-                this.timer.DisposeAsync().Forget();
+                await DisposeTimerAsync();
                 this.capture.StopCapture();
                 var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                 await sbmp.TrySaveImage(path);
@@ -194,11 +263,12 @@ public abstract partial class MainViewModelBase : IDisposable
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
 
         // フィルター&翻訳処理は必ず通す
+        FilterContext context;
+        TextRect[] displayedTexts;
         using (this.Filtering.EnterBusy())
         {
             texts = await this.color.ConvertColorAsync(sbmp, texts);
-
-            var context = new FilterContext()
+            context = new()
             {
                 SoftwareBitmap = sbmp,
                 ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
@@ -212,35 +282,56 @@ public abstract partial class MainViewModelBase : IDisposable
                 using var t = this.logger.LogDebugTime("PreTranslate");
                 texts = await tmp.ToArrayAsync();
             }
-            TranslateAsync(texts.Where(t => !t.IsBusy)).Forget();
-            texts = texts.Select(t => t switch
+            if (!this.isOneShotMode)
             {
-                { IsBusy: true } => t with { TranslatedText = null },
-                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with
-                {
-                    TranslatedText = this.cache.Get(t.SourceText),
-                    BusyReasons = t.BusyReasons & ~TextRegionBusyReason.Translation,
-                },
-                { TranslatedText: null } => t with
-                {
-                    BusyReasons = t.BusyReasons | TextRegionBusyReason.Translation,
-                },
-                _ => t,
-            }).ToArray();
-            {
-                var tmp = texts.ToAsyncEnumerable();
-                foreach (var filter in this.filters.OrderBy(f => f.Priority))
-                {
-                    tmp = filter.ExecutePostTranslate(tmp, context);
-                }
-                using var t = this.logger.LogDebugTime("PostTranslate");
-                texts = await tmp.ToArrayAsync();
+                TranslateAsync(texts.Where(t => !t.IsBusy)).Forget();
             }
-
-            // 背景色に不透明度を設定
-            texts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+            displayedTexts = await CreateDisplayedTextsAsync(texts, context);
         }
 
+        UpdateOcrTexts(displayedTexts);
+        if (!this.isOneShotMode)
+        {
+            return;
+        }
+
+        await TranslateAsync(texts);
+
+        using (this.Filtering.EnterBusy())
+        {
+            displayedTexts = await CreateDisplayedTextsAsync(texts, context);
+        }
+        UpdateOcrTexts(displayedTexts);
+    }
+
+    private async Task<TextRect[]> CreateDisplayedTextsAsync(IEnumerable<TextRect> texts, FilterContext context)
+    {
+        texts = texts.Select(t => t switch
+        {
+            { IsBusy: true } => t with { TranslatedText = null },
+            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with
+            {
+                TranslatedText = this.cache.Get(t.SourceText),
+                BusyReasons = t.BusyReasons & ~TextRegionBusyReason.Translation,
+            },
+            { TranslatedText: null } => t with
+            {
+                BusyReasons = t.BusyReasons | TextRegionBusyReason.Translation,
+            },
+            _ => t,
+        }).ToArray();
+        var tmp = texts.ToAsyncEnumerable();
+        foreach (var filter in this.filters.OrderBy(f => f.Priority))
+        {
+            tmp = filter.ExecutePostTranslate(tmp, context);
+        }
+        using var t = this.logger.LogDebugTime("PostTranslate");
+        texts = await tmp.ToArrayAsync();
+        return texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+    }
+
+    private void UpdateOcrTexts(IEnumerable<TextRect> texts)
+    {
         var hash = texts.ToHashSet();
         foreach (var text in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
         {
@@ -290,7 +381,7 @@ public abstract partial class MainViewModelBase : IDisposable
         catch (Exception e) when (e is not OperationCanceledException)
         {
             this.logger.LogError(e, "翻訳中にエラーが発生");
-            this.timer.DisposeAsync().Forget();
+            await DisposeTimerAsync();
             this.capture.StopCapture();
             // 翻訳失敗してエラーで閉じる場合はキューをクリア
             Interlocked.Exchange(ref this.lastRequested, null);
@@ -300,6 +391,14 @@ public abstract partial class MainViewModelBase : IDisposable
         finally
         {
             this.translating.Release();
+        }
+    }
+
+    private async ValueTask DisposeTimerAsync()
+    {
+        if (this.timer is { } timer)
+        {
+            await timer.DisposeAsync();
         }
     }
 
@@ -335,13 +434,15 @@ public sealed class CaptureMainViewModel(
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
+    [Inject] IOptionsSnapshot<BasicOcrParam> ocrParam,
     [Inject] IOcrTextTracker ocrTextTracker,
+    [Inject] OcrTraceRecorder ocrTraceRecorder,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<CaptureMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrTextTracker, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, ocrTraceRecorder, translator, cache, color, filters, logger)
 {
     public ICaptureModule Capture { get; } = capture ?? throw new ArgumentNullException(nameof(capture));
 }
@@ -353,12 +454,14 @@ public sealed class OverlayMainViewModel(
     [Inject] IProcessInfoStore processInfoStore,
     [Inject] ICaptureModule capture,
     [Inject] IOcrModule ocr,
+    [Inject] IOptionsSnapshot<BasicOcrParam> ocrParam,
     [Inject] IOcrTextTracker ocrTextTracker,
+    [Inject] OcrTraceRecorder ocrTraceRecorder,
     [Inject] ITranslateModule translator,
     [Inject] ICacheModule cache,
     [Inject] IColorModule color,
     [Inject] IEnumerable<IFilterModule> filters,
     [Inject] ILogger<OverlayMainViewModel> logger)
-    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrTextTracker, translator, cache, color, filters, logger)
+    : MainViewModelBase(presentationService, options, processInfoStore, capture, ocr, ocrParam, ocrTextTracker, ocrTraceRecorder, translator, cache, color, filters, logger)
 {
 }

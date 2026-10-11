@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>حالت نمایش نتایج</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>اهداف ترجمه خودکار</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>ترجمه خودکار هنگام راه‌اندازی فرآیند انتخاب‌شده</value>
+    <value>ترجمه خودکار هنگام اجرای برنامه</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>تنظیمات کلی</value>
@@ -444,4 +441,100 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>افزونه‌ها</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>پیش‌انتشار</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>نصب</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>نصب شده</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>به‌روزرسانی</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>آیا مطمئن هستید که می‌خواهید {0} را حذف کنید؟</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>به‌روزرسانی موجود است</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>نسخه نصب شده</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>جدیدترین نسخه</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>دریافت لیست افزونه از NuGet ناموفق بود. لطفاً اتصال شبکه خود را بررسی کنید.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>نصب کامل شد</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>نصب ناموفق بود</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>اکنون راه‌اندازی مجدد شود</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>لطفاً WindowTranslator را مجدداً راه‌اندازی کنید تا تغییرات افزونه اعمال شود.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>راه‌اندازی مجدد</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>صفحه پروژه</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>اطلاعات مجوز</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>افزونه‌ها بسته‌های شخص ثالثی هستند که از طریق NuGet توزیع می‌شوند. مجوز هر بسته را مالک آن ارائه می‌کند و WindowTranslator محتوا، عملکرد یا امنیت آن را تضمین نمی‌کند. فقط بسته‌های مورد اعتماد را نصب کنید.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>افزونه رسمی</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>افزودن محدوده</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>توسط ماژول‌های ترجمه‌ای که از زمینه پشتیبانی می‌کنند استفاده می‌شود</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>راه‌اندازی اولیه</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>افزونه‌هایی را که می‌خواهید استفاده کنید انتخاب کنید. بدون انتخاب هیچ افزونه‌ای هم می‌توانید از امکانات اصلی استفاده کنید. بعداً می‌توانید افزونه‌ها را اضافه کنید.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>تلاش مجدد</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>رد کردن</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>هیچ افزونه رسمی قابل نصبی پیدا نشد.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>نصب برخی افزونه‌ها ناموفق بود. دوباره تلاش کنید یا نصب‌های موفق را ذخیره کرده و خارج شوید.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>نتایج راه‌اندازی ذخیره نشد. دوباره تلاش کنید.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>سایر</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>ردیابی OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>پایداری موقعیت و اندازه</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>لرزش موقعیت و اندازه را کاهش می‌دهد. 1: پاسخ سریع، 5: پایداری بیشتر (پیش‌فرض: 3). جابه‌جایی‌های بزرگ فوراً اعمال می‌شوند.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>پایداری تشخیص</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>تغییرات موقت متن و تقسیم یا ادغام ناحیه‌ها را کاهش می‌دهد. 1: پاسخ سریع، 5: پایداری بیشتر (پیش‌فرض: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>حفظ نمایش هنگام ناپدید شدن موقت</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>تعداد دفعات متوالی عدم تشخیص که متن همچنان نمایش داده می‌شود. 0: حذف در اولین عدم تشخیص، حداکثر: 7، پیش‌فرض: 3. بر حسب تعداد دفعات است، نه ثانیه.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>همه</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>ترجمه</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>فیلترها</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>زبان و ترجمه</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>تشخیص متن</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>نمایش و رفتار</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>رفتار</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>حافظهٔ نهان</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>موتور تشخیص</value></data>
 </root>

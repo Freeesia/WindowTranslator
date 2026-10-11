@@ -135,4 +135,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>Gamitin ang mga Japanese na mapagkukunang kasama sa laro</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>Gamitin ang mga opisyal na salin habang nasa Ingles ang laro (isalin nang normal kung walang opisyal na salin)</value>
+  </data>
 </root>

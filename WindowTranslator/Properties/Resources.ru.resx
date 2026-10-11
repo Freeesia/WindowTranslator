@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Режим отображения результата перевода</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Цели автоматического перевода</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Автоматически переводить при запуске процесса, ранее выбранного в качестве цели перевода</value>
+    <value>Автоматически переводить при запуске приложения</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Общие настройки</value>
@@ -450,4 +447,100 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Предварительная версия</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Установить</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Установлен</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Вы уверены, что хотите удалить {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Установленная версия</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Последняя версия</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Не удалось получить список плагинов из NuGet. Проверьте подключение к сети.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Установка завершена</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Ошибка установки</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Перезапустить сейчас</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Перезапустите WindowTranslator для применения изменений плагина.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Перезапустить</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Страница проекта</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Информация о лицензии</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Плагины — это сторонние пакеты, распространяемые через NuGet. Лицензию на каждый пакет предоставляет его владелец; WindowTranslator не гарантирует его содержимое, работу или безопасность. Устанавливайте только пакеты, которым доверяете.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Официальный плагин</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Добавить область</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Используется модулями перевода, поддерживающими контекст</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Первоначальная настройка</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Выберите расширения, которые хотите использовать. Основные функции доступны и без выбора расширений. Вы сможете добавить расширения позже.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Повторить</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Пропустить</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Не найдено официальных плагинов, доступных для установки.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Не удалось установить некоторые плагины. Повторите попытку или сохраните успешно установленные плагины и выйдите.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Не удалось сохранить результаты настройки. Повторите попытку.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Другое</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>Отслеживание OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Стабильность положения и размера</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Уменьшает колебания положения и размера. 1: быстрый отклик, 5: высокая стабильность (по умолчанию: 3). Большие перемещения применяются сразу.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Стабильность распознавания</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Уменьшает временные изменения текста, разделение и объединение областей. 1: быстрый отклик, 5: высокая стабильность (по умолчанию: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Сохранение при временном исчезновении</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Число последовательных пропусков распознавания, при которых текст остаётся видимым. 0: удалить при первом пропуске, максимум: 7, по умолчанию: 3. Измеряется в пропусках, а не секундах.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Перевод</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Фильтры</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Язык и перевод</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Распознавание текста</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Отображение и поведение</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Поведение</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Кэш</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Движок распознавания</value></data>
 </root>

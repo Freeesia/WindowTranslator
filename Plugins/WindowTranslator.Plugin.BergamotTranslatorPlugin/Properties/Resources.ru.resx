@@ -136,4 +136,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Данные модели для перевода с {0} на {1} не найдены. Перевод для этой языковой пары недоступен.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Путь к глоссарию</value>
+  </data>
 </root>

@@ -168,4 +168,12 @@
   <data name="Misc" xml:space="preserve">
     <value>其他</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>OCR 区域</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>OCR 区域</value>
+  </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>文字识别</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>图像调整</value></data>
 </root>

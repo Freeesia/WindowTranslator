@@ -136,4 +136,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>{0}から{1}への翻訳可能なモデルデータは見つかりませんでした。この言語ペアでの翻訳は利用できません。</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>用語集パス</value>
+  </data>
 </root>

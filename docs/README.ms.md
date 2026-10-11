@@ -18,6 +18,7 @@ WindowTranslator adalah alat untuk menterjemah tetingkap aplikasi pada Windows.
     - [Versi Microsoft Store ](#versi-microsoft-store-)
     - [Versi Pemasang](#versi-pemasang)
     - [Versi Mudah Alih](#versi-mudah-alih)
+  - [Cara kerja dan batasan](#cara-kerja-dan-batasan)
   - [Cara Penggunaan](#cara-penggunaan)
     - [Bergamot ](#bergamot-)
   - [Ciri-ciri Lain](#ciri-ciri-lain)
@@ -39,6 +40,14 @@ Video tutorial pemasangan ada di sini⬇️
 Muat turun fail zip dari [halaman keluaran GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) dan ekstrak ke mana-mana folder.  
 - `WindowTranslator-(versi).zip` : Memerlukan persekitaran .NET  
 - `WindowTranslator-full-(versi).zip` : Bebas daripada .NET
+
+## Cara kerja dan batasan
+
+WindowTranslator menangkap tetingkap permainan atau aplikasi yang dipilih menggunakan Windows.Graphics.Capture, mengenal pasti teks pada skrin melalui OCR, menterjemahkannya dan memaparkan hasil dalam tindihan berasingan.
+
+Ia tidak mengubah fail atau proses permainan dan tidak menyuntik DLL atau kod lain ke dalam proses tersebut. Semak terma penggunaan dan dasar anti-penipuan setiap permainan sebelum digunakan. Kebenaran penggunaan atau ketiadaan penalti tidak dapat dijamin.
+
+Jika DRM atau perlindungan tangkapan skrin menghalang Windows daripada menangkap tetingkap, kandungannya mungkin tidak dapat diterjemahkan.
 
 ## Cara Penggunaan
 

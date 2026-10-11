@@ -110,4 +110,12 @@
   <data name="Misc" xml:space="preserve">
     <value>Lainnya</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>Area OCR</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Area OCR</value>
+  </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Pengenalan teks</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Penyesuaian gambar</value></data>
 </root>

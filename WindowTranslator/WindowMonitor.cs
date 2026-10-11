@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using System.Diagnostics;
+using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
-using WindowTranslator.Stores;
 using static Windows.Win32.PInvoke;
 
 namespace WindowTranslator;
-public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore autoTargetStore, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
+
+public class WindowMonitor(IMainWindowModule mainWindowModule, IOptionsMonitor<UserSettings> userSettings, IVirtualDesktopManager desktopManager, ILogger<WindowMonitor> logger) : BackgroundService
 {
     private readonly IMainWindowModule mainWindowModule = mainWindowModule;
-    private readonly IAutoTargetStore autoTargetStore = autoTargetStore;
+    private readonly IOptionsMonitor<UserSettings> userSettings = userSettings;
     private readonly IVirtualDesktopManager desktopManager = desktopManager;
     private readonly ILogger<WindowMonitor> logger = logger;
     private readonly HashSet<IntPtr> checkedWindows = [];
@@ -32,13 +34,17 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore 
         var windows = new HashSet<IntPtr>();
         EnumWindows((hWnd, lParam) =>
         {
-            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd) || this.checkedWindows.Contains(hWnd))
+            if (hWnd.ShouldIgnore() || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
+            {
+                return true;
+            }
+            windows.Add(hWnd);
+            if (this.checkedWindows.Contains(hWnd))
             {
                 return true;
             }
 
-            var windowTitle = GetWindowText(hWnd);
-            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            if (!hWnd.TryGetProcessId(out var processId))
             {
                 return true;
             }
@@ -51,19 +57,20 @@ public class WindowMonitor(IMainWindowModule mainWindowModule, IAutoTargetStore 
             {
                 return true;
             }
-            if (this.autoTargetStore.IsAutoTarget(hWnd, p.ProcessName))
+            if (ShouldAutoAttach(this.userSettings.CurrentValue, p.ProcessName)
+                && !this.mainWindowModule.IsTargetOpened(hWnd))
             {
                 this.logger.LogInformation($"`{p.ProcessName}`の翻訳を開始");
                 this.checkedWindows.Add(hWnd);
                 this.mainWindowModule.OpenTargetAsync(hWnd, p.ProcessName).Forget();
             }
-            else
-            {
-                windows.Add(hWnd);
-            }
             return true;
         }, IntPtr.Zero);
-        this.checkedWindows.ExceptWith(windows);
+        this.checkedWindows.IntersectWith(windows);
         this.logger.LogDebug("プロセスチェック終了");
     }
+
+    internal static bool ShouldAutoAttach(UserSettings settings, string processName)
+        => settings.Targets.TryGetValue(processName, out var target)
+            && target.IsEnableAutoTarget;
 }

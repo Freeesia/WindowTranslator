@@ -128,37 +128,31 @@ public sealed class OneOcr : IOcrModule, IDisposable
         this.fastText?.Dispose();
     }
 
-    public async ValueTask<IEnumerable<TextRect>> RecognizeAsync(SoftwareBitmap bitmap)
-    {
-        // リサイズ処理（scale != 1.0 の場合は新しいビットマップを生成）
-        var workingBitmap = await bitmap.ResizeSoftwareBitmapAsync(this.scale);
+    public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
+        => OcrUtility.RecognizeRegionsAsync(
+            input,
+            RecognizeRegionAsync,
+            this.scale,
+            this.brightness,
+            this.contrast);
 
-        // 明るさ・コントラスト調整（インプレース）
-        // scale == 1.0 の場合はリサイズで元のビットマップが返るため、コピーを作成してから調整
-        if (this.brightness != 0 || this.contrast != 0)
-        {
-            if (workingBitmap == bitmap)
-            {
-                // 元のビットマップを変更しないようにコピーを作成
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-                workingBitmap = SoftwareBitmap.Copy(bitmap);
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
-            }
-            workingBitmap.AdjustBrightnessContrastInPlace(this.brightness, this.contrast);
-        }
+    /// <summary>
+    /// 指定した画像のテキストを認識する
+    /// </summary>
+    /// <param name="workingBitmap">認識対象の画像</param>
+    /// <param name="sourceSize">拡大後の全体画像サイズ</param>
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(
+        SoftwareBitmap workingBitmap,
+        System.Drawing.Size sourceSize)
+    {
 
         // テキスト認識処理をバックグラウンドで実行
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
-        textRects = ProcessTextRects(textRects, workingBitmap.PixelWidth, workingBitmap.PixelHeight);
+        textRects = ProcessTextRects(textRects, sourceSize.Width, sourceSize.Height);
 
-        if (bitmap != workingBitmap)
-        {
-            workingBitmap.Dispose();
-        }
-
-        var wFat = bitmap.PixelWidth * 0.004;
+        var wFat = sourceSize.Width * 0.004;
 
         return textRects
             // マージ後に少なすぎる文字も認識ミス扱い
@@ -391,23 +385,13 @@ public sealed class OneOcr : IOcrModule, IDisposable
     {
         var (x, y, width, height, fontSize, text) = mergedRect;
 
-        // スケールに応じた座標変換
-        if (this.scale != 1.0)
-        {
-            x /= scale;
-            y /= scale;
-            width /= scale;
-            height /= scale;
-            fontSize /= scale;
-        }
-
         // 高さがフォントサイズの2倍以上の場合は複数行とみなす
         var lines = height / fontSize >= 2;
 
         // 結合された矩形の平均角度を計算
         var angle = mergedRect.Rects.Average(r => r.Angle);
 
-        return new(text, x, y, width, height, fontSize, lines) { Angle = angle };
+        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle };
     }
 
     /// <summary>

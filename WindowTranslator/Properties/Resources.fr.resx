@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Mode d'affichage des résultats</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Cibles de traduction automatique</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Traduire automatiquement lorsqu'un processus sélectionné pour la traduction est lancé</value>
+    <value>Traduire automatiquement au lancement de l'application</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Paramètres généraux</value>
@@ -450,4 +447,100 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Préversion</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Installer</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installé</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Mettre à jour</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Désinstaller</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Voulez-vous vraiment désinstaller {0} ?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Mise à jour disponible</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Version installée</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Dernière version</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Échec de la récupération de la liste des plugins depuis NuGet. Vérifiez votre connexion réseau.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Installation terminée</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Échec de l'installation</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Redémarrer maintenant</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Veuillez redémarrer WindowTranslator pour appliquer les modifications de plugin.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Redémarrer</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Page du projet</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informations de licence</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Les plugins sont des paquets tiers distribués via NuGet. La licence de chaque paquet est accordée par son propriétaire ; WindowTranslator ne garantit ni son contenu, ni son fonctionnement, ni sa sécurité. N’installez que des paquets de confiance.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Plugin officiel</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Ajouter une zone</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Utilisé par les modules de traduction prenant en charge le contexte</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Configuration initiale</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Sélectionnez les extensions que vous souhaitez utiliser. Les fonctionnalités de base restent accessibles sans rien sélectionner. Vous pourrez ajouter des extensions plus tard.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Réessayer</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Ignorer</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Aucune extension officielle installable n’a été trouvée.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Certaines extensions n’ont pas pu être installées. Réessayez ou enregistrez les installations réussies et quittez.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Les résultats de la configuration n’ont pas pu être enregistrés. Réessayez.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Autres</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>Suivi OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilité de la position et de la taille</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Réduit les variations de position et de taille. 1 : réactivité, 5 : stabilité (par défaut : 3). Les grands déplacements sont appliqués immédiatement.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilité de la reconnaissance</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Réduit les variations temporaires du texte et de la division ou fusion des zones. 1 : réactivité, 5 : stabilité (par défaut : 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Maintien en cas de disparition temporaire</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Nombre d'échecs consécutifs de reconnaissance pendant lesquels le texte reste affiché. 0 : supprimer dès le premier échec, maximum : 7, par défaut : 3. Il s'agit d'échecs, pas de secondes.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Traduction</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtres</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Langue et traduction</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Reconnaissance de texte</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Affichage et comportement</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Comportement</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Moteur de reconnaissance</value></data>
 </root>

@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>وضع عرض النتائج</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>أهداف الترجمة التلقائية</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>الترجمة تلقائياً عند بدء عملية محددة</value>
+    <value>ترجمة تلقائية عند تشغيل التطبيق</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>الإعدادات العامة</value>
@@ -450,4 +447,100 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>المكونات الإضافية</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>إصدار أولي</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>تثبيت</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>مثبت</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>إلغاء التثبيت</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>هل أنت متأكد من رغبتك في إلغاء تثبيت {0}؟</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>يتوفر تحديث</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>الإصدار المثبت</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>أحدث إصدار</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>فشل استرداد قائمة المكونات الإضافية من NuGet. يرجى التحقق من اتصالك بالشبكة.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>اكتمل التثبيت</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>فشل التثبيت</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>إعادة التشغيل الآن</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>يرجى إعادة تشغيل WindowTranslator لتطبيق تغييرات المكون الإضافي.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>إعادة التشغيل</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>صفحة المشروع</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>معلومات الترخيص</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>المكونات الإضافية حزم تابعة لجهات خارجية موزعة عبر NuGet. يمنح مالك كل حزمة ترخيصها، ولا يضمن WindowTranslator محتواها أو سلوكها أو أمانها. ثبّت فقط الحزم التي تثق بها.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>مكوّن إضافي رسمي</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>إضافة نطاق</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>تستخدمه وحدات الترجمة التي تدعم السياق</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>إعداد أولي</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>اختر الإضافات التي ترغب في استخدامها. يمكنك استخدام الميزات الأساسية دون اختيار أي منها. يمكنك إضافة إضافات لاحقًا.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>إعادة المحاولة</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>تخطي</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>لم يتم العثور على مكونات إضافية رسمية قابلة للتثبيت.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>تعذر تثبيت بعض المكونات الإضافية. أعد المحاولة، أو احفظ عمليات التثبيت الناجحة ثم اخرج.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>تعذر حفظ نتائج الإعداد. يرجى إعادة المحاولة.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>أخرى</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>تتبّع OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>استقرار الموضع والحجم</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>يقلل اهتزاز الموضع والحجم. 1: استجابة سريعة، 5: استقرار أكبر (الافتراضي: 3). تُطبَّق الحركات الكبيرة فورًا.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>استقرار نتائج التعرّف</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>يقلل التغيّرات المؤقتة في النص وتقسيم المناطق أو دمجها. 1: استجابة سريعة، 5: استقرار أكبر (الافتراضي: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>الاحتفاظ عند الاختفاء المؤقت</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>عدد مرات فشل التعرّف المتتالية التي يبقى خلالها النص ظاهرًا. 0: إزالة عند أول فشل، الحد الأقصى: 7، الافتراضي: 3. يُحسب بالمرات وليس بالثواني.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>الترجمة</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>المرشحات</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>اللغة والترجمة</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>التعرف على النص</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>العرض والسلوك</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>السلوك</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>ذاكرة التخزين المؤقت</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>محرك التعرف</value></data>
 </root>

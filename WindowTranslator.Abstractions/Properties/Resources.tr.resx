@@ -122,4 +122,12 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Önbellek Modülü</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>OCR Alanı</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>OCR Alanları</value>
+  </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Metin tanıma</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Görüntü ayarları</value></data>
 </root>

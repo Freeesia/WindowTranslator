@@ -18,6 +18,7 @@ WindowTranslator egy Windows-alkalmazás, amely lefordítja az alkalmazások abl
     - [Microsoft Store verzió ](#microsoft-store-verzió-)
     - [Telepítési verzió](#telepítési-verzió)
     - [Hordozható verzió](#hordozható-verzió)
+  - [Működés és korlátok](#működés-és-korlátok)
   - [Használat](#használat)
     - [Bergamot ](#bergamot-)
   - [Egyéb funkciók](#egyéb-funkciók)
@@ -39,6 +40,14 @@ Telepítési útmutató videó itt⬇️
 Töltse le a zip fájlt a [GitHub kiadási oldalról](https://github.com/Freeesia/WindowTranslator/releases/latest), és csomagolja ki egy tetszőleges mappába.  
 - `WindowTranslator-(verzió).zip` : .NET környezet szükséges  
 - `WindowTranslator-full-(verzió).zip` : .NET független
+
+## Működés és korlátok
+
+A WindowTranslator a Windows.Graphics.Capture segítségével rögzíti a kiválasztott játék- vagy alkalmazásablakot, OCR-rel felismeri és lefordítja a képernyőn látható szöveget, majd külön átfedésben jeleníti meg az eredményt.
+
+Nem módosítja a játék fájljait vagy folyamatát, és nem fecskendez DLL-t vagy más kódot a folyamatba. Használat előtt ellenőrizze az adott játék felhasználási feltételeit és csalás elleni szabályzatát. A használat engedélyezése és a szankciók elmaradása nem garantálható.
+
+Ha a DRM vagy a képernyőrögzítés elleni védelem megakadályozza, hogy a Windows rögzítse az ablakot, annak tartalma nem feltétlenül fordítható le.
 
 ## Használat
 

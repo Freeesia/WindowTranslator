@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>โหมดการแสดงผลการแปล</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>เป้าหมายการแปลอัตโนมัติ</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>แปลอัตโนมัติเมื่อเริ่มกระบวนการที่เคยถูกเลือกเป็นเป้าหมายการแปลก่อนหน้านี้</value>
+    <value>แปลอัตโนมัติเมื่อแอปเปิดขึ้น</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>การตั้งค่าทั่วไป</value>
@@ -459,4 +456,100 @@
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>ปลั๊กอิน</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>รุ่นก่อนเผยแพร่</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>ติดตั้ง</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>ติดตั้งแล้ว</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>อัปเดต</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>ถอนการติดตั้ง</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้ง {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>มีการอัปเดต</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>เวอร์ชันที่ติดตั้ง</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>เวอร์ชันล่าสุด</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>ไม่สามารถดึงรายการปลั๊กอินจาก NuGet ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่าย</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>การติดตั้งเสร็จสมบูรณ์</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>การติดตั้งล้มเหลว</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>เริ่มใหม่ตอนนี้</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>กรุณาเริ่ม WindowTranslator ใหม่เพื่อนำการเปลี่ยนแปลงปลั๊กอินไปใช้</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>เริ่มใหม่</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>หน้าโครงการ</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>ข้อมูลใบอนุญาต</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>ปลั๊กอินเป็นแพ็กเกจของบุคคลที่สามที่เผยแพร่ผ่าน NuGet เจ้าของแพ็กเกจเป็นผู้ให้สิทธิ์การใช้งาน และ WindowTranslator ไม่รับประกันเนื้อหา การทำงาน หรือความปลอดภัย โปรดติดตั้งเฉพาะแพ็กเกจที่คุณเชื่อถือ</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>ปลั๊กอินอย่างเป็นทางการ</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>เพิ่มพื้นที่</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>ใช้โดยโมดูลการแปลที่รองรับบริบท</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>การตั้งค่าครั้งแรก</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>เลือกส่วนขยายที่ต้องการใช้ คุณยังใช้ฟีเจอร์พื้นฐานได้แม้ไม่เลือกอะไร และสามารถเพิ่มส่วนขยายได้ภายหลัง</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>ลองอีกครั้ง</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>ข้าม</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>ไม่พบปลั๊กอินอย่างเป็นทางการที่ติดตั้งได้</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>ไม่สามารถติดตั้งปลั๊กอินบางรายการได้ ลองอีกครั้ง หรือบันทึกรายการที่ติดตั้งสำเร็จแล้วออก</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>ไม่สามารถบันทึกผลการตั้งค่าได้ โปรดลองอีกครั้ง</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>อื่นๆ</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>การติดตาม OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>ความคงที่ของตำแหน่งและขนาด</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>ลดการสั่นของตำแหน่งและขนาด 1: ตอบสนองเร็ว, 5: เน้นความคงที่ (ค่าเริ่มต้น: 3) การเคลื่อนที่มากจะมีผลทันที</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>ความคงที่ของผลการรู้จำ</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>ลดการเปลี่ยนแปลงชั่วคราวของข้อความและการแยกหรือรวมพื้นที่ 1: ตอบสนองเร็ว, 5: เน้นความคงที่ (ค่าเริ่มต้น: 3)</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>คงการแสดงผลเมื่อหายไปชั่วคราว</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>จำนวนครั้งที่รู้จำไม่สำเร็จติดต่อกันซึ่งยังคงแสดงข้อความไว้ 0: ลบเมื่อพลาดครั้งแรก, สูงสุด: 7 ครั้ง, ค่าเริ่มต้น: 3 ครั้ง นับเป็นครั้ง ไม่ใช่วินาที</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>ทั้งหมด</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>การแปล</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>ตัวกรอง</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>ภาษาและการแปล</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>การรู้จำข้อความ</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>การแสดงผลและการทำงาน</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>การทำงาน</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>แคช</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>เอนจินการรู้จำ</value></data>
 </root>

@@ -18,6 +18,7 @@ WindowTranslator é uma ferramenta para traduzir as janelas de aplicativos do Wi
     - [Versão Microsoft Store ](#microsoft-store-)
     - [Versão para instalação](#Versão para instalação)
     - [Versão portátil](#Versão portátil)
+  - [Como funciona e limitações](#como-funciona-e-limitações)
   - [Como usar](#Como usar)
     - [Bergamot ](#bergamot-)
   - [Outras funções](#Outras funções)
@@ -39,6 +40,14 @@ Vídeo tutorial de instalação aqui⬇️
 [página de releases do GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest)de arquivo zip e extraia para qualquer pasta.  
 - `WindowTranslator-(versão).zip` : Requer ambiente .NET  
 - `WindowTranslator-full-(versão).zip` : Independente do .NET
+
+## Como funciona e limitações
+
+O WindowTranslator captura a janela selecionada de um jogo ou aplicativo com Windows.Graphics.Capture, reconhece o texto na tela por OCR, traduz e mostra o resultado em uma sobreposição separada.
+
+Ele não altera arquivos nem processos do jogo e não injeta DLLs ou outro código nesse processo. Confira os termos de uso e a política antitrapaça de cada jogo antes de usar. Não é possível garantir que o uso seja permitido ou que não haja penalidades.
+
+Se DRM ou proteção contra captura de tela impedir o Windows de capturar uma janela, talvez não seja possível traduzir seu conteúdo.
 
 ## Como usar
 

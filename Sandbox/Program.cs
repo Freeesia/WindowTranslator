@@ -126,7 +126,7 @@ static async Task ClipTextRect([Argument] string imagePath, [FromServices] ILogg
     var bitmap = await decoder.GetSoftwareBitmapAsync();
 
     // OCRの実行
-    var textRects = await ocr.RecognizeAsync(bitmap);
+    var textRects = await ocr.RecognizeAsync(new(bitmap, []));
 
     // 画像からテキスト矩形を切り抜き
     var outputDir = Path.Combine(Path.GetDirectoryName(imagePath)!, "clipped");

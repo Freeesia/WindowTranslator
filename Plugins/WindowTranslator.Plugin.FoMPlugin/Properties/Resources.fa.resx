@@ -77,4 +77,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>استفاده از منابع ژاپنی بازی</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>استفاده از ترجمه‌های رسمی هنگام نمایش بازی به انگلیسی (ترجمهٔ معمول در صورت نبود ترجمهٔ رسمی)</value>
+  </data>
 </root>

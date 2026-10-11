@@ -18,6 +18,7 @@ WindowTranslator is a tool for translating windows of applications on Windows.
     - [Microsoft Store Version ](#microsoft-store-version-)
     - [Installer Version](#installer-version)
     - [Portable Version](#portable-version)
+  - [How it works and limitations](#how-it-works-and-limitations)
   - [How to Use](#how-to-use)
     - [Bergamot ](#bergamot-)
   - [Other Features](#other-features)
@@ -25,7 +26,7 @@ WindowTranslator is a tool for translating windows of applications on Windows.
 ## Download
 ### Microsoft Store Version ![Recommended](https://img.shields.io/badge/Recommended-brightgreen)
 
-Install from the [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
+The easiest way to get started is to install WindowTranslator from the [Microsoft Store](https://apps.microsoft.com/detail/9pjd2fdzqxm3?referrer=appbadge&mode=direct).
 Works even in environments where .NET is not installed.
 
 ### Installer Version
@@ -39,6 +40,14 @@ Installation tutorial video is here⬇️
 Download the zip file from the [GitHub releases page](https://github.com/Freeesia/WindowTranslator/releases/latest) and extract it to any folder.  
 - `WindowTranslator-(version).zip` : Requires .NET environment  
 - `WindowTranslator-full-(version).zip` : .NET independent
+
+## How it works and limitations
+
+WindowTranslator captures the selected game or app window with Windows.Graphics.Capture, recognizes its on-screen text with OCR, translates it, and displays the result in a separate overlay.
+
+It does not modify game files or the game process, or inject DLLs or other code into that process. Check each game's terms of service and anti-cheat policy before use; WindowTranslator cannot guarantee that a game permits its use or that penalties will not occur.
+
+If DRM or capture protection prevents Windows from capturing a window, WindowTranslator may be unable to translate its contents.
 
 ## How to Use
 

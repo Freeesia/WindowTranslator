@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Mode tampilan hasil terjemahan</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Target terjemahan otomatis</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Terjemahkan secara otomatis saat proses diluncurkan setelah dipilih untuk terjemahan</value>
+    <value>Terjemahkan secara otomatis saat aplikasi diluncurkan</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Pengaturan keseluruhan</value>
@@ -458,4 +455,100 @@ Monitor tidak didukung.</value>
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prarilis</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Pasang</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Terpasang</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Perbarui</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Apakah Anda yakin ingin menghapus {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Pembaruan tersedia</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Versi terpasang</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Versi terbaru</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Gagal mengambil daftar plugin dari NuGet. Silakan periksa koneksi jaringan Anda.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Instalasi selesai</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Instalasi gagal</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Mulai ulang sekarang</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Silakan restart WindowTranslator untuk menerapkan perubahan plugin.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Mulai ulang</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Halaman proyek</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Informasi lisensi</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Plugin adalah paket pihak ketiga yang didistribusikan melalui NuGet. Lisensi setiap paket diberikan oleh pemiliknya; WindowTranslator tidak menjamin konten, perilaku, atau keamanannya. Instal hanya paket yang Anda percayai.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Plugin resmi</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tambahkan area</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Digunakan oleh modul terjemahan yang mendukung konteks</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Penyiapan awal</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Pilih ekstensi yang ingin Anda gunakan. Fitur dasar tetap dapat digunakan tanpa memilih apa pun. Anda dapat menambahkan ekstensi nanti.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Coba lagi</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Lewati</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Tidak ditemukan plugin resmi yang dapat diinstal.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Beberapa plugin tidak dapat diinstal. Coba lagi, atau simpan instalasi yang berhasil lalu keluar.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil penyiapan tidak dapat disimpan. Coba lagi.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Lainnya</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>Pelacakan OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Stabilitas posisi dan ukuran</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Mengurangi getaran posisi dan ukuran. 1: respons cepat, 5: lebih stabil (default: 3). Pergerakan besar langsung diterapkan.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilitas pengenalan</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Mengurangi perubahan sementara pada teks serta pemisahan atau penggabungan area. 1: respons cepat, 5: lebih stabil (default: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Pertahankan saat hilang sementara</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Jumlah kegagalan pengenalan berturut-turut untuk mempertahankan tampilan. 0: hapus saat kegagalan pertama, maksimum: 7, default: 3. Dihitung dalam jumlah kegagalan, bukan detik.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Semua</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Terjemahan</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Bahasa dan terjemahan</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Pengenalan teks</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Tampilan dan perilaku</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Perilaku</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Mesin pengenalan</value></data>
 </root>

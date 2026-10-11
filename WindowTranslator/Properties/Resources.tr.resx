@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Çeviri sonucu görüntüleme modu</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Otomatik çeviri hedefleri</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Daha önce çeviri hedefi olarak seçilen bir işlem başlatıldığında otomatik olarak çevir</value>
+    <value>Uygulama başlatıldığında otomatik olarak çevir</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Genel ayarlar</value>
@@ -459,4 +456,100 @@ Monitör desteklenmiyor.
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Eklentiler</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Ön sürüm</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Yükle</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Yüklü</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>{0} öğesini kaldırmak istediğinizden emin misiniz?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Güncelleme mevcut</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Yüklü sürüm</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>En son sürüm</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>NuGet'ten eklenti listesi alınamadı. Lütfen ağ bağlantınızı kontrol edin.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Kurulum tamamlandı</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Kurulum başarısız</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Şimdi yeniden başlat</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Eklenti değişikliklerini uygulamak için lütfen WindowTranslator'ı yeniden başlatın.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Yeniden başlat</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Proje sayfası</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Lisans bilgileri</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Eklentiler, NuGet üzerinden dağıtılan üçüncü taraf paketlerdir. Her paketin lisansı sahibi tarafından sağlanır; WindowTranslator içeriğini, davranışını veya güvenliğini garanti etmez. Yalnızca güvendiğiniz paketleri yükleyin.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Resmî eklenti</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Alan ekle</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Bağlamı destekleyen çeviri modülleri tarafından kullanılır</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>İlk kurulum</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Kullanmak istediğiniz uzantıları seçin. Hiçbirini seçmeseniz de temel özellikleri kullanabilirsiniz. Uzantıları daha sonra ekleyebilirsiniz.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Yeniden dene</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Atla</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Yüklenebilir resmi eklenti bulunamadı.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Bazı eklentiler yüklenemedi. Yeniden deneyin veya başarılı yüklemeleri kaydedip çıkın.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Kurulum sonuçları kaydedilemedi. Yeniden deneyin.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Diğer</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>OCR takibi</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Konum ve boyut kararlılığı</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Konum ve boyut titreşimini azaltır. 1: hızlı tepki, 5: yüksek kararlılık (varsayılan: 3). Büyük hareketler hemen uygulanır.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Tanıma kararlılığı</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Metindeki ve bölgelerin bölünmesi veya birleşmesindeki geçici değişiklikleri azaltır. 1: hızlı tepki, 5: yüksek kararlılık (varsayılan: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Geçici kaybolmada görüntüyü koruma</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Metnin görüntülenmeye devam edeceği art arda başarısız tanıma sayısı. 0: ilk başarısızlıkta kaldır, en fazla: 7, varsayılan: 3. Saniye değil, başarısızlık sayısıdır.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Tümü</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Çeviri</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Filtreler</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Dil ve çeviri</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Metin tanıma</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Görünüm ve davranış</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Davranış</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Önbellek</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Tanıma motoru</value></data>
 </root>

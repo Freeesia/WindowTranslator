@@ -180,4 +180,12 @@
   <data name="CacheModule" xml:space="preserve">
     <value>Moduł pamięci podręcznej</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>Obszar OCR</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>Obszary OCR</value>
+  </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Rozpoznawanie tekstu</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>Dostosowanie obrazu</value></data>
 </root>

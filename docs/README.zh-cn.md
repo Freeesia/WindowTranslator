@@ -18,6 +18,7 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
     - [Microsoft Store 版本 ](#microsoft-store-版本-)
     - [安装版](#安装版)
     - [便携版](#便携版)
+  - [工作方式与限制](#工作方式与限制)
   - [使用方法](#使用方法)
     - [Bergamot ](#bergamot-)
   - [其他功能](#其他功能)
@@ -39,6 +40,14 @@ WindowTranslator是一款用于翻译Windows应用程序窗口的工具。
 从[GitHub发布页面](https://github.com/Freeesia/WindowTranslator/releases/latest)下载zip文件并解压到任意文件夹。  
 - `WindowTranslator-(版本).zip` : 需要.NET环境  
 - `WindowTranslator-full-(版本).zip` : 不依赖.NET
+
+## 工作方式与限制
+
+WindowTranslator 使用 Windows.Graphics.Capture 捕获所选游戏或应用窗口，通过 OCR 识别并翻译画面文字，再将译文显示在独立的叠加层中。
+
+它不会修改游戏文件或游戏进程，也不会向游戏进程注入 DLL 或其他代码。使用前请查看相应游戏的服务条款及反作弊政策；无法保证游戏允许使用或不会受到处罚。
+
+如果 DRM 或屏幕捕获保护阻止 Windows 获取窗口画面，该画面可能无法翻译。
 
 ## 使用方法
 

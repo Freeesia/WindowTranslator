@@ -45,6 +45,15 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
             fe.SetBinding(TextBox.TextProperty, property.CreateBinding());
         }
 
+        // OCR対象範囲は専用のエディタで編集する
+        if (property.Is(typeof(List<PriorityRect>)))
+        {
+            var editor = new PriorityRectsEditor();
+            editor.SetBinding(PriorityRectsEditor.RectsProperty, property.CreateOneWayBinding());
+            editor.SetBinding(PriorityRectsEditor.TargetWindowHandleProperty, new Binding(nameof(TargetSettingsViewModel.TargetWindowHandle)));
+            fe = editor;
+        }
+
         // EditableItemsSourceAttributeが指定されている場合、編集可能ComboBoxを生成
         if (fe == null && property is IEditableItemsPropertyItem editableItem && editableItem.EditableCandidates != null)
         {
@@ -59,6 +68,13 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         }
 
         fe ??= base.CreateControl(property, options);
+
+        // 入れ子になったプラグイン設定では、ItemsSource の所有者を明示して標準 ComboBox の更新通知を受け取る。
+        if (fe is ComboBox itemsSourceComboBox && property.ItemsSourceDescriptor is { } itemsSourceDescriptor
+            && property is IItemsSourcePropertyItem { ItemsSourceOwner: { } owner })
+        {
+            itemsSourceComboBox.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(itemsSourceDescriptor.Name) { Source = owner });
+        }
 
         // マウスポインター判定の余白は、コントロールにフォーカスがある間だけ設定画面内にプレビュー表示する
         if (property.PropertyName == nameof(TargetSettingsViewModel.MousePointerHitTestPadding))
@@ -204,7 +220,7 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         grid.Children.Add(control);
 
         // 現在のUI言語に基づいてURLを構築
-        var helpUri = BuildHelpUri(pageName);
+        var helpUri = HelpUriBuilder.Build(pageName, CultureInfo.CurrentUICulture);
 
         // ヘルプボタンを配置
         var helpButton = new HyperlinkButton
@@ -226,25 +242,6 @@ internal class SettingsPropertyGridFactory : PropertyGridControlFactory
         grid.Children.Add(helpButton);
 
         return grid;
-    }
-
-    private static string BuildHelpUri(string pageName)
-    {
-        const string baseUrl = "https://wt.studiofreesia.com/";
-
-        // 現在のUI言語を取得
-        var culture = CultureInfo.CurrentUICulture;
-
-        // 言語コードをドキュメントファイルのサフィックスにマッピング
-        var languageSuffix = culture.Name switch
-        {
-            "ja-JP" or "ja" => "", // 日本語はデフォルト（サフィックスなし）
-            "zh-Hans" or "zh-CN" => ".zh-cn",
-            "zh-Hant" or "zh-TW" => ".zh-tw",
-            _ => "." + culture.TwoLetterISOLanguageName.ToLowerInvariant(),
-        };
-
-        return $"{baseUrl}{pageName}{languageSuffix}";
     }
 
     private class SymbolIcon(SymbolRegular symbol) : Wpf.Ui.Controls.SymbolIcon(symbol)

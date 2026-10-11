@@ -1,0 +1,32 @@
+<Project>
+  <ItemGroup>
+    <DistributionProject Include="$(MSBuildThisFileDirectory)..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)..\ColorThief\ColorThief\ColorThief.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)..\WindowTranslator.PLaMo.CudaRuntime\WindowTranslator.PLaMo.CudaRuntime.csproj" />
+    <DistributionProject Include="$(MSBuildThisFileDirectory)WindowTranslator.Plugin.*\*.csproj" />
+  </ItemGroup>
+
+  <Target Name="RestoreProjects">
+    <MSBuild
+      Projects="@(DistributionProject)"
+      Targets="Restore" />
+  </Target>
+
+  <Target Name="Pack" DependsOnTargets="RestoreProjects">
+    <!-- Restore が生成した NuGet のパスプロパティを読み直すため、別のグローバルプロパティで再評価する。 -->
+    <MSBuild
+      Projects="@(DistributionProject)"
+      Targets="Pack"
+      BuildInParallel="true"
+      Properties="PackageAfterRestore=true" />
+  </Target>
+
+  <Target Name="PublishAppBundle" DependsOnTargets="RestoreProjects">
+    <MSBuild
+      Projects="@(DistributionProject)"
+      Targets="Publish"
+      BuildInParallel="true"
+      RemoveProperties="AppBundleOutputPath"
+      Properties="PublishDir=$(AppBundleOutputPath)\%(DistributionProject.Filename)\" />
+  </Target>
+</Project>

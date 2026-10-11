@@ -19,8 +19,8 @@ using Weikio.PluginFramework.AspNetCore;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using WindowTranslator.Modules.Main;
+using WindowTranslator.Modules.PluginStore;
 using WindowTranslator.Properties;
-using WindowTranslator.Stores;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
@@ -45,7 +45,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private readonly IReviewRequestService reviewRequestService;
     private readonly IContentDialogService dialogService;
     private readonly IPresentationService presentationService;
-    private readonly IAutoTargetStore autoTargetStore;
     private readonly IEnumerable<ITargetSettingsValidator> validators;
     private readonly IMainWindowModule mainWindowModule;
     private readonly ILogger<AllSettingsViewModel> logger;
@@ -80,9 +79,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     private bool isOverlayPointSwap;
 
     [ObservableProperty]
-    private bool isEnableAutoTarget;
-
-    [ObservableProperty]
     private TargetSettingsViewModel selectedTarget;
 
     public IReadOnlyList<EnumItem<ViewMode>> ViewModes { get; } = Enum.GetValues<ViewMode>().Select(v => new EnumItem<ViewMode>(v)).ToArray();
@@ -90,8 +86,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public IReadOnlyList<EnumItem<OverlaySwitch>> OverlaySwitches { get; } = Enum.GetValues<OverlaySwitch>().Select(v => new EnumItem<OverlaySwitch>(v)).ToArray();
 
     public bool IsCheckableCapture => this.ViewMode == ViewMode.Overlay;
-
-    public ObservableCollection<string> AutoTargets { get; }
 
     public ObservableCollection<TargetSettingsViewModel> Targets { get; }
 
@@ -103,6 +97,8 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
 
     public bool IsVisibleReviewButton => this.reviewRequestService.CanOpenReview;
 
+    public PluginStoreViewModel PluginStore { get; }
+
     public AllSettingsViewModel(
         [Inject] PluginProvider provider,
         [Inject] IOptionsSnapshot<UserSettings> options,
@@ -111,11 +107,11 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         [Inject] IReviewRequestService reviewRequestService,
         [Inject] IContentDialogService dialogService,
         [Inject] IPresentationService presentationService,
-        [Inject] IAutoTargetStore autoTargetStore,
         [Inject] IConfiguration config,
         [Inject] IEnumerable<ITargetSettingsValidator> validators,
         [Inject] IMainWindowModule mainWindowModule,
         [Inject] ILogger<AllSettingsViewModel> logger,
+        [Inject] PluginStoreViewModel pluginStoreViewModel,
         string target,
         bool? applyMode = null)
     {
@@ -129,9 +125,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.IsEnableCaptureOverlay = common.IsEnableCaptureOverlay;
         this.OverlaySwitch = common.OverlaySwitch;
         this.IsOverlayPointSwap = common.IsOverlayPointSwap;
-        this.IsEnableAutoTarget = common.IsEnableAutoTarget;
-        this.AutoTargets = [.. autoTargetStore.AutoTargets];
-
         this.Targets = [.. options.Value.Targets
             .DefaultIfEmpty(new KeyValuePair<string, TargetSettings>(string.Empty, new()))
             .Select(t => new TargetSettingsViewModel(t.Key, sp, t.Value, ocrModules, translateModules, cacheModules))];
@@ -152,12 +145,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         this.reviewRequestService = reviewRequestService;
         this.dialogService = dialogService;
         this.presentationService = presentationService;
-        this.autoTargetStore = autoTargetStore;
         this.validators = validators;
         this.mainWindowModule = mainWindowModule;
         this.logger = logger;
         this.target = target;
         this.rootConfig = config as IConfigurationRoot;
+        this.PluginStore = pluginStoreViewModel;
         this.updateChecker.UpdateAvailable += UpdateChecker_UpdateAvailable;
         SetUpUpdateInfo();
         this.isStartup = GetIsStartup();
@@ -219,13 +212,15 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public Task OpenReviewAsync()
         => this.reviewRequestService.OpenReviewPageAsync();
 
-    [RelayCommand]
-    public void DeleteAutoTarget(string item)
-        => this.AutoTargets.Remove(item);
-
     [RelayCommand(CanExecute = nameof(CanDeleteTargetSetting))]
     public void DeleteTargetSetting(TargetSettingsViewModel item)
-        => this.Targets.Remove(item);
+    {
+        if (this.SelectedTarget == item)
+        {
+            this.SelectedTarget = this.Targets.First(target => string.IsNullOrEmpty(target.Name));
+        }
+        this.Targets.Remove(item);
+    }
 
     public static bool CanDeleteTargetSetting(TargetSettingsViewModel item)
         => !string.IsNullOrEmpty(item?.Name);
@@ -239,13 +234,13 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
             Common = new()
             {
                 ViewMode = this.ViewMode,
-                IsEnableAutoTarget = this.IsEnableAutoTarget,
                 OverlaySwitch = this.OverlaySwitch,
                 IsOverlayPointSwap = this.IsOverlayPointSwap,
                 IsEnableCaptureOverlay = this.IsEnableCaptureOverlay,
             },
             Targets = this.Targets.ToDictionary(t => t.Name, t => new TargetSettings()
             {
+                IsEnableAutoTarget = t.IsEnableAutoTarget,
                 Language = new()
                 {
                     Source = t.Source,
@@ -262,8 +257,12 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
                 },
                 PluginParams = t.Params.ToDictionary(p => p.GetType().Name),
                 DisplayBusy = t.DisplayBusy,
+                IsOneShotMode = t.IsOneShotMode,
                 OverlayOpacity = t.OverlayOpacity,
                 MousePointerHitTestPadding = t.MousePointerHitTestPadding,
+                OcrGeometryStability = t.OcrGeometryStability,
+                OcrRecognitionStability = t.OcrRecognitionStability,
+                OcrMissingFrameRetention = t.OcrMissingFrameRetention,
             }),
         };
 
@@ -298,10 +297,6 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
         Directory.CreateDirectory(PathUtility.UserDir);
         using (var fs = File.Open(PathUtility.UserSettings, FileMode.Create, FileAccess.Write, FileShare.None))
             await JsonSerializer.SerializeAsync(fs, settings, serializerOptions);
-        this.autoTargetStore.AutoTargets.Clear();
-        this.autoTargetStore.AutoTargets.UnionWith(this.AutoTargets);
-        this.autoTargetStore.Save();
-
         this.rootConfig?.Reload();
         if (this.ApplyMode)
         {
@@ -333,6 +328,7 @@ sealed partial class AllSettingsViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         this.updateChecker.UpdateAvailable -= UpdateChecker_UpdateAvailable;
+        this.PluginStore.Dispose();
     }
 }
 
@@ -390,6 +386,13 @@ public partial class TargetSettingsViewModel(
     [Browsable(false)]
     public string Name { get; } = name;
 
+    /// <summary>
+    /// 対象ウィンドウのハンドル（翻訳中でない場合は<see cref="IntPtr.Zero"/>）
+    /// </summary>
+    [Browsable(false)]
+    public nint TargetWindowHandle
+        => sp.GetService<IMainWindowModule>()?.OpenedWindows.FirstOrDefault(w => w.Name == Name)?.Target ?? IntPtr.Zero;
+
     [Browsable(false)]
     public IEnumerable<ModuleItem> OcrModules { get; } = ocrModules;
     [Browsable(false)]
@@ -397,19 +400,23 @@ public partial class TargetSettingsViewModel(
     [Browsable(false)]
     public IEnumerable<ModuleItem> CacheModules { get; } = cacheModules;
 
-    [Category("SettingsViewModel|Language")]
+    // SortIndexはタブの生成順にも使われるため、共通タブの先頭項目を負値で先に並べる。
+    [Category("SettingsLanguageTranslation|Language")]
+    [SortIndex(-40)]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Source { get; set; } = settings.Language.Source;
 
-    [Category("SettingsViewModel|Language")]
+    [Category("SettingsLanguageTranslation|Language")]
+    [SortIndex(20)]
     [ItemsSourceProperty(nameof(Languages))]
     [SelectedValuePath(nameof(CultureInfo.Name))]
     [DisplayMemberPath(nameof(CultureInfo.DisplayName))]
     public string Target { get; set; } = settings.Language.Target;
 
-    [Category("SettingsViewModel|Plugin")]
+    [Category("SettingsRecognition|RecognitionEngine")]
+    [SortIndex(-30)]
     [ItemsSourceProperty(nameof(OcrModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -419,7 +426,8 @@ public partial class TargetSettingsViewModel(
             nameof(IOcrModule),
             ocrModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsViewModel|Plugin")]
+    [Category("SettingsLanguageTranslation|")]
+    [SortIndex(30)]
     [ItemsSourceProperty(nameof(TranslateModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -429,7 +437,8 @@ public partial class TargetSettingsViewModel(
             nameof(ITranslateModule),
             translateModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsViewModel|Plugin")]
+    [Category("SettingsCache|")]
+    [SortIndex(-10)]
     [ItemsSourceProperty(nameof(CacheModules))]
     [SelectedValuePath(nameof(ModuleItem.Name))]
     [DisplayMemberPath(nameof(ModuleItem.DisplayName))]
@@ -438,52 +447,69 @@ public partial class TargetSettingsViewModel(
             nameof(ICacheModule),
             cacheModules.OrderByDescending(i => i.IsDefault).FirstOrDefault()?.Name ?? string.Empty);
 
-    [Category("SettingsViewModel|Font")]
+    [Category("SettingsDisplayBehavior|Font")]
+    [SortIndex(-20)]
     [FontFamilySelector]
     [FontPreview(18)]
-    [SortIndex(5)]
     public string Font { get; set; } = settings.Font;
 
-    [property: Category("SettingsViewModel|Font")]
+    [property: Category("SettingsDisplayBehavior|Font")]
+    [property: SortIndex(20)]
     [property: Slidable(0.1, 5, 0.1, 1.0, true, 0.1)]
     [property: FormatString("F2")]
-    [property: SortIndex(6)]
     [ObservableProperty]
     private double fontScale = settings.FontScale;
 
-    [property: Category("SettingsViewModel|Shortcut")]
+    [property: Category("SettingsRecognition|OcrTracking")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrGeometryStability)}_Desc")]
+    [property: Slidable(1, 5, 1, 1, true, 1)]
+    [property: SortIndex(40)]
     [ObservableProperty]
-    private string overlayShortcut = settings.OverlayShortcut;
+    private int ocrGeometryStability = settings.OcrGeometryStability;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(7)]
+    [property: Category("SettingsRecognition|OcrTracking")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrRecognitionStability)}_Desc")]
+    [property: Slidable(1, 5, 1, 1, true, 1)]
+    [property: SortIndex(41)]
+    [ObservableProperty]
+    private int ocrRecognitionStability = settings.OcrRecognitionStability;
+
+    [property: Category("SettingsRecognition|OcrTracking")]
+    [property: LocalizedDescription(typeof(Resources), $"{nameof(OcrMissingFrameRetention)}_Desc")]
+    [property: Slidable(0, 7, 1, 1, true, 1)]
+    [property: SortIndex(42)]
+    [ObservableProperty]
+    private int ocrMissingFrameRetention = settings.OcrMissingFrameRetention;
+
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(60)]
+    public string OverlayShortcut { get; set; } = settings.OverlayShortcut;
+
+    [property: Category("SettingsDisplayBehavior|Overlay")]
+    [property: SortIndex(30)]
     [property: Slidable(0, 1, 0.005, 0.05, true, 0.01)]
     [property: FormatString("P1")]
     [ObservableProperty]
     private double overlayOpacity = settings.OverlayOpacity;
 
-    [property: Category("SettingsViewModel|Misc")]
-    [property: SortIndex(8)]
-    [ObservableProperty]
-    private bool displayBusy = settings.DisplayBusy;
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(70)]
+    public bool IsOneShotMode { get; set; } = settings.IsOneShotMode;
 
-    [property: Category("SettingsViewModel|Misc")]
+    [property: Category("SettingsDisplayBehavior|Overlay")]
+    [property: SortIndex(40)]
     [property: LocalizedDescription(typeof(Resources), $"{nameof(MousePointerHitTestPadding)}_Desc")]
     [property: Slidable(0, 100, 1, 10, true, 1)]
-    [property: SortIndex(9)]
     [ObservableProperty]
     private double mousePointerHitTestPadding = settings.MousePointerHitTestPadding;
 
-    public IReadOnlyList<IPluginParam> Params { get; } = sp.GetServices<IPluginParam>().Select(p =>
-    {
-        var configureType = typeof(IConfigureNamedOptions<>).MakeGenericType(p.GetType());
-        var configures = (IEnumerable<object>)sp.GetService(typeof(IEnumerable<>).MakeGenericType(configureType))!;
-        var configureMethod = configureType.GetMethod(nameof(IConfigureNamedOptions<object>.Configure))!;
-        foreach (var configure in configures)
-        {
-            configureMethod.Invoke(configure, [name, p]);
-        }
+    [Category("SettingsDisplayBehavior|SettingsBehavior")]
+    [SortIndex(80)]
+    public bool IsEnableAutoTarget { get; set; } = settings.IsEnableAutoTarget;
 
-        return p;
-    }).ToArray();
+    [Category("SettingsDisplayBehavior|Overlay")]
+    [SortIndex(50)]
+    public bool DisplayBusy { get; set; } = settings.DisplayBusy;
+
+    public IReadOnlyList<IPluginParam> Params { get; } = sp.GetParams(name).ToArray();
 }

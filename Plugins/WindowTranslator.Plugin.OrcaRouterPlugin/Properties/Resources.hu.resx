@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>OrcaRouter beállítások</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>OrcaRouter fordítás</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Bejelentkezés / Kijelentkezés</value></data>
+  <data name="Model" xml:space="preserve"><value>Modell (bemeneti / kimeneti ár USD-ben)</value></data>
+  <data name="Status" xml:space="preserve"><value>Bejelentkezési állapot</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Fordítási kontextus</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Szójegyzék elérési útja</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Bejelentkezve</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Nincs bejelentkezve</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Jelentkezzen be a böngészőben. A megszakításhoz nyomja meg újra a gombot.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>A bejelentkezést megszakították vagy időtúllépés történt.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>A bejelentkezés sikertelen. Ellenőrizze a kapcsolatot, majd próbálja újra.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Térjen vissza a WindowTranslator alkalmazásba az eredmény ellenőrzéséhez. Bezárhatja ezt a lapot.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>modellenként változik</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>az ár nem érhető el</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Jelentkezzen be az OrcaRouter beállításaiban, majd mentse a beállításokat.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Az OrcaRouter-egyenleg nem elegendő, vagy elérte a használati korlátot. Ingyenes használathoz válassza az „OrcaRouter Free” modellt.</value></data>
+</root>

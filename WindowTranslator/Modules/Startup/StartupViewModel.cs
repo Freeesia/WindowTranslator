@@ -73,8 +73,31 @@ public partial class StartupViewModel
     private MenuItemViewModel CreateMenu(WindowInfo item)
         => new(item.Name, null, [
                 new(Resources.Settings, new AsyncRelayCommand(() => OpenSettingsDialogAsync(item.Name)), []),
+#if DEBUG
+                new(item.OcrTraceRecorder.IsEnabled ? "OCRトレース記録を停止" : "OCRトレース記録を開始", new RelayCommand(() => ToggleOcrTrace(item)), []),
+#endif
                 new(Resources.Detach, new RelayCommand(item.Window.Close), []),
             ]);
+
+#if DEBUG
+    private void ToggleOcrTrace(WindowInfo item)
+    {
+        if (item.OcrTraceRecorder.IsEnabled)
+        {
+            item.OcrTraceRecorder.Stop();
+        }
+        else
+        {
+            item.OcrTraceRecorder.Start();
+        }
+
+        int index = this.mainWindowModule.OpenedWindows.IndexOf(item);
+        if (index >= 0)
+        {
+            this.attachingWindows[index] = CreateMenu(item);
+        }
+    }
+#endif
 
     [RelayCommand]
     public async Task RunAsync()
@@ -160,18 +183,18 @@ public partial class StartupViewModel
 
         EnumWindows((hWnd, _) =>
         {
-            if (IsIgnoreWindow(hWnd) || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
+            if (hWnd.ShouldIgnore() || !this.desktopManager.IsWindowOnCurrentVirtualDesktop(hWnd))
             {
                 return true;
             }
 
-            var windowTitle = GetWindowText(hWnd);
+            var windowTitle = hWnd.GetText();
             if (windowTitle != targetTitle)
             {
                 return true;
             }
 
-            if (GetWindowThreadProcessId(hWnd, out var processId) == 0)
+            if (!hWnd.TryGetProcessId(out var processId))
             {
                 return true;
             }
@@ -187,7 +210,7 @@ public partial class StartupViewModel
             }
 
             // ウィンドウサイズを取得
-            var (width, height) = GetWindowSizeForWgcCompare(hWnd);
+            var (width, height) = hWnd.GetSizeForWgcCompare();
             // サイズが完全一致する場合は即座に結果を設定して終了
             if (width == targetSize.Width && height == targetSize.Height)
             {

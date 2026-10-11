@@ -135,4 +135,7 @@
   <data name="UseJpn" xml:space="preserve">
     <value>Oyunda bulunan Japonca kaynakları kullan</value>
   </data>
+  <data name="UseOfficialTranslation" xml:space="preserve">
+    <value>Oyun İngilizce görüntülenirken resmî çevirileri kullan (çeviri yoksa normal şekilde çevir)</value>
+  </data>
 </root>

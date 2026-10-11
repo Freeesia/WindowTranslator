@@ -136,4 +136,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>Walang natagpuang datos ng modelo na maaaring magsalin mula sa {0} patungo sa {1}. Ang pagsasalin para sa pares ng wikang ito ay hindi available.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>Landas ng Glossary</value>
+  </data>
 </root>

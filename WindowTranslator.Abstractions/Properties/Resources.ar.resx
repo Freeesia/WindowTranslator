@@ -110,4 +110,12 @@
   <data name="Misc" xml:space="preserve">
     <value>أخرى</value>
   </data>
+  <data name="PriorityRect" xml:space="preserve">
+    <value>منطقة OCR</value>
+  </data>
+  <data name="PriorityRects" xml:space="preserve">
+    <value>مناطق OCR</value>
+  </data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>التعرف على النص</value></data>
+  <data name="OcrImageAdjustments" xml:space="preserve"><value>تعديلات الصورة</value></data>
 </root>

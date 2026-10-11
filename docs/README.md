@@ -18,6 +18,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
     - [Microsoft Store版 ](#microsoft-store版-)
     - [インストール版](#インストール版)
     - [ポータブル版](#ポータブル版)
+  - [動作方式と制約](#動作方式と制約)
   - [使い方](#使い方)
     - [Bergamot ](#bergamot-)
   - [その他の機能](#その他の機能)
@@ -39,6 +40,14 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 [GitHubのリリースページ](https://github.com/Freeesia/WindowTranslator/releases/latest)からzipファイルをダウンロードして任意のフォルダに展開してください。  
 - `WindowTranslator-(バージョン).zip` : .NET環境が必要  
 - `WindowTranslator-full-(バージョン).zip` : .NET非依存
+
+## 動作方式と制約
+
+WindowTranslator は、選択したゲームやアプリのウィンドウを Windows.Graphics.Capture で取得し、OCR で画面内の文字を認識して翻訳し、訳文を別のオーバーレイに表示します。
+
+ゲームファイルやゲームプロセスを書き換えず、ゲームプロセスへの DLL やコードの注入も行いません。利用前に各ゲームの利用規約とアンチチートのポリシーを確認してください。使用が認められることやペナルティがないことは保証できません。
+
+DRM や画面キャプチャ保護によって Windows がウィンドウを取得できない場合、その画面は翻訳できないことがあります。
 
 ## 使い方
 
@@ -68,6 +77,7 @@ WindowTranslatorは、Windowsのアプリケーションのウィンドウを翻
 > |     DeepL      |   [![DeepL設定動画](https://github.com/user-attachments/assets/4abd512f-cff9-45a8-852b-722641458f0b)](https://youtu.be/D7Yb6rIVPI0)   | 無料枠が多い<br/>翻訳が速い | |
 > |     Gemini     | [![Google AI設定動画](https://github.com/user-attachments/assets/9d3a91ab-f1aa-4079-be68-622212ab1b68)](https://youtu.be/Oht0z03M91I) | 翻訳精度が高い | 少額の課金が必要 |
 > |    ChatGPT     | TBD | 翻訳精度が高い | 少額の課金が必要 |
+> |   OrcaRouter   | TBD | 無料で簡単にAI翻訳を使える<br/>有料ならいろんなAIモデルを利用できる | 無料だと翻訳速度が遅い |
 > |  ローカルLLM   | TBD | サービス自体は無料 | 高スペックなPCが必要 |
 
 ## その他の機能

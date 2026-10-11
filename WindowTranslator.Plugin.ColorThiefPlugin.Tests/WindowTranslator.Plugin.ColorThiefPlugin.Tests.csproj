@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup><ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -15,8 +18,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WindowTranslator.Plugin.ColorThiefPlugin\WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
-    <ProjectReference Update="..\..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" ExcludeAssets="none" IncludeAssets="all" Private="true" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.ColorThiefPlugin\WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
+    <ProjectReference Update="..\WindowTranslator.Abstractions\WindowTranslator.Abstractions.csproj" ExcludeAssets="none" IncludeAssets="all" Private="true" />
   </ItemGroup>
 
   <ItemGroup>

@@ -120,6 +120,15 @@
   <data name="ModelFileNotFound" xml:space="preserve">
     <value>PLaMo モデルファイルが見つかりません。</value>
   </data>
+  <data name="CudaRuntimeUnavailable" xml:space="preserve">
+    <value>CUDA 12 Runtime が見つかりません。PLaMo の設定を再確認してください。</value>
+  </data>
+  <data name="CudaRuntimeDownloadFailed" xml:space="preserve">
+    <value>CUDA 12 Runtime の取得に失敗しました。&#xD;&#xA;{0}</value>
+  </data>
+  <data name="CudaRuntimeLoadFailed" xml:space="preserve">
+    <value>CUDA 12 Runtime の読み込みに失敗しました。&#xD;&#xA;{0}</value>
+  </data>
   <data name="ModelNotInitialized" xml:space="preserve">
     <value>PLaMo モデルが初期化されていません。</value>
   </data>

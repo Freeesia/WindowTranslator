@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="OrcaRouterOptions" xml:space="preserve"><value>Nastavení OrcaRouter</value></data>
+  <data name="OrcaRouterTranslator" xml:space="preserve"><value>Překlad OrcaRouter</value></data>
+  <data name="AccountCommand" xml:space="preserve"><value>Přihlásit / Odhlásit</value></data>
+  <data name="Model" xml:space="preserve"><value>Model (cena vstupu / výstupu v USD)</value></data>
+  <data name="Status" xml:space="preserve"><value>Stav přihlášení</value></data>
+  <data name="TranslateContext" xml:space="preserve"><value>Kontext překladu</value></data>
+  <data name="GlossaryPath" xml:space="preserve"><value>Cesta ke glosáři</value></data>
+  <data name="SignedIn" xml:space="preserve"><value>Přihlášeno</value></data>
+  <data name="SignedOut" xml:space="preserve"><value>Nepřihlášeno</value></data>
+  <data name="SigningIn" xml:space="preserve"><value>Přihlaste se v prohlížeči. Opětovným stisknutím tlačítka akci zrušíte.</value></data>
+  <data name="SignInCancelled" xml:space="preserve"><value>Přihlášení bylo zrušeno nebo vypršel časový limit.</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Přihlášení se nezdařilo. Zkontrolujte připojení a zkuste to znovu.</value></data>
+  <data name="ReturnToApp" xml:space="preserve"><value>Vraťte se do WindowTranslator a zkontrolujte výsledek. Tuto kartu můžete zavřít.</value></data>
+  <data name="VariablePrice" xml:space="preserve"><value>liší se podle modelu</value></data>
+  <data name="PriceUnavailable" xml:space="preserve"><value>cena není k dispozici</value></data>
+  <data name="NeedSignIn" xml:space="preserve"><value>Přihlaste se v nastavení OrcaRouter a nastavení uložte.</value></data>
+  <data name="QuotaExceeded" xml:space="preserve"><value>Kredit OrcaRouter je nedostatečný nebo byl dosažen limit využití. Pro bezplatné použití vyberte model „OrcaRouter Free“.</value></data>
+</root>

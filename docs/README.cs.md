@@ -18,6 +18,7 @@ WindowTranslator je nástroj pro překlad oken aplikací v systému Windows.
     - [Verze Microsoft Store ](#verze-microsoft-store-)
     - [Instalační verze](#instalační-verze)
     - [Přenosná verze](#přenosná-verze)
+  - [Jak funguje a omezení](#jak-funguje-a-omezení)
   - [Jak používat](#jak-používat)
     - [Bergamot ](#bergamot-)
   - [Další funkce](#další-funkce)
@@ -39,6 +40,14 @@ Výukové video pro instalaci je zde⬇️
 Stáhněte soubor zip ze [stránky vydání GitHub](https://github.com/Freeesia/WindowTranslator/releases/latest) a rozbalte jej do libovolné složky.  
 - `WindowTranslator-(verze).zip` : Vyžaduje prostředí .NET  
 - `WindowTranslator-full-(verze).zip` : Nezávislé na .NET
+
+## Jak funguje a omezení
+
+WindowTranslator zachytí vybrané okno hry nebo aplikace pomocí Windows.Graphics.Capture, rozpozná text na obrazovce pomocí OCR, přeloží jej a výsledek zobrazí v samostatné překryvné vrstvě.
+
+Nemění soubory ani proces hry a nevkládá do něj DLL ani jiný kód. Před použitím si ověřte podmínky služby a pravidla proti podvádění u každé hry. Nelze zaručit, že je použití povoleno ani že nehrozí postih.
+
+Pokud DRM nebo ochrana proti snímání obrazovky brání Windows v zachycení okna, jeho obsah nemusí být možné přeložit.
 
 ## Jak používat
 

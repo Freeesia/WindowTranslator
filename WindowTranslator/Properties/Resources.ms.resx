@@ -132,11 +132,8 @@
   <data name="ViewMode" xml:space="preserve">
     <value>Mod paparan hasil terjemahan</value>
   </data>
-  <data name="AutoTargets" xml:space="preserve">
-    <value>Sasaran terjemahan automatik</value>
-  </data>
   <data name="IsEnableAutoTarget" xml:space="preserve">
-    <value>Terjemahkan secara automatik apabila proses dilancarkan sebaik sahaja dipilih untuk terjemahan</value>
+    <value>Terjemah secara automatik apabila aplikasi dilancarkan</value>
   </data>
   <data name="SettingsViewModel" xml:space="preserve">
     <value>Tetapan keseluruhan</value>
@@ -458,4 +455,100 @@ Monitor tidak disokong.</value>
 
 </value>
   </data>
+  <data name="PluginStore" xml:space="preserve">
+    <value>Plugin</value>
+  </data>
+  <data name="Prerelease" xml:space="preserve">
+    <value>Prakeluaran</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Pasang</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Dipasang</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Kemaskini</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Nyahpasang</value>
+  </data>
+  <data name="UninstallConfirm" xml:space="preserve">
+    <value>Adakah anda pasti mahu menyahpasang {0}?</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Kemaskini tersedia</value>
+  </data>
+  <data name="InstalledVersionLabel" xml:space="preserve">
+    <value>Versi yang dipasang</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Versi terkini</value>
+  </data>
+  <data name="NuGetSearchFailed" xml:space="preserve">
+    <value>Gagal mendapatkan senarai plugin dari NuGet. Sila semak sambungan rangkaian anda.</value>
+  </data>
+  <data name="PluginInstallSuccess" xml:space="preserve">
+    <value>Pemasangan selesai</value>
+  </data>
+  <data name="PluginInstallFailed" xml:space="preserve">
+    <value>Pemasangan gagal</value>
+  </data>
+  <data name="RestartNow" xml:space="preserve">
+    <value>Mulakan semula sekarang</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Sila mulakan semula WindowTranslator untuk menerapkan perubahan plugin.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Mulakan semula</value>
+  </data>
+  <data name="ProjectUrl" xml:space="preserve">
+    <value>Halaman projek</value>
+  </data>
+  <data name="LicenseUrl" xml:space="preserve">
+    <value>Maklumat lesen</value>
+  </data>
+  <data name="PluginStoreDisclaimer" xml:space="preserve">
+    <value>Pemalam ialah pakej pihak ketiga yang diedarkan melalui NuGet. Lesen setiap pakej diberikan oleh pemiliknya; WindowTranslator tidak menjamin kandungan, tingkah laku atau keselamatannya. Pasang hanya pakej yang anda percayai.</value>
+  </data>
+  <data name="PluginOfficial" xml:space="preserve">
+    <value>Pemalam rasmi</value>
+  </data>
+  <data name="PriorityRectAdd" xml:space="preserve">
+    <value>Tambah kawasan</value>
+  </data>
+  <data name="PriorityRectKeywordDescription" xml:space="preserve">
+    <value>Digunakan oleh modul terjemahan yang menyokong konteks</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve"><value>Persediaan awal</value></data>
+  <data name="SetupDescription" xml:space="preserve"><value>Pilih sambungan yang ingin anda gunakan. Fungsi asas masih boleh digunakan tanpa memilih apa-apa. Anda boleh menambah sambungan kemudian.</value></data>
+  <data name="SetupRetry" xml:space="preserve"><value>Cuba lagi</value></data>
+  <data name="SetupSkip" xml:space="preserve"><value>Langkau</value></data>
+  <data name="SetupNoPackages" xml:space="preserve"><value>Tiada pemalam rasmi yang boleh dipasang ditemui.</value></data>
+  <data name="SetupInstallFailed" xml:space="preserve"><value>Sesetengah pemalam gagal dipasang. Cuba lagi, atau simpan pemasangan yang berjaya dan keluar.</value></data>
+  <data name="SetupSaveFailed" xml:space="preserve"><value>Hasil persediaan tidak dapat disimpan. Cuba lagi.</value></data>
+  <data name="SetupOther" xml:space="preserve"><value>Lain-lain</value></data>
+  <data name="OcrTracking" xml:space="preserve"><value>Penjejakan OCR</value></data>
+  <data name="OcrGeometryStability" xml:space="preserve"><value>Kestabilan kedudukan dan saiz</value></data>
+  <data name="OcrGeometryStability_Desc" xml:space="preserve"><value>Mengurangkan gegaran kedudukan dan saiz. 1: respons pantas, 5: lebih stabil (lalai: 3). Pergerakan besar diterapkan serta-merta.</value></data>
+  <data name="OcrRecognitionStability" xml:space="preserve"><value>Kestabilan pengecaman</value></data>
+  <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Mengurangkan perubahan sementara pada teks serta pemisahan atau penggabungan kawasan. 1: respons pantas, 5: lebih stabil (lalai: 3).</value></data>
+  <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Kekalkan paparan semasa kehilangan sementara</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Bilangan kegagalan pengecaman berturut-turut untuk mengekalkan paparan. 0: buang pada kegagalan pertama, maksimum: 7, lalai: 3. Dikira mengikut bilangan kegagalan, bukan saat.</value></data>
+  <data name="PluginCategoryAll" xml:space="preserve">
+    <value>Semua</value>
+  </data>
+  <data name="PluginCategoryTranslate" xml:space="preserve">
+    <value>Terjemahan</value>
+  </data>
+  <data name="PluginCategoryFilter" xml:space="preserve">
+    <value>Penapis</value>
+  </data>
+  <data name="SettingsLanguageTranslation" xml:space="preserve"><value>Bahasa dan terjemahan</value></data>
+  <data name="SettingsRecognition" xml:space="preserve"><value>Pengecaman teks</value></data>
+  <data name="SettingsDisplayBehavior" xml:space="preserve"><value>Paparan dan tingkah laku</value></data>
+  <data name="SettingsBehavior" xml:space="preserve"><value>Tingkah laku</value></data>
+  <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
+  <data name="RecognitionEngine" xml:space="preserve"><value>Enjin pengecaman</value></data>
 </root>

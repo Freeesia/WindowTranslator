@@ -18,6 +18,7 @@ WindowTranslator, Windows üzerindeki uygulamaların pencerelerini çevirmek iç
     - [Microsoft Store Sürümü ](#microsoft-store-sürümü-)
     - [Yükleyici Sürümü](#yükleyici-sürümü)
     - [Taşınabilir Sürüm](#taşınabilir-sürüm)
+  - [Çalışma şekli ve sınırlamalar](#çalışma-şekli-ve-sınırlamalar)
   - [Nasıl Kullanılır](#nasıl-kullanılır)
     - [Bergamot ](#bergamot-)
   - [Diğer Özellikler](#diğer-özellikler)
@@ -37,6 +38,14 @@ WindowTranslator, Windows üzerindeki uygulamaların pencerelerini çevirmek iç
 [GitHub sürümler sayfasından](https://github.com/Freeesia/WindowTranslator/releases/latest) zip dosyasını indirin ve istediğiniz bir klasöre çıkarın.
 - `WindowTranslator-(sürüm).zip` : .NET ortamı gerektirir
 - `WindowTranslator-full-(sürüm).zip` : .NET'ten bağımsız
+
+## Çalışma şekli ve sınırlamalar
+
+WindowTranslator, seçilen oyun veya uygulama penceresini Windows.Graphics.Capture ile yakalar, ekrandaki metni OCR ile tanıyıp çevirir ve sonucu ayrı bir katmanda gösterir.
+
+Oyun dosyalarını veya oyun işlemini değiştirmez; bu işleme DLL ya da başka kod enjekte etmez. Kullanmadan önce her oyunun kullanım koşullarını ve hile önleme politikasını kontrol edin. Kullanıma izin verileceği veya ceza uygulanmayacağı garanti edilemez.
+
+DRM veya ekran yakalama koruması Windows'un bir pencereyi yakalamasını engellerse içerik çevrilemeyebilir.
 
 ## Nasıl Kullanılır
 
