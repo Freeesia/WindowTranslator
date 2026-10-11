@@ -265,14 +265,14 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
-        var recognizedTexts = texts.Select(t => t switch
+        texts = texts.Select(t => t switch
         {
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
         }).ToArray();
-        var displayedTexts = recognizedTexts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+        var displayedTexts = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
         this.uiRequests.OnNext(displayedTexts);
-        this.translationRequests.OnNext((recognizedTexts, context));
+        this.translationRequests.OnNext((texts.ToArray(), context));
         sbmp = null;
     }
 
@@ -280,7 +280,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
-        TextRect[] texts;
+        IEnumerable<TextRect> texts;
         using (this.Filtering.EnterBusy())
         {
             var tmp = request.Texts.ToAsyncEnumerable();
@@ -294,8 +294,7 @@ public abstract partial class MainViewModelBase : IDisposable
         try
         {
             var requests = texts
-                .Select((text, index) => (Text: text, Index: index))
-                .Where(t => t.Text.TranslatedText is null)
+                .Where(t => t.TranslatedText is null)
                 .ToArray();
             if (this.disposedValue)
             {
@@ -305,12 +304,12 @@ public abstract partial class MainViewModelBase : IDisposable
             if (requests.Length > 0)
             {
                 using var t = this.logger.LogDebugTime("翻訳");
-                var translated = await this.translator.TranslateAsync(requests.Select(t => t.Text).ToArray()).ConfigureAwait(false);
-                this.cache.AddRange(requests.Select(t => t.Text.SourceText).Zip(translated));
-                foreach (var (target, translatedText) in requests.Zip(translated))
-                {
-                    texts[target.Index] = target.Text with { TranslatedText = translatedText };
-                }
+                var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
+                this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
+                var translatedIndex = 0;
+                texts = texts.Select(t => t.TranslatedText is null
+                    ? t with { TranslatedText = translated[translatedIndex++] }
+                    : t).ToArray();
             }
             else
             {
