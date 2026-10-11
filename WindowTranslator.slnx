@@ -53,6 +53,7 @@
   <Project Path="WindowTranslator.Abstractions/WindowTranslator.Abstractions.csproj" />
   <Project Path="WindowTranslator.Plugin.ColorThiefPlugin.Tests/WindowTranslator.Plugin.ColorThiefPlugin.Tests.csproj" />
   <Project Path="WindowTranslator.Tests/WindowTranslator.Tests.csproj" />
+  <Project Path="WindowTranslator.TraceViewer/WindowTranslator.TraceViewer.csproj" />
   <Project Path="WindowTranslator.Wix/WindowTranslator.Wix.csproj" />
   <Project Path="WindowTranslator/WindowTranslator.csproj" />
   <Properties Name="ExtensibilityGlobals" Scope="PostLoad">
