@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Quickenshtein" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\WindowTranslator\Modules\Ocr\OcrTextTracker.cs" Link="Ocr\OcrTextTracker.cs" />
+    <Compile Include="..\WindowTranslator\Modules\Ocr\IOcrTextTracker.cs" Link="Ocr\IOcrTextTracker.cs" />
+    <Compile Include="..\WindowTranslator\Modules\Ocr\OcrTraceFrame.cs" Link="Ocr\OcrTraceFrame.cs" />
+    <Compile Include="..\WindowTranslator.Abstractions\TextRect.cs" Link="Abstractions\TextRect.cs" />
+    <Compile Include="..\WindowTranslator.Abstractions\UserSettings.cs" Link="Abstractions\UserSettings.cs" />
+    <Compile Include="..\WindowTranslator.Abstractions\LanguageOptions.cs" Link="Abstractions\LanguageOptions.cs" />
+    <Compile Include="..\WindowTranslator.Abstractions\IPluginParam.cs" Link="Abstractions\IPluginParam.cs" />
+  </ItemGroup>
+</Project>

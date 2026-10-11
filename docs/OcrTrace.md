@@ -12,6 +12,25 @@ JSON Lines の先頭行は形式バージョン 1 のヘッダーです。2 行�
 
 別ワーカーが `PeriodicTimer` の周期ごとに、その間のフレームをまとめて追記します。書き込みに失敗した分は保持して再試行し、失敗はログに記録します。記録の失敗によって OCR・翻訳処理は停止しません。
 
+## 独立ビューアでの再生・比較
+
+`WindowTranslator.TraceViewer` は .NET 10 の開発者向け WPF アプリです。WindowTranslator 本体を起動せずに、記録を停止した Version 1 の `.jsonl` を「JSONL を開く…」で読み込めます。
+
+```powershell
+dotnet build WindowTranslator.TraceViewer/WindowTranslator.TraceViewer.csproj
+dotnet run --project WindowTranslator.TraceViewer/WindowTranslator.TraceViewer.csproj
+```
+
+ビルド先の `WindowTranslator.TraceViewer.exe` からも起動できます。本体のインストーラーには含まれません。ファイルはローカルで読み取るだけで、変更や外部送信は行いません。
+
+表示モードは Raw OCR、Tracked、左右比較です。黒い背景に OCR の文字列と矩形を描画し、回転角度と各フレームの画像サイズを反映します。元画像はトレースに含まれないため表示しません。
+
+再生・一時停止、前後のフレーム送り、スライダーでのシーク、表示 FPS（1～120）を操作できます。現在と総フレーム数、記録された相対時刻、画像サイズを表示します。
+
+読み込み時には既存の `OcrTextTracker` を先頭から記録順に実行し、記録の `RelativeTimeTicks` を渡します。シークや逆方向の移動は計算済み結果を参照するため、表示 FPS や操作順序は追跡結果に影響しません。
+
+位置・サイズの安定性（1～5）、文字列・構造の安定性（1～5）、OCR 欠落の保持回数（0～7）は画面から変更できます。初期値は `TargetSettings` の既定値を使用し、変更すると先頭から全フレームを再計算します。トレースには記録時の設定や Tracker の実装バージョンが含まれないため、記録時と同じ結果を確認するには同じ実装と設定を用いてください。
+
 ## テストでの再入力
 
 本体に再生機能はありません。`WindowTranslator.Tests/OcrTraceTests.cs` に、ヘッダーとフレームを読み、保存順に `OcrTextTracker` へ入力する例があります。形式バージョンが未対応なら読み込みを拒否し、未知の追加フィールドは無視します。
