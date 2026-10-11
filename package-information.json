@@ -78,5 +78,10 @@
     "Copyright": "Cysharp",
     "Authors": "Cysharp",
     "ProjectUrl": "https://github.com/Cysharp/ValueTaskSupplement"
+  },
+  {
+    "Id": "System.ComponentModel.Annotations",
+    "Version": "4.6.0",
+    "License": "MIT"
   }
 ]

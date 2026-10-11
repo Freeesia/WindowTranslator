@@ -78,4 +78,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>داده مدل برای ترجمه از {0} به {1} یافت نشد.</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>مسیر واژه‌نامه</value>
+  </data>
 </root>

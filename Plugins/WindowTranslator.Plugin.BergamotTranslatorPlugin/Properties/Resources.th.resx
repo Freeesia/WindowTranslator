@@ -136,4 +136,7 @@
   <data name="NotFoundCompatModel" xml:space="preserve">
     <value>ไม่พบข้อมูลโมเดลที่สามารถแปลจาก {0} เป็น {1} การแปลสำหรับคู่ภาษานี้ไม่สามารถใช้งานได้</value>
   </data>
+  <data name="GlossaryPath" xml:space="preserve">
+    <value>เส้นทางคำศัพท์</value>
+  </data>
 </root>

@@ -47,7 +47,8 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// 認識スケール
     /// </summary>
-    [Category("Recognize")]
+    [Category("SettingsRecognition|OcrImageAdjustments")]
+    [SortIndex(30)]
     [Slidable(0.5, 4, 0.1, 0.5, true, 0.1)]
     [FormatString("F2")]
     public double Scale { get; set; } = 1.0;
@@ -55,21 +56,24 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// 明るさ（-127 - 128）
     /// </summary>
-    [Category("Recognize")]
+    [Category("SettingsRecognition|OcrImageAdjustments")]
+    [SortIndex(31)]
     [Slidable(-127, 128, 1, 10, true, 1)]
     public int Brightness { get; set; } = 0;
 
     /// <summary>
     /// コントラスト（-99 - 100）
     /// </summary>
-    [Category("Recognize")]
+    [Category("SettingsRecognition|OcrImageAdjustments")]
+    [SortIndex(32)]
     [Slidable(-99, 100, 1, 10, true, 1)]
     public int Contrast { get; set; } = 0;
 
     /// <summary>
     /// X位置のしきい値
     /// </summary>
-    [Category("MergeThrethold")]
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(50)]
     [FormatString("P2")]
     [Slidable(0, 0.2, .001, .01, true, .001)]
     public double XPosThrethold { get; set; } = .005;
@@ -77,7 +81,8 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// Y位置のしきい値
     /// </summary>
-    [Category("MergeThrethold")]
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(51)]
     [FormatString("P2")]
     [Slidable(0, 0.2, .001, .01, true, .001)]
     public double YPosThrethold { get; set; } = .005;
@@ -85,7 +90,8 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// 行間のしきい値
     /// </summary>
-    [Category("MergeThrethold")]
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(52)]
     [Slidable(0, 1, .01, .1, true, .01)]
     [FormatString("P2")]
     public double LeadingThrethold { get; set; } = .80;
@@ -93,7 +99,8 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// 文字間のしきい値
     /// </summary>
-    [Category("MergeThrethold")]
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(53)]
     [Slidable(0, 3, .01, .1, true, .01)]
     [FormatString("P2")]
     public double SpacingThreshold { get; set; } = 1.1;
@@ -101,7 +108,8 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// フォントサイズのしきい値
     /// </summary>
-    [Category("MergeThrethold")]
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(54)]
     [Slidable(0, 1, .01, .1, true, .01)]
     [FormatString("P2")]
     public double FontSizeThrethold { get; set; } = .25;
@@ -109,7 +117,8 @@ public class BasicOcrParam : IPluginParam
     /// <summary>
     /// リストのマージを避けるかどうか
     /// </summary>
-    [Category("MergeThrethold")]
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(55)]
     public bool IsAvoidMergeList { get; set; } = false;
 
     /// <summary>
@@ -119,6 +128,7 @@ public class BasicOcrParam : IPluginParam
     /// 1件以上設定されている場合は、画像全体ではなく指定範囲内だけをOCRする。
     /// 範囲が重なる場合は、リストの順序が優先度を表す（前方が高優先度）。
     /// </remarks>
-    [Category("PriorityRect")]
+    [Category("SettingsRecognition|PriorityRect")]
+    [SortIndex(20)]
     public List<PriorityRect> PriorityRects { get; set; } = [];
 }

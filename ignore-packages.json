@@ -4,5 +4,7 @@
 	"Microsoft.Windows.SDK.*",
 	"Microsoft.Windows.WDK.*",
 	"Microsoft.Management.Infrastructure.Runtime.*",
+	"Microsoft.NETCore.Platforms",
+	"NETStandard.Library",
 	"runtime.*"
 ]
