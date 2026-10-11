@@ -108,7 +108,7 @@ public class TargetSettings
     public int OcrRecognitionStability { get; set => field = Math.Clamp(value, 1, 5); } = 3;
 
     /// <summary>
-    /// 表示を保持する連続OCR欠落回数（0～7回）
+    /// 認識できなくなった領域の表示保持時間（100ミリ秒単位、0～7）
     /// </summary>
     public int OcrMissingFrameRetention { get; set => field = Math.Clamp(value, 0, 7); } = 3;
 
