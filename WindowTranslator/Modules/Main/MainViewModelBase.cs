@@ -265,12 +265,6 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
-        texts = texts.Select(t => t switch
-        {
-            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
-            _ => t,
-        }).ToArray();
-        this.uiRequests.OnNext(texts);
         this.translationRequests.OnNext((texts, context));
         sbmp = null;
     }
@@ -292,14 +286,24 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         try
         {
-            var requests = texts
-                .Where(t => t.TranslatedText is null)
-                .ToArray();
+            cancellationToken.ThrowIfCancellationRequested();
             if (this.disposedValue)
             {
                 this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
                 return;
             }
+
+            // 除外・補正後の矩形でキャッシュ参照と初回表示を行う。
+            texts = texts.Select(t => t switch
+            {
+                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+                _ => t,
+            }).ToArray();
+            this.uiRequests.OnNext(texts);
+
+            var requests = texts
+                .Where(t => t.TranslatedText is null)
+                .ToArray();
             if (requests.Length > 0)
             {
                 using var t = this.logger.LogDebugTime("翻訳");
