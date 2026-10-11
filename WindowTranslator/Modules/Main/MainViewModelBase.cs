@@ -253,6 +253,7 @@ public abstract partial class MainViewModelBase : IDisposable
             }
         }
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
+        texts = (await this.color.ConvertColorAsync(sbmp, texts)).ToArray();
 
         cancellationToken.ThrowIfCancellationRequested();
         if (this.disposedValue)
@@ -264,6 +265,12 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
+        var displayedTexts = texts.Select(t => t switch
+        {
+            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+            _ => t,
+        }).Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+        this.uiRequests.OnNext(displayedTexts);
         this.translationRequests.OnNext((texts.ToArray(), context));
         sbmp = null;
     }
@@ -275,8 +282,7 @@ public abstract partial class MainViewModelBase : IDisposable
         IEnumerable<TextRect> texts;
         using (this.Filtering.EnterBusy())
         {
-            texts = await this.color.ConvertColorAsync(bitmap, request.Texts);
-            var tmp = texts.ToAsyncEnumerable();
+            var tmp = request.Texts.ToAsyncEnumerable();
             foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
             {
                 tmp = filter.ExecutePreTranslate(tmp, request.Context);
