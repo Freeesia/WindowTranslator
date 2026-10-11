@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows;
@@ -24,7 +23,7 @@ namespace WindowTranslator.Modules.Main;
 public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Subject<SoftwareBitmap> captureRequests = new();
-    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context, TimeSpan ObservedAt)?> trackingRequests = new();
+    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)?> trackingRequests = new();
     private readonly Subject<TextRect[]> translationRequests = new();
     private readonly Subject<Unit> translationCompleted = new();
     private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
@@ -124,7 +123,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 : Observable.Merge(
                         this.isOneShotMode
                             ? Observable.Return(Unit.Default)
-                            : Observable.Timer(TimeSpan.Zero, OcrTextTracker.ProcessingInterval).AsUnitObservable(),
+                            : Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100)).AsUnitObservable(),
                         this.translationCompleted)
                     .Select(_ => request))
             .Switch()
@@ -294,17 +293,16 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
-        this.trackingRequests.OnNext((texts, context, TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency)));
+        this.trackingRequests.OnNext((texts, context));
         sbmp = null;
     }
 
-    private async ValueTask ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context, TimeSpan ObservedAt) request, CancellationToken cancellationToken)
+    private async ValueTask ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         IEnumerable<TextRect> texts = this.isOneShotMode
             ? request.Texts
-            : this.ocrTextTracker.Update(request.Texts, request.Context.ImageSize,
-                TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency), request.ObservedAt);
+            : this.ocrTextTracker.Update(request.Texts, request.Context.ImageSize);
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
         using (this.Filtering.EnterBusy())
         {

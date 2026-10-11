@@ -12,7 +12,7 @@ namespace WindowTranslator.Modules.Ocr;
 /// </summary>
 public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSettings? settings = null) : IOcrTextTracker
 {
-    public static readonly TimeSpan ProcessingInterval = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan ProcessingInterval = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan assignmentRecency = ProcessingInterval * 4;
     private const int MaxStructureCandidates = 6;
     private const int MaxStructureSelectionStates = 1024;
@@ -39,26 +39,38 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
     private readonly ILogger<OcrTextTracker> logger = logger;
     private readonly TrackingProfile profile = TrackingProfile.FromSettings(settings ?? new());
     private readonly object syncRoot = new();
+    private readonly Stopwatch clock = Stopwatch.StartNew();
     private readonly List<TextTrack> tracks = [];
     private Dictionary<string, TimeSpan> mergeCandidates = [];
     private Dictionary<long, TimeSpan> dormantRestoreCandidates = [];
     private long nextTrackId;
+    private IEnumerable<TextRect>? previousObservations;
+    private TimeSpan observationTimestamp;
 
     public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize)
-        => this.Update(
-            observations,
-            imageSize,
-            TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency));
-
-    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
-        => this.Update(observations, imageSize, timestamp, timestamp);
-
-    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp, TimeSpan observationTimestamp)
     {
         ArgumentNullException.ThrowIfNull(observations);
         lock (this.syncRoot)
         {
-            return this.UpdateCore(observations, imageSize, timestamp, observationTimestamp);
+            var timestamp = this.clock.Elapsed;
+            if (!ReferenceEquals(this.previousObservations, observations))
+            {
+                this.previousObservations = observations;
+                this.observationTimestamp = timestamp;
+            }
+            return this.UpdateCore(observations, imageSize, timestamp, this.observationTimestamp);
+        }
+    }
+
+    /// <summary>
+    /// 記録済みのOCR観測を記録時刻で再計算する。
+    /// </summary>
+    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
+    {
+        ArgumentNullException.ThrowIfNull(observations);
+        lock (this.syncRoot)
+        {
+            return this.UpdateCore(observations, imageSize, timestamp, timestamp);
         }
     }
 
@@ -70,6 +82,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.mergeCandidates.Clear();
             this.dormantRestoreCandidates.Clear();
             this.nextTrackId = 0;
+            this.previousObservations = null;
         }
     }
 

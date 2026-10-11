@@ -8,14 +8,9 @@ namespace WindowTranslator.Modules.Ocr;
 public interface IOcrTextTracker
 {
     /// <summary>
-    /// 現在フレームのOCR観測でトラックを更新する。
+    /// 最新のOCR観測でトラックを更新し、安定化したテキスト領域を返す。
     /// </summary>
     IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize);
-
-    /// <summary>
-    /// 最新の観測を処理時刻に基づいて安定化する。観測時刻は移動予測に使用する。
-    /// </summary>
-    IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp, TimeSpan observationTimestamp);
 
     /// <summary>
     /// 保持しているすべてのトラックを破棄する。
