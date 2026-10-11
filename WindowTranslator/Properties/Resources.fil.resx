@@ -552,4 +552,6 @@ Ang monitor ay hindi suportado.
   <data name="SettingsBehavior" xml:space="preserve"><value>Gawi</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Cache</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Engine ng pagkilala</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Pagitan ng pagkuha (segundo)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Pagitan ng pagkuha at pagkilala ng teksto sa segundo. 0: walang limitasyon sa pagitan (default). Agad na magsisimula ang isang pagkuha gamit ang hotkey.</value></data>
 </root>

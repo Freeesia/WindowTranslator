@@ -552,4 +552,6 @@ Màn hình không được hỗ trợ.
   <data name="SettingsBehavior" xml:space="preserve"><value>Hành vi</value></data>
   <data name="SettingsCache" xml:space="preserve"><value>Bộ nhớ đệm</value></data>
   <data name="RecognitionEngine" xml:space="preserve"><value>Bộ máy nhận dạng</value></data>
+  <data name="CaptureInterval" xml:space="preserve"><value>Khoảng chụp (giây)</value></data>
+  <data name="CaptureInterval_Desc" xml:space="preserve"><value>Khoảng thời gian chụp và nhận dạng văn bản tính bằng giây. 0: không giới hạn khoảng thời gian (mặc định). Chụp một lần bằng phím tắt bắt đầu ngay lập tức.</value></data>
 </root>

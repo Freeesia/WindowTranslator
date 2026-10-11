@@ -2,12 +2,13 @@
 using System.Drawing;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Kamishibai;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.Threading;
+using R3;
 using Windows.Graphics.Imaging;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
@@ -15,14 +16,18 @@ using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Ocr;
 using WindowTranslator.Properties;
 using WindowTranslator.Stores;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WindowTranslator.Modules.Main;
 
 [ObservableObject]
 public abstract partial class MainViewModelBase : IDisposable
 {
-    private readonly Timer? timer;
+    private readonly Subject<SoftwareBitmap> captureRequests = new();
+    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> translationRequests = new();
+    private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
+    private readonly IDisposable captureLoop;
+    private readonly IDisposable translationLoop;
+    private readonly IDisposable uiLoop;
     private readonly IOcrModule ocr;
     private readonly List<PriorityRect> priorityRects;
     private readonly IOcrTextTracker ocrTextTracker;
@@ -32,8 +37,6 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly IColorModule color;
     private readonly IEnumerable<IFilterModule> filters;
     private readonly ILogger logger;
-    private readonly SemaphoreSlim analyzing = new(1, 1);
-    private readonly SemaphoreSlim translating = new(1, 1);
     private readonly string name;
     private readonly IPresentationService presentationService;
     private readonly ICaptureModule capture;
@@ -42,7 +45,6 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly double overlayOpacity;
     private readonly double mousePointerHitTestPadding;
     private readonly bool isOneShotMode;
-    private TextRect[]? lastRequested;
 
     [ObservableProperty]
     private string title;
@@ -60,10 +62,8 @@ public abstract partial class MainViewModelBase : IDisposable
     public BusyScope Recognizing { get; } = new();
     public BusyScope Filtering { get; } = new();
 
-    private SoftwareBitmap? capturedBmp;
-    private SoftwareBitmap? analyzingBmp;
     private bool isFirstCapture;
-    private bool disposedValue;
+    private volatile bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
     public string Font { get; }
@@ -104,10 +104,32 @@ public abstract partial class MainViewModelBase : IDisposable
         this.color = color ?? throw new ArgumentNullException(nameof(color));
         this.filters = filters.ToArray();
         this.logger = logger;
+        this.uiLoop = this.uiRequests
+            .ObserveOn(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
+            .Subscribe(UpdateOcrTexts);
+        var captureInterval = TimeSpan.FromSeconds(options.Value.CaptureInterval);
+        var captures = !this.isOneShotMode && captureInterval > TimeSpan.Zero
+            ? this.captureRequests.ThrottleLast(captureInterval)
+            : this.captureRequests;
+        var previousSize = default(System.Drawing.Size);
+        this.captureLoop = captures
+            .ObserveOnThreadPool()
+            .SubscribeAwait(async (bitmap, ct) =>
+            {
+                var size = new System.Drawing.Size(bitmap.PixelWidth, bitmap.PixelHeight);
+                if (!this.isOneShotMode && size != previousSize)
+                {
+                    this.ocrTextTracker.Reset();
+                }
+                previousSize = size;
+                await RecognizeAsync(bitmap, ct);
+            }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
+        this.translationLoop = this.translationRequests
+            .ObserveOnThreadPool()
+            .SubscribeAwait(ProcessTranslationAsync, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         if (!this.isOneShotMode)
         {
-            this.capture.StartCapture(processInfoStore.MainWindowHandle);
-            this.timer = new(_ => Application.Current.Dispatcher.Invoke(() => CreateTextOverlayAsync().Forget()), null, 0, 500);
+            this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
         }
         var transAsm = this.translator.GetType().Assembly;
         this.title = $"{this.name} - {this.translator.Name} ({transAsm.GetName().Version})";
@@ -117,7 +139,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         if (value)
         {
-            this.OcrTexts.Clear();
+            this.uiRequests.OnNext([]);
             if (this.isOneShotMode)
             {
                 this.isFirstCapture = true;
@@ -149,55 +171,26 @@ public abstract partial class MainViewModelBase : IDisposable
             this.capture.StopCapture();
         }
 
-        if (this.analyzing.CurrentCount == 0)
+        // フレームの寿命はイベント処理中だけなので、コピーの完了まで待つ。
+        var bitmap = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
+        if (this.disposedValue)
         {
+            bitmap.Dispose();
             return;
         }
-        var newBmp = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
-        var sbmp = Interlocked.Exchange(ref this.capturedBmp, newBmp);
-        this.Width = newBmp.PixelWidth;
-        this.Height = newBmp.PixelHeight;
-        CreateTextOverlayAsync().Forget();
-        sbmp?.Dispose();
+        this.Width = bitmap.PixelWidth;
+        this.Height = bitmap.PixelHeight;
+        this.captureRequests.OnNext(bitmap);
     }
 
-    private async Task CreateTextOverlayAsync()
+    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
-        if (!await this.analyzing.WaitAsync(0))
-        {
-            return;
-        }
-        using var to = this.logger.LogDebugTime("TextOverlay");
-        using var rel = new DisposeAction(() =>
-        {
-            this.analyzing.Release();
-        });
-        var sbmp = Interlocked.Exchange(ref this.capturedBmp, null);
-        if (sbmp is null)
-        {
-            sbmp = this.analyzingBmp;
-        }
-        else
-        {
-            if (this.analyzingBmp is { } previousBmp)
-            {
-                if (!this.isOneShotMode
-                    && (previousBmp.PixelWidth != sbmp.PixelWidth || previousBmp.PixelHeight != sbmp.PixelHeight))
-                {
-                    this.ocrTextTracker.Reset();
-                }
-                previousBmp.Dispose();
-            }
-            this.analyzingBmp = sbmp;
-        }
-        if (sbmp is null)
-        {
-            return;
-        }
-
+        SoftwareBitmap? sbmp = capturedBitmap;
+        using var bitmap = new DisposeAction(() => sbmp?.Dispose());
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
         {
+            using var to = this.logger.LogDebugTime("画像認識");
             try
             {
                 var regions = new List<OcrRegionInput>();
@@ -238,92 +231,121 @@ public abstract partial class MainViewModelBase : IDisposable
             catch (ObjectDisposedException)
             {
                 // すでに破棄されている場合は何もしない
-                await DisposeTimerAsync();
-                this.capture.StopCapture();
+                this.captureLoop.Dispose();
+                await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
                 return;
             }
             catch (OperationCanceledException)
             {
                 // キャンセルされた場合は何もしない
-                await DisposeTimerAsync();
-                this.capture.StopCapture();
+                this.captureLoop.Dispose();
+                await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
                 return;
             }
             catch (Exception e)
             {
-                await DisposeTimerAsync();
-                this.capture.StopCapture();
+                this.captureLoop.Dispose();
+                await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
                 var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                 await sbmp.TrySaveImage(path);
-                await this.presentationService.OpenErrorDialogAsync(Resources.FaildOcr, e, this.name, path);
-                StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
+                await ShowErrorAsync(Resources.FaildOcr, e, path);
                 return;
             }
         }
         texts = texts.Select(t => t with { FontSize = t.FontSize * this.fontScale });
+        texts = (await this.color.ConvertColorAsync(sbmp, texts)).ToArray();
 
-        // フィルター&翻訳処理は必ず通す
-        FilterContext context;
-        TextRect[] displayedTexts;
-        using (this.Filtering.EnterBusy())
-        {
-            texts = await this.color.ConvertColorAsync(sbmp, texts);
-            context = new()
-            {
-                SoftwareBitmap = sbmp,
-                ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
-            };
-            {
-                var tmp = texts.ToAsyncEnumerable();
-                foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
-                {
-                    tmp = filter.ExecutePreTranslate(tmp, context);
-                }
-                using var t = this.logger.LogDebugTime("PreTranslate");
-                texts = await tmp.ToArrayAsync();
-            }
-            if (!this.isOneShotMode)
-            {
-                TranslateAsync(texts).Forget();
-            }
-            displayedTexts = await CreateDisplayedTextsAsync(texts, context);
-        }
-
-        UpdateOcrTexts(displayedTexts);
-        if (!this.isOneShotMode)
+        cancellationToken.ThrowIfCancellationRequested();
+        if (this.disposedValue)
         {
             return;
         }
-
-        await TranslateAsync(texts);
-
-        using (this.Filtering.EnterBusy())
+        var context = new FilterContext
         {
-            displayedTexts = await CreateDisplayedTextsAsync(texts, context);
-        }
-        UpdateOcrTexts(displayedTexts);
-    }
-
-    private async Task<TextRect[]> CreateDisplayedTextsAsync(IEnumerable<TextRect> texts, FilterContext context)
-    {
+            SoftwareBitmap = sbmp,
+            ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
+        };
         texts = texts.Select(t => t switch
         {
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
         }).ToArray();
-        var tmp = texts.ToAsyncEnumerable();
-        foreach (var filter in this.filters.OrderBy(f => f.Priority))
+        this.uiRequests.OnNext(texts);
+        this.translationRequests.OnNext((texts, context));
+        sbmp = null;
+    }
+
+    private async ValueTask ProcessTranslationAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
+    {
+        using var bitmap = request.Context.SoftwareBitmap;
+        cancellationToken.ThrowIfCancellationRequested();
+        IEnumerable<TextRect> texts;
+        using (this.Filtering.EnterBusy())
         {
-            tmp = filter.ExecutePostTranslate(tmp, context);
+            var tmp = request.Texts.ToAsyncEnumerable();
+            foreach (var filter in this.filters.OrderByDescending(f => f.Priority))
+            {
+                tmp = filter.ExecutePreTranslate(tmp, request.Context);
+            }
+            using var t = this.logger.LogDebugTime("翻訳前処理");
+            texts = await tmp.ToArrayAsync(cancellationToken);
         }
-        using var t = this.logger.LogDebugTime("PostTranslate");
-        texts = await tmp.ToArrayAsync();
-        return texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToArray();
+        try
+        {
+            var requests = texts
+                .Where(t => t.TranslatedText is null)
+                .ToArray();
+            if (this.disposedValue)
+            {
+                this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
+                return;
+            }
+            if (requests.Length > 0)
+            {
+                using var t = this.logger.LogDebugTime("翻訳");
+                var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
+                this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
+                var translatedIndex = 0;
+                texts = texts.Select(t => t.TranslatedText is null
+                    ? t with { TranslatedText = translated[translatedIndex++] }
+                    : t).ToArray();
+            }
+            else
+            {
+                this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳を省略");
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception e)
+        {
+            this.logger.LogError(e, "翻訳中にエラーが発生");
+            this.captureLoop.Dispose();
+            await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
+            this.translationLoop.Dispose();
+            await ShowErrorAsync(Resources.FaildOverlay, e, string.Empty);
+            return;
+        }
+        using (this.Filtering.EnterBusy())
+        {
+            var tmp = texts.ToAsyncEnumerable();
+            foreach (var filter in this.filters.OrderBy(f => f.Priority))
+            {
+                tmp = filter.ExecutePostTranslate(tmp, request.Context);
+            }
+            using var t = this.logger.LogDebugTime("翻訳後処理");
+            texts = await tmp.ToArrayAsync(cancellationToken);
+        }
+        cancellationToken.ThrowIfCancellationRequested();
+        this.uiRequests.OnNext(texts);
     }
 
     private void UpdateOcrTexts(IEnumerable<TextRect> texts)
     {
-        var hash = texts.ToHashSet();
+        this.logger.LogDebug("UI適用");
+        var hash = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToHashSet();
         foreach (var text in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
         {
             this.OcrTexts.Remove(text);
@@ -335,78 +357,34 @@ public abstract partial class MainViewModelBase : IDisposable
         }
     }
 
-    private async Task TranslateAsync(IEnumerable<TextRect> texts)
-    {
-        if (Interlocked.Exchange(ref this.lastRequested, texts.ToArray()) is not null)
+    private Task ShowErrorAsync(string message, Exception exception, string path)
+        => Application.Current.Dispatcher.InvokeAsync(async () =>
         {
-            this.logger.LogDebug("以前の翻訳キューを削除");
-            return;
-        }
-        await this.translating.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (Interlocked.Exchange(ref this.lastRequested, null) is not { } requests)
-            {
-                this.logger.LogDebug("翻訳キューがないので翻訳処理終了");
-                return;
-            }
-            requests = requests
-                .Where(t => t.TranslatedText is null)
-                .Where(t => !this.cache.Contains(t.SourceText))
-                .ToArray();
-            if (!requests.Any())
-            {
-                this.logger.LogDebug("翻訳キューに未翻訳がないので翻訳処理終了");
-                return;
-            }
-            if (this.disposedValue)
-            {
-                this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
-                return;
-            }
-            this.logger.LogDebug("Translate");
-            var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
-            this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
-        }
-        catch (Exception e) when (e is not OperationCanceledException)
-        {
-            this.logger.LogError(e, "翻訳中にエラーが発生");
-            await DisposeTimerAsync();
-            this.capture.StopCapture();
-            // 翻訳失敗してエラーで閉じる場合はキューをクリア
-            Interlocked.Exchange(ref this.lastRequested, null);
-            await Application.Current.Dispatcher.BeginInvoke(async () => await this.presentationService.OpenErrorDialogAsync(Resources.FaildOverlay, e, this.name, string.Empty));
+            await this.presentationService.OpenErrorDialogAsync(message, exception, this.name, path);
             StrongReferenceMessenger.Default.Send<CloseMessage>(new(this));
-        }
-        finally
-        {
-            this.translating.Release();
-        }
-    }
-
-    private async ValueTask DisposeTimerAsync()
-    {
-        if (this.timer is { } timer)
-        {
-            await timer.DisposeAsync();
-        }
-    }
+        }).Task.Unwrap();
 
     protected virtual void Dispose(bool disposing)
     {
-        if (disposedValue)
+        if (this.disposedValue)
         {
             return;
         }
+        this.disposedValue = true;
         if (disposing)
         {
+            // 実行中の処理から遅れて通知されても受け付けない。
+            this.captureRequests.OnCompleted();
+            this.translationRequests.OnCompleted();
+            this.uiRequests.OnCompleted();
             if (this.capture is IDisposable captureDisposable)
             {
                 captureDisposable.Dispose();
             }
-            this.timer?.Dispose();
+            this.captureLoop.Dispose();
+            this.translationLoop.Dispose();
+            this.uiLoop.Dispose();
         }
-        disposedValue = true;
     }
 
     public void Dispose()

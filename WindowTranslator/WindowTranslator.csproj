@@ -71,6 +71,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Threading" />
     <PackageReference Include="Weikio.PluginFramework.AspNetCore" />
     <PackageReference Include="Quickenshtein" />
+    <PackageReference Include="R3" />
     <PackageReference Include="XamlAnimatedGif" />
   </ItemGroup>
 
