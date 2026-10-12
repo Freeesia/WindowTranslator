@@ -26,6 +26,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> trackingRequests = new();
     private readonly Subject<TextRect[]> translationRequests = new();
     private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
+    private SoftwareBitmap? pendingTrackingBitmap;
     private readonly IDisposable captureLoop;
     private readonly IDisposable trackingLoop;
     private readonly IDisposable translationLoop;
@@ -123,9 +124,8 @@ public abstract partial class MainViewModelBase : IDisposable
                 .Subscribe(_ => this.ocrTextTracker.Reset()),
             this.trackingRequests.SubscribeAwait(async (request, ct) =>
             {
-                // 認識側の画像が破棄される前に、追跡の購読で使う画像を確保する。
-                using var bitmap = SoftwareBitmap.Copy(request.Context.SoftwareBitmap);
-                request.Context = request.Context with { SoftwareBitmap = bitmap };
+                // OnNext 内で所有を引き取り、認識側の破棄対象から外す。
+                using var bitmap = Interlocked.Exchange(ref this.pendingTrackingBitmap, null);
                 if (previousSize != request.Context.ImageSize)
                 {
                     this.ocrTextTracker.Reset();
@@ -198,7 +198,9 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
-        using var sbmp = capturedBitmap;
+        this.pendingTrackingBitmap = capturedBitmap;
+        using var release = new DisposeAction(() => Interlocked.Exchange(ref this.pendingTrackingBitmap, null)?.Dispose());
+        var sbmp = capturedBitmap;
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
         {
