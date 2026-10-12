@@ -64,7 +64,7 @@ public abstract partial class MainViewModelBase : IDisposable
     public BusyScope Recognizing { get; } = new();
     public BusyScope Filtering { get; } = new();
 
-    private bool isFirstCapture;
+    private bool isFirstCapture = true;
     private volatile bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -165,10 +165,7 @@ public abstract partial class MainViewModelBase : IDisposable
         if (value)
         {
             this.uiRequests.OnNext([]);
-            if (this.isOneShotMode)
-            {
-                this.isFirstCapture = true;
-            }
+            this.isFirstCapture = true;
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
         }

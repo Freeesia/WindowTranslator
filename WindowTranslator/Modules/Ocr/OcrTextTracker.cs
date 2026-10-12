@@ -12,15 +12,12 @@ namespace WindowTranslator.Modules.Ocr;
 /// </summary>
 public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSettings? settings = null) : IOcrTextTracker
 {
-    // 旧方式で測定したOCR間隔（約280ms）を参考に、設定の段階を時間へ換算する。
-    private static readonly TimeSpan ReferenceInterval = TimeSpan.FromMilliseconds(300);
-    private static readonly TimeSpan assignmentRecency = ReferenceInterval * 4;
+    private static readonly TimeSpan assignmentRecency = TimeSpan.FromSeconds(1.2);
     private const int MaxStructureCandidates = 6;
     private const int MaxStructureSelectionStates = 1024;
     private const int MaxOneToOneCandidatesPerResource = 3;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
-    private const double TextVoteDecay = 0.75;
     private const double MinimumStructureSizeRatio = 0.65;
     private const double MinimumStructureOverlap = 0.45;
     private const double MinimumStructureTextSimilarity = 0.65;
@@ -48,30 +45,18 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
     private IEnumerable<TextRect>? previousObservations;
     private TimeSpan observationTimestamp;
 
-    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize)
+    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan? timestamp = null)
     {
         ArgumentNullException.ThrowIfNull(observations);
         lock (this.syncRoot)
         {
-            var timestamp = this.clock.Elapsed;
+            var now = timestamp ?? this.clock.Elapsed;
             if (!ReferenceEquals(this.previousObservations, observations))
             {
                 this.previousObservations = observations;
-                this.observationTimestamp = timestamp;
+                this.observationTimestamp = now;
             }
-            return this.UpdateCore(observations, imageSize, timestamp, this.observationTimestamp);
-        }
-    }
-
-    /// <summary>
-    /// 記録済みのOCR観測を記録時刻で再計算する。
-    /// </summary>
-    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
-    {
-        ArgumentNullException.ThrowIfNull(observations);
-        lock (this.syncRoot)
-        {
-            return this.UpdateCore(observations, imageSize, timestamp, timestamp);
+            return this.UpdateCore(observations, imageSize, now, this.observationTimestamp);
         }
     }
 
@@ -1905,35 +1890,35 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         TimeSpan GeometryConfirmationTime,
         TimeSpan MicroGeometryConfirmationTime,
         TimeSpan StructureConfirmationTime,
-        int MinimumTextVotes,
-        double TextVoteThreshold,
-        int TextVoteHistorySize,
+        TimeSpan TextConfirmationTime,
+        TimeSpan TextChangeTimeout,
         TimeSpan MissingRetention)
     {
         public static TrackingProfile FromSettings(TargetSettings settings)
         {
-            (int geometry, int microGeometry) = settings.OcrGeometryStability switch
+            (int geometryMs, int microGeometryMs) = settings.OcrGeometryStability switch
             {
-                1 => (1, 1),
-                2 => (1, 2),
-                4 => (3, 6),
-                5 => (4, 8),
-                _ => (2, 4),
+                1 => (0, 0),
+                2 => (0, 300),
+                4 => (600, 1500),
+                5 => (900, 2100),
+                _ => (300, 900),
             };
-            (int structure, int votes, double threshold, int history) = settings.OcrRecognitionStability switch
+            (int structureMs, int textMs, int textTimeoutMs) = settings.OcrRecognitionStability switch
             {
-                1 => (1, 1, 1.0, 3),
-                2 => (1, 2, 1.25, 4),
-                4 => (3, 3, 2.0, 6),
-                5 => (4, 4, 2.5, 8),
-                _ => (2, 2, 1.5, 5),
+                1 => (0, 0, 0),
+                2 => (0, 300, 900),
+                4 => (600, 600, 1500),
+                5 => (900, 900, 2100),
+                _ => (300, 300, 1200),
             };
             return new(
-                ReferenceInterval * (geometry - 1),
-                ReferenceInterval * (microGeometry - 1),
-                ReferenceInterval * (structure - 1),
-                votes, threshold, history,
-                ReferenceInterval * settings.OcrMissingFrameRetention);
+                TimeSpan.FromMilliseconds(geometryMs),
+                TimeSpan.FromMilliseconds(microGeometryMs),
+                TimeSpan.FromMilliseconds(structureMs),
+                TimeSpan.FromMilliseconds(textMs),
+                TimeSpan.FromMilliseconds(textTimeoutMs),
+                TimeSpan.FromMilliseconds(300 * settings.OcrMissingFrameRetention));
         }
     }
 
@@ -1948,13 +1933,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         private TimeSpan normalGeometryCandidateSince;
         private TimeSpan noiseGeometrySince;
         private readonly List<TextRect> noiseGeometrySamples = [];
-        private readonly List<TextVote> textVotes = [];
+        private string? textCandidate;
+        private TimeSpan textCandidateSince;
+        private TimeSpan textChangeSince;
         private string normalizedConfirmedText = NormalizeText(observation.SourceText);
         private DormantGeometry? dormantGeometry;
         private TextRect? outputGeometryOverride;
         private double velocityX;
         private double velocityY;
-        private int motionSamples;
+        private bool hasMotion;
 
         public long Id { get; } = id;
 
@@ -2029,7 +2016,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         public TextRect Predict(TimeSpan timestamp)
         {
             double seconds = (timestamp - this.LastObservationTime).TotalSeconds;
-            if (this.motionSamples == 0 || seconds <= 0 || seconds > 2)
+            if (!this.hasMotion || seconds <= 0 || seconds > 2)
             {
                 return this.LatestObservation;
             }
@@ -2071,50 +2058,27 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             string normalizedCurrent = NormalizeText(current);
             if (normalizedCurrent == this.normalizedConfirmedText)
             {
-                this.textVotes.Clear();
+                this.textCandidate = null;
                 return;
             }
 
-            if (this.textVotes.Count > 0 && timestamp - this.textVotes[^1].Timestamp < ReferenceInterval)
+            if (this.textCandidate is null)
             {
-                this.textVotes[^1] = new(normalizedCurrent, current, this.textVotes[^1].Timestamp);
+                this.textChangeSince = timestamp;
             }
-            else
+            if (this.textCandidate != normalizedCurrent)
             {
-                this.textVotes.Add(new(normalizedCurrent, current, timestamp));
-            }
-            if (this.textVotes.Count > profile.TextVoteHistorySize)
-            {
-                this.textVotes.RemoveAt(0);
+                this.textCandidate = normalizedCurrent;
+                this.textCandidateSince = timestamp;
             }
 
-            (string normalized, int count, double weight)? winner = this.textVotes
-                .Select(vote => (vote, age: (timestamp - vote.Timestamp) / ReferenceInterval))
-                .GroupBy(item => item.vote.Normalized)
-                .Select(group => (
-                    normalized: group.Key,
-                    count: group.Count(),
-                    weight: group.Sum(item => Math.Pow(TextVoteDecay, item.age))))
-                .OrderByDescending(candidate => candidate.weight)
-                .ThenByDescending(candidate => candidate.count)
-                .Cast<(string normalized, int count, double weight)?>()
-                .FirstOrDefault();
-            if (winner is { } candidate
-                && candidate.count >= profile.MinimumTextVotes
-                && candidate.weight >= profile.TextVoteThreshold)
+            // 候補が変わり続ける場合も、古い文字列を保持し続けない。
+            if (timestamp - this.textCandidateSince >= profile.TextConfirmationTime
+                || timestamp - this.textChangeSince >= profile.TextChangeTimeout)
             {
-                this.ConfirmedText = this.textVotes.Last(vote => vote.Normalized == winner.Value.normalized).Original;
-                this.normalizedConfirmedText = winner.Value.normalized;
-                this.textVotes.Clear();
-                return;
-            }
-
-            if (timestamp - this.textVotes[0].Timestamp >= ReferenceInterval * (profile.TextVoteHistorySize - 1))
-            {
-                TextVote latest = this.textVotes[^1];
-                this.ConfirmedText = latest.Original;
-                this.normalizedConfirmedText = latest.Normalized;
-                this.textVotes.Clear();
+                this.ConfirmedText = current;
+                this.normalizedConfirmedText = normalizedCurrent;
+                this.textCandidate = null;
             }
         }
 
@@ -2142,17 +2106,17 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
             double instantX = movementX / seconds;
             double instantY = movementY / seconds;
-            double newWeight = this.motionSamples == 0 ? 1 : 0.8;
+            double newWeight = this.hasMotion ? 0.8 : 1;
             this.velocityX = (this.velocityX * (1 - newWeight)) + (instantX * newWeight);
             this.velocityY = (this.velocityY * (1 - newWeight)) + (instantY * newWeight);
-            this.motionSamples++;
+            this.hasMotion = true;
         }
 
         private void ResetMotion(TimeSpan timestamp)
         {
             this.velocityX = 0;
             this.velocityY = 0;
-            this.motionSamples = 0;
+            this.hasMotion = false;
             this.LastObservationTime = timestamp;
         }
 
@@ -2327,7 +2291,5 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 };
             }
         }
-
-        private sealed record TextVote(string Normalized, string Original, TimeSpan Timestamp);
     }
 }
