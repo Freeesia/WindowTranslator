@@ -26,8 +26,6 @@ public abstract partial class MainViewModelBase : IDisposable
     private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> trackingRequests = new();
     private readonly Subject<TextRect[]> translationRequests = new();
     private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
-    private SoftwareBitmap? pendingTrackingBitmap;
-    private readonly IDisposable captureLoop;
     private readonly IDisposable trackingLoop;
     private readonly IDisposable translationLoop;
     private readonly IDisposable uiLoop;
@@ -114,34 +112,38 @@ public abstract partial class MainViewModelBase : IDisposable
         var captures = !this.isOneShotMode && captureInterval > TimeSpan.Zero
             ? this.captureRequests.ThrottleLast(captureInterval)
             : this.captureRequests;
-        this.captureLoop = captures
+        captures
             .ObserveOnThreadPool()
-            .SubscribeAwait(RecognizeAsync, AwaitOperation.ThrottleFirstLast, configureAwait: false);
+            .SubscribeAwait(RecognizeAsync,
+                onCompleted: _ => this.trackingRequests.OnCompleted(),
+                awaitOperation: AwaitOperation.ThrottleFirstLast, configureAwait: false, cancelOnCompleted: false);
         var previousSize = default(System.Drawing.Size);
         this.trackingLoop = Disposable.Combine(
             Observable.ObservePropertyChanged(this, x => x.OverlayVisible)
                 .ObserveOnThreadPool()
                 .Subscribe(_ => this.ocrTextTracker.Reset()),
-            this.trackingRequests.SubscribeAwait(async (request, ct) =>
-            {
-                // OnNext 内で所有を引き取り、認識側の破棄対象から外す。
-                using var bitmap = Interlocked.Exchange(ref this.pendingTrackingBitmap, null);
-                if (previousSize != request.Context.ImageSize)
+            this.trackingRequests
+                .ObserveOnThreadPool()
+                .SubscribeAwait(async (request, ct) =>
                 {
-                    this.ocrTextTracker.Reset();
-                    previousSize = request.Context.ImageSize;
-                }
-                // 切替時はタイマーを止め、処理の終了を待ってから画像を破棄する。
-                await Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100), CancellationToken.None)
-                    .TakeUntil(ct)
-                    .Where(_ => this.OverlayVisible)
-                    .SelectAwait(async (_, _) =>
+                    using var bitmap = request.Context.SoftwareBitmap;
+                    if (previousSize != request.Context.ImageSize)
                     {
-                        await ProcessTrackingAsync(request, ct);
-                        return Unit.Default;
-                    }, AwaitOperation.Drop, configureAwait: false)
-                    .LastOrDefaultAsync(cancellationToken: CancellationToken.None);
-            }, AwaitOperation.Switch, configureAwait: false));
+                        this.ocrTextTracker.Reset();
+                        previousSize = request.Context.ImageSize;
+                    }
+                    // 切替時はタイマーを止め、処理の終了を待ってから画像を破棄する。
+                    await Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100), CancellationToken.None)
+                        .TakeUntil(ct)
+                        .Where(_ => this.OverlayVisible)
+                        .SelectAwait(async (_, _) =>
+                        {
+                            await ProcessTrackingAsync(request, ct);
+                            return Unit.Default;
+                        }, AwaitOperation.Drop, configureAwait: false)
+                        .LastOrDefaultAsync(cancellationToken: CancellationToken.None);
+                }, onCompleted: _ => this.trackingLoop!.Dispose(),
+                    awaitOperation: AwaitOperation.Switch, configureAwait: false, cancelOnCompleted: true));
         this.translationLoop = this.translationRequests
             .DistinctUntilChanged(EqualityComparer<TextRect[]>.Create((previous, current) =>
                 previous!.Select(t => (t.SourceText, t.Context)).SequenceEqual(current!.Select(t => (t.SourceText, t.Context)))))
@@ -198,9 +200,8 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
-        this.pendingTrackingBitmap = capturedBitmap;
-        using var release = new DisposeAction(() => Interlocked.Exchange(ref this.pendingTrackingBitmap, null)?.Dispose());
-        var sbmp = capturedBitmap;
+        SoftwareBitmap? sbmp = capturedBitmap;
+        using var bitmap = new DisposeAction(() => sbmp?.Dispose());
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
         {
@@ -243,20 +244,20 @@ public abstract partial class MainViewModelBase : IDisposable
             catch (ObjectDisposedException)
             {
                 // すでに破棄されている場合は何もしない
-                this.captureLoop.Dispose();
+                this.captureRequests.OnCompleted();
                 await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
                 return;
             }
             catch (OperationCanceledException)
             {
                 // キャンセルされた場合は何もしない
-                this.captureLoop.Dispose();
+                this.captureRequests.OnCompleted();
                 await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
                 return;
             }
             catch (Exception e)
             {
-                this.captureLoop.Dispose();
+                this.captureRequests.OnCompleted();
                 await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
                 var path = Path.Combine(PathUtility.UserDir, $"ocr_error", $"{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.png");
                 await sbmp.TrySaveImage(path);
@@ -277,6 +278,7 @@ public abstract partial class MainViewModelBase : IDisposable
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
         this.trackingRequests.OnNext((texts, context));
+        sbmp = null;
     }
 
     private async ValueTask ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
@@ -340,8 +342,7 @@ public abstract partial class MainViewModelBase : IDisposable
         catch (Exception e)
         {
             this.logger.LogError(e, "翻訳中にエラーが発生");
-            this.captureLoop.Dispose();
-            this.trackingLoop.Dispose();
+            this.captureRequests.OnCompleted();
             await Application.Current.Dispatcher.InvokeAsync(this.capture.StopCapture);
             this.translationLoop.Dispose();
             await ShowErrorAsync(Resources.FaildOverlay, e, string.Empty);
@@ -380,17 +381,14 @@ public abstract partial class MainViewModelBase : IDisposable
         this.disposedValue = true;
         if (disposing)
         {
-            // 実行中の処理から遅れて通知されても受け付けない。
+            // 実行中の認識が終わってから追跡を終了し、渡した画像を破棄する。
             this.captureRequests.OnCompleted();
-            this.trackingLoop.Dispose();
-            this.trackingRequests.OnCompleted();
             this.translationRequests.OnCompleted();
             this.uiRequests.OnCompleted();
             if (this.capture is IDisposable captureDisposable)
             {
                 captureDisposable.Dispose();
             }
-            this.captureLoop.Dispose();
             this.translationLoop.Dispose();
             this.uiLoop.Dispose();
         }
