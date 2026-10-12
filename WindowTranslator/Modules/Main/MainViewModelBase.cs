@@ -62,7 +62,7 @@ public abstract partial class MainViewModelBase : IDisposable
     public BusyScope Recognizing { get; } = new();
     public BusyScope Filtering { get; } = new();
 
-    private bool isFirstCapture;
+    private bool isFirstCapture = true;
     private volatile bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -116,13 +116,19 @@ public abstract partial class MainViewModelBase : IDisposable
             .ObserveOnThreadPool()
             .SubscribeAwait(async (bitmap, ct) =>
             {
+                // ワンショットは受信時に、連続キャプチャは処理する最初のフレームでフラグを消費する。
+                var isFirstCapture = this.isOneShotMode || this.isFirstCapture;
+                if (!this.isOneShotMode)
+                {
+                    this.isFirstCapture = false;
+                }
                 var size = new System.Drawing.Size(bitmap.PixelWidth, bitmap.PixelHeight);
                 if (!this.isOneShotMode && size != previousSize)
                 {
                     this.ocrTextTracker.Reset();
                 }
                 previousSize = size;
-                await RecognizeAsync(bitmap, ct);
+                await RecognizeAsync(bitmap, isFirstCapture, ct);
             }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         this.translationLoop = this.translationRequests
             .ObserveOnThreadPool()
@@ -140,11 +146,8 @@ public abstract partial class MainViewModelBase : IDisposable
         if (value)
         {
             this.uiRequests.OnNext([]);
-            if (this.isOneShotMode)
-            {
-                this.isFirstCapture = true;
-            }
-            else
+            this.isFirstCapture = true;
+            if (!this.isOneShotMode)
             {
                 this.ocrTextTracker.Reset();
             }
@@ -183,7 +186,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.captureRequests.OnNext(bitmap);
     }
 
-    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
+    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, bool isFirstCapture, CancellationToken cancellationToken)
     {
         SoftwareBitmap? sbmp = capturedBitmap;
         using var bitmap = new DisposeAction(() => sbmp?.Dispose());
@@ -265,6 +268,16 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
+        if (isFirstCapture)
+        {
+            // 翻訳待ちの表示遅延を抑えるため、最初の認識結果だけ先に表示する。
+            var initialTexts = texts.Select(t => t switch
+            {
+                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+                _ => t,
+            }).ToArray();
+            this.uiRequests.OnNext(initialTexts);
+        }
         this.translationRequests.OnNext((texts, context));
         sbmp = null;
     }
@@ -293,14 +306,12 @@ public abstract partial class MainViewModelBase : IDisposable
                 return;
             }
 
-            // 除外・補正後の矩形でキャッシュ参照と初回表示を行う。
+            // 補正後の原文でキャッシュを参照し、フィルターが設定した翻訳文を維持する。
             texts = texts.Select(t => t switch
             {
                 { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
                 _ => t,
             }).ToArray();
-            this.uiRequests.OnNext(texts);
-
             var requests = texts
                 .Where(t => t.TranslatedText is null)
                 .ToArray();
