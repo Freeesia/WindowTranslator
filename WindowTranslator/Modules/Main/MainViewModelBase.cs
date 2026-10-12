@@ -23,7 +23,7 @@ namespace WindowTranslator.Modules.Main;
 public abstract partial class MainViewModelBase : IDisposable
 {
     private readonly Subject<SoftwareBitmap> captureRequests = new();
-    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context, Observable<Unit> Lifetime, BooleanDisposable Released)> trackingRequests = new();
+    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> trackingRequests = new();
     private readonly Subject<TextRect[]> translationRequests = new();
     private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
     private readonly IDisposable captureLoop;
@@ -117,36 +117,31 @@ public abstract partial class MainViewModelBase : IDisposable
             .ObserveOnThreadPool()
             .SubscribeAwait(RecognizeAsync, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         var previousSize = default(System.Drawing.Size);
-        var visible = Observable.ObservePropertyChanged(this, x => x.OverlayVisible)
-            .ObserveOnThreadPool()
-            .Do(_ => this.ocrTextTracker.Reset());
-        this.trackingLoop = this.trackingRequests
-            .Select(request =>
+        this.trackingLoop = Disposable.Combine(
+            Observable.ObservePropertyChanged(this, x => x.OverlayVisible)
+                .ObserveOnThreadPool()
+                .Subscribe(_ => this.ocrTextTracker.Reset()),
+            this.trackingRequests.SubscribeAwait(async (request, ct) =>
             {
-                var lifetime = request.Lifetime.Subscribe();
-                return Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100))
-                    .Select(_ => request)
-                    .Do(onDispose: lifetime.Dispose);
-            })
-            .Switch()
-            .CombineLatest(visible, (request, isVisible) => (Request: request, IsVisible: isVisible))
-            .Where(value => value.IsVisible)
-            .Select(value => value.Request)
-            .ObserveOnThreadPool()
-            .SubscribeAwait(async (request, ct) =>
-            {
-                using var lifetime = request.Lifetime.Subscribe();
-                if (request.Released.IsDisposed)
-                {
-                    return;
-                }
+                // 認識側の画像が破棄される前に、追跡の購読で使う画像を確保する。
+                using var bitmap = SoftwareBitmap.Copy(request.Context.SoftwareBitmap);
+                request.Context = request.Context with { SoftwareBitmap = bitmap };
                 if (previousSize != request.Context.ImageSize)
                 {
                     this.ocrTextTracker.Reset();
                     previousSize = request.Context.ImageSize;
                 }
-                await ProcessTrackingAsync((request.Texts, request.Context), ct);
-            }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
+                // 切替時はタイマーを止め、処理の終了を待ってから画像を破棄する。
+                await Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100), CancellationToken.None)
+                    .TakeUntil(ct)
+                    .Where(_ => this.OverlayVisible)
+                    .SelectAwait(async (_, _) =>
+                    {
+                        await ProcessTrackingAsync(request, ct);
+                        return Unit.Default;
+                    }, AwaitOperation.Drop, configureAwait: false)
+                    .LastOrDefaultAsync(cancellationToken: CancellationToken.None);
+            }, AwaitOperation.Switch, configureAwait: false));
         this.translationLoop = this.translationRequests
             .DistinctUntilChanged(EqualityComparer<TextRect[]>.Create((previous, current) =>
                 previous!.Select(t => (t.SourceText, t.Context)).SequenceEqual(current!.Select(t => (t.SourceText, t.Context)))))
@@ -203,8 +198,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
-        SoftwareBitmap? sbmp = capturedBitmap;
-        using var bitmap = new DisposeAction(() => sbmp?.Dispose());
+        using var sbmp = capturedBitmap;
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
         {
@@ -280,17 +274,7 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
-        // 最新観測としての保持と処理中の利用を、購読の参照数で管理する。
-        var released = new BooleanDisposable();
-        var image = Disposable.Create(() =>
-        {
-            released.Dispose();
-            context.SoftwareBitmap.Dispose();
-        });
-        var lifetime = Observable.Create<Unit>(_ => image).Publish().RefCount();
-        using var reference = lifetime.Subscribe();
-        sbmp = null;
-        this.trackingRequests.OnNext((texts, context, lifetime, released));
+        this.trackingRequests.OnNext((texts, context));
     }
 
     private async ValueTask ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
