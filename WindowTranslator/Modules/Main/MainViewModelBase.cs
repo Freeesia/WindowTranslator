@@ -267,6 +267,15 @@ public abstract partial class MainViewModelBase : IDisposable
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
         }).ToArray();
+        if (this.isOneShotMode || this.isFirstCapture)
+        {
+            // 翻訳待ちの表示遅延を抑えるため、初回だけ認識結果を先に表示する。
+            if (!this.isOneShotMode)
+            {
+                this.isFirstCapture = false;
+            }
+            this.uiRequests.OnNext(texts);
+        }
         this.translationRequests.OnNext((texts, context));
         sbmp = null;
     }
@@ -275,15 +284,6 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
-        if (this.isOneShotMode || this.isFirstCapture)
-        {
-            // 翻訳待ちの表示遅延を抑えるため、初回だけ認識結果を先に表示する。
-            if (!this.isOneShotMode)
-            {
-                this.isFirstCapture = false;
-            }
-            this.uiRequests.OnNext(request.Texts);
-        }
         IEnumerable<TextRect> texts;
         using (this.Filtering.EnterBusy())
         {
