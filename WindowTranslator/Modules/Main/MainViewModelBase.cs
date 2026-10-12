@@ -116,19 +116,13 @@ public abstract partial class MainViewModelBase : IDisposable
             .ObserveOnThreadPool()
             .SubscribeAwait(async (bitmap, ct) =>
             {
-                // ワンショットは受信時に、連続キャプチャは処理する最初のフレームでフラグを消費する。
-                var isFirstCapture = this.isOneShotMode || this.isFirstCapture;
-                if (!this.isOneShotMode)
-                {
-                    this.isFirstCapture = false;
-                }
                 var size = new System.Drawing.Size(bitmap.PixelWidth, bitmap.PixelHeight);
                 if (!this.isOneShotMode && size != previousSize)
                 {
                     this.ocrTextTracker.Reset();
                 }
                 previousSize = size;
-                await RecognizeAsync(bitmap, isFirstCapture, ct);
+                await RecognizeAsync(bitmap, ct);
             }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         this.translationLoop = this.translationRequests
             .ObserveOnThreadPool()
@@ -186,7 +180,7 @@ public abstract partial class MainViewModelBase : IDisposable
         this.captureRequests.OnNext(bitmap);
     }
 
-    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, bool isFirstCapture, CancellationToken cancellationToken)
+    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
         SoftwareBitmap? sbmp = capturedBitmap;
         using var bitmap = new DisposeAction(() => sbmp?.Dispose());
@@ -268,16 +262,11 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = sbmp,
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
-        if (isFirstCapture)
+        texts = texts.Select(t => t switch
         {
-            // 翻訳待ちの表示遅延を抑えるため、最初の認識結果だけ先に表示する。
-            var initialTexts = texts.Select(t => t switch
-            {
-                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
-                _ => t,
-            }).ToArray();
-            this.uiRequests.OnNext(initialTexts);
-        }
+            { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
+            _ => t,
+        }).ToArray();
         this.translationRequests.OnNext((texts, context));
         sbmp = null;
     }
@@ -286,6 +275,15 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
+        if (this.isOneShotMode || this.isFirstCapture)
+        {
+            // 翻訳待ちの表示遅延を抑えるため、初回だけ認識結果を先に表示する。
+            if (!this.isOneShotMode)
+            {
+                this.isFirstCapture = false;
+            }
+            this.uiRequests.OnNext(request.Texts);
+        }
         IEnumerable<TextRect> texts;
         using (this.Filtering.EnterBusy())
         {
@@ -299,22 +297,14 @@ public abstract partial class MainViewModelBase : IDisposable
         }
         try
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            var requests = texts
+                .Where(t => t.TranslatedText is null)
+                .ToArray();
             if (this.disposedValue)
             {
                 this.logger.LogDebug("すでに破棄されているので翻訳キューを無視");
                 return;
             }
-
-            // 補正後の原文でキャッシュを参照し、フィルターが設定した翻訳文を維持する。
-            texts = texts.Select(t => t switch
-            {
-                { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
-                _ => t,
-            }).ToArray();
-            var requests = texts
-                .Where(t => t.TranslatedText is null)
-                .ToArray();
             if (requests.Length > 0)
             {
                 using var t = this.logger.LogDebugTime("翻訳");
