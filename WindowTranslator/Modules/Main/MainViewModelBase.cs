@@ -62,7 +62,7 @@ public abstract partial class MainViewModelBase : IDisposable
     public BusyScope Recognizing { get; } = new();
     public BusyScope Filtering { get; } = new();
 
-    private bool isFirstCapture;
+    private bool isFirstCapture = true;
     private volatile bool disposedValue;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
@@ -140,11 +140,8 @@ public abstract partial class MainViewModelBase : IDisposable
         if (value)
         {
             this.uiRequests.OnNext([]);
-            if (this.isOneShotMode)
-            {
-                this.isFirstCapture = true;
-            }
-            else
+            this.isFirstCapture = true;
+            if (!this.isOneShotMode)
             {
                 this.ocrTextTracker.Reset();
             }
@@ -270,7 +267,15 @@ public abstract partial class MainViewModelBase : IDisposable
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
         }).ToArray();
-        this.uiRequests.OnNext(texts);
+        if (this.isOneShotMode || this.isFirstCapture)
+        {
+            // 翻訳待ちの表示遅延を抑えるため、初回だけ認識結果を先に表示する。
+            if (!this.isOneShotMode)
+            {
+                this.isFirstCapture = false;
+            }
+            this.uiRequests.OnNext(texts);
+        }
         this.translationRequests.OnNext((texts, context));
         sbmp = null;
     }
