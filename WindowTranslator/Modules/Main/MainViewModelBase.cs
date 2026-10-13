@@ -125,9 +125,7 @@ public abstract partial class MainViewModelBase : IDisposable
             this.trackingRequests
                 .SubscribeAwait(async (request, ct) =>
                 {
-                    // 認識側で画像を閉じる前に、画素を共有するビューを取得する。
-                    using var bitmap = request.Context.SoftwareBitmap.GetReadOnlyView();
-                    request.Context = request.Context with { SoftwareBitmap = bitmap };
+                    using var bitmap = request.Context.SoftwareBitmap;
                     if (previousSize != request.Context.ImageSize)
                     {
                         this.ocrTextTracker.Reset();
@@ -157,16 +155,36 @@ public abstract partial class MainViewModelBase : IDisposable
                 }, AwaitOperation.Switch, configureAwait: false, cancelOnCompleted: true));
         // 待機用ビューは差し替え時に閉じ、実行中のビューは翻訳側で保持する。
         var pendingTranslationImage = new SerialDisposable();
-        this.translationLoop = Disposable.Combine(pendingTranslationImage,
-            this.translationRequests
-                .Select(request =>
+        this.translationLoop = this.translationRequests
+            .Select(request =>
+            {
+                lock (pendingTranslationImage)
                 {
                     var bitmap = request.Context.SoftwareBitmap.GetReadOnlyView();
                     pendingTranslationImage.Disposable = bitmap;
                     return (request.Texts, Context: request.Context with { SoftwareBitmap = bitmap });
-                })
-                .ObserveOnThreadPool()
-                .SubscribeAwait(ProcessTranslationAsync, AwaitOperation.ThrottleFirstLast, configureAwait: false));
+                }
+            })
+            .Do(onDispose: () =>
+            {
+                lock (pendingTranslationImage)
+                {
+                    pendingTranslationImage.Dispose();
+                }
+            })
+            .ObserveOnThreadPool()
+            .SubscribeAwait(async (request, ct) =>
+            {
+                lock (pendingTranslationImage)
+                {
+                    if (!ReferenceEquals(pendingTranslationImage.Disposable, request.Context.SoftwareBitmap))
+                    {
+                        return;
+                    }
+                    request.Context = request.Context with { SoftwareBitmap = request.Context.SoftwareBitmap.GetReadOnlyView() };
+                }
+                await ProcessTranslationAsync(request, ct);
+            }, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         if (!this.isOneShotMode)
         {
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
@@ -218,7 +236,8 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
     {
-        using var sbmp = capturedBitmap;
+        SoftwareBitmap? sbmp = capturedBitmap;
+        using var bitmap = new DisposeAction(() => sbmp?.Dispose());
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
         {
@@ -293,6 +312,7 @@ public abstract partial class MainViewModelBase : IDisposable
             ImageSize = new(sbmp.PixelWidth, sbmp.PixelHeight),
         };
         this.trackingRequests.OnNext((texts, context));
+        sbmp = null;
     }
 
     private async ValueTask<IEnumerable<TextRect>> ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
@@ -312,18 +332,7 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async ValueTask ProcessTranslationAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
     {
-        SoftwareBitmap bitmap;
-        try
-        {
-            bitmap = request.Context.SoftwareBitmap.GetReadOnlyView();
-        }
-        catch (ObjectDisposedException)
-        {
-            // 新しい要求に差し替えられ、待機用のビューが閉じられている。
-            return;
-        }
-        using var release = new DisposeAction(bitmap.Dispose);
-        request.Context = request.Context with { SoftwareBitmap = bitmap };
+        using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
         IEnumerable<TextRect> texts;
         using (this.Filtering.EnterBusy())
