@@ -9,8 +9,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <Compile Include="../WindowTranslator.Plugin.BluePrinceOcrPlugin/BluePrinceOcrParam.cs" Link="BluePrinceOcrParam.cs" />
     <Compile Include="../WindowTranslator.Plugin.BluePrinceOcrPlugin/ParagraphBuilder.cs" Link="ParagraphBuilder.cs" />
   </ItemGroup>
 </Project>
+
 
 

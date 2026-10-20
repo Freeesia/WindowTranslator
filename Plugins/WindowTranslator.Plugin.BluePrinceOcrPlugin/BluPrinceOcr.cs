@@ -28,6 +28,7 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
     private readonly long pipeline;
     private readonly long opt;
     private readonly long context;
+    private readonly double lineSpacingTolerance;
     private readonly double scale = 1.0; // スケールのデフォルト値
     private readonly int brightness; // 明るさ（-127 - 128）
     private readonly int contrast; // コントラスト（-99 - 100）
@@ -51,9 +52,10 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
         }
     }
 
-    public BluPrinceOcr(ILogger<BluPrinceOcr> logger, IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BasicOcrParam> ocrParam)
+    public BluPrinceOcr(ILogger<BluPrinceOcr> logger, IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<BasicOcrParam> ocrParam, IOptionsSnapshot<BluePrinceOcrParam> paragraphParam)
     {
         this.logger = logger;
+        this.lineSpacingTolerance = BluePrinceOcrParam.Normalize(paragraphParam.Value.LineSpacingTolerance);
         this.fastText = FastTextDetector.IsSupported() ? new() : null;
         this.fastText?.LoadDefaultModel();
         this.source = langOptions.Value.Source;
@@ -247,7 +249,7 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
     /// <param name="imageHeight">画像の高さ</param>
     /// <returns>補正・結合後のテキスト矩形のリスト</returns>
     private IEnumerable<TextRect> ProcessTextRects(IEnumerable<TextRect> textRects, int imageWidth, int imageHeight)
-        => ParagraphBuilder.Build(textRects);
+        => ParagraphBuilder.Build(textRects, this.lineSpacingTolerance);
 }
 [ComImport]
 [Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
@@ -256,6 +258,7 @@ unsafe interface IMemoryBufferByteAccess
 {
     void GetBuffer(out byte* buffer, out uint capacity);
 }
+
 
 
 

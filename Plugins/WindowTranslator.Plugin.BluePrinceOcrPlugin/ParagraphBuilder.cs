@@ -3,10 +3,12 @@ namespace WindowTranslator.Plugin.BluePrinceOcrPlugin;
 /// <summary>行の傾きを補正した座標で、空行と段組みを判定する。</summary>
 internal static class ParagraphBuilder
 {
-    public static IReadOnlyList<TextRect> Build(IEnumerable<TextRect> source)
+    public static IReadOnlyList<TextRect> Build(IEnumerable<TextRect> source, double lineSpacingTolerance = BluePrinceOcrParam.DefaultLineSpacingTolerance)
     {
         var remaining = source.Where(r => !string.IsNullOrWhiteSpace(r.SourceText)
             && r.Width > 0 && r.Height > 0).OrderBy(r => r.Y).ToList();
+        var allLines = remaining.ToArray();
+        lineSpacingTolerance = BluePrinceOcrParam.Normalize(lineSpacingTolerance);
         var results = new List<TextRect>();
         while (remaining.Count > 0)
         {
@@ -17,6 +19,7 @@ internal static class ParagraphBuilder
             var sin = Math.Sin(angle);
             (double X, double Y) Project(TextRect r)
                 => (r.X * cos + r.Y * sin, -r.X * sin + r.Y * cos);
+            var normalStep = EstimateLineSpacing(allLines, first);
             var lines = new List<TextRect> { first };
             var last = first;
             while (true)
@@ -31,7 +34,7 @@ internal static class ParagraphBuilder
                     var p = Project(r);
                     var height = (r.Height + last.Height) / 2;
                     var step = p.Y - previous.Y;
-                    return step > height * .65 && step <= height * 2.05
+                    return step > height * .65 && step <= height * normalStep * lineSpacingTolerance
                         && Math.Abs(p.X - Project(first).X) <= height * 1.5;
                 }).OrderBy(r => Project(r).Y).FirstOrDefault();
                 if (next is null)
@@ -69,5 +72,35 @@ internal static class ParagraphBuilder
             });
         }
         return results;
+    }
+    // 同じ列・向き・文字サイズの行から、直下の行までの距離を収集する。
+    // 文字高で正規化し、短い側の半分の中央値を使うことで段落間の空白の影響を抑える。
+    private static double EstimateLineSpacing(IReadOnlyList<TextRect> lines, TextRect first)
+    {
+        var angle = first.Angle * Math.PI / 180;
+        var cos = Math.Cos(angle);
+        var sin = Math.Sin(angle);
+        (double X, double Y) Project(TextRect r)
+            => (r.X * cos + r.Y * sin, -r.X * sin + r.Y * cos);
+        var origin = Project(first);
+        var column = lines.Where(r => Math.Abs(r.Angle - first.Angle) <= 3
+            && Math.Abs(r.Height - first.Height) / Math.Min(r.Height, first.Height) <= .3
+            && Math.Abs(Project(r).X - origin.X) <= (r.Height + first.Height) * .75).ToArray();
+        var steps = new List<double>();
+        foreach (var line in column)
+        {
+            var start = Project(line);
+            var nearest = column.Where(r => !ReferenceEquals(r, line))
+                .Select(r => (Project(r).Y - start.Y) / ((r.Height + line.Height) / 2))
+                .Where(step => step > .65 && step <= 4)
+                .DefaultIfEmpty(double.NaN).Min();
+            if (double.IsFinite(nearest))
+                steps.Add(nearest);
+        }
+        if (steps.Count == 0)
+            return 1.5;
+        steps.Sort();
+        var count = (steps.Count + 1) / 2;
+        return (steps[(count - 1) / 2] + steps[count / 2]) / 2;
     }
 }

@@ -52,4 +52,41 @@ public class ParagraphBuilderTests
             new("invalid", 0, 0, 0, 20, 20, false),
         ]));
     }
+    [Fact]
+    public void 文字高の固定しきい値内でも通常より広い行送りで段落を分ける()
+    {
+        var lines = new[] { Line("a", 500, 100), Line("b", 500, 128),
+            Line("c", 500, 156), Line("d", 500, 206), Line("e", 500, 234) };
+        var result = ParagraphBuilder.Build(lines);
+        Assert.Equal(new[] { "a b c", "d e" }, result.Select(r => r.SourceText));
+        Assert.Single(ParagraphBuilder.Build(lines, 2));
+    }
+
+    [Fact]
+    public void 行送りが広い本文でも一定なら結合する()
+    {
+        var result = ParagraphBuilder.Build([
+            Line("a", 500, 100), Line("b", 500, 165), Line("c", 500, 230),
+        ]);
+        Assert.Single(result);
+        Assert.Equal("a b c", result[0].SourceText);
+    }
+
+    [Theory]
+    [InlineData(.5)]
+    [InlineData(2)]
+    public void 拡大率が変わっても段落を同じように分ける(double scale)
+    {
+        var lines = new[] { Line("a", 500, 100), Line("b", 500, 128),
+            Line("c", 500, 156), Line("d", 500, 206), Line("e", 500, 234) }
+            .Select(r => r with { X = r.X * scale, Y = r.Y * scale,
+                Width = r.Width * scale, Height = r.Height * scale, FontSize = r.FontSize * scale });
+        Assert.Equal(2, ParagraphBuilder.Build(lines).Count);
+    }
+
+    [Fact]
+    public void 不正な許容倍率は既定値へ戻す()
+    {
+        Assert.Equal(BluePrinceOcrParam.DefaultLineSpacingTolerance, BluePrinceOcrParam.Normalize(double.NaN));
+    }
 }
