@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
+    <DirectoryBuildTargetsPath>$(MSBuildProjectDirectory)/../../Directory.Build.targets</DirectoryBuildTargetsPath>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Update="../../WindowTranslator.Abstractions/WindowTranslator.Abstractions.csproj" Private="true" ExcludeAssets="" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <Compile Include="../WindowTranslator.Plugin.BluePrinceOcrPlugin/ParagraphBuilder.cs" Link="ParagraphBuilder.cs" />
+  </ItemGroup>
+</Project>
+
+
