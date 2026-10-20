@@ -1,7 +1,7 @@
-using System.ClientModel;
 using System.Globalization;
-using OpenAI;
-using OpenAI.Chat;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using WindowTranslator.Modules;
 
@@ -9,78 +9,94 @@ namespace WindowTranslator.Plugin.Sarashina3Plugin;
 
 public sealed class Sarashina3Translator : ITranslateModule
 {
-    internal const string Endpoint = "https://api.sarashina.ai/v1";
-    internal const string Model = "sarashina3-translate";
+    internal const string Endpoint = "https://api.sarashina.ai/v1/translate";
+    private static readonly HttpClient httpClient = new();
 
-    private readonly ChatClient client;
+    private readonly string apiKey;
     private readonly string sourceLanguage;
     private readonly string targetLanguage;
-    private readonly string? translateContext;
-    private readonly Dictionary<string, string> glossary = new(StringComparer.Ordinal);
-    private string? context;
+    private readonly HttpClient client;
 
     public Sarashina3Translator(IOptionsSnapshot<Sarashina3Options> options, IOptionsSnapshot<LanguageOptions> languages)
-        : this(options.Value, languages.Value, CreateClient(options.Value))
+        : this(options.Value, languages.Value, httpClient)
     {
     }
 
-    internal Sarashina3Translator(Sarashina3Options options, LanguageOptions languages)
-        : this(options, languages, CreateClient(options))
+    internal Sarashina3Translator(Sarashina3Options options, LanguageOptions languages, HttpClient client)
     {
-    }
+        if (string.IsNullOrWhiteSpace(options.ApiKey))
+        {
+            throw new AppUserException("Sarashina APIキーを設定してください。");
+        }
 
-    internal Sarashina3Translator(Sarashina3Options options, LanguageOptions languages, ChatClient client)
-    {
+        this.sourceLanguage = GetLanguageCode(languages.Source);
+        this.targetLanguage = GetLanguageCode(languages.Target);
+        this.apiKey = options.ApiKey.Trim();
         this.client = client;
-        this.sourceLanguage = CultureInfo.GetCultureInfo(languages.Source).EnglishName;
-        this.targetLanguage = CultureInfo.GetCultureInfo(languages.Target).EnglishName;
-        this.translateContext = options.TranslateContext;
     }
 
-    private static ChatClient CreateClient(Sarashina3Options options)
-        => string.IsNullOrWhiteSpace(options.ApiKey)
-            ? throw new AppUserException("Sarashina3 APIキーを設定してください。")
-            : new ChatClient(Model, new ApiKeyCredential(options.ApiKey), new OpenAIClientOptions
-            {
-                Endpoint = new Uri(Endpoint),
-            });
+    internal static bool SupportsLanguage(string cultureCode)
+        => TryGetLanguageCode(cultureCode, out _);
+
+    private static string GetLanguageCode(string cultureCode)
+        => TryGetLanguageCode(cultureCode, out var languageCode)
+            ? languageCode
+            : throw new AppUserException("Sarashina Translate APIは日本語と英語の翻訳に対応しています。");
+
+    private static bool TryGetLanguageCode(string cultureCode, out string languageCode)
+    {
+        try
+        {
+            languageCode = CultureInfo.GetCultureInfo(cultureCode).TwoLetterISOLanguageName;
+            return languageCode is "ja" or "en";
+        }
+        catch (CultureNotFoundException)
+        {
+            languageCode = string.Empty;
+            return false;
+        }
+    }
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
         var translated = new string[srcTexts.Length];
         for (var i = 0; i < srcTexts.Length; i++)
         {
-            var systemPrompt = $"""
-                Translate from {this.sourceLanguage} to {this.targetLanguage}.
-                Return only the translation without explanations or quotation marks.
-                Preserve formatting, placeholders, and tags.
-                <translation context>{this.translateContext}
-                {this.context}
-                {srcTexts[i].Context}</translation context>
-                <glossary>
-                {string.Join(Environment.NewLine, this.glossary.Select(entry => $"{entry.Key} => {entry.Value}"))}
-                </glossary>
-                """;
-            var completion = await this.client.CompleteChatAsync([
-                ChatMessage.CreateSystemMessage(systemPrompt),
-                ChatMessage.CreateUserMessage(srcTexts[i].SourceText),
-            ]).ConfigureAwait(false);
-            translated[i] = string.Concat(completion.Value.Content.Select(content => content.Text)).Trim();
+            if (this.sourceLanguage == this.targetLanguage)
+            {
+                translated[i] = srcTexts[i].SourceText;
+                continue;
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, Endpoint);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.apiKey);
+            request.Content = JsonContent.Create(new TranslateRequest(
+                srcTexts[i].SourceText,
+                this.sourceLanguage,
+                this.targetLanguage));
+
+            using var response = await this.client.SendAsync(request).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Sarashina Translate API returned HTTP {(int)response.StatusCode}.",
+                    null,
+                    response.StatusCode);
+            }
+
+            await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var document = await JsonDocument.ParseAsync(stream).ConfigureAwait(false);
+            if (!document.RootElement.TryGetProperty("translated_text", out var translatedText)
+                || translatedText.ValueKind != JsonValueKind.String)
+            {
+                throw new InvalidDataException("Sarashina Translate API response did not contain translated_text.");
+            }
+
+            translated[i] = translatedText.GetString()!;
         }
 
         return translated;
     }
 
-    public ValueTask RegisterGlossaryAsync(IReadOnlyDictionary<string, string> glossary)
-    {
-        foreach (var (source, target) in glossary)
-        {
-            this.glossary.TryAdd(source.ReplaceLineEndings(string.Empty), target.ReplaceLineEndings(string.Empty));
-        }
-
-        return default;
-    }
-
-    public void RegisterContext(string context)
-        => this.context = context;
+    private sealed record TranslateRequest(string text, string source_lang, string target_lang);
 }

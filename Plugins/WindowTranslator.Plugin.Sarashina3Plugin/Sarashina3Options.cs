@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using PropertyTools.DataAnnotations;
 using WindowTranslator.Modules;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
 
@@ -10,10 +9,6 @@ public sealed class Sarashina3Options : IPluginParam
 {
     [DataType(DataType.Password)]
     public string? ApiKey { get; set; }
-
-    [Height(120)]
-    [DataType(DataType.MultilineText)]
-    public string? TranslateContext { get; set; }
 }
 
 public sealed class Sarashina3Validator : ITargetSettingsValidator
@@ -26,8 +21,15 @@ public sealed class Sarashina3Validator : ITargetSettingsValidator
         }
 
         var options = settings.PluginParams.GetValueOrDefault(nameof(Sarashina3Options)) as Sarashina3Options;
-        return ValueTask.FromResult(string.IsNullOrWhiteSpace(options?.ApiKey)
-            ? ValidateResult.Invalid("Sarashina3", "Sarashina3 APIキーを設定してください。")
-            : ValidateResult.Valid);
+        if (string.IsNullOrWhiteSpace(options?.ApiKey))
+        {
+            return ValueTask.FromResult(ValidateResult.Invalid("Sarashina3", "Sarashina APIキーを設定してください。"));
+        }
+
+        return ValueTask.FromResult(
+            !Sarashina3Translator.SupportsLanguage(settings.Language.Source)
+            || !Sarashina3Translator.SupportsLanguage(settings.Language.Target)
+                ? ValidateResult.Invalid("Sarashina3", "Sarashina Translate APIは日本語と英語の翻訳に対応しています。")
+                : ValidateResult.Valid);
     }
 }

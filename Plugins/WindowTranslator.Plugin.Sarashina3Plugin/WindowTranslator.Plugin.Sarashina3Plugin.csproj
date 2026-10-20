@@ -7,7 +7,6 @@
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="OpenAI" />
     <InternalsVisibleTo Include="WindowTranslator.Tests" />
   </ItemGroup>
 </Project>
