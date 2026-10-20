@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using PropertyTools.DataAnnotations;
 using WindowTranslator.Modules;
 using DisplayNameAttribute = System.ComponentModel.DisplayNameAttribute;
