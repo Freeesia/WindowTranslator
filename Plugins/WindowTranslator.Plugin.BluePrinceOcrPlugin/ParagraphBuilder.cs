@@ -3,11 +3,12 @@ namespace WindowTranslator.Plugin.BluePrinceOcrPlugin;
 /// <summary>行の傾きを補正した座標で、空行と段組みを判定する。</summary>
 internal static class ParagraphBuilder
 {
-    public static IReadOnlyList<TextRect> Build(IEnumerable<TextRect> source, double lineSpacingTolerance = BluePrinceOcrParam.DefaultLineSpacingTolerance)
+    public static IReadOnlyList<TextRect> Build(IEnumerable<TextRect> source, double lineSpacingTolerance = BluePrinceOcrParam.DefaultLineSpacingTolerance, double fontSizeTolerance = .30)
     {
         var remaining = source.Where(r => !string.IsNullOrWhiteSpace(r.SourceText)
             && r.Width > 0 && r.Height > 0).OrderBy(r => r.Y).ToList();
         var allLines = remaining.ToArray();
+        fontSizeTolerance = BluePrinceOcrParam.NormalizeFontSize(fontSizeTolerance);
         lineSpacingTolerance = BluePrinceOcrParam.Normalize(lineSpacingTolerance);
         var results = new List<TextRect>();
         while (remaining.Count > 0)
@@ -19,7 +20,7 @@ internal static class ParagraphBuilder
             var sin = Math.Sin(angle);
             (double X, double Y) Project(TextRect r)
                 => (r.X * cos + r.Y * sin, -r.X * sin + r.Y * cos);
-            var normalStep = EstimateLineSpacing(allLines, first);
+            var normalStep = EstimateLineSpacing(allLines, first, fontSizeTolerance);
             var lines = new List<TextRect> { first };
             var last = first;
             while (true)
@@ -29,10 +30,10 @@ internal static class ParagraphBuilder
                 var next = remaining.Where(r =>
                 {
                     if (Math.Abs(r.Angle - first.Angle) > 3 ||
-                        Math.Abs(r.Height - last.Height) / Math.Min(r.Height, last.Height) > .3)
+                        Math.Abs(TextHeight(r) - TextHeight(last)) / Math.Min(TextHeight(r), TextHeight(last)) > fontSizeTolerance)
                         return false;
                     var p = Project(r);
-                    var height = (r.Height + last.Height) / 2;
+                    var height = (TextHeight(r) + TextHeight(last)) / 2;
                     var step = p.Y - previous.Y;
                     return step > height * .65 && step <= height * normalStep * lineSpacingTolerance
                         && Math.Abs(p.X - Project(first).X) <= height * 1.5;
@@ -75,7 +76,7 @@ internal static class ParagraphBuilder
     }
     // 同じ列・向き・文字サイズの行から、直下の行までの距離を収集する。
     // 文字高で正規化し、短い側の半分の中央値を使うことで段落間の空白の影響を抑える。
-    private static double EstimateLineSpacing(IReadOnlyList<TextRect> lines, TextRect first)
+    private static double EstimateLineSpacing(IReadOnlyList<TextRect> lines, TextRect first, double fontSizeTolerance)
     {
         var angle = first.Angle * Math.PI / 180;
         var cos = Math.Cos(angle);
@@ -84,14 +85,14 @@ internal static class ParagraphBuilder
             => (r.X * cos + r.Y * sin, -r.X * sin + r.Y * cos);
         var origin = Project(first);
         var column = lines.Where(r => Math.Abs(r.Angle - first.Angle) <= 3
-            && Math.Abs(r.Height - first.Height) / Math.Min(r.Height, first.Height) <= .3
-            && Math.Abs(Project(r).X - origin.X) <= (r.Height + first.Height) * .75).ToArray();
+            && Math.Abs(TextHeight(r) - TextHeight(first)) / Math.Min(TextHeight(r), TextHeight(first)) <= fontSizeTolerance
+            && Math.Abs(Project(r).X - origin.X) <= (TextHeight(r) + TextHeight(first)) * .75).ToArray();
         var steps = new List<double>();
         foreach (var line in column)
         {
             var start = Project(line);
             var nearest = column.Where(r => !ReferenceEquals(r, line))
-                .Select(r => (Project(r).Y - start.Y) / ((r.Height + line.Height) / 2))
+                .Select(r => (Project(r).Y - start.Y) / ((TextHeight(r) + TextHeight(line)) / 2))
                 .Where(step => step > .65 && step <= 4)
                 .DefaultIfEmpty(double.NaN).Min();
             if (double.IsFinite(nearest))
@@ -103,4 +104,8 @@ internal static class ParagraphBuilder
         var count = (steps.Count + 1) / 2;
         return (steps[(count - 1) / 2] + steps[count / 2]) / 2;
     }
+    private static double TextHeight(TextRect line)
+        => double.IsFinite(line.FontSize) && line.FontSize > 0 ? line.FontSize / .9 : line.Height;
 }
+
+

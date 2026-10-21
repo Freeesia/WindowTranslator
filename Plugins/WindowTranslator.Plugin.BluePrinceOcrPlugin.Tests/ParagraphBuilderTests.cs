@@ -89,4 +89,34 @@ public class ParagraphBuilderTests
     {
         Assert.Equal(BluePrinceOcrParam.DefaultLineSpacingTolerance, BluePrinceOcrParam.Normalize(double.NaN));
     }
+    [Fact]
+    public void アイコンで行矩形が高くても文字サイズで段落をまとめる()
+    {
+        var result = ParagraphBuilder.Build([
+            Line("first", 500, 100) with { FontSize = 24 },
+            Line("with icon", 500, 160) with { Height = 65, FontSize = 24 },
+            Line("last", 500, 220) with { FontSize = 24 },
+            Line("next paragraph", 500, 340) with { FontSize = 24 },
+            Line("continued", 500, 400) with { FontSize = 24 },
+        ]);
+        Assert.Equal(new[] { "first with icon last", "next paragraph continued" }, result.Select(r => r.SourceText));
+    }
+    [Fact]
+    public void サイズ差の許容率を上げると大見出しとアイコン入り本文を結合できる()
+    {
+        TextRect Rect(string text, double y, double h)
+            => new(text, 700, y, 600, h, h * .9, false);
+        var source = new[] {
+            Rect("title", 160, 41), Rect("large title", 220, 81),
+            Rect("first paragraph", 340, 29), Rect("icon line", 395, 43),
+            Rect("second paragraph", 510, 32), Rect("another icon", 550, 63),
+            Rect("continued", 625, 29), Rect("continued again", 680, 29), Rect("end", 740, 29)
+        };
+        var result = ParagraphBuilder.Build(source, 1.9, 1.2);
+        Assert.Equal(new[] { "title large title", "first paragraph icon line",
+            "second paragraph another icon continued continued again end" }, result.Select(r => r.SourceText));
+        Assert.True(ParagraphBuilder.Build(source).Count > result.Count);
+    }
 }
+
+

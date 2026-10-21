@@ -29,6 +29,7 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
     private readonly long opt;
     private readonly long context;
     private readonly double lineSpacingTolerance;
+    private readonly double fontSizeTolerance;
     private readonly double scale = 1.0; // スケールのデフォルト値
     private readonly int brightness; // 明るさ（-127 - 128）
     private readonly int contrast; // コントラスト（-99 - 100）
@@ -56,6 +57,7 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
     {
         this.logger = logger;
         this.lineSpacingTolerance = BluePrinceOcrParam.Normalize(paragraphParam.Value.LineSpacingTolerance);
+        this.fontSizeTolerance = BluePrinceOcrParam.NormalizeFontSize(paragraphParam.Value.FontSizeTolerance);
         this.fastText = FastTextDetector.IsSupported() ? new() : null;
         this.fastText?.LoadDefaultModel();
         this.source = langOptions.Value.Source;
@@ -234,7 +236,8 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
             this.logger.LogDebug($"Text: '{lineContent}', Angle: {angle:F2}°, Size: {width:F1}x{height:F1}, Position: ({x:F1}, {y:F1})");
 
             // TextRectを作成して追加（角度情報を含む、座標は左上位置）
-            textRects.Add(new(lineContent, x, y, width, height, height * 0.9, false) { Angle = angle });
+            var textHeight = height;
+            textRects.Add(new(lineContent, x, y, width, height, textHeight * 0.9, false) { Angle = angle });
         }
 
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
@@ -249,7 +252,7 @@ public sealed class BluPrinceOcr : IOcrModule, IDisposable
     /// <param name="imageHeight">画像の高さ</param>
     /// <returns>補正・結合後のテキスト矩形のリスト</returns>
     private IEnumerable<TextRect> ProcessTextRects(IEnumerable<TextRect> textRects, int imageWidth, int imageHeight)
-        => ParagraphBuilder.Build(textRects, this.lineSpacingTolerance);
+        => ParagraphBuilder.Build(textRects, this.lineSpacingTolerance, this.fontSizeTolerance);
 }
 [ComImport]
 [Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
@@ -258,6 +261,9 @@ unsafe interface IMemoryBufferByteAccess
 {
     void GetBuffer(out byte* buffer, out uint capacity);
 }
+
+
+
 
 
 
