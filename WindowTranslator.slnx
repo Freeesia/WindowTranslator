@@ -32,6 +32,8 @@
     <File Path="Plugins/Directory.Build.targets" />
     <File Path="Plugins/WindowTranslator.Plugins.proj" />
     <Project Path="Plugins/WindowTranslator.Plugin.BergamotTranslatorPlugin/WindowTranslator.Plugin.BergamotTranslatorPlugin.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.BluePrinceOcrPlugin.Tests/WindowTranslator.Plugin.BluePrinceOcrPlugin.Tests.csproj" />
+    <Project Path="Plugins/WindowTranslator.Plugin.BluePrinceOcrPlugin/WindowTranslator.Plugin.BluePrinceOcrPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.ColorThiefPlugin/WindowTranslator.Plugin.ColorThiefPlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.DeepLTranslatePlugin/WindowTranslator.Plugin.DeepLTranslatePlugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.DummyPlugin/WindowTranslator.Plugin.DummyPlugin.csproj" />

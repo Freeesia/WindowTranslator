@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.20348.0</TargetFramework>
+    <Title>BluePrinceOcr</Title>
+    <Description>Blue Prince の英文を段落単位で認識する OCR プラグイン。</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsPublishable>true</IsPublishable>
+    <IsPackable>true</IsPackable>
+    <PackageTags>$(PackageTags);ocr</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Panlingo.LanguageIdentification.FastText" />
+    <PackageReference Include="WPF-UI" ExcludeAssets="runtime" />
+    <!-- エンジンとセットアップ処理は OneOcr と共通化する。 -->
+    <Compile Include="../WindowTranslator.Plugin.OneOcrPlugin/NativeMethods.cs" Link="Engine/NativeMethods.cs" />
+    <Compile Include="../WindowTranslator.Plugin.OneOcrPlugin/Utility.cs" Link="Engine/Utility.cs" />
+    <Compile Include="../WindowTranslator.Plugin.OneOcrPlugin/Properties/Resources.Designer.cs" Link="Properties/Resources.Designer.cs" />
+    <EmbeddedResource Include="../WindowTranslator.Plugin.OneOcrPlugin/Properties/Resources*.resx" Link="Properties/%(Filename)%(Extension)">
+      <LogicalName>WindowTranslator.Plugin.OneOcrPlugin.Properties.%(Filename).resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
