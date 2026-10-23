@@ -8,9 +8,10 @@ namespace WindowTranslator.Modules.Ocr;
 public interface IOcrTextTracker
 {
     /// <summary>
-    /// 現在フレームのOCR観測でトラックを更新する。
+    /// 最新のOCR観測でトラックを更新し、安定化したテキスト領域を返す。
     /// </summary>
-    IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize);
+    /// <param name="timestamp">記録の再入力時の処理時刻。省略時は内部の時計を使用する。</param>
+    IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan? timestamp = null);
 
     /// <summary>
     /// 保持しているすべてのトラックを破棄する。

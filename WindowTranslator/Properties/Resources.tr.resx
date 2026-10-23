@@ -536,7 +536,7 @@ Monitör desteklenmiyor.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Tanıma kararlılığı</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Metindeki ve bölgelerin bölünmesi veya birleşmesindeki geçici değişiklikleri azaltır. 1: hızlı tepki, 5: yüksek kararlılık (varsayılan: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Geçici kaybolmada görüntüyü koruma</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Metnin görüntülenmeye devam edeceği art arda başarısız tanıma sayısı. 0: ilk başarısızlıkta kaldır, en fazla: 7, varsayılan: 3. Saniye değil, başarısızlık sayısıdır.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Tanıma kaybolduktan sonra bölgenin ne kadar süre gösterileceğini belirler. 0: ilk kayıpta kaldır, en fazla: 7 (yaklaşık 2,1 saniye), varsayılan: 3 (yaklaşık 0,9 saniye). Yakalama aralığından bağımsızdır.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Tümü</value>
   </data>
