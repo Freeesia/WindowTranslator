@@ -26,10 +26,6 @@ public sealed class Sarashina3Validator : ITargetSettingsValidator
             return ValueTask.FromResult(ValidateResult.Invalid("Sarashina3", "Sarashina APIキーを設定してください。"));
         }
 
-        return ValueTask.FromResult(
-            !Sarashina3Translator.SupportsLanguage(settings.Language.Source)
-            || !Sarashina3Translator.SupportsLanguage(settings.Language.Target)
-                ? ValidateResult.Invalid("Sarashina3", "Sarashina Translate APIは日本語と英語の翻訳に対応しています。")
-                : ValidateResult.Valid);
+        return ValueTask.FromResult(ValidateResult.Valid);
     }
 }
