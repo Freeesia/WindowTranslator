@@ -536,7 +536,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>ความคงที่ของผลการรู้จำ</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>ลดการเปลี่ยนแปลงชั่วคราวของข้อความและการแยกหรือรวมพื้นที่ 1: ตอบสนองเร็ว, 5: เน้นความคงที่ (ค่าเริ่มต้น: 3)</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>คงการแสดงผลเมื่อหายไปชั่วคราว</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>จำนวนครั้งที่รู้จำไม่สำเร็จติดต่อกันซึ่งยังคงแสดงข้อความไว้ 0: ลบเมื่อพลาดครั้งแรก, สูงสุด: 7 ครั้ง, ค่าเริ่มต้น: 3 ครั้ง นับเป็นครั้ง ไม่ใช่วินาที</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>กำหนดระยะเวลาที่คงแสดงพื้นที่หลังจากรู้จำไม่สำเร็จ 0: ลบเมื่อพลาดครั้งแรก, สูงสุด: 7 (ประมาณ 2.1 วินาที), ค่าเริ่มต้น: 3 (ประมาณ 0.9 วินาที) ไม่ขึ้นกับช่วงเวลาจับภาพ</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>ทั้งหมด</value>
   </data>
