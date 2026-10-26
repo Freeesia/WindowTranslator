@@ -12,13 +12,12 @@ namespace WindowTranslator.Modules.Ocr;
 /// </summary>
 public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSettings? settings = null) : IOcrTextTracker
 {
-    private const int AssignmentRecencyFrames = 4;
+    private static readonly TimeSpan assignmentRecency = TimeSpan.FromSeconds(1.2);
     private const int MaxStructureCandidates = 6;
     private const int MaxStructureSelectionStates = 1024;
     private const int MaxOneToOneCandidatesPerResource = 3;
     private const double MinimumAssignmentScore = 0.58;
     private const double StructureAssignmentBonus = 0.05;
-    private const double TextVoteDecay = 0.75;
     private const int TypewriterCandidateHistorySize = 7;
     private const int TypewriterCooldownFrames = 2;
     private const double MinimumStructureSizeRatio = 0.65;
@@ -42,23 +41,26 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
     private readonly ILogger<OcrTextTracker> logger = logger;
     private readonly TrackingProfile profile = TrackingProfile.FromSettings(settings ?? new());
     private readonly object syncRoot = new();
+    private readonly Stopwatch clock = Stopwatch.StartNew();
     private readonly List<TextTrack> tracks = [];
-    private Dictionary<string, int> mergeCandidates = [];
-    private Dictionary<long, int> dormantRestoreCandidates = [];
+    private Dictionary<string, TimeSpan> mergeCandidates = [];
+    private Dictionary<long, TimeSpan> dormantRestoreCandidates = [];
     private long nextTrackId;
+    private IEnumerable<TextRect>? previousObservations;
+    private TimeSpan observationTimestamp;
 
-    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize)
-        => this.Update(
-            observations,
-            imageSize,
-            TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency));
-
-    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
+    public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, Size imageSize, TimeSpan? timestamp = null)
     {
         ArgumentNullException.ThrowIfNull(observations);
         lock (this.syncRoot)
         {
-            return this.UpdateCore(observations, imageSize, timestamp);
+            var now = timestamp ?? this.clock.Elapsed;
+            if (!ReferenceEquals(this.previousObservations, observations))
+            {
+                this.previousObservations = observations;
+                this.observationTimestamp = now;
+            }
+            return this.UpdateCore(observations, imageSize, now, this.observationTimestamp);
         }
     }
 
@@ -70,10 +72,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.mergeCandidates.Clear();
             this.dormantRestoreCandidates.Clear();
             this.nextTrackId = 0;
+            this.previousObservations = null;
         }
     }
 
-    private TextRect[] UpdateCore(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp)
+    private TextRect[] UpdateCore(IEnumerable<TextRect> observations, Size imageSize, TimeSpan timestamp, TimeSpan observationTimestamp)
     {
         TextRect[] current = observations.Where(IsValid).ToArray();
         foreach (TextTrack track in this.tracks)
@@ -84,7 +87,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         {
             foreach (TextRect observation in current)
             {
-                this.CreateTrack(observation, timestamp);
+                this.CreateTrack(observation, observationTimestamp);
             }
             return this.GetOutput();
         }
@@ -103,7 +106,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             current,
             normalizedCurrent,
             imageSize,
-            timestamp);
+            timestamp,
+            observationTimestamp);
         MatchCandidate[] strongMatches = SelectOneToOne(
             oneToOneCandidates
                 .Where(candidate => IsStrongOneToOneCandidate(candidate, normalizedCurrent))
@@ -130,6 +134,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             normalizedCurrent,
             imageSize,
             timestamp,
+            observationTimestamp,
             reservedObservations));
         List<MatchCandidate> selected = [.. strongMatches, .. SelectStructures(structureCandidates)];
         reservedTracks.UnionWith(selected.SelectMany(candidate => candidate.Tracks));
@@ -168,7 +173,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
             reliableMergeOutputGeometryGroups.Add(group);
         }
-        this.ApplyMatches(selected, timestamp, matchedTracks, matchedObservations);
+        this.ApplyMatches(selected, timestamp, observationTimestamp, matchedTracks, matchedObservations);
 
         for (int i = 0; i < current.Length; i++)
         {
@@ -176,7 +181,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             {
                 TextTrack? coveringTrack = activeTracks.FirstOrDefault(track =>
                     IsCoveredTextFragment(current[i], track.Stabilized));
-                TextTrack track = this.CreateTrack(current[i], timestamp, coveringTrack?.Id);
+                TextTrack track = this.CreateTrack(current[i], observationTimestamp, coveringTrack?.Id);
                 matchedTracks.Add(track);
                 tracksWithCurrentGeometry.Add(track);
             }
@@ -203,18 +208,18 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     this.RemoveTrackTree(track);
                     continue;
                 }
-                track.MarkMissed();
+                track.MarkMissed(timestamp);
             }
         }
 
         foreach (TextTrack track in this.tracks
-            .Where(track => (!track.IsDormant && track.MissedFrames > this.profile.MaxMissedFrames)
+            .Where(track => (!track.IsDormant && track.MissingSince is { } since && timestamp - since >= this.profile.MissingRetention)
                 || (track.IsDormant
                     && !matchedTracks.Contains(track)
                     && timestamp - track.DormantSince > dormantRetention))
             .ToArray())
         {
-            this.logger.LogDebug("OCR track {TrackId} expired after {MissedFrames} missed frames", track.Id, track.MissedFrames);
+            this.logger.LogDebug("OCR track {TrackId} expired", track.Id);
             this.RemoveTrackTree(track);
         }
 
@@ -400,6 +405,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         string[] normalizedObservations,
         Size imageSize,
         TimeSpan timestamp,
+        TimeSpan observationTimestamp,
         Func<TextTrack, TextRect>? geometryOverride = null,
         Func<TextTrack, double>? distanceGateDimensionOverride = null,
         HashSet<int>? excludedObservations = null)
@@ -421,6 +427,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     normalizedObservation,
                     imageSize,
                     timestamp,
+                    observationTimestamp,
                     geometry,
                     distanceGateDimensionOverride?.Invoke(track));
                 if (score >= MinimumAssignmentScore)
@@ -622,11 +629,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         string normalizedObservation,
         Size imageSize,
         TimeSpan timestamp,
+        TimeSpan observationTimestamp,
         TextRect? geometryOverride = null,
         double? distanceGateDimensionOverride = null)
     {
         TextRect previous = geometryOverride ?? track.LatestObservation;
-        TextRect predicted = geometryOverride ?? track.Predict(timestamp);
+        TextRect predicted = geometryOverride ?? track.Predict(observationTimestamp);
         double centerDistance = CenterDistance(predicted, observation);
         double maximumDimension = Math.Max(previous.Width, previous.Height);
         double distanceGate = TrackingDistanceGate(previous, imageSize, distanceGateDimensionOverride);
@@ -703,7 +711,9 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             return -1;
         }
         double aspect = RatioSimilarity(previous.Width / previous.Height, observation.Width / observation.Height);
-        double recency = Math.Max(0, 1 - ((double)track.MissedFrames / AssignmentRecencyFrames));
+        double recency = track.MissingSince is { } since
+            ? Math.Max(0, 1 - ((timestamp - since) / assignmentRecency))
+            : 1;
         double score = (text * 0.35)
             + (overlap * 0.25)
             + (center * 0.2)
@@ -1177,6 +1187,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         string[] normalizedObservations,
         Size imageSize,
         TimeSpan timestamp,
+        TimeSpan observationTimestamp,
         HashSet<int> excludedObservations)
     {
         List<MatchCandidate> result = [];
@@ -1197,6 +1208,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 normalizedObservations,
                 imageSize,
                 timestamp,
+                observationTimestamp,
                 child => child.RestoreGeometry(parent.LatestObservation),
                 _ => Math.Max(parent.LatestObservation.Width, parent.LatestObservation.Height),
                 excludedObservations);
@@ -1272,11 +1284,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
     private void ApplyMatches(
         IReadOnlyList<MatchCandidate> selected,
         TimeSpan timestamp,
+        TimeSpan observationTimestamp,
         HashSet<TextTrack> matchedTracks,
         HashSet<int> matchedObservations)
     {
-        Dictionary<string, int> currentMergeCandidates = [];
-        Dictionary<long, int> currentRestoreCandidates = [];
+        Dictionary<string, TimeSpan> currentMergeCandidates = [];
+        Dictionary<long, TimeSpan> currentRestoreCandidates = [];
         foreach (MatchCandidate candidate in selected)
         {
             foreach (int observationIndex in candidate.ObservationIndices)
@@ -1288,23 +1301,23 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             {
                 TextTrack parent = candidate.Tracks[0];
                 TextTrack[] children = candidate.Tracks.Skip(1).ToArray();
-                int restoreCount = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id) + 1;
-                currentRestoreCandidates[parent.Id] = restoreCount;
+                TimeSpan restoreSince = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id, timestamp);
+                currentRestoreCandidates[parent.Id] = restoreSince;
                 matchedTracks.Add(parent);
                 matchedTracks.UnionWith(children);
-                if (restoreCount >= this.profile.StructureConfirmationFrames)
+                if (timestamp - restoreSince >= this.profile.StructureConfirmationTime)
                 {
                     foreach (RestorationAssignment assignment in candidate.RestorationAssignments)
                     {
-                        assignment.Track.Reactivate(timestamp);
-                        assignment.Track.Observe(assignment.Observation, timestamp);
+                        assignment.Track.Reactivate(observationTimestamp);
+                        assignment.Track.Observe(assignment.Observation, timestamp, observationTimestamp);
                     }
                     this.tracks.Remove(parent);
                     this.logger.LogDebug("OCR track {TrackId} restored {ChildCount} dormant child tracks", parent.Id, children.Length);
                 }
                 else
                 {
-                    parent.Observe(candidate.Combined, timestamp);
+                    parent.Observe(candidate.Combined, timestamp, observationTimestamp);
                 }
                 continue;
             }
@@ -1312,7 +1325,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             if (candidate.Kind is MatchKind.OneToOne or MatchKind.Split)
             {
                 TextTrack track = candidate.Tracks[0];
-                track.Observe(candidate.Combined, timestamp);
+                track.Observe(candidate.Combined, timestamp, observationTimestamp);
                 matchedTracks.Add(track);
                 if (candidate.Kind == MatchKind.Split)
                 {
@@ -1322,19 +1335,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
 
             string key = string.Join(',', candidate.Tracks.Select(track => track.Id).Order());
-            int count = this.mergeCandidates.GetValueOrDefault(key) + 1;
-            currentMergeCandidates[key] = count;
+            TimeSpan mergeSince = this.mergeCandidates.GetValueOrDefault(key, timestamp);
+            currentMergeCandidates[key] = mergeSince;
             foreach (TextTrack track in candidate.Tracks)
             {
                 matchedTracks.Add(track);
             }
-            if (count >= this.profile.StructureConfirmationFrames)
+            if (timestamp - mergeSince >= this.profile.StructureConfirmationTime)
             {
-                TextTrack parent = this.CreateTrack(candidate.Combined, timestamp);
+                TextTrack parent = this.CreateTrack(candidate.Combined, observationTimestamp);
                 matchedTracks.Add(parent);
                 foreach (TextTrack child in candidate.Tracks)
                 {
-                    child.MarkDormant(parent, timestamp);
+                    child.MarkDormant(parent, timestamp, observationTimestamp);
                 }
                 this.logger.LogDebug("OCR tracks {TrackIds} converged into track {TrackId}", key, parent.Id);
             }
@@ -1342,7 +1355,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             {
                 foreach (TextTrack track in candidate.Tracks)
                 {
-                    track.MarkObservedWithoutChangingStructure(timestamp);
+                    track.MarkObservedWithoutChangingStructure(observationTimestamp);
                 }
                 this.logger.LogDebug("OCR tracks {TrackIds} retained during a temporary merge", key);
             }
@@ -1878,33 +1891,38 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
     }
 
     private sealed record TrackingProfile(
-        int GeometryConfirmationFrames,
-        int MicroGeometryConfirmationFrames,
-        int StructureConfirmationFrames,
-        int MinimumTextVotes,
-        double TextVoteThreshold,
-        int TextVoteHistorySize,
-        int MaxMissedFrames)
+        TimeSpan GeometryConfirmationTime,
+        TimeSpan MicroGeometryConfirmationTime,
+        TimeSpan StructureConfirmationTime,
+        TimeSpan TextConfirmationTime,
+        TimeSpan TextChangeTimeout,
+        TimeSpan MissingRetention)
     {
         public static TrackingProfile FromSettings(TargetSettings settings)
         {
-            (int geometry, int microGeometry) = settings.OcrGeometryStability switch
+            (int geometryMs, int microGeometryMs) = settings.OcrGeometryStability switch
             {
-                1 => (1, 1),
-                2 => (1, 2),
-                4 => (3, 6),
-                5 => (4, 8),
-                _ => (2, 4),
+                1 => (0, 0),
+                2 => (0, 300),
+                4 => (600, 1500),
+                5 => (900, 2100),
+                _ => (300, 900),
             };
-            (int structure, int votes, double threshold, int history) = settings.OcrRecognitionStability switch
+            (int structureMs, int textMs, int textTimeoutMs) = settings.OcrRecognitionStability switch
             {
-                1 => (1, 1, 1.0, 3),
-                2 => (1, 2, 1.25, 4),
-                4 => (3, 3, 2.0, 6),
-                5 => (4, 4, 2.5, 8),
-                _ => (2, 2, 1.5, 5),
+                1 => (0, 0, 0),
+                2 => (0, 300, 900),
+                4 => (600, 600, 1500),
+                5 => (900, 900, 2100),
+                _ => (300, 300, 1200),
             };
-            return new(geometry, microGeometry, structure, votes, threshold, history, settings.OcrMissingFrameRetention);
+            return new(
+                TimeSpan.FromMilliseconds(geometryMs),
+                TimeSpan.FromMilliseconds(microGeometryMs),
+                TimeSpan.FromMilliseconds(structureMs),
+                TimeSpan.FromMilliseconds(textMs),
+                TimeSpan.FromMilliseconds(textTimeoutMs),
+                TimeSpan.FromMilliseconds(300 * settings.OcrMissingFrameRetention));
         }
     }
 
@@ -1916,17 +1934,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         TrackingProfile profile)
     {
         private TextRect? normalGeometryCandidate;
-        private int normalGeometryCandidateCount;
+        private TimeSpan normalGeometryCandidateSince;
+        private TimeSpan noiseGeometrySince;
         private readonly List<TextRect> noiseGeometrySamples = [];
-        private readonly List<TextVote> textVotes = [];
         private TypewriterState? typewriter;
         private int typewriterCooldownFrames;
+        private string? textCandidate;
+        private TimeSpan textCandidateSince;
+        private TimeSpan textChangeSince;
         private string normalizedConfirmedText = NormalizeText(observation.SourceText);
         private DormantGeometry? dormantGeometry;
         private TextRect? outputGeometryOverride;
         private double velocityX;
         private double velocityY;
-        private int motionSamples;
+        private bool hasMotion;
 
         public long Id { get; } = id;
 
@@ -1951,7 +1972,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
         public string NormalizedConfirmedText => this.normalizedConfirmedText;
 
-        public int MissedFrames { get; private set; }
+        public TimeSpan? MissingSince { get; private set; }
 
         public TimeSpan LastObservationTime { get; private set; } = timestamp;
 
@@ -1963,15 +1984,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
         public TimeSpan DormantSince { get; private set; }
 
-        public void Observe(TextRect current, TimeSpan timestamp)
+        public void Observe(TextRect current, TimeSpan timestamp, TimeSpan observationTimestamp)
         {
-            this.MissedFrames = 0;
-            this.UpdateMotion(current, timestamp);
+            this.MissingSince = null;
+            bool isNewObservation = observationTimestamp != this.LastObservationTime;
+            if (isNewObservation)
+            {
+                this.UpdateMotion(current, observationTimestamp);
+                this.LastObservationTime = observationTimestamp;
+            }
             string previousText = this.LatestObservation.SourceText;
             this.LatestObservation = current;
-            this.LastObservationTime = timestamp;
-            this.UpdateText(previousText, current.SourceText, timestamp);
-            this.UpdateGeometry(current);
+            this.UpdateText(previousText, current.SourceText, timestamp, isNewObservation);
+            this.UpdateGeometry(current, timestamp);
             this.Stabilized = current with
             {
                 SourceText = this.ConfirmedText,
@@ -1990,19 +2015,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
         public void MarkObservedWithoutChangingStructure(TimeSpan timestamp)
         {
-            this.MissedFrames = 0;
+            this.MissingSince = null;
             this.LastObservationTime = timestamp;
         }
 
-        public void MarkMissed()
+        public void MarkMissed(TimeSpan timestamp)
         {
-            this.MissedFrames++;
+            this.MissingSince ??= timestamp;
         }
 
         public TextRect Predict(TimeSpan timestamp)
         {
             double seconds = (timestamp - this.LastObservationTime).TotalSeconds;
-            if (this.motionSamples == 0 || seconds <= 0 || seconds > 2)
+            if (!this.hasMotion || seconds <= 0 || seconds > 2)
             {
                 return this.LatestObservation;
             }
@@ -2020,14 +2045,14 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         public TextRect RestoreGeometry(TextRect parent)
             => this.dormantGeometry?.Restore(this.Stabilized, parent) ?? this.Stabilized;
 
-        public void MarkDormant(TextTrack parent, TimeSpan timestamp)
+        public void MarkDormant(TextTrack parent, TimeSpan timestamp, TimeSpan observationTimestamp)
         {
             this.dormantGeometry = DormantGeometry.Create(this.Stabilized, parent.Stabilized);
             this.IsDormant = true;
             this.DormantParentId = parent.Id;
             this.DormantSince = timestamp;
-            this.MissedFrames = 0;
-            this.ResetMotion(timestamp);
+            this.MissingSince = null;
+            this.ResetMotion(observationTimestamp);
         }
 
         public void Reactivate(TimeSpan timestamp)
@@ -2035,11 +2060,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.IsDormant = false;
             this.DormantParentId = null;
             this.dormantGeometry = null;
-            this.MissedFrames = 0;
+            this.MissingSince = null;
             this.ResetMotion(timestamp);
         }
 
-        private void UpdateText(string previous, string current, TimeSpan timestamp)
+        private void UpdateText(string previous, string current, TimeSpan timestamp, bool isNewObservation)
         {
             string normalizedPrevious = NormalizeText(previous);
             string normalizedCurrent = NormalizeText(current);
@@ -2049,11 +2074,11 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 if (normalizedCurrent == this.typewriter.Start.Normalized)
                 {
                     this.typewriter = null;
-                    this.textVotes.Clear();
+                    this.textCandidate = null;
                     return;
                 }
 
-                if (this.typewriter.Observe(new(normalizedCurrent, current), timestamp, out TextVote? final))
+                if (this.typewriter.Observe(new(normalizedCurrent, current), timestamp, isNewObservation, out TextVote? final))
                 {
                     TextVote confirmed = final
                         ?? throw new InvalidOperationException("文字送りの最終候補がありません。");
@@ -2061,20 +2086,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     this.normalizedConfirmedText = confirmed.Normalized;
                     this.typewriter = null;
                     this.typewriterCooldownFrames = TypewriterCooldownFrames;
-                    this.textVotes.Clear();
+                    this.textCandidate = null;
                 }
                 return;
             }
 
             bool canStartTypewriter = this.typewriterCooldownFrames == 0;
-            if (this.typewriterCooldownFrames > 0)
+            if (isNewObservation && this.typewriterCooldownFrames > 0)
             {
                 this.typewriterCooldownFrames--;
             }
 
             if (normalizedCurrent == this.normalizedConfirmedText)
             {
-                this.textVotes.Clear();
+                this.textCandidate = null;
                 return;
             }
 
@@ -2085,43 +2110,27 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     new(normalizedPrevious, previous),
                     new(normalizedCurrent, current),
                     timestamp);
-                this.textVotes.Clear();
+                this.textCandidate = null;
                 return;
             }
 
-            this.textVotes.Add(new(normalizedCurrent, current));
-            if (this.textVotes.Count > profile.TextVoteHistorySize)
+            if (this.textCandidate is null)
             {
-                this.textVotes.RemoveAt(0);
+                this.textChangeSince = timestamp;
+            }
+            if (this.textCandidate != normalizedCurrent)
+            {
+                this.textCandidate = normalizedCurrent;
+                this.textCandidateSince = timestamp;
             }
 
-            (string normalized, int count, double weight)? winner = this.textVotes
-                .Select((vote, index) => (vote, age: this.textVotes.Count - index - 1))
-                .GroupBy(item => item.vote.Normalized)
-                .Select(group => (
-                    normalized: group.Key,
-                    count: group.Count(),
-                    weight: group.Sum(item => Math.Pow(TextVoteDecay, item.age))))
-                .OrderByDescending(candidate => candidate.weight)
-                .ThenByDescending(candidate => candidate.count)
-                .Cast<(string normalized, int count, double weight)?>()
-                .FirstOrDefault();
-            if (winner is { } candidate
-                && candidate.count >= profile.MinimumTextVotes
-                && candidate.weight >= profile.TextVoteThreshold)
+            // 候補が変わり続ける場合も、古い文字列を保持し続けない。
+            if (timestamp - this.textCandidateSince >= profile.TextConfirmationTime
+                || timestamp - this.textChangeSince >= profile.TextChangeTimeout)
             {
-                this.ConfirmedText = this.textVotes.Last(vote => vote.Normalized == winner.Value.normalized).Original;
-                this.normalizedConfirmedText = winner.Value.normalized;
-                this.textVotes.Clear();
-                return;
-            }
-
-            if (this.textVotes.Count == profile.TextVoteHistorySize)
-            {
-                TextVote latest = this.textVotes[^1];
-                this.ConfirmedText = latest.Original;
-                this.normalizedConfirmedText = latest.Normalized;
-                this.textVotes.Clear();
+                this.ConfirmedText = current;
+                this.normalizedConfirmedText = normalizedCurrent;
+                this.textCandidate = null;
             }
         }
 
@@ -2154,21 +2163,21 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
             double instantX = movementX / seconds;
             double instantY = movementY / seconds;
-            double newWeight = this.motionSamples == 0 ? 1 : 0.8;
+            double newWeight = this.hasMotion ? 0.8 : 1;
             this.velocityX = (this.velocityX * (1 - newWeight)) + (instantX * newWeight);
             this.velocityY = (this.velocityY * (1 - newWeight)) + (instantY * newWeight);
-            this.motionSamples++;
+            this.hasMotion = true;
         }
 
         private void ResetMotion(TimeSpan timestamp)
         {
             this.velocityX = 0;
             this.velocityY = 0;
-            this.motionSamples = 0;
+            this.hasMotion = false;
             this.LastObservationTime = timestamp;
         }
 
-        private void UpdateGeometry(TextRect current)
+        private void UpdateGeometry(TextRect current, TimeSpan timestamp)
         {
             double movement = CenterDistance(this.Stabilized, current);
             if (movement > Math.Max(this.Stabilized.Width, this.Stabilized.Height) * 0.75)
@@ -2179,21 +2188,21 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
             if (IsGeometryNoise(this.Stabilized, current))
             {
-                if (profile.MicroGeometryConfirmationFrames == 1)
+                if (profile.MicroGeometryConfirmationTime == TimeSpan.Zero)
                 {
                     this.ApplyGeometry(current);
                     return;
                 }
                 this.normalGeometryCandidate = null;
-                this.normalGeometryCandidateCount = 0;
                 if (this.noiseGeometrySamples.Count == 0)
                 {
+                    this.noiseGeometrySince = timestamp;
                     this.noiseGeometrySamples.Add(this.Stabilized);
                 }
 
                 this.noiseGeometrySamples.Add(current);
                 // 現在の表示値を含めた中央値で微小な揺れを抑える。
-                if (this.noiseGeometrySamples.Count >= profile.MicroGeometryConfirmationFrames + 1)
+                if (timestamp - this.noiseGeometrySince >= profile.MicroGeometryConfirmationTime)
                 {
                     this.ApplyGeometry(RepresentativeGeometry(this.noiseGeometrySamples));
                 }
@@ -2205,15 +2214,14 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 && GeometryCandidateMatches(this.normalGeometryCandidate, current))
             {
                 this.normalGeometryCandidate = current;
-                this.normalGeometryCandidateCount++;
             }
             else
             {
                 this.normalGeometryCandidate = current;
-                this.normalGeometryCandidateCount = 1;
+                this.normalGeometryCandidateSince = timestamp;
             }
 
-            if (this.normalGeometryCandidateCount >= profile.GeometryConfirmationFrames)
+            if (timestamp - this.normalGeometryCandidateSince >= profile.GeometryConfirmationTime)
             {
                 this.ApplyGeometry(current);
             }
@@ -2285,7 +2293,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 Angle = current.Angle,
             };
             this.normalGeometryCandidate = null;
-            this.normalGeometryCandidateCount = 0;
             this.noiseGeometrySamples.Clear();
         }
 
@@ -2357,17 +2364,21 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
             public TextVote MostProgressed { get; private set; } = current;
 
-            public bool Observe(TextVote current, TimeSpan timestamp, out TextVote? final)
+            public bool Observe(TextVote current, TimeSpan timestamp, bool isNewObservation, out TextVote? final)
             {
-                this.AddHistory(current);
-                if (current.Normalized == this.last.Normalized)
+                // タイマーによる再評価では、認識履歴と連続観測回数を増やさない。
+                if (isNewObservation)
                 {
-                    this.consecutiveCount++;
-                }
-                else
-                {
-                    this.last = current;
-                    this.consecutiveCount = 1;
+                    this.AddHistory(current);
+                    if (current.Normalized == this.last.Normalized)
+                    {
+                        this.consecutiveCount++;
+                    }
+                    else
+                    {
+                        this.last = current;
+                        this.consecutiveCount = 1;
+                    }
                 }
 
                 // 誤認識を挟んでも、直近の候補から文字送りが続いていれば進行とみなす。

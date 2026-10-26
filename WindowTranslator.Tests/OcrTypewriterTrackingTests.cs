@@ -198,6 +198,72 @@ public sealed class OcrTypewriterTrackingTests
     }
 
     [Fact]
+    public void ReusingAnOcrObservationDoesNotConfirmTypewriterBeforeAnotherRecognition()
+    {
+        OcrTextTracker tracker = CreateTracker();
+        TextRect[] observation = [Rect("He")];
+
+        Update(tracker, 0, Rect("H"));
+        Update(tracker, 500, observation);
+        for (int milliseconds = 600; milliseconds <= 1000; milliseconds += 100)
+        {
+            TextRect waiting = Update(tracker, milliseconds, observation).Single();
+            Assert.True(waiting.IsBusy);
+            Assert.Equal("H", waiting.SourceText);
+        }
+
+        TextRect confirmed = Update(tracker, 1100, Rect("He")).Single();
+        Assert.False(confirmed.IsBusy);
+        Assert.Equal("He", confirmed.SourceText);
+    }
+
+    [Fact]
+    public void ReusingANoisyObservationDoesNotEvictEarlierProgression()
+    {
+        OcrTextTracker tracker = CreateTracker();
+        TextRect[] noisy = [Rect("Hell0")];
+        TextRect[] complete = [Rect("Hello!")];
+
+        Update(tracker, 0, Rect("H"));
+        Update(tracker, 500, Rect("He"));
+        Update(tracker, 1000, Rect("Hel"));
+        Update(tracker, 1500, noisy);
+        for (int milliseconds = 1600; milliseconds <= 2700; milliseconds += 100)
+        {
+            Assert.True(Update(tracker, milliseconds, noisy).Single().IsBusy);
+        }
+
+        Assert.True(Update(tracker, 2800, complete).Single().IsBusy);
+        Assert.True(Update(tracker, 3300, complete).Single().IsBusy);
+        TextRect confirmed = Update(tracker, 3400, Rect("Hello!")).Single();
+
+        Assert.False(confirmed.IsBusy);
+        Assert.Equal("Hello!", confirmed.SourceText);
+    }
+
+    [Fact]
+    public void ReusingAnOcrObservationDoesNotConsumePostCompletionCooldown()
+    {
+        OcrTextTracker tracker = CreateTracker();
+        TextRect[] complete = [Rect("Hello")];
+        TextRect[] noise = [Rect("Hello!")];
+
+        Update(tracker, 0, Rect("H"));
+        Update(tracker, 500, Rect("He"));
+        Update(tracker, 1000, Rect("Hello"));
+        Assert.False(Update(tracker, 1500, complete).Single().IsBusy);
+        Update(tracker, 1600, complete);
+        Update(tracker, 1700, complete);
+        TextRect pending = Update(tracker, 2000, noise).Single();
+        TextRect confirmed = Update(tracker, 2300, noise).Single();
+
+        Assert.False(pending.IsBusy);
+        Assert.Equal("Hello", pending.SourceText);
+        Assert.False(confirmed.IsBusy);
+        Assert.Equal("Hello!", confirmed.SourceText);
+    }
+
+    [Fact]
     public void ATypewriterTrackDoesNotBlockAnotherLogicalTrack()
     {
         OcrTextTracker tracker = CreateTracker();

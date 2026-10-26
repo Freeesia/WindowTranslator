@@ -521,7 +521,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>پایداری تشخیص</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>تغییرات موقت متن و تقسیم یا ادغام ناحیه‌ها را کاهش می‌دهد. 1: پاسخ سریع، 5: پایداری بیشتر (پیش‌فرض: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>حفظ نمایش هنگام ناپدید شدن موقت</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>تعداد دفعات متوالی عدم تشخیص که متن همچنان نمایش داده می‌شود. 0: حذف در اولین عدم تشخیص، حداکثر: 7، پیش‌فرض: 3. بر حسب تعداد دفعات است، نه ثانیه.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>مدت نمایش ناحیه پس از از دست رفتن تشخیص را تعیین می‌کند. 0: حذف در اولین عدم تشخیص، حداکثر: 7 (حدود 2.1 ثانیه)، پیش‌فرض: 3 (حدود 0.9 ثانیه). مستقل از فاصلهٔ زمانی ثبت تصویر است.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>همه</value>
   </data>
