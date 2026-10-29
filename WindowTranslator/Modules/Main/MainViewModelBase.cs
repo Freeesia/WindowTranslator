@@ -286,6 +286,7 @@ public abstract partial class MainViewModelBase : IDisposable
         texts = (await this.color.ConvertColorAsync(bitmap, texts)).ToArray();
         texts = texts.Select(t => t switch
         {
+            { IsBusy: true } => t with { TranslatedText = null },
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
             _ => t,
         }).ToArray();
@@ -315,6 +316,7 @@ public abstract partial class MainViewModelBase : IDisposable
         try
         {
             var requests = texts
+                .Where(t => !t.IsBusy)
                 .Where(t => t.TranslatedText is null)
                 .ToArray();
             if (requests.Length > 0)
@@ -323,7 +325,7 @@ public abstract partial class MainViewModelBase : IDisposable
                 var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
                 this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
                 var translatedIndex = 0;
-                texts = texts.Select(t => t.TranslatedText is null
+                texts = texts.Select(t => t.TranslatedText is null && !t.IsBusy
                     ? t with { TranslatedText = translated[translatedIndex++] }
                     : t).ToArray();
             }
@@ -363,7 +365,14 @@ public abstract partial class MainViewModelBase : IDisposable
     private void UpdateOcrTexts(IEnumerable<TextRect> texts)
     {
         this.logger.LogDebug("UI適用");
-        var hash = texts.Select(t => t with { Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background) }).ToHashSet();
+        // 翻訳待ちは表示用の複製にだけ付ける。
+        var hash = texts.Select(t => t with
+        {
+            Background = Color.FromArgb((int)(255 * this.overlayOpacity), t.Background),
+            BusyReasons = t.TranslatedText is null && !t.IsBusy
+                ? TextRegionBusyReason.Translation
+                : t.BusyReasons,
+        }).ToHashSet();
         foreach (var text in this.OcrTexts.Where(t => !hash.Contains(t)).ToArray())
         {
             this.OcrTexts.Remove(text);

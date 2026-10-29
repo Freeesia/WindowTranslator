@@ -50,8 +50,8 @@
                                     CornerRadius="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource s2crConv}}"
                                     Opacity="{Binding TranslatedText, Converter={StaticResource n2dConv}}">
                                     <Border.Resources>
-                                        <data:NullToDataTemplateConverter x:Key="b2dtConv">
-                                            <data:NullToDataTemplateConverter.NotNullContent>
+                                        <data:BoolToDataTemplateConverter x:Key="b2dtConv">
+                                            <data:BoolToDataTemplateConverter.FalseContent>
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <TextBlock
                                                         Width="{Binding Converter={x:Static data:TextOverlayWidthConverter.Default}}"
@@ -65,8 +65,8 @@
                                                         </i:Interaction.Behaviors>
                                                     </TextBlock>
                                                 </DataTemplate>
-                                            </data:NullToDataTemplateConverter.NotNullContent>
-                                            <data:NullToDataTemplateConverter.NullContent>
+                                            </data:BoolToDataTemplateConverter.FalseContent>
+                                            <data:BoolToDataTemplateConverter.TrueContent>
                                                 <DataTemplate DataType="{x:Type root:TextRect}">
                                                     <Viewbox
                                                         Width="{Binding Width}"
@@ -97,15 +97,15 @@
                                                         </Path>
                                                     </Viewbox>
                                                 </DataTemplate>
-                                            </data:NullToDataTemplateConverter.NullContent>
-                                        </data:NullToDataTemplateConverter>
+                                            </data:BoolToDataTemplateConverter.TrueContent>
+                                        </data:BoolToDataTemplateConverter>
                                     </Border.Resources>
                                     <Border.RenderTransform>
                                         <TransformGroup>
                                             <RotateTransform Angle="{Binding Angle}" />
                                         </TransformGroup>
                                     </Border.RenderTransform>
-                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding TranslatedText, Converter={StaticResource b2dtConv}}" />
+                                    <ContentControl Content="{Binding}" ContentTemplate="{Binding IsBusy, Converter={StaticResource b2dtConv}}" />
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
