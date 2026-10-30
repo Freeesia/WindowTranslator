@@ -10,12 +10,6 @@
 - OCR領域の結合、傾き、拡大率、明るさ、コントラストを考慮した後処理
 - 認識結果から翻訳先言語のテキストを除外
 
-## 段落の結合設定
-
-傾いた文章も、行の位置と間隔に応じて段落ごとにまとめます。
-
-共通の認識設定にある「段落内の行送り許容倍率」（既定値1.45）を小さくすると段落を分けやすく、大きくすると複数行をまとめやすくなります。文字の大きさの違いで行が分かれる場合は、「フォントサイズのしきい値」を上げて調整できます。
-
 ## 必要条件
 
 - OneOCRを含む対応バージョンのWindows Snipping Tool
@@ -36,12 +30,6 @@ An OCR plugin for [WindowTranslator](https://github.com/Freeesia/WindowTranslato
 - Fast, high-accuracy text recognition with a local Windows OCR engine
 - Post-processing that accounts for merged OCR regions, rotation, scale, brightness, and contrast
 - Excludes text written in the translation target language from recognition results
-
-## Paragraph merging settings
-
-Lines in slanted text are grouped into paragraphs according to their positions and spacing.
-
-In the common recognition settings, lower "Paragraph line spacing tolerance" (default: 1.45) to separate paragraphs more readily, or raise it to combine more lines. If differences in text size keep lines separate, increase the font size threshold.
 
 ## Requirements
 
