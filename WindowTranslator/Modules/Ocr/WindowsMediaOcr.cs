@@ -1,12 +1,10 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
-using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Extensions;
 using static WindowTranslator.LanguageUtility;
@@ -22,12 +20,7 @@ public sealed partial class WindowsMediaOcr(
     ILogger<WindowsMediaOcr> logger)
     : IOcrModule, IDisposable
 {
-    private readonly double xPosThrethold = ocrParam.Value.XPosThrethold;
-    private readonly double yPosThrethold = ocrParam.Value.YPosThrethold;
-    private readonly double leadingThrethold = ocrParam.Value.LeadingThrethold;
-    private readonly double spacingThreshold = ocrParam.Value.SpacingThreshold;
-    private readonly double fontSizeThrethold = ocrParam.Value.FontSizeThrethold;
-    private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
+    private readonly BasicOcrParam ocrOptions = ocrParam.Value;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
     private readonly int brightness = ocrParam.Value.Brightness;
@@ -93,9 +86,10 @@ public sealed partial class WindowsMediaOcr(
         //     * 全部数字なら対象外
 
 
+        // Windows OCRの矩形は角度補正済み座標なので、結合後に画像中心で回転する。
         var lineResults = rawResults
             .Lines
-            .Select(line => CalcRect(line, angle, centerX, centerY))
+            .Select(line => CalcRect(line, 0, centerX, centerY))
             // 大きすぎる文字は映像の認識ミスとみなす
             .Where(w => w.Height < sourceSize.Height * 0.1)
             .ToArray();
@@ -105,44 +99,8 @@ public sealed partial class WindowsMediaOcr(
             return lineResults;
         }
 
-        var xt = xPosThrethold * sourceSize.Width;
-        var yt = yPosThrethold * sourceSize.Height;
-
-        var results = new List<TempMergeRect>(lineResults.Length);
-        {
-            var queue = new RemovableQueue<TextRect>(lineResults.OrderBy(r => r.Y));
-            while (queue.TryDequeue(out var target))
-            {
-                var temp = new TempMergeRect(this.source, target);
-                var merged = false;
-                do
-                {
-                    merged = false;
-                    foreach (var lineResult in queue.ToArray())
-                    {
-                        if (CanMerge(temp, lineResult, xt, yt))
-                        {
-                            temp.Merge(lineResult);
-                            queue.Remove(lineResult);
-                            merged = true;
-                        }
-                    }
-                    foreach (var rect in results.OrderBy(r => r.Y).ToArray())
-                    {
-                        var r = rect.ToRect();
-                        if (CanMerge(temp, r, xt, yt))
-                        {
-                            temp.Merge(r);
-                            results.Remove(rect);
-                            merged = true;
-                        }
-                    }
-                } while (merged);
-                results.Add(temp);
-            }
-        }
-
-        return results.Select(r => ToTextRect(r, angle))
+        return OcrUtility.MergeTextRects(lineResults, sourceSize, this.ocrOptions, this.source)
+            .Select(r => ToTextRect(r, angle, centerX, centerY))
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
             .Where(w => IsSpecialLang(this.source) || w.SourceText.Length > 2)
@@ -151,150 +109,9 @@ public sealed partial class WindowsMediaOcr(
             .ToArray();
     }
 
-    private bool CanMerge(TempMergeRect temp, TextRect rect, double xThreshold, double yThreshold)
+    private static TextRect ToTextRect(TextRect combinedRect, double angle, double centerX, double centerY)
     {
-        // 重なっている場合はマージできる
-        if (temp.IntersectsWith(rect))
-        {
-            return true;
-        }
-
-        // フォントサイズが大きく異なる場合はマージできない
-        var fDiff = Math.Abs(temp.FontSize - rect.FontSize) / Math.Min(temp.FontSize, rect.FontSize);
-        if (fDiff > fontSizeThrethold)
-        {
-            return false;
-        }
-
-        var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
-        var (text, x, y, w, _, _, _, _, _) = rect;
-
-        // y座標が近く、x間隔が近い場合にマージできる
-        var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
-        var yDiff = Math.Abs(temp.Y - y); // Y座標の差
-        var gThre = fontSize * spacingThreshold;
-        if (xGap < gThre && yDiff < yThreshold)
-        {
-            return true;
-        }
-
-        // マージ元先の文字列が両方2単語未満の場合は縦にマージできない
-        if (this.isAvoidMergeList && (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2 && WordCount(text) <= 2) : (temp.Text.Length <= 8 && text.Length <= 8)))
-        {
-            return false;
-        }
-
-        // x座標が近く、y間隔が近い場合にマージできる
-        var xDiff = Math.Abs(temp.X - x); // X座標の差
-        var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
-        var lThre = fontSize * leadingThrethold; // 行間の閾値
-        if (xDiff < xThreshold && yGap < lThre)
-        {
-            return true;
-        }
-
-        // x座標の中心が近く、y間隔が近い場合にマージできる
-        var xCenter2 = x + (w * .5);
-        var xCenterDiff = Math.Abs(temp.CenterX - xCenter2); // X座標の中心の差
-        if (xCenterDiff < xThreshold && yGap < lThre)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private class TempMergeRect
-    {
-        private readonly string lang;
-        private readonly ResetableLazy<string> text;
-        private readonly List<TextRect> rects;
-
-        public double X { get; private set; }
-        public double Y { get; private set; }
-        public double Width { get; private set; }
-        public double Height { get; private set; }
-        public double FontSize { get; private set; }
-
-        public double Left => X;
-        public double Top => Y;
-        public double Right => X + Width;
-        public double Bottom => Y + Height;
-        public double CenterX => X + (Width * .5);
-        public IReadOnlyList<TextRect> Rects => this.rects;
-        public string Text => text.Value;
-
-        public TempMergeRect(string lang, TextRect rect)
-        {
-            this.lang = lang;
-            this.text = new(CreateText, LazyThreadSafetyMode.None);
-            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
-            this.rects = [rect];
-        }
-
-        public void Merge(TextRect rect)
-        {
-            var (_, x, y, width, height, _, _, _, _) = rect;
-            this.rects.Add(rect);
-            var x1 = Math.Min(X, x);
-            var y1 = Math.Min(Y, y);
-            var x2 = Math.Max(X + Width, x + width);
-            var y2 = Math.Max(Y + Height, y + height);
-            (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
-            FontSize = Rects.Average(r => r.FontSize);
-            this.text.Reset();
-        }
-
-        public bool IntersectsWith(TextRect rect)
-            => (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
-
-        private string CreateText()
-        {
-            var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
-            foreach (var rect in this.Rects.OrderBy(r => (int)((r.Y - this.Y) / this.FontSize)).ThenBy(r => r.X))
-            {
-                builder.Append(rect.SourceText);
-                if (IsSpaceLang(this.lang))
-                {
-                    builder.Append(' ');
-                }
-            }
-            if (IsSpaceLang(this.lang))
-            {
-                builder.Length--;
-            }
-            return builder.ToString();
-        }
-
-        public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out IReadOnlyList<TextRect> rects)
-        {
-            x = X;
-            y = Y;
-            width = Width;
-            height = Height;
-            fontSize = FontSize;
-            rects = Rects;
-        }
-
-        public TextRect ToRect()
-        {
-            // 元の画像座標に変換
-            var text = this.Text;
-            // 高さがフォントサイズの2倍以上の場合は複数行とみなす
-            var lines = Height / FontSize >= 2;
-            return new(text, X, Y, Width, Height, FontSize, lines);
-        }
-    }
-
-    private static TextRect ToTextRect(TempMergeRect combinedRect, double angle)
-    {
-        var (x, y, width, height, fontSize, _) = combinedRect;
-        var text = combinedRect.Text;
-        // 高さがフォントサイズの2倍以上の場合は複数行とみなす
-        // または、
-        // スペース言語の場合は単語数が2以上、それ以外の場合は文字数が8文字以上の場合は複数行とみなす(やっぱり微妙…)
-        var lines = height / fontSize >= 2;
-        //|| (IsSpaceLang(this.source) ? (WordCount(text) > 2) : (text.Length > 8));
-
+        var (_, x, y, width, height, fontSize, _, _, _) = combinedRect;
         // 若干太らせて完全に文字を覆う
         const double fat = .2;
         width += fontSize * fat;
@@ -302,7 +119,8 @@ public sealed partial class WindowsMediaOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle };
+        (x, y) = RotatePoint(x, y, angle, centerX, centerY);
+        return combinedRect with { X = x, Y = y, Width = width, Height = height, Angle = angle };
     }
 
     private TextRect CalcRect(OcrLine line, double angle, double centerX, double centerY)
@@ -354,7 +172,7 @@ file record WordRect(string Text, double X, double Y, double Width, double Heigh
 
 file static class Utility
 {
-    private static (double x, double y) RotatePoint(double x, double y, double angleInDegrees, double centerX, double centerY)
+    public static (double x, double y) RotatePoint(double x, double y, double angleInDegrees, double centerX, double centerY)
     {
         double angleInRadians = angleInDegrees * Math.PI / 180.0;
         double cos = Math.Cos(angleInRadians);

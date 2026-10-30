@@ -130,4 +130,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>การรู้จำข้อความ</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>การปรับภาพ</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>อัตรายอมรับระยะห่างบรรทัดภายในย่อหน้า</value>
+  </data>
 </root>

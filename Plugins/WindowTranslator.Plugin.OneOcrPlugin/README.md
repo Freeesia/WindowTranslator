@@ -10,6 +10,14 @@
 - OCR領域の結合、傾き、拡大率、明るさ、コントラストを考慮した後処理
 - 認識結果から翻訳先言語のテキストを除外
 
+## 段落の結合設定
+
+小さな傾きも保持し、傾きを補正した座標で横方向の断片結合と段落判定を行います。共通の認識設定にある「段落内の行送り許容倍率」（既定値1.45）を小さくすると段落を分けやすく、大きくすると行を結合しやすくなります。同じ列の行送りを推定できない少数行では、既存の「行間のしきい値」を使います。
+
+アイコン入りの行や大小の見出しが分断される場合は、既存の「フォントサイズのしきい値」を上げて調整できます。PR #755のアイコン入り画像で使われた設定値に合わせる場合は、行送り許容倍率を1.90、フォントサイズのしきい値を120%にします。通常の既定値は1.45／25%です。OCRエンジン自体の文字誤認識は、この結合設定では補正されません。
+
+結合処理は、Windows OCR・Tesseract・実験用のGemini/ChatGPT OCRと共通の `OcrUtility.MergeTextRects` を利用します。入力は同じOCR対象範囲の単語または行の `TextRect`、同じ倍率の全体画像サイズ、`BasicOcrParam`、原文言語です。ほかのOCRプラグインでも、認識結果をこの形式に変換して利用できます。
+
 ## 必要条件
 
 - OneOCRを含む対応バージョンのWindows Snipping Tool
@@ -30,6 +38,14 @@ An OCR plugin for [WindowTranslator](https://github.com/Freeesia/WindowTranslato
 - Fast, high-accuracy text recognition with a local Windows OCR engine
 - Post-processing that accounts for merged OCR regions, rotation, scale, brightness, and contrast
 - Excludes text written in the translation target language from recognition results
+
+## Paragraph merging settings
+
+Small rotations are preserved. Fragments and paragraphs are merged in coordinates corrected for the text angle. Lower the common recognition setting "Paragraph line spacing tolerance" (default: 1.45) to split paragraphs more readily, or raise it to join more lines. When too few lines are available to estimate normal line spacing, the existing leading threshold is used.
+
+For lines containing icons or headings of different sizes, increase the existing font size threshold. To use the settings reported for the icon sample in PR #755, set the line spacing tolerance to 1.90 and the font size threshold to 120%. The defaults are 1.45 and 25%. These settings adjust merging, rather than correcting characters misrecognized by the OCR engine.
+
+The plugin calls `OcrUtility.MergeTextRects`, shared with Windows OCR, Tesseract, and the experimental Gemini/ChatGPT OCR modules. It accepts word or line `TextRect` instances from one OCR region, the full image size at the same scale, `BasicOcrParam`, and the source language. Additional OCR plugins can convert their results to this format to use the same merging step.
 
 ## Requirements
 

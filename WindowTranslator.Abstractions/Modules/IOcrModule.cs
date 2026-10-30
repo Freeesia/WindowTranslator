@@ -97,6 +97,15 @@ public class BasicOcrParam : IPluginParam
     public double LeadingThrethold { get; set; } = .80;
 
     /// <summary>
+    /// 推定した通常の行送りに対する段落内の許容倍率
+    /// </summary>
+    [Category("SettingsRecognition|MergeThrethold")]
+    [SortIndex(56)]
+    [Slidable(1.05, 2.5, .05, .1, true, .05)]
+    [FormatString("F2")]
+    public double LineSpacingTolerance { get; set; } = 1.45;
+
+    /// <summary>
     /// 文字間のしきい値
     /// </summary>
     [Category("SettingsRecognition|MergeThrethold")]
@@ -110,7 +119,7 @@ public class BasicOcrParam : IPluginParam
     /// </summary>
     [Category("SettingsRecognition|MergeThrethold")]
     [SortIndex(54)]
-    [Slidable(0, 1, .01, .1, true, .01)]
+    [Slidable(0, 2, .01, .1, true, .01)]
     [FormatString("P2")]
     public double FontSizeThrethold { get; set; } = .25;
 

@@ -18,9 +18,13 @@ public sealed class GoogleAIOcr : IOcrModule
 {
     private readonly ILogger<GoogleAIOcr> logger;
     private readonly GenerativeModel client;
+    private readonly BasicOcrParam ocrOptions;
+    private readonly string source;
 
-    public GoogleAIOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, ILogger<GoogleAIOcr> logger)
+    public GoogleAIOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<GoogleAIOptions> googleAiOptions, IOptionsSnapshot<BasicOcrParam> ocrParam, ILogger<GoogleAIOcr> logger)
     {
+        this.ocrOptions = ocrParam.Value;
+        this.source = langOptions.Value.Source;
         var options = googleAiOptions.Value;
         var system = $$"""
         あなたは{{CultureInfo.GetCultureInfo(langOptions.Value.Source).DisplayName}}の専門家です。
@@ -53,9 +57,9 @@ public sealed class GoogleAIOcr : IOcrModule
     }
 
     public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
-        => OcrUtility.RecognizeRegionsAsync(input, (bitmap, _) => RecognizeRegionAsync(bitmap));
+        => OcrUtility.RecognizeRegionsAsync(input, RecognizeRegionAsync);
 
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, System.Drawing.Size sourceSize)
     {
         var base64 = await bitmap.EncodeToJpegBase64().ConfigureAwait(false);
         var req = new GenerateContentRequest();
@@ -64,7 +68,7 @@ public sealed class GoogleAIOcr : IOcrModule
         // 画像のピクセルサイズ
         var imageWidth = bitmap.PixelWidth;
         var imageHeight = bitmap.PixelHeight;
-        return res
+        var textRects = res
             .Where(rect => rect.Box2d.Length == 4 && rect.Box2d.All(v => v >= 0 && v <= 1000))
             .Select(rect =>
             {
@@ -77,6 +81,7 @@ public sealed class GoogleAIOcr : IOcrModule
                 return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
             })
             .ToArray();
+        return OcrUtility.MergeTextRects(textRects, sourceSize, this.ocrOptions, this.source);
     }
 
     private record Rect(int[] Box2d, string Text);
