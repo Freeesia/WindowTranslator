@@ -5,9 +5,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
-using System.Text;
 using Windows.Graphics.Imaging;
-using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using WindowTranslator.Plugin.OneOcrPlugin.Properties;
@@ -30,12 +28,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
     private readonly long pipeline;
     private readonly long opt;
     private readonly long context;
-    private readonly double xPosThrethold;
-    private readonly double yPosThrethold;
-    private readonly double leadingThrethold;
-    private readonly double spacingThreshold;
-    private readonly double fontSizeThrethold;
-    private readonly bool isAvoidMergeList;
+    private readonly BasicOcrParam ocrOptions;
     private readonly double scale = 1.0; // スケールのデフォルト値
     private readonly int brightness; // 明るさ（-127 - 128）
     private readonly int contrast; // コントラスト（-99 - 100）
@@ -72,12 +65,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
             this.targets.UnionWith(["ja", "zh"]);
         }
         // 閾値パラメータの設定
-        this.xPosThrethold = ocrParam.Value.XPosThrethold;
-        this.yPosThrethold = ocrParam.Value.YPosThrethold;
-        this.leadingThrethold = ocrParam.Value.LeadingThrethold;
-        this.spacingThreshold = ocrParam.Value.SpacingThreshold;
-        this.fontSizeThrethold = ocrParam.Value.FontSizeThrethold;
-        this.isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
+        this.ocrOptions = ocrParam.Value;
         this.scale = ocrParam.Value.Scale;
         this.brightness = ocrParam.Value.Brightness;
         this.contrast = ocrParam.Value.Contrast;
@@ -150,7 +138,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
         var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
-        textRects = ProcessTextRects(textRects, sourceSize.Width, sourceSize.Height);
+        textRects = OcrUtility.MergeTextRects(textRects, sourceSize, this.ocrOptions, this.source);
 
         var wFat = sourceSize.Width * 0.004;
 
@@ -251,231 +239,6 @@ public sealed class OneOcr : IOcrModule, IDisposable
 
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
         return textRects;
-    }
-
-    /// <summary>
-    /// 認識したテキスト矩形の補正と結合を行う
-    /// </summary>
-    /// <param name="textRects">認識したテキスト矩形のリスト</param>
-    /// <param name="imageWidth">画像の幅</param>
-    /// <param name="imageHeight">画像の高さ</param>
-    /// <returns>補正・結合後のテキスト矩形のリスト</returns>
-    private IEnumerable<TextRect> ProcessTextRects(IEnumerable<TextRect> textRects, int imageWidth, int imageHeight)
-    {
-        var sw = Stopwatch.StartNew();
-
-        // 空のリストや無効なテキストの場合は処理しない
-        var rects = textRects.Where(r => !string.IsNullOrEmpty(r.SourceText)).ToArray();
-        if (rects.Length == 0)
-        {
-            return [];
-        }
-
-        // 閾値の計算
-        var xt = xPosThrethold * imageWidth;
-        var yt = yPosThrethold * imageHeight;
-
-        // 結果格納用リスト
-        var results = new List<TextRectMerger>(rects.Length);
-
-        // Y座標でソートしたRemovableQueueを作成（上から下へ処理するため）
-        var queue = new RemovableQueue<TextRect>(rects.OrderBy(r => r.Y));
-
-        while (queue.TryDequeue(out var target))
-        {
-            // マージ用の一時オブジェクトを作成
-            var temp = new TextRectMerger(target);
-            var merged = false;
-
-            // マージできる限りマージを続ける
-            do
-            {
-                merged = false;
-                foreach (var rect in queue.ToList())
-                {
-                    if (CanMerge(temp, rect, xt, yt))
-                    {
-                        temp.Merge(rect);
-                        queue.Remove(rect);
-                        merged = true;
-                    }
-                }
-            } while (merged);
-
-            // 結果に追加
-            results.Add(temp);
-        }
-
-        this.logger.LogDebug($"ProcessTextRects: {sw.Elapsed}");
-
-        return results.Select(ToTextRect);
-    }
-
-    /// <summary>
-    /// 矩形同士が結合可能かどうかを判断する
-    /// </summary>
-    private bool CanMerge(TextRectMerger temp, TextRect rect, double xThreshold, double yThreshold)
-    {
-        // 角度の差が閾値以上の場合はマージしない
-        var angleDiff = Math.Abs(temp.Rects.Average(r => r.Angle) - rect.Angle);
-        if (angleDiff >= Utility.IgnoreAngleThreshold)
-        {
-            return false;
-        }
-
-        // 重なっている場合はマージできる
-        if (temp.IntersectsWith(rect))
-        {
-            return true;
-        }
-
-        // フォントサイズが大きく異なる場合はマージできない
-        var fDiff = Math.Abs(temp.FontSize - rect.FontSize) / Math.Min(temp.FontSize, rect.FontSize);
-        if (fDiff > fontSizeThrethold)
-        {
-            return false;
-        }
-
-        var fontSize = (temp.FontSize + rect.FontSize) / 2;
-        var (text, x, y, w, _, _, _, _, _) = rect;
-
-        // y座標が近く、x間隔が近い場合にマージできる（横方向の結合）
-        var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
-        var yDiff = Math.Abs(temp.Y - y); // Y座標の差
-        var gThre = fontSize * spacingThreshold;
-        if (xGap < gThre && yDiff < yThreshold)
-        {
-            return true;
-        }
-
-        // マージ元先の文字列が両方単語数が少ない場合は縦にマージできない
-        // 言語によって判定方法を変える（スペース区切りの言語と非スペース区切りの言語で異なる）
-        if (this.isAvoidMergeList && (IsSpaceLang(this.source) ?
-            (WordCount(temp.Text) <= 2 && WordCount(text) <= 2) :
-            (temp.Text.Length <= 8 && text.Length <= 8)))
-        {
-            return false;
-        }
-
-        // x座標が近く、y間隔が近い場合にマージできる（縦方向の結合）
-        // ただし、rectのwidthがtempのwidthよりも2倍以上大きい場合は除外
-        var xDiff = Math.Abs(temp.X - x); // X座標の差
-        var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
-        var lThre = fontSize * leadingThrethold; // 行間の閾値
-        if (xDiff < xThreshold && yGap < lThre && w < temp.Width * 2)
-        {
-            return true;
-        }
-
-        // x座標の中心が近く、y間隔が近い場合にマージできる（縦方向の中央揃え結合）
-        var xCenter2 = x + (w * .5);
-        var xCenterDiff = Math.Abs(temp.CenterX - xCenter2); // X座標の中心の差
-        if (xCenterDiff < xThreshold && yGap < lThre)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// 結合した矩形からTextRectを作成する
-    /// </summary>
-    private TextRect ToTextRect(TextRectMerger mergedRect)
-    {
-        var (x, y, width, height, fontSize, text) = mergedRect;
-
-        // 高さがフォントサイズの2倍以上の場合は複数行とみなす
-        var lines = height / fontSize >= 2;
-
-        // 結合された矩形の平均角度を計算
-        var angle = mergedRect.Rects.Average(r => r.Angle);
-
-        return new TextRect(text, x, y, width, height, fontSize, lines) { Angle = angle };
-    }
-
-    /// <summary>
-    /// テキスト矩形の結合を行うためのヘルパークラス
-    /// </summary>
-    private class TextRectMerger
-    {
-        private readonly List<TextRect> rects;
-
-        public double X { get; private set; }
-        public double Y { get; private set; }
-        public double Width { get; private set; }
-        public double Height { get; private set; }
-        public double FontSize { get; private set; }
-
-        public double Left => X;
-        public double Top => Y;
-        public double Right => X + Width;
-        public double Bottom => Y + Height;
-        public double CenterX => X + (Width * 0.5);
-        public IReadOnlyList<TextRect> Rects => this.rects;
-
-        public string Text
-        {
-            get
-            {
-                var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
-
-                // Y座標でソートしてから、同じY座標内ではX座標でソート
-                foreach (var rect in this.Rects
-                    .OrderBy(r => (int)((r.Y - this.Y) / this.FontSize))
-                    .ThenBy(r => r.X))
-                {
-                    builder.Append(rect.SourceText);
-                    builder.Append(' ');
-                }
-
-                // 末尾の余分なスペースを削除
-                if (builder.Length > 0)
-                {
-                    builder.Length--;
-                }
-
-                return builder.ToString();
-            }
-        }
-
-        public TextRectMerger(TextRect rect)
-        {
-            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
-            this.rects = [rect];
-        }
-
-        public void Merge(TextRect rect)
-        {
-            var (_, x, y, width, height, _, _, _, _) = rect;
-            this.rects.Add(rect);
-
-            // 新しい境界を計算
-            var x1 = Math.Min(X, x);
-            var y1 = Math.Min(Y, y);
-            var x2 = Math.Max(X + Width, x + width);
-            var y2 = Math.Max(Y + Height, y + height);
-
-            // 境界を更新
-            (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
-
-            // フォントサイズは平均を取る
-            FontSize = Rects.Average(r => r.FontSize);
-        }
-
-        public bool IntersectsWith(TextRect rect)
-            => (rect.X < X + Width) && (X < rect.X + rect.Width) &&
-               (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
-
-        public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out string text)
-        {
-            x = X;
-            y = Y;
-            width = Width;
-            height = Height;
-            fontSize = FontSize;
-            text = Text;
-        }
     }
 }
 

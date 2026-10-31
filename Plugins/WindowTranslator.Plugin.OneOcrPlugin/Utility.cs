@@ -6,7 +6,6 @@ namespace WindowTranslator.Plugin.OneOcrPlugin;
 
 static class Utility
 {
-    public const double IgnoreAngleThreshold = 3.0; // 度
     private const string OneOcrDll = "oneocr.dll";
     public const string OneOcrModel = "oneocr.onemodel";
     private const string OnnxRuntimeDll = "onnxruntime.dll";
@@ -206,22 +205,6 @@ static class Utility
         }
 
         var angleInDegrees = edgeAngle * 180.0 / Math.PI;
-
-        // 角度が閾値未満なら角度を無視する
-        if (Math.Abs(angleInDegrees) < IgnoreAngleThreshold)
-        {
-            // 単純に外接矩形を計算
-            var simpleMinX = points.Min(p => p.x);
-            var simpleMaxX = points.Max(p => p.x);
-            var simpleMinY = points.Min(p => p.y);
-            var simpleMaxY = points.Max(p => p.y);
-
-            var simpleWidth = simpleMaxX - simpleMinX;
-            var simpleHeight = simpleMaxY - simpleMinY;
-
-            // 角度を0度として返す
-            return (simpleMinX, simpleMinY, simpleWidth, simpleHeight, 0.0);
-        }
 
         // この角度で全ての点を回転
         var rotatedPoints = points.Select(p => RotatePoint(p, -edgeAngle, 0, 0)).ToArray();

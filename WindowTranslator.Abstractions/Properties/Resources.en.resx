@@ -176,4 +176,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Text recognition</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>Image adjustments</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>Paragraph line spacing tolerance</value>
+  </data>
 </root>

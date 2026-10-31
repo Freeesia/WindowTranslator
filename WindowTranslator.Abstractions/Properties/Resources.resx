@@ -188,4 +188,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>文字認識</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>画像調整</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>段落内の行送り許容倍率</value>
+  </data>
 </root>

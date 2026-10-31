@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TesseractOCR;
@@ -11,7 +10,6 @@ using TesseractOCR.Layout;
 using TesseractOCR.Pix;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
-using WindowTranslator.Collections;
 using WindowTranslator.ComponentModel;
 using WindowTranslator.Modules;
 using static WindowTranslator.LanguageUtility;
@@ -32,12 +30,7 @@ public sealed class TesseractOcr(
     private readonly CancellationTokenSource cts = new();
 
     // マージと除外処理のためのパラメータ
-    private readonly double xPosThreshold = ocrParam.Value.XPosThrethold;
-    private readonly double yPosThreshold = ocrParam.Value.YPosThrethold;
-    private readonly double leadingThreshold = ocrParam.Value.LeadingThrethold;
-    private readonly double spacingThreshold = ocrParam.Value.SpacingThreshold;
-    private readonly double fontSizeThreshold = ocrParam.Value.FontSizeThrethold;
-    private readonly bool isAvoidMergeList = ocrParam.Value.IsAvoidMergeList;
+    private readonly BasicOcrParam ocrOptions = ocrParam.Value;
     private readonly string source = langOptions.Value.Source;
     private readonly double scale = ocrParam.Value.Scale;
     private readonly int brightness = ocrParam.Value.Brightness;
@@ -71,47 +64,7 @@ public sealed class TesseractOcr(
             return textRects;
         }
 
-        // マージ処理
-        // 認識結果はスケール後画像の座標系なので、マージ閾値も同じ座標系に揃える
-        var xt = xPosThreshold * sourceSize.Width;
-        var yt = yPosThreshold * sourceSize.Height;
-
-        var results = new List<TempMergeRect>(textRects.Length);
-        var queue = new RemovableQueue<TextRect>(textRects.OrderBy(r => r.Y));
-
-        while (queue.TryDequeue(out var target))
-        {
-            this.cts.Token.ThrowIfCancellationRequested();
-
-            var temp = new TempMergeRect(this.source, target);
-            var merged = false;
-            do
-            {
-                merged = false;
-                foreach (var wordResult in queue.ToArray())
-                {
-                    if (CanMerge(temp, wordResult, xt, yt))
-                    {
-                        temp.Merge(wordResult);
-                        queue.Remove(wordResult);
-                        merged = true;
-                    }
-                }
-                foreach (var rect in results.OrderBy(r => r.Y).ToArray())
-                {
-                    var r = rect.ToRect();
-                    if (CanMerge(temp, r, xt, yt))
-                    {
-                        temp.Merge(r);
-                        results.Remove(rect);
-                        merged = true;
-                    }
-                }
-            } while (merged);
-            results.Add(temp);
-        }
-
-        return results
+        return OcrUtility.MergeTextRects(textRects, sourceSize, this.ocrOptions, this.source)
             .Select(ToTextRect)
             // マージ後に少なすぎる文字も認識ミス扱い
             // 特殊なグリフの言語は対象外(日本語、中国語、韓国語、ロシア語)
@@ -139,164 +92,27 @@ public sealed class TesseractOcr(
                 .Layout
                 .SelectMany(l => l.Paragraphs)
                 .SelectMany(p => p.TextLines)
-                .SelectMany(t => t.Words)
-                .Select(CalcRect)
+                .Select(line =>
+                {
+                    // エンジンが認識した同一行の情報を保持して段落結合へ渡す。
+                    var words = line.Words.Select(CalcRect).Where(r => !string.IsNullOrEmpty(r.SourceText)).ToArray();
+                    if (words.Length == 0)
+                        return TextRect.Empty;
+                    var left = words.Min(r => r.X);
+                    var top = words.Min(r => r.Y);
+                    return new TextRect(
+                        string.Join(IsSpaceLang(this.source) ? " " : string.Empty, words.Select(r => r.SourceText)),
+                        left, top, words.Max(r => r.X + r.Width) - left, words.Max(r => r.Y + r.Height) - top,
+                        words.Average(r => r.FontSize), false);
+                })
                 .Where(w => !string.IsNullOrEmpty(w.SourceText))
                 .ToArray();
         }
     }
 
-    private bool CanMerge(TempMergeRect temp, TextRect rect, double xThreshold, double yThreshold)
+    private static TextRect ToTextRect(TextRect combinedRect)
     {
-        // 重なっている場合はマージできる
-        if (temp.IntersectsWith(rect))
-        {
-            return true;
-        }
-
-        // フォントサイズが大きく異なる場合はマージできない
-        var fDiff = Math.Abs(temp.FontSize - rect.FontSize) / Math.Min(temp.FontSize, rect.FontSize);
-        if (fDiff > fontSizeThreshold)
-        {
-            return false;
-        }
-
-        var fontSize = temp.Rects.Append(rect).Average(r => r.FontSize);
-        var (text, x, y, w, _, _, _, _, _) = rect;
-
-        // y座標が近く、x間隔が近い場合にマージできる
-        var xGap = Math.Min(Math.Abs((temp.X + temp.Width) - x), Math.Abs((x + w) - temp.X)); // X座標の間隔
-        var yDiff = Math.Abs(temp.Y - y); // Y座標の差
-        var gThre = fontSize * spacingThreshold;
-        if (xGap < gThre && yDiff < yThreshold)
-        {
-            return true;
-        }
-
-        // マージ元先の文字列が両方2単語未満の場合は縦にマージできない
-        if (this.isAvoidMergeList && (IsSpaceLang(this.source) ? (WordCount(temp.Text) <= 2 && WordCount(text) <= 2) : (temp.Text.Length <= 8 && text.Length <= 8)))
-        {
-            return false;
-        }
-
-        // x座標が近く、y間隔が近い場合にマージできる
-        var xDiff = Math.Abs(temp.X - x); // X座標の差
-        var yGap = Math.Abs((temp.Y + temp.Height) - y); // Y座標の間隔
-        var lThre = fontSize * leadingThreshold; // 行間の閾値
-        if (xDiff < xThreshold && yGap < lThre)
-        {
-            return true;
-        }
-
-        // x座標の中心が近く、y間隔が近い場合にマージできる
-        var xCenter2 = x + (w * .5);
-        var xCenterDiff = Math.Abs(temp.CenterX - xCenter2); // X座標の中心の差
-        if (xCenterDiff < xThreshold && yGap < lThre)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private class TempMergeRect
-    {
-        private readonly string lang;
-        private string? cachedText;
-        private readonly List<TextRect> rects;
-        private bool textDirty = true;
-
-        public double X { get; private set; }
-        public double Y { get; private set; }
-        public double Width { get; private set; }
-        public double Height { get; private set; }
-        public double FontSize { get; private set; }
-
-        public double Left => X;
-        public double Top => Y;
-        public double Right => X + Width;
-        public double Bottom => Y + Height;
-        public double CenterX => X + (Width * .5);
-        public IReadOnlyList<TextRect> Rects => this.rects;
-        public string Text
-        {
-            get
-            {
-                if (textDirty || cachedText == null)
-                {
-                    cachedText = CreateText();
-                    textDirty = false;
-                }
-                return cachedText;
-            }
-        }
-
-        public TempMergeRect(string lang, TextRect rect)
-        {
-            this.lang = lang;
-            (_, X, Y, Width, Height, FontSize, _, _, _) = rect;
-            this.rects = [rect];
-        }
-
-        public void Merge(TextRect rect)
-        {
-            var (_, x, y, width, height, _, _, _, _) = rect;
-            this.rects.Add(rect);
-            var x1 = Math.Min(X, x);
-            var y1 = Math.Min(Y, y);
-            var x2 = Math.Max(X + Width, x + width);
-            var y2 = Math.Max(Y + Height, y + height);
-            (X, Y, Width, Height) = (x1, y1, x2 - x1, y2 - y1);
-            FontSize = Rects.Average(r => r.FontSize);
-            textDirty = true;
-        }
-
-        public bool IntersectsWith(TextRect rect)
-            => (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
-
-        private string CreateText()
-        {
-            var builder = new StringBuilder(this.Rects.Sum(r => r.SourceText.Length + 1));
-            foreach (var rect in this.Rects.OrderBy(r => (int)((r.Y - this.Y) / this.FontSize)).ThenBy(r => r.X))
-            {
-                builder.Append(rect.SourceText);
-                if (IsSpaceLang(this.lang))
-                {
-                    builder.Append(' ');
-                }
-            }
-            if (IsSpaceLang(this.lang))
-            {
-                builder.Length--;
-            }
-            return builder.ToString();
-        }
-
-        public void Deconstruct(out double x, out double y, out double width, out double height, out double fontSize, out IReadOnlyList<TextRect> rects)
-        {
-            x = X;
-            y = Y;
-            width = Width;
-            height = Height;
-            fontSize = FontSize;
-            rects = Rects;
-        }
-
-        public TextRect ToRect()
-        {
-            // 元の画像座標に変換
-            var text = this.Text;
-            // 高さがフォントサイズの2倍以上の場合は複数行とみなす
-            var lines = Height / FontSize >= 2;
-            return new(text, X, Y, Width, Height, FontSize, lines);
-        }
-    }
-
-    private static TextRect ToTextRect(TempMergeRect combinedRect)
-    {
-        var (x, y, width, height, fontSize, _) = combinedRect;
-        var text = combinedRect.Text;
-        // 高さがフォントサイズの2倍以上の場合は複数行とみなす
-        var lines = height / fontSize >= 2;
+        var (_, x, y, width, height, fontSize, _, _, _) = combinedRect;
 
         // 若干太らせて完全に文字を覆う
         const double fat = .4;
@@ -305,7 +121,7 @@ public sealed class TesseractOcr(
         height += fontSize * fat;
         y -= fontSize * fat * .5;
 
-        return new TextRect(text, x, y, width, height, fontSize, lines);
+        return combinedRect with { X = x, Y = y, Width = width, Height = height };
     }
 
     public void Dispose()

@@ -188,4 +188,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Rozpoznávání textu</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>Úpravy obrazu</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>Tolerance řádkování v odstavci</value>
+  </data>
 </root>

@@ -188,4 +188,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Rozpoznawanie tekstu</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>Dostosowanie obrazu</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>Tolerancja odstępów między wierszami akapitu</value>
+  </data>
 </root>

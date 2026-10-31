@@ -118,4 +118,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>التعرف على النص</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>تعديلات الصورة</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>معامل السماح لتباعد الأسطر داخل الفقرة</value>
+  </data>
 </root>

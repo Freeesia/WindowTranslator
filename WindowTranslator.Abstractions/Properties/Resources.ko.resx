@@ -176,4 +176,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>문자 인식</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>이미지 조정</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>문단 내 줄 간격 허용 배율</value>
+  </data>
 </root>

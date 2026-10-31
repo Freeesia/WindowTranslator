@@ -130,4 +130,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Распознавание текста</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>Настройки изображения</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>Допуск межстрочного интервала внутри абзаца</value>
+  </data>
 </root>

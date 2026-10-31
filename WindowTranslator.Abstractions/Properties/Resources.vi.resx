@@ -176,4 +176,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Nhận dạng văn bản</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>Điều chỉnh hình ảnh</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>Hệ số dung sai giãn dòng trong đoạn</value>
+  </data>
 </root>

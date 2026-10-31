@@ -118,4 +118,7 @@
   </data>
   <data name="SettingsRecognition" xml:space="preserve"><value>Pengecaman teks</value></data>
   <data name="OcrImageAdjustments" xml:space="preserve"><value>Pelarasan imej</value></data>
+  <data name="LineSpacingTolerance" xml:space="preserve">
+    <value>Toleransi jarak baris dalam perenggan</value>
+  </data>
 </root>

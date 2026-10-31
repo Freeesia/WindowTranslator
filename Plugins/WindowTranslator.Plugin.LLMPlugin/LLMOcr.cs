@@ -65,9 +65,13 @@ public sealed class LLMOcr : IOcrModule
     private readonly ILogger<LLMOcr> logger;
     private readonly SystemChatMessage system;
     private readonly ChatClient client;
+    private readonly BasicOcrParam basicOcrOptions;
+    private readonly string source;
 
-    public LLMOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, ILogger<LLMOcr> logger)
+    public LLMOcr(IOptionsSnapshot<LanguageOptions> langOptions, IOptionsSnapshot<LLMOptions> llmOptions, IOptionsSnapshot<BasicOcrParam> ocrParam, ILogger<LLMOcr> logger)
     {
+        this.basicOcrOptions = ocrParam.Value;
+        this.source = langOptions.Value.Source;
         var options = llmOptions.Value;
         this.logger = logger;
         if (string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.Model))
@@ -106,9 +110,9 @@ public sealed class LLMOcr : IOcrModule
     }
 
     public ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
-        => OcrUtility.RecognizeRegionsAsync(input, (bitmap, _) => RecognizeRegionAsync(bitmap));
+        => OcrUtility.RecognizeRegionsAsync(input, RecognizeRegionAsync);
 
-    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap)
+    private async ValueTask<IReadOnlyList<TextRect>> RecognizeRegionAsync(SoftwareBitmap bitmap, System.Drawing.Size sourceSize)
     {
         var bytes = await bitmap.EncodeToJpegBytes().ConfigureAwait(false);
         var image = BinaryData.FromBytes(bytes);
@@ -139,7 +143,7 @@ public sealed class LLMOcr : IOcrModule
             var imageWidth = bitmap.PixelWidth;
             var imageHeight = bitmap.PixelHeight;
 
-            return rectangles
+            var textRects = rectangles
                 .Where(rect => rect.Box2d.Length == 4 && rect.Box2d.All(v => v >= 0 && v <= 1000))
                 .Select(rect =>
                 {
@@ -152,6 +156,7 @@ public sealed class LLMOcr : IOcrModule
                     return new TextRect(rect.Text, xMinPx, yMinPx, widthPx, heightPx, heightPx, false);
                 })
                 .ToArray();
+            return OcrUtility.MergeTextRects(textRects, sourceSize, this.basicOcrOptions, this.source);
         }
         catch (Exception ex)
         {
