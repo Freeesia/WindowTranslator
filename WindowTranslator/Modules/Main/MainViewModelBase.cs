@@ -22,10 +22,11 @@ namespace WindowTranslator.Modules.Main;
 [ObservableObject]
 public abstract partial class MainViewModelBase : IDisposable
 {
-    private readonly Subject<SoftwareBitmap> captureRequests = new();
-    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> trackingRequests = new();
-    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> translationRequests = new();
-    private readonly Subject<IEnumerable<TextRect>> uiRequests = new();
+    private readonly Subject<CaptureRequest> captureRequests = new();
+    private readonly Subject<TrackingSignal> trackingRequests = new();
+    private readonly Subject<(IEnumerable<TextRect> Texts, FilterContext Context, int VisibilityGeneration)> translationRequests = new();
+    private readonly Subject<(IEnumerable<TextRect> Texts, int VisibilityGeneration)> uiRequests = new();
+    private readonly object ocrTextTrackerLock = new();
     private readonly IDisposable captureLoop;
     private readonly IDisposable trackingLoop;
     private readonly IDisposable translationLoop;
@@ -66,10 +67,16 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private bool isFirstCapture = true;
     private volatile bool disposedValue;
+    private int visibilityGeneration;
 
     public ObservableCollection<TextRect> OcrTexts { get; } = [];
     public string Font { get; }
     public double MousePointerHitTestPadding => this.mousePointerHitTestPadding;
+
+    private bool IsCurrentVisibleGeneration(int generation)
+        => !this.disposedValue
+            && this.OverlayVisible
+            && generation == Volatile.Read(ref this.visibilityGeneration);
 
     public MainViewModelBase(
         IPresentationService presentationService,
@@ -108,8 +115,8 @@ public abstract partial class MainViewModelBase : IDisposable
         this.logger = logger;
         this.uiLoop = this.uiRequests
             .ObserveOn(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
-            .Where(_ => this.OverlayVisible)
-            .Subscribe(UpdateOcrTexts);
+            .Where(request => this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+            .Subscribe(request => UpdateOcrTexts(request.Texts));
         var captureInterval = TimeSpan.FromSeconds(options.Value.CaptureInterval);
         var captures = !this.isOneShotMode && captureInterval > TimeSpan.Zero
             ? this.captureRequests.ThrottleLast(captureInterval)
@@ -119,40 +126,79 @@ public abstract partial class MainViewModelBase : IDisposable
             .SubscribeAwait(RecognizeAsync, AwaitOperation.ThrottleFirstLast, configureAwait: false);
         this.trackingLoop = Disposable.Combine(
             Disposable.Create(() => this.trackingRequests.OnCompleted()),
-            this.ObservePropertyChanged(x => x.OverlayVisible).Where(v => v).ObserveOnThreadPool().Subscribe(_ => this.ocrTextTracker.Reset()),
-            Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100), TimeProvider.System).Subscribe(_ => this.trackingRequests.OnNext(default)),
+            Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(100), TimeProvider.System)
+                .Where(_ => this.OverlayVisible)
+                .Subscribe(_ => this.trackingRequests.OnNext(new(TrackingSignalKind.Tick))),
             this.trackingRequests
                 .Materialize()
                 .Synchronize()
-                // タイマーの空通知では直前のOCR結果を再利用する。
-                .Scan(default((IEnumerable<TextRect> Texts, FilterContext Context)), (previous, current) =>
+                .Scan(new TrackingUpdate(null, null), (previous, current) =>
                 {
-                    if (current.Value.Context is { } context)
+                    if (current.Kind != NotificationKind.OnNext)
                     {
-                        if (previous.Context?.ImageSize != context.ImageSize)
-                        {
-                            this.ocrTextTracker.Reset();
-                        }
-                        this.isFirstCapture |= this.isOneShotMode;
+                        previous.Current?.Context.SoftwareBitmap.Dispose();
+                        return new(null, null);
                     }
-                    else if (current.Kind == NotificationKind.OnNext)
+
+                    switch (current.Value.Kind)
                     {
-                        return previous;
+                        case TrackingSignalKind.Reset:
+                            previous.Current?.Context.SoftwareBitmap.Dispose();
+                            this.ResetOcrTextTracker();
+                            return new(null, null);
+                        case TrackingSignalKind.Observation:
+                            var request = current.Value.Request!;
+                            if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+                            {
+                                request.Context.SoftwareBitmap.Dispose();
+                                return new(previous.Current, null);
+                            }
+                            if (previous.Current?.Context.ImageSize != request.Context.ImageSize)
+                            {
+                                this.ResetOcrTextTracker();
+                            }
+                            previous.Current?.Context.SoftwareBitmap.Dispose();
+                            this.isFirstCapture |= this.isOneShotMode;
+                            return new(request, request);
+                        case TrackingSignalKind.Tick:
+                            if (previous.Current is not { } previousRequest)
+                            {
+                                return new(null, null);
+                            }
+                            if (this.IsCurrentVisibleGeneration(previousRequest.VisibilityGeneration))
+                            {
+                                return new(previousRequest, previousRequest);
+                            }
+                            previousRequest.Context.SoftwareBitmap.Dispose();
+                            this.ResetOcrTextTracker();
+                            return new(null, null);
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(current), current.Value.Kind, null);
                     }
-                    previous.Context?.SoftwareBitmap.Dispose();
-                    return current.Value;
                 })
-                .Where(request => request.Context is not null)
+                .Where(update => update.Work is not null)
+                .Select(update => update.Work!)
                 .SubscribeAwait(async (request, ct) =>
                 {
+                    if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+                    {
+                        return;
+                    }
                     using var bitmap = request.Context.SoftwareBitmap.GetReadOnlyView();
                     var texts = await ProcessTrackingAsync(request, bitmap, ct);
+                    if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+                    {
+                        return;
+                    }
                     if (this.isFirstCapture)
                     {
                         this.isFirstCapture = false;
-                        this.uiRequests.OnNext(texts);
+                        this.uiRequests.OnNext((texts, request.VisibilityGeneration));
                     }
-                    this.translationRequests.OnNext((texts, request.Context with { SoftwareBitmap = bitmap.GetReadOnlyView(), }));
+                    if (this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+                    {
+                        this.translationRequests.OnNext((texts, request.Context with { SoftwareBitmap = bitmap.GetReadOnlyView(), }, request.VisibilityGeneration));
+                    }
                 }, AwaitOperation.Drop, configureAwait: false, cancelOnCompleted: true));
         this.translationLoop = this.translationRequests
             .SubscribeAwaitThrottleFirstLast(ProcessTranslationAsync, static r => r.Context.SoftwareBitmap.Dispose(), configureAwait: false);
@@ -166,9 +212,11 @@ public abstract partial class MainViewModelBase : IDisposable
 
     partial void OnOverlayVisibleChanged(bool value)
     {
+        var generation = Interlocked.Increment(ref this.visibilityGeneration);
+        this.trackingRequests.OnNext(new(TrackingSignalKind.Reset));
         if (value)
         {
-            this.uiRequests.OnNext([]);
+            this.uiRequests.OnNext(([], generation));
             this.isFirstCapture = !this.isOneShotMode;
             // Start capture when overlay becomes visible
             this.capture.StartCapture(this.processInfoStore.MainWindowHandle);
@@ -183,6 +231,11 @@ public abstract partial class MainViewModelBase : IDisposable
 
     private async Task Capture_CapturedAsync(object? sender, CapturedEventArgs args)
     {
+        var generation = Volatile.Read(ref this.visibilityGeneration);
+        if (!this.IsCurrentVisibleGeneration(generation))
+        {
+            return;
+        }
         if (this.isOneShotMode)
         {
             this.capture.StopCapture();
@@ -190,19 +243,24 @@ public abstract partial class MainViewModelBase : IDisposable
 
         // フレームの寿命はイベント処理中だけなので、コピーの完了まで待つ。
         var bitmap = await SoftwareBitmap.CreateCopyFromSurfaceAsync(args.Frame.Surface);
-        if (this.disposedValue)
+        if (this.disposedValue || !this.IsCurrentVisibleGeneration(generation))
         {
             bitmap.Dispose();
             return;
         }
         this.Width = bitmap.PixelWidth;
         this.Height = bitmap.PixelHeight;
-        this.captureRequests.OnNext(bitmap);
+        this.captureRequests.OnNext(new(bitmap, generation));
     }
 
-    private async ValueTask RecognizeAsync(SoftwareBitmap capturedBitmap, CancellationToken cancellationToken)
+    private async ValueTask RecognizeAsync(CaptureRequest request, CancellationToken cancellationToken)
     {
+        var capturedBitmap = request.Bitmap;
         using var bitmap = new DisposeAction(capturedBitmap.Dispose);
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            return;
+        }
         IEnumerable<TextRect> texts;
         using (this.Recognizing.EnterBusy())
         {
@@ -267,7 +325,7 @@ public abstract partial class MainViewModelBase : IDisposable
             }
         }
         cancellationToken.ThrowIfCancellationRequested();
-        if (this.disposedValue)
+        if (this.disposedValue || !this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
         {
             return;
         }
@@ -276,19 +334,48 @@ public abstract partial class MainViewModelBase : IDisposable
             SoftwareBitmap = capturedBitmap.GetReadOnlyView(),
             ImageSize = new(capturedBitmap.PixelWidth, capturedBitmap.PixelHeight),
         };
-        this.trackingRequests.OnNext((texts, context));
+        this.trackingRequests.OnNext(new(TrackingSignalKind.Observation, new(texts, context, request.VisibilityGeneration)));
     }
 
     internal static IEnumerable<TextRect> SelectOcrTexts(
         IEnumerable<TextRect> observations, System.Drawing.Size imageSize, IOcrTextTracker tracker, bool isOneShotMode)
         => isOneShotMode ? observations : tracker.Update(observations, imageSize);
 
-    private async ValueTask<IEnumerable<TextRect>> ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, SoftwareBitmap bitmap, CancellationToken cancellationToken)
+    private void ResetOcrTextTracker()
+    {
+        lock (this.ocrTextTrackerLock)
+        {
+            this.ocrTextTracker.Reset();
+        }
+    }
+
+    private async ValueTask<IEnumerable<TextRect>> ProcessTrackingAsync(TrackingRequest request, SoftwareBitmap bitmap, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var texts = SelectOcrTexts(request.Texts, request.Context.ImageSize, this.ocrTextTracker, this.isOneShotMode)
+        IEnumerable<TextRect> trackedTexts;
+        lock (this.ocrTextTrackerLock)
+        {
+            if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+            {
+                return [];
+            }
+            trackedTexts = SelectOcrTexts(request.Texts, request.Context.ImageSize, this.ocrTextTracker, this.isOneShotMode);
+        }
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            return [];
+        }
+        var texts = trackedTexts
             .Select(t => t with { FontSize = t.FontSize * this.fontScale });
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            return [];
+        }
         texts = (await this.color.ConvertColorAsync(bitmap, texts)).ToArray();
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            return [];
+        }
         texts = texts.Select(t => t switch
         {
             { TranslatedText: null } when this.cache.Contains(t.SourceText) => t with { TranslatedText = this.cache.Get(t.SourceText) },
@@ -298,11 +385,11 @@ public abstract partial class MainViewModelBase : IDisposable
         return texts;
     }
 
-    private async ValueTask ProcessTranslationAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, CancellationToken cancellationToken)
+    private async ValueTask ProcessTranslationAsync((IEnumerable<TextRect> Texts, FilterContext Context, int VisibilityGeneration) request, CancellationToken cancellationToken)
     {
         using var bitmap = request.Context.SoftwareBitmap;
         cancellationToken.ThrowIfCancellationRequested();
-        if (this.disposedValue || !this.OverlayVisible)
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
         {
             return;
         }
@@ -317,6 +404,10 @@ public abstract partial class MainViewModelBase : IDisposable
             using var t = this.logger.LogDebugTime("翻訳前処理");
             texts = await tmp.ToArrayAsync(cancellationToken);
         }
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            return;
+        }
         try
         {
             var requests = texts
@@ -324,8 +415,16 @@ public abstract partial class MainViewModelBase : IDisposable
                 .ToArray();
             if (requests.Length > 0)
             {
+                if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+                {
+                    return;
+                }
                 using var t = this.logger.LogDebugTime("翻訳");
                 var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
+                if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+                {
+                    return;
+                }
                 this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
                 var translatedIndex = 0;
                 texts = texts.Select(t => t.TranslatedText is null
@@ -351,6 +450,10 @@ public abstract partial class MainViewModelBase : IDisposable
             await ShowErrorAsync(Resources.FaildOverlay, e, string.Empty);
             return;
         }
+        if (!this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            return;
+        }
         using (this.Filtering.EnterBusy())
         {
             var tmp = texts.ToAsyncEnumerable();
@@ -362,7 +465,10 @@ public abstract partial class MainViewModelBase : IDisposable
             texts = await tmp.ToArrayAsync(cancellationToken);
         }
         cancellationToken.ThrowIfCancellationRequested();
-        this.uiRequests.OnNext(texts);
+        if (this.IsCurrentVisibleGeneration(request.VisibilityGeneration))
+        {
+            this.uiRequests.OnNext((texts, request.VisibilityGeneration));
+        }
     }
 
     private void UpdateOcrTexts(IEnumerable<TextRect> texts)
@@ -378,6 +484,24 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             this.OcrTexts.Add(text);
         }
+    }
+
+    private sealed record CaptureRequest(SoftwareBitmap Bitmap, int VisibilityGeneration);
+
+    private sealed record TrackingRequest(
+        IEnumerable<TextRect> Texts,
+        FilterContext Context,
+        int VisibilityGeneration);
+
+    private sealed record TrackingSignal(TrackingSignalKind Kind, TrackingRequest? Request = null);
+
+    private sealed record TrackingUpdate(TrackingRequest? Current, TrackingRequest? Work);
+
+    private enum TrackingSignalKind
+    {
+        Tick,
+        Observation,
+        Reset,
     }
 
     private Task ShowErrorAsync(string message, Exception exception, string path)
