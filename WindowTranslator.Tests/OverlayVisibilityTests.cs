@@ -83,9 +83,12 @@ public sealed class OverlayVisibilityTests
                         await VerifyInFlightAsync(Stage.Ocr, withoutContext: true);
                         await VerifyInFlightAsync(Stage.Ocr, failFirst: true);
                         await VerifyInFlightAsync(Stage.Translation, failFirst: true);
+                        await VerifyHiddenBeforeWorkStartsAsync();
                         await VerifyHiddenDuringResetAsync();
                         await VerifyHiddenDuringTrackingAsync();
+                        await VerifyHiddenDuringColorAsync();
                         await VerifyHiddenBeforeTranslationAsync();
+                        await VerifyOldEmptyResultDoesNotRemoveNewAsync();
                         await VerifyUiNotificationsAsync();
                         await VerifyReentrantShowAsync();
                         await VerifyReentrantHideAsync();
@@ -198,6 +201,55 @@ public sealed class OverlayVisibilityTests
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
     }
 
+    private static async Task VerifyHiddenBeforeWorkStartsAsync()
+    {
+        await using var fixture = new Fixture(delayFilter: true);
+        const int blockedWorkers = 4;
+        using var started = new CountdownEvent(blockedWorkers);
+        using var release = new ManualResetEventSlim();
+        ThreadPool.GetMinThreads(out var minWorker, out var minIo);
+        ThreadPool.GetMaxThreads(out var maxWorker, out var maxIo);
+        Task[] blockers = [];
+        try
+        {
+            Assert.True(ThreadPool.SetMaxThreads(Math.Max(maxWorker, blockedWorkers + 1), maxIo));
+            Assert.True(ThreadPool.SetMinThreads(Math.Max(minWorker, blockedWorkers + 1), minIo));
+            blockers = Enumerable.Range(0, blockedWorkers).Select(_ => Task.Run(() =>
+            {
+                started.Signal();
+                if (!release.Wait(TimeSpan.FromSeconds(15))) throw new TimeoutException();
+            })).ToArray();
+            Assert.True(started.Wait(TimeSpan.FromSeconds(5)));
+            Assert.True(ThreadPool.SetMinThreads(1, minIo));
+            Assert.True(ThreadPool.SetMaxThreads(blockedWorkers, maxIo));
+            fixture.SubmitCapture(Bitmap(320));
+            fixture.Tracking.OnNext(([new("old", 0, 0, 100, 30, 20, false)],
+                new() { SoftwareBitmap = Bitmap(320), ImageSize = new(320, 240) }));
+            fixture.Translations.OnNext(([new("old", 0, 0, 100, 30, 20, false)],
+                new() { SoftwareBitmap = Bitmap(320), ImageSize = new(320, 240) }));
+            var timeout = Stopwatch.StartNew();
+            while (fixture.HiddenSubscriberCount != 3 && timeout.Elapsed < TimeSpan.FromSeconds(5))
+            {
+                await System.Windows.Threading.Dispatcher.Yield(System.Windows.Threading.DispatcherPriority.Background);
+            }
+            Assert.Equal(3, fixture.HiddenSubscriberCount);
+            fixture.Model.OverlayVisible = false;
+            fixture.Filter.Gate.Release.TrySetResult();
+        }
+        finally
+        {
+            release.Set();
+            ThreadPool.SetMinThreads(1, minIo);
+            ThreadPool.SetMaxThreads(maxWorker, maxIo);
+            ThreadPool.SetMinThreads(minWorker, minIo);
+            await Task.WhenAll(blockers).WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        await WaitUntilAsync(() => fixture.HiddenSubscriberCount == 0);
+        Assert.False(fixture.Ocr.Gate.Started.Task.IsCompleted);
+        Assert.False(fixture.Tracker.ResetStarted.Task.IsCompleted);
+        Assert.False(fixture.Filter.Gate.Started.Task.IsCompleted);
+    }
+
     private static async Task VerifyHiddenDuringTrackingAsync()
     {
         await using var fixture = new Fixture(delayUpdate: true);
@@ -211,6 +263,17 @@ public sealed class OverlayVisibilityTests
         fixture.Model.OverlayVisible = true;
         fixture.SubmitCapture(Bitmap(321));
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+    }
+
+    private static async Task VerifyHiddenDuringColorAsync()
+    {
+        await using var fixture = new Fixture(Stage.Color);
+        fixture.SubmitCapture(Bitmap(320));
+        await fixture.Color.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Model.OverlayVisible = false;
+        fixture.Color.Gate.Release.TrySetResult();
+        await WaitUntilAsync(() => fixture.Color.Bitmap is { } bitmap && IsDisposed(bitmap));
+        Assert.Equal(0, fixture.Cache.ContainsCount);
     }
 
     private static async Task VerifyHiddenBeforeTranslationAsync()
@@ -231,6 +294,27 @@ public sealed class OverlayVisibilityTests
         fixture.SubmitCapture(Bitmap(321));
         await WaitUntilAsync(() => fixture.Translator.Gate.Started.Task.IsCompleted);
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+    }
+
+    private static async Task VerifyOldEmptyResultDoesNotRemoveNewAsync()
+    {
+        await using var fixture = new Fixture(delayFilter: true, emptyFirstCapture: true, delayNextFilter: true);
+        fixture.SubmitCapture(Bitmap(320));
+        await fixture.Filter.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Model.OverlayVisible = false;
+        fixture.Model.OverlayVisible = true;
+        fixture.SubmitCapture(Bitmap(321));
+        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+        fixture.Filter.Gate.Release.TrySetResult();
+        await fixture.Filter.Gate.NextStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        try
+        {
+            Assert.Contains(fixture.Model.OcrTexts, text => text.SourceText == "new");
+        }
+        finally
+        {
+            fixture.Filter.Gate.NextRelease.TrySetResult();
+        }
     }
 
     private static async Task VerifyUiNotificationsAsync()
@@ -327,7 +411,10 @@ public sealed class OverlayVisibilityTests
         await using var fixture = new Fixture();
         var handler = fixture.Capture.CurrentHandler!;
         fixture.Model.OverlayVisible = false;
+        Assert.Null(fixture.Capture.CurrentHandler);
         fixture.Model.OverlayVisible = true;
+        Assert.NotNull(fixture.Capture.CurrentHandler);
+        Assert.NotSame(handler, fixture.Capture.CurrentHandler);
         await handler.InvokeAsync(fixture.Capture, null!);
         await Task.Delay(150);
         Assert.False(fixture.Ocr.Gate.Started.Task.IsCompleted);
@@ -454,13 +541,13 @@ public sealed class OverlayVisibilityTests
         private readonly OcrTraceRecorder recorder = new(NullLogger<OcrTraceRecorder>.Instance);
         private readonly Action<SoftwareBitmap> submitCapture;
 
-        public Fixture(Stage? delayed = null, double captureInterval = 0, bool delayReset = false, bool delayFilter = false, bool multipleTexts = false, bool withoutContext = false, bool failFirst = false, bool delayUpdate = false, bool isOneShotMode = false)
+        public Fixture(Stage? delayed = null, double captureInterval = 0, bool delayReset = false, bool delayFilter = false, bool multipleTexts = false, bool withoutContext = false, bool failFirst = false, bool delayUpdate = false, bool isOneShotMode = false, bool emptyFirstCapture = false, bool delayNextFilter = false)
         {
-            this.Ocr = new(delayed == Stage.Ocr, multipleTexts, failFirst && delayed == Stage.Ocr);
+            this.Ocr = new(delayed == Stage.Ocr, multipleTexts, failFirst && delayed == Stage.Ocr, emptyFirstCapture);
             this.Color = new(delayed == Stage.Color);
             this.Translator = new(delayed == Stage.Translation, failFirst && delayed == Stage.Translation);
             this.Tracker = new(delayReset, delayUpdate);
-            this.Filter = new(delayFilter);
+            this.Filter = new(delayFilter, delayNextFilter);
             var context = SynchronizationContext.Current;
             try
             {
@@ -468,7 +555,7 @@ public sealed class OverlayVisibilityTests
                 this.Model = new OverlayMainViewModel(
                     null!, new Snapshot<TargetSettings>(new() { CaptureInterval = captureInterval, IsOneShotMode = isOneShotMode }), new ProcessInfo(),
                     this.Capture, this.Ocr, new Snapshot<BasicOcrParam>(new()), this.Tracker, this.recorder,
-                    this.Translator, new Cache(), this.Color, delayFilter ? [this.Filter] : [], NullLogger<OverlayMainViewModel>.Instance);
+                    this.Translator, this.Cache, this.Color, delayFilter ? [this.Filter] : [], NullLogger<OverlayMainViewModel>.Instance);
             }
             finally
             {
@@ -483,6 +570,7 @@ public sealed class OverlayVisibilityTests
         public Tracker Tracker { get; }
         public Color Color { get; }
         public Translator Translator { get; }
+        public Cache Cache { get; } = new();
         public Filter Filter { get; }
         public OverlayMainViewModel Model { get; }
         public System.Windows.Threading.DispatcherTimer TrackingTimer => Field<System.Windows.Threading.DispatcherTimer>("trackingTimer");
@@ -490,6 +578,9 @@ public sealed class OverlayVisibilityTests
             => Field<Subject<(IEnumerable<TextRect>, FilterContext)>>("trackingRequests");
         public Subject<(IEnumerable<TextRect> Texts, FilterContext Context)?> Translations
             => Field<Subject<(IEnumerable<TextRect>, FilterContext)?>>("translationRequests");
+        public int HiddenSubscriberCount
+            => ((Delegate?)typeof(MainViewModelBase).GetField("OverlayHidden", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(this.Model))?.GetInvocationList().Length ?? 0;
 
         public void SubmitCapture(SoftwareBitmap bitmap) => this.submitCapture(bitmap);
 
@@ -505,13 +596,14 @@ public sealed class OverlayVisibilityTests
         }
     }
 
-    private sealed class Gate(bool delayed)
+    private sealed class Gate(bool delayed, bool delayNext = false)
     {
         private int count;
         public int Count => Volatile.Read(ref this.count);
         public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource NextStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource NextRelease { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public async Task EnterAsync()
         {
@@ -519,6 +611,7 @@ public sealed class OverlayVisibilityTests
             if (current == 1) this.Started.TrySetResult();
             else this.NextStarted.TrySetResult();
             if (delayed && current == 1) await this.Release.Task.WaitAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+            if (delayNext && current == 2) await this.NextRelease.Task.WaitAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
         }
     }
 
@@ -544,13 +637,14 @@ public sealed class OverlayVisibilityTests
         public void StopCapture() => this.OnStopped?.Invoke();
     }
 
-    private sealed class Ocr(bool delayed, bool multipleTexts, bool failFirst) : IOcrModule
+    private sealed class Ocr(bool delayed, bool multipleTexts, bool failFirst, bool emptyFirstCapture) : IOcrModule
     {
         public Gate Gate { get; } = new(delayed);
         public async ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
         {
             await this.Gate.EnterAsync();
             if (failFirst && this.Gate.Count == 1) throw new InvalidOperationException("模擬 OCR エラー");
+            if (emptyFirstCapture && input.Source.PixelWidth == 320) return [];
             var text = input.Source.PixelWidth == 321 ? "new" : "old";
             var first = new TextRect(text, 0, 0, 100, 30, 20, false);
             return multipleTexts ? [first, first with { SourceText = "old2", Y = 40 }] : [first];
@@ -595,8 +689,10 @@ public sealed class OverlayVisibilityTests
     private sealed class Color(bool delayed) : IColorModule
     {
         public Gate Gate { get; } = new(delayed);
+        public SoftwareBitmap? Bitmap { get; private set; }
         public async ValueTask<IEnumerable<TextRect>> ConvertColorAsync(SoftwareBitmap bitmap, IEnumerable<TextRect> texts)
         {
+            this.Bitmap = bitmap;
             var result = texts.ToArray();
             await this.Gate.EnterAsync();
             return result;
@@ -614,9 +710,9 @@ public sealed class OverlayVisibilityTests
         }
     }
 
-    private sealed class Filter(bool delayed) : IFilterModule
+    private sealed class Filter(bool delayed, bool delayNext) : IFilterModule
     {
-        public Gate Gate { get; } = new(delayed);
+        public Gate Gate { get; } = new(delayed, delayNext);
         public async IAsyncEnumerable<TextRect> ExecutePreTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context)
         {
             await this.Gate.EnterAsync();
@@ -628,7 +724,13 @@ public sealed class OverlayVisibilityTests
 
     private sealed class Cache : ICacheModule
     {
-        public bool Contains(string src) => false;
+        private int containsCount;
+        public int ContainsCount => Volatile.Read(ref this.containsCount);
+        public bool Contains(string src)
+        {
+            Interlocked.Increment(ref this.containsCount);
+            return false;
+        }
         public string Get(string src) => throw new InvalidOperationException();
         public void AddRange(IEnumerable<(string src, string dst)> pairs) { }
     }

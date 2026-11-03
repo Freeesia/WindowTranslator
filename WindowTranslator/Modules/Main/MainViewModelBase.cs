@@ -146,10 +146,9 @@ public abstract partial class MainViewModelBase : IDisposable
                 // タイマーの空通知では直前のOCR結果を再利用する。
                 .Scan(default((IEnumerable<TextRect> Texts, FilterContext Context)), (previous, current) =>
                 {
-                    if (!this.OverlayVisible && current.Kind == NotificationKind.OnNext)
+                    if (!this.OverlayVisible)
                     {
                         previous.Context?.SoftwareBitmap.Dispose();
-                        current.Value.Context?.SoftwareBitmap.Dispose();
                         return default;
                     }
                     if (current.Value.Context is { } context)
@@ -172,10 +171,6 @@ public abstract partial class MainViewModelBase : IDisposable
                 {
                     var hidden = new TaskCompletionSource();
                     using var visibility = ObserveHiding(hidden);
-                    if (!this.OverlayVisible)
-                    {
-                        return;
-                    }
                     using var bitmap = request.Context.SoftwareBitmap.GetReadOnlyView();
                     var reset = this.needsTrackerReset;
                     this.needsTrackerReset = false;
@@ -316,7 +311,6 @@ public abstract partial class MainViewModelBase : IDisposable
         using var bitmap = new DisposeAction(capturedBitmap.Dispose);
         var hidden = new TaskCompletionSource();
         using var visibility = ObserveHiding(hidden);
-        if (!this.OverlayVisible) return;
         await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
         cancellationToken.ThrowIfCancellationRequested();
         if (this.disposedValue || hidden.Task.IsCompleted)
@@ -448,7 +442,6 @@ public abstract partial class MainViewModelBase : IDisposable
         using var bitmap = request.Context.SoftwareBitmap;
         var hidden = new TaskCompletionSource();
         using var visibility = ObserveHiding(hidden);
-        if (!this.OverlayVisible) return;
         await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
         cancellationToken.ThrowIfCancellationRequested();
         if (this.disposedValue || hidden.Task.IsCompleted)
@@ -465,10 +458,6 @@ public abstract partial class MainViewModelBase : IDisposable
             }
             using var t = this.logger.LogDebugTime("翻訳前処理");
             texts = await tmp.ToArrayAsync(cancellationToken);
-        }
-        if (hidden.Task.IsCompleted)
-        {
-            return;
         }
         try
         {
@@ -527,7 +516,7 @@ public abstract partial class MainViewModelBase : IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         await this.dispatcher.InvokeAsync(() =>
         {
-            if (!hidden.Task.IsCompleted && !this.disposedValue)
+            if (!this.disposedValue)
             {
                 UpdateOcrTexts(texts, hidden.Task);
             }
