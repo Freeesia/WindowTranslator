@@ -1297,23 +1297,23 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             {
                 TextTrack parent = candidate.Tracks[0];
                 TextTrack[] children = candidate.Tracks.Skip(1).ToArray();
-                TimeSpan restoreSince = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id, observationTimestamp);
+                TimeSpan restoreSince = this.dormantRestoreCandidates.GetValueOrDefault(parent.Id, timestamp);
                 currentRestoreCandidates[parent.Id] = restoreSince;
                 matchedTracks.Add(parent);
                 matchedTracks.UnionWith(children);
-                if (observationTimestamp - restoreSince >= this.profile.StructureConfirmationTime)
+                if (timestamp - restoreSince >= this.profile.StructureConfirmationTime)
                 {
                     foreach (RestorationAssignment assignment in candidate.RestorationAssignments)
                     {
                         assignment.Track.Reactivate(observationTimestamp);
-                        assignment.Track.Observe(assignment.Observation, observationTimestamp);
+                        assignment.Track.Observe(assignment.Observation, timestamp, observationTimestamp);
                     }
                     this.tracks.Remove(parent);
                     this.logger.LogDebug("OCR track {TrackId} restored {ChildCount} dormant child tracks", parent.Id, children.Length);
                 }
                 else
                 {
-                    parent.Observe(candidate.Combined, observationTimestamp);
+                    parent.Observe(candidate.Combined, timestamp, observationTimestamp);
                 }
                 continue;
             }
@@ -1321,7 +1321,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             if (candidate.Kind is MatchKind.OneToOne or MatchKind.Split)
             {
                 TextTrack track = candidate.Tracks[0];
-                track.Observe(candidate.Combined, observationTimestamp);
+                track.Observe(candidate.Combined, timestamp, observationTimestamp);
                 matchedTracks.Add(track);
                 if (candidate.Kind == MatchKind.Split)
                 {
@@ -1331,13 +1331,13 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
 
             string key = string.Join(',', candidate.Tracks.Select(track => track.Id).Order());
-            TimeSpan mergeSince = this.mergeCandidates.GetValueOrDefault(key, observationTimestamp);
+            TimeSpan mergeSince = this.mergeCandidates.GetValueOrDefault(key, timestamp);
             currentMergeCandidates[key] = mergeSince;
             foreach (TextTrack track in candidate.Tracks)
             {
                 matchedTracks.Add(track);
             }
-            if (observationTimestamp - mergeSince >= this.profile.StructureConfirmationTime)
+            if (timestamp - mergeSince >= this.profile.StructureConfirmationTime)
             {
                 TextTrack parent = this.CreateTrack(candidate.Combined, observationTimestamp);
                 matchedTracks.Add(parent);
@@ -1932,6 +1932,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         private TextRect? normalGeometryCandidate;
         private TimeSpan normalGeometryCandidateSince;
         private TimeSpan noiseGeometrySince;
+        private TimeSpan lastGeometryObservationTime = timestamp;
         private readonly List<TextRect> noiseGeometrySamples = [];
         private string? textCandidate;
         private TimeSpan textCandidateSince;
@@ -1978,19 +1979,18 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
         public TimeSpan DormantSince { get; private set; }
 
-        public void Observe(TextRect current, TimeSpan observationTimestamp)
+        public void Observe(TextRect current, TimeSpan timestamp, TimeSpan observationTimestamp)
         {
             this.MissingSince = null;
-            if (observationTimestamp == this.LastObservationTime)
+            if (observationTimestamp != this.LastObservationTime)
             {
-                return;
+                this.UpdateMotion(current, observationTimestamp);
+                this.LastObservationTime = observationTimestamp;
             }
-
-            this.UpdateMotion(current, observationTimestamp);
-            this.LastObservationTime = observationTimestamp;
             this.LatestObservation = current;
-            this.UpdateText(current.SourceText, observationTimestamp);
-            this.UpdateGeometry(current, observationTimestamp);
+            this.UpdateText(current.SourceText, timestamp);
+            this.UpdateGeometry(current, timestamp, observationTimestamp != this.lastGeometryObservationTime);
+            this.lastGeometryObservationTime = observationTimestamp;
             this.Stabilized = current with
             {
                 SourceText = this.ConfirmedText,
@@ -2122,7 +2122,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.LastObservationTime = timestamp;
         }
 
-        private void UpdateGeometry(TextRect current, TimeSpan timestamp)
+        private void UpdateGeometry(TextRect current, TimeSpan timestamp, bool isNewObservation)
         {
             double movement = CenterDistance(this.Stabilized, current);
             if (movement > Math.Max(this.Stabilized.Width, this.Stabilized.Height) * 0.75)
@@ -2139,15 +2139,19 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     return;
                 }
                 this.normalGeometryCandidate = null;
-                if (this.noiseGeometrySamples.Count == 0)
+                if (isNewObservation)
                 {
-                    this.noiseGeometrySince = timestamp;
-                    this.noiseGeometrySamples.Add(this.Stabilized);
+                    if (this.noiseGeometrySamples.Count == 0)
+                    {
+                        this.noiseGeometrySince = timestamp;
+                        this.noiseGeometrySamples.Add(this.Stabilized);
+                    }
+                    this.noiseGeometrySamples.Add(current);
                 }
 
-                this.noiseGeometrySamples.Add(current);
                 // 現在の表示値を含めた中央値で微小な揺れを抑える。
-                if (timestamp - this.noiseGeometrySince >= profile.MicroGeometryConfirmationTime)
+                if (this.noiseGeometrySamples.Count > 0
+                    && timestamp - this.noiseGeometrySince >= profile.MicroGeometryConfirmationTime)
                 {
                     this.ApplyGeometry(RepresentativeGeometry(this.noiseGeometrySamples));
                 }

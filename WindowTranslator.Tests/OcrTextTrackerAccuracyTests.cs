@@ -95,44 +95,143 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Equal("Alpha Beta Gamma Delta Epsilon", longMenu.SourceText);
     }
 
-    [Fact]
-    public void ReprocessingTheSameObservationDoesNotConfirmTextOrGeometry()
+    [Theory]
+    [InlineData(1, 0, 0)]
+    [InlineData(2, 0, 300)]
+    [InlineData(3, 300, 300)]
+    [InlineData(4, 600, 600)]
+    [InlineData(5, 900, 900)]
+    public void ReprocessingTheSameObservationConfirmsTextAndGeometryByElapsedTime(
+        int level, int geometryConfirmationMs, int textConfirmationMs)
     {
-        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance, new()
+        {
+            OcrGeometryStability = level,
+            OcrRecognitionStability = level,
+        });
         Size imageSize = new(1000, 600);
         TextRect initial = new("Stable", 100, 100, 100, 30, 24, false);
-        TextRect[] transientError = [initial with { SourceText = "Stab1e", X = 120 }];
+        TextRect[] changed = [initial with { SourceText = "Changed", X = 120 }];
         tracker.Update([initial], imageSize, TimeSpan.Zero);
+        AssertAt(0);
 
-        TextRect firstProcessing = Assert.Single(tracker.Update(
-            transientError, imageSize, TimeSpan.FromMilliseconds(500)));
-        TextRect secondProcessing = Assert.Single(tracker.Update(
-            transientError, imageSize, TimeSpan.FromMilliseconds(1000)));
-        Assert.Equal(("Stable", 100d), (firstProcessing.SourceText, secondProcessing.X));
-        TextRect repeated = Assert.Single(tracker.Update(
-            transientError, imageSize, TimeSpan.FromSeconds(3)));
+        foreach (int deadline in new[] { geometryConfirmationMs, textConfirmationMs }
+            .Where(value => value > 0).Distinct().Order())
+        {
+            AssertAt(deadline - 1);
+            AssertAt(deadline);
+        }
 
-        Assert.Equal(("Stable", 100), (repeated.SourceText, repeated.X));
+        void AssertAt(int elapsedMs)
+        {
+            TextRect result = Assert.Single(tracker.Update(
+                changed, imageSize, TimeSpan.FromMilliseconds(3000 + elapsedMs)));
+            Assert.Equal(elapsedMs < textConfirmationMs ? initial.SourceText : changed[0].SourceText, result.SourceText);
+            Assert.Equal(elapsedMs < geometryConfirmationMs ? initial.X : changed[0].X, result.X);
+        }
     }
 
-    [Fact]
-    public void ReprocessingTheSameMicroGeometryObservationAddsNoNoiseSamples()
+    [Theory]
+    [InlineData(1, 0)]
+    [InlineData(2, 300)]
+    [InlineData(3, 900)]
+    [InlineData(4, 1500)]
+    [InlineData(5, 2100)]
+    public void ReprocessingTheSameMicroGeometryObservationConfirmsByElapsedTime(int level, int confirmationMs)
     {
-        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance, new() { OcrGeometryStability = level });
         Size imageSize = new(1000, 600);
         TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
         TextRect[] microGeometry = [initial with { X = 102 }];
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
-        tracker.Update(microGeometry, imageSize, TimeSpan.FromMilliseconds(500));
-        TextRect repeated = Assert.Single(tracker.Update(
-            microGeometry, imageSize, TimeSpan.FromSeconds(3)));
+        TextRect pending = Assert.Single(tracker.Update(microGeometry, imageSize, TimeSpan.FromSeconds(3)));
+        Assert.Equal(confirmationMs == 0 ? 102 : 100, pending.X);
+        if (confirmationMs > 0)
+        {
+            TextRect beforeDeadline = Assert.Single(tracker.Update(
+                microGeometry, imageSize, TimeSpan.FromMilliseconds(3000 + confirmationMs - 1)));
+            Assert.Equal(100, beforeDeadline.X);
+        }
 
-        Assert.Equal(100, repeated.X);
+        TextRect confirmed = Assert.Single(tracker.Update(
+            microGeometry, imageSize, TimeSpan.FromMilliseconds(3000 + confirmationMs)));
+        Assert.Equal(102, confirmed.X);
+    }
+
+    [Theory]
+    [InlineData(50)]
+    [InlineData(100)]
+    [InlineData(300)]
+    public void ReprocessingTheSameMicroGeometryObservationAddsNoNoiseSamples(int processingIntervalMs)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect[] microGeometry = [initial with { X = 98, FontSize = 23 }];
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        for (int elapsedMs = 0; elapsedMs <= 1800; elapsedMs += processingIntervalMs)
+        {
+            TextRect repeated = Assert.Single(tracker.Update(
+                microGeometry, imageSize, TimeSpan.FromMilliseconds(3000 + elapsedMs)));
+            Assert.Equal((100d, 24d), (repeated.X, repeated.FontSize));
+        }
+
+        TextRect[] nextObservation = [initial with { X = 102, FontSize = 25 }];
+        tracker.Update(nextObservation, imageSize, TimeSpan.FromSeconds(6));
+        TextRect confirmed = Assert.Single(tracker.Update(
+            nextObservation, imageSize, TimeSpan.FromMilliseconds(6900)));
+        Assert.Equal((102d, 25d), (confirmed.X, confirmed.FontSize));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(5)]
+    public void ReprocessingTheConfirmedObservationDoesNotStartAMicroGeometryWindow(int processingCount)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect[] initial = [new("Panel", 100, 100, 100, 30, 24, false)];
+        tracker.Update(initial, imageSize, TimeSpan.Zero);
+        for (int processing = 1; processing <= processingCount; processing++)
+        {
+            tracker.Update(initial, imageSize, TimeSpan.FromMilliseconds(processing * 100));
+        }
+
+        TextRect[] changed = [initial[0] with { X = 102 }];
+        tracker.Update(changed, imageSize, TimeSpan.FromMilliseconds(600));
+        TextRect pending = Assert.Single(tracker.Update(changed, imageSize, TimeSpan.FromMilliseconds(1499)));
+        Assert.Equal(100, pending.X);
+        TextRect confirmed = Assert.Single(tracker.Update(changed, imageSize, TimeSpan.FromMilliseconds(1500)));
+        Assert.Equal(102, confirmed.X);
     }
 
     [Fact]
-    public void ReprocessingTheSameSplitObservationDoesNotConfirmItsText()
+    public void ReprocessingTheConfirmedNormalGeometryDoesNotStartAMicroGeometryWindow()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+        TextRect[] normalGeometry = [initial with { X = 120 }];
+        tracker.Update(normalGeometry, imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Equal(120, Assert.Single(tracker.Update(
+            normalGeometry, imageSize, TimeSpan.FromMilliseconds(800))).X);
+        tracker.Update(normalGeometry, imageSize, TimeSpan.FromMilliseconds(900));
+
+        TextRect[] microGeometry = [normalGeometry[0] with { X = 122 }];
+        tracker.Update(microGeometry, imageSize, TimeSpan.FromMilliseconds(1000));
+        TextRect pending = Assert.Single(tracker.Update(
+            microGeometry, imageSize, TimeSpan.FromMilliseconds(1899)));
+        Assert.Equal(120, pending.X);
+        TextRect confirmed = Assert.Single(tracker.Update(
+            microGeometry, imageSize, TimeSpan.FromMilliseconds(1900)));
+        Assert.Equal(122, confirmed.X);
+    }
+
+    [Fact]
+    public void ReprocessingTheSameSplitObservationConfirmsItsTextByElapsedTime()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
@@ -144,15 +243,18 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         ];
         tracker.Update([whole], imageSize, TimeSpan.Zero);
 
-        tracker.Update(split, imageSize, TimeSpan.FromMilliseconds(500));
-        TextRect repeated = Assert.Single(tracker.Update(
-            split, imageSize, TimeSpan.FromSeconds(3)));
+        tracker.Update(split, imageSize, TimeSpan.FromSeconds(3));
+        TextRect pending = Assert.Single(tracker.Update(
+            split, imageSize, TimeSpan.FromMilliseconds(3299)));
+        Assert.Equal(whole.SourceText, pending.SourceText);
+        TextRect confirmed = Assert.Single(tracker.Update(
+            split, imageSize, TimeSpan.FromMilliseconds(3300)));
 
-        Assert.Equal(whole.SourceText, repeated.SourceText);
+        Assert.Equal("Open Settings And Configure", confirmed.SourceText);
     }
 
     [Fact]
-    public void ReprocessingTheSameMergeObservationDoesNotConfirmTheMerge()
+    public void ReprocessingTheSameMergeObservationConfirmsByElapsedTime()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
@@ -161,28 +263,58 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TextRect[] merged = [new("New Game", 50, 400, 165, 32, 25, false)];
         tracker.Update([first, second], imageSize, TimeSpan.Zero);
 
-        Assert.Equal(2, tracker.Update(merged, imageSize, TimeSpan.FromMilliseconds(500)).Count);
         Assert.Equal(2, tracker.Update(merged, imageSize, TimeSpan.FromSeconds(3)).Count);
+        Assert.Equal(2, tracker.Update(merged, imageSize, TimeSpan.FromMilliseconds(3299)).Count);
+        TextRect confirmed = Assert.Single(tracker.Update(merged, imageSize, TimeSpan.FromMilliseconds(3300)));
+        Assert.Equal("New Game", confirmed.SourceText);
     }
 
     [Fact]
-    public void ReprocessingTheSameRestoreObservationDoesNotConfirmTheRestore()
+    public void ReprocessingTheSameRestoreObservationConfirmsByElapsedTime()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
         TextRect first = new("New", 50, 400, 70, 32, 25, false);
         TextRect second = new("Game", 125, 400, 90, 32, 25, false);
-        TextRect[] firstMerge = [new("New Game", 50, 400, 165, 32, 25, false)];
-        TextRect[] secondMerge = [new("New Game", 50, 400, 165, 32, 25, false)];
+        TextRect[] merged = [new("New Game", 50, 400, 165, 32, 25, false)];
         tracker.Update([first, second], imageSize, TimeSpan.Zero);
-        tracker.Update(firstMerge, imageSize, TimeSpan.FromMilliseconds(500));
-        tracker.Update(secondMerge, imageSize, TimeSpan.FromMilliseconds(1000));
+        tracker.Update(merged, imageSize, TimeSpan.FromMilliseconds(500));
+        Assert.Single(tracker.Update(merged, imageSize, TimeSpan.FromMilliseconds(800)));
         TextRect[] fragments = [first, second];
 
-        tracker.Update(fragments, imageSize, TimeSpan.FromMilliseconds(1500));
-        TextRect[] repeated = tracker.Update(fragments, imageSize, TimeSpan.FromSeconds(3)).ToArray();
+        tracker.Update(fragments, imageSize, TimeSpan.FromSeconds(3));
+        TextRect pending = Assert.Single(tracker.Update(fragments, imageSize, TimeSpan.FromMilliseconds(3299)));
+        Assert.Equal("New Game", pending.SourceText);
+        IReadOnlyList<TextRect> restored = tracker.Update(fragments, imageSize, TimeSpan.FromMilliseconds(3300));
 
-        Assert.Equal(["New Game"], repeated.Select(rect => rect.SourceText));
+        Assert.Equal(["New", "Game"], restored.Select(rect => rect.SourceText));
+    }
+
+    [Theory]
+    [InlineData(3, 1200)]
+    [InlineData(4, 1500)]
+    [InlineData(5, 2100)]
+    public void ReprocessingTheSameObservationAdvancesTheTextChangeTimeout(int level, int timeoutMs)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance, new() { OcrRecognitionStability = level });
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Score 0", 100, 100, 100, 30, 24, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+        TextRect[] latest = [];
+        for (int elapsedMs = 0; elapsedMs < timeoutMs; elapsedMs += 100)
+        {
+            latest = [initial with { SourceText = $"Score {1 + elapsedMs / 100}" }];
+            TextRect pending = Assert.Single(tracker.Update(
+                latest, imageSize, TimeSpan.FromMilliseconds(3000 + elapsedMs)));
+            Assert.Equal(initial.SourceText, pending.SourceText);
+        }
+
+        TextRect beforeDeadline = Assert.Single(tracker.Update(
+            latest, imageSize, TimeSpan.FromMilliseconds(3000 + timeoutMs - 1)));
+        Assert.Equal(initial.SourceText, beforeDeadline.SourceText);
+        TextRect confirmed = Assert.Single(tracker.Update(
+            latest, imageSize, TimeSpan.FromMilliseconds(3000 + timeoutMs)));
+        Assert.Equal(latest[0].SourceText, confirmed.SourceText);
     }
 
     [Fact]

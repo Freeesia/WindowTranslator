@@ -84,3 +84,4 @@ dotnet nuget-license -t -ignore ignore-packages.json -override package-informati
 - `Directory.Build.props` で `LangVersion=latest`、Nullable、ImplicitUsings が有効。
 - `IFilterModule` の翻訳前後の処理は `IAsyncEnumerable<TextRect>` を使用する。
 - `WindowTranslator.Abstractions` で Windows 固有 API を扱う場合は `#if WINDOWS` で条件コンパイルする。
+- OCRのキャプチャ間隔は表示の振動防止のための設定。トラッカーの保持・安定化・確定はOCR回数ではなく経過時間で判定し、次のOCR観測を待つ条件を追加しない。同じ観測の再処理によるサンプルの重複集計と、時間経過による確定は別に扱う。
