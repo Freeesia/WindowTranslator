@@ -431,9 +431,9 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         tracker.Update([whole], imageSize, TimeSpan.Zero);
 
         TextRect pending = Assert.Single(tracker.Update(
-            changedSplit, imageSize, TimeSpan.FromMilliseconds(500)));
+            changedSplit.ToArray(), imageSize, TimeSpan.FromMilliseconds(500)));
         TextRect confirmed = Assert.Single(tracker.Update(
-            changedSplit, imageSize, TimeSpan.FromMilliseconds(1000)));
+            changedSplit.ToArray(), imageSize, TimeSpan.FromMilliseconds(1000)));
 
         Assert.Equal("Open Options And Configure", pending.SourceText);
         Assert.Equal("Open Settings And Configure", confirmed.SourceText);
@@ -451,9 +451,9 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
             new("And Configure", 250, 100, 150, 30, 24, false),
         ];
         tracker.Update([whole], imageSize, TimeSpan.Zero);
-        tracker.Update(changedSplit, imageSize, TimeSpan.FromMilliseconds(500));
+        tracker.Update(changedSplit.ToArray(), imageSize, TimeSpan.FromMilliseconds(500));
         Assert.Single(tracker.Update(
-            changedSplit, imageSize, TimeSpan.FromMilliseconds(1000)));
+            changedSplit.ToArray(), imageSize, TimeSpan.FromMilliseconds(1000)));
 
         Assert.Single(tracker.Update(
             [whole], imageSize, TimeSpan.FromMilliseconds(1500)));
@@ -496,15 +496,15 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
             new("And Configure", 245, 100, 155, 30, 24, false),
         ];
         TextRect changedMerged = new("Open Settings And Configure", 100, 100, 300, 30, 24, false);
-        tracker.Update(fragments, imageSize, TimeSpan.Zero);
-        tracker.Update([changedMerged], imageSize, TimeSpan.FromMilliseconds(500));
+        tracker.Update(fragments.ToArray(), imageSize, TimeSpan.Zero);
+        tracker.Update(new[] { changedMerged }, imageSize, TimeSpan.FromMilliseconds(500));
         Assert.Single(tracker.Update(
-            [changedMerged], imageSize, TimeSpan.FromMilliseconds(1000)));
+            new[] { changedMerged }, imageSize, TimeSpan.FromMilliseconds(1000)));
 
         Assert.Single(tracker.Update(
-            fragments, imageSize, TimeSpan.FromMilliseconds(1500)));
+            fragments.ToArray(), imageSize, TimeSpan.FromMilliseconds(1500)));
         IReadOnlyList<TextRect> restored = tracker.Update(
-            fragments, imageSize, TimeSpan.FromMilliseconds(2000));
+            fragments.ToArray(), imageSize, TimeSpan.FromMilliseconds(2000));
 
         Assert.Equal(["Open Options", "And Configure"], restored.Select(rect => rect.SourceText));
     }
@@ -864,9 +864,10 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         TextRect second = new("Game", 125, 400, 90, 32, 25, false);
         TextRect merged = new("New Game", 50, 400, 165, 32, 25, false);
 
-        Assert.Equal(2, tracker.Update([first, second], imageSize).Count);
-        Assert.Equal(2, tracker.Update([merged], imageSize).Count);
-        TextRect result = Assert.Single(tracker.Update([merged], imageSize));
+        Assert.Equal(2, tracker.Update([first, second], imageSize, TimeSpan.Zero).Count);
+        Assert.Equal(2, tracker.Update(new[] { merged }, imageSize, TimeSpan.FromMilliseconds(500)).Count);
+        TextRect result = Assert.Single(tracker.Update(
+            new[] { merged }, imageSize, TimeSpan.FromMilliseconds(1000)));
         Assert.Equal("New Game", result.SourceText);
     }
 
