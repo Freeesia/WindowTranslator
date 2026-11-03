@@ -132,102 +132,63 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Theory]
-    [InlineData(1, 0)]
-    [InlineData(2, 300)]
-    [InlineData(3, 900)]
-    [InlineData(4, 1500)]
-    [InlineData(5, 2100)]
-    public void ReprocessingTheSameMicroGeometryObservationConfirmsByElapsedTime(int level, int confirmationMs)
+    [InlineData(1, 0, 98, 23)]
+    [InlineData(2, 300, 98, 23)]
+    [InlineData(3, 900, 98, 23)]
+    [InlineData(4, 1500, 98, 23)]
+    [InlineData(5, 2100, 98, 23)]
+    [InlineData(1, 0, 102, 25)]
+    [InlineData(2, 300, 102, 25)]
+    [InlineData(3, 900, 102, 25)]
+    [InlineData(4, 1500, 102, 25)]
+    [InlineData(5, 2100, 102, 25)]
+    public void ReprocessingTheSameMicroGeometryObservationConfirmsByElapsedTime(
+        int level, int confirmationMs, double x, double fontSize)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance, new() { OcrGeometryStability = level });
         Size imageSize = new(1000, 600);
         TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
-        TextRect[] microGeometry = [initial with { X = 102 }];
+        TextRect[] microGeometry = [initial with { X = x, FontSize = fontSize }];
         tracker.Update([initial], imageSize, TimeSpan.Zero);
 
         TextRect pending = Assert.Single(tracker.Update(microGeometry, imageSize, TimeSpan.FromSeconds(3)));
-        Assert.Equal(confirmationMs == 0 ? 102 : 100, pending.X);
+        Assert.Equal(confirmationMs == 0 ? (x, fontSize) : (100, 24), (pending.X, pending.FontSize));
         if (confirmationMs > 0)
         {
             TextRect beforeDeadline = Assert.Single(tracker.Update(
                 microGeometry, imageSize, TimeSpan.FromMilliseconds(3000 + confirmationMs - 1)));
-            Assert.Equal(100, beforeDeadline.X);
+            Assert.Equal((100, 24), (beforeDeadline.X, beforeDeadline.FontSize));
         }
 
         TextRect confirmed = Assert.Single(tracker.Update(
             microGeometry, imageSize, TimeSpan.FromMilliseconds(3000 + confirmationMs)));
-        Assert.Equal(102, confirmed.X);
+        Assert.Equal((x, fontSize), (confirmed.X, confirmed.FontSize));
     }
 
     [Theory]
     [InlineData(50)]
     [InlineData(100)]
     [InlineData(300)]
-    public void ReprocessingTheSameMicroGeometryObservationAddsNoNoiseSamples(int processingIntervalMs)
+    [InlineData(900)]
+    public void ReprocessingPersistentMicroDecreaseDoesNotWaitForAnotherCapture(int processingIntervalMs)
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
         Size imageSize = new(1000, 600);
         TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
-        TextRect[] microGeometry = [initial with { X = 98, FontSize = 23 }];
+        TextRect[] changed = [initial with { X = 98, FontSize = 23 }];
         tracker.Update([initial], imageSize, TimeSpan.Zero);
+        tracker.Update(changed, imageSize, TimeSpan.FromSeconds(3));
 
-        for (int elapsedMs = 0; elapsedMs <= 1800; elapsedMs += processingIntervalMs)
+        for (int elapsedMs = processingIntervalMs; elapsedMs < 900; elapsedMs += processingIntervalMs)
         {
-            TextRect repeated = Assert.Single(tracker.Update(
-                microGeometry, imageSize, TimeSpan.FromMilliseconds(3000 + elapsedMs)));
-            Assert.Equal((100d, 24d), (repeated.X, repeated.FontSize));
+            TextRect pending = Assert.Single(tracker.Update(
+                changed, imageSize, TimeSpan.FromMilliseconds(3000 + elapsedMs)));
+            Assert.Equal((100, 24), (pending.X, pending.FontSize));
         }
 
-        TextRect[] nextObservation = [initial with { X = 102, FontSize = 25 }];
-        tracker.Update(nextObservation, imageSize, TimeSpan.FromSeconds(6));
         TextRect confirmed = Assert.Single(tracker.Update(
-            nextObservation, imageSize, TimeSpan.FromMilliseconds(6900)));
-        Assert.Equal((102d, 25d), (confirmed.X, confirmed.FontSize));
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(5)]
-    public void ReprocessingTheConfirmedObservationDoesNotStartAMicroGeometryWindow(int processingCount)
-    {
-        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
-        Size imageSize = new(1000, 600);
-        TextRect[] initial = [new("Panel", 100, 100, 100, 30, 24, false)];
-        tracker.Update(initial, imageSize, TimeSpan.Zero);
-        for (int processing = 1; processing <= processingCount; processing++)
-        {
-            tracker.Update(initial, imageSize, TimeSpan.FromMilliseconds(processing * 100));
-        }
-
-        TextRect[] changed = [initial[0] with { X = 102 }];
-        tracker.Update(changed, imageSize, TimeSpan.FromMilliseconds(600));
-        TextRect pending = Assert.Single(tracker.Update(changed, imageSize, TimeSpan.FromMilliseconds(1499)));
-        Assert.Equal(100, pending.X);
-        TextRect confirmed = Assert.Single(tracker.Update(changed, imageSize, TimeSpan.FromMilliseconds(1500)));
-        Assert.Equal(102, confirmed.X);
-    }
-
-    [Fact]
-    public void ReprocessingTheConfirmedNormalGeometryDoesNotStartAMicroGeometryWindow()
-    {
-        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
-        Size imageSize = new(1000, 600);
-        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
-        tracker.Update([initial], imageSize, TimeSpan.Zero);
-        TextRect[] normalGeometry = [initial with { X = 120 }];
-        tracker.Update(normalGeometry, imageSize, TimeSpan.FromMilliseconds(500));
-        Assert.Equal(120, Assert.Single(tracker.Update(
-            normalGeometry, imageSize, TimeSpan.FromMilliseconds(800))).X);
-        tracker.Update(normalGeometry, imageSize, TimeSpan.FromMilliseconds(900));
-
-        TextRect[] microGeometry = [normalGeometry[0] with { X = 122 }];
-        tracker.Update(microGeometry, imageSize, TimeSpan.FromMilliseconds(1000));
-        TextRect pending = Assert.Single(tracker.Update(
-            microGeometry, imageSize, TimeSpan.FromMilliseconds(1899)));
-        Assert.Equal(120, pending.X);
-        TextRect confirmed = Assert.Single(tracker.Update(
-            microGeometry, imageSize, TimeSpan.FromMilliseconds(1900)));
-        Assert.Equal(122, confirmed.X);
+            changed, imageSize, TimeSpan.FromMilliseconds(3900)));
+        Assert.Equal((98, 23), (confirmed.X, confirmed.FontSize));
     }
 
     [Fact]

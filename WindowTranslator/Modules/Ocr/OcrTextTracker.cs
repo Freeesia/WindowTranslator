@@ -1932,7 +1932,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         private TextRect? normalGeometryCandidate;
         private TimeSpan normalGeometryCandidateSince;
         private TimeSpan noiseGeometrySince;
-        private TimeSpan lastGeometryObservationTime = timestamp;
         private readonly List<TextRect> noiseGeometrySamples = [];
         private string? textCandidate;
         private TimeSpan textCandidateSince;
@@ -1989,8 +1988,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
             this.LatestObservation = current;
             this.UpdateText(current.SourceText, timestamp);
-            this.UpdateGeometry(current, timestamp, observationTimestamp != this.lastGeometryObservationTime);
-            this.lastGeometryObservationTime = observationTimestamp;
+            this.UpdateGeometry(current, timestamp);
             this.Stabilized = current with
             {
                 SourceText = this.ConfirmedText,
@@ -2122,7 +2120,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.LastObservationTime = timestamp;
         }
 
-        private void UpdateGeometry(TextRect current, TimeSpan timestamp, bool isNewObservation)
+        private void UpdateGeometry(TextRect current, TimeSpan timestamp)
         {
             double movement = CenterDistance(this.Stabilized, current);
             if (movement > Math.Max(this.Stabilized.Width, this.Stabilized.Height) * 0.75)
@@ -2139,19 +2137,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     return;
                 }
                 this.normalGeometryCandidate = null;
-                if (isNewObservation)
+                if (this.noiseGeometrySamples.Count == 0)
                 {
-                    if (this.noiseGeometrySamples.Count == 0)
-                    {
-                        this.noiseGeometrySince = timestamp;
-                        this.noiseGeometrySamples.Add(this.Stabilized);
-                    }
-                    this.noiseGeometrySamples.Add(current);
+                    this.noiseGeometrySince = timestamp;
+                    this.noiseGeometrySamples.Add(this.Stabilized);
                 }
 
+                this.noiseGeometrySamples.Add(current);
                 // 現在の表示値を含めた中央値で微小な揺れを抑える。
-                if (this.noiseGeometrySamples.Count > 0
-                    && timestamp - this.noiseGeometrySince >= profile.MicroGeometryConfirmationTime)
+                if (timestamp - this.noiseGeometrySince >= profile.MicroGeometryConfirmationTime)
                 {
                     this.ApplyGeometry(RepresentativeGeometry(this.noiseGeometrySamples));
                 }
