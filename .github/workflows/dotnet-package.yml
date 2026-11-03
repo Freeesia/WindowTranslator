@@ -39,9 +39,11 @@ jobs:
             -p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} `
             -p:DecryptKey="${{ secrets.WINDOWTRANSLATOR_DECRYPTKEY }}"
       - name: Upload NuGet packages
-        uses: ./.github/scripts/upload-nupkgs
+        uses: actions/upload-artifact@v7
         with:
-          path: pack
+          name: WindowTranslator-plugins-${{ steps.gitversion.outputs.fullSemVer }}
+          path: pack\*.nupkg
+          if-no-files-found: error
       - name: NuGet login
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: nuget_login
