@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
@@ -1929,6 +1930,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         long? coveringTrackId,
         TrackingProfile profile)
     {
+        // OCRで見間違えやすい文字の組。同じ組の文字への入れ替わりは元の文字列の読み間違いとみなす。
+        private static readonly FrozenDictionary<char, int> confusableCharacterGroups = new[]
+        {
+            "1lI|!i", "0Oo", "5Ss", "8B", "2Zz", "Cc", "Vv", "Ww", "Xx",
+            "ロ口", "カ力", "エ工", "ニ二", "ハ八", "タ夕", "ト卜", "ー一", "へヘ", "べベ", "ぺペ",
+        }
+            .SelectMany((characters, group) => characters.Select(character => (character, group)))
+            .ToFrozenDictionary(pair => pair.character, pair => pair.group);
+
         private TextRect? normalGeometryCandidate;
         private TimeSpan normalGeometryCandidateSince;
         private TimeSpan noiseGeometrySince;
@@ -2086,29 +2096,40 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 return;
             }
 
-            // 直近のタイムアウト時間の過半を占める候補だけを、一時的な誤認識ではないとみなして確定する。
+            // 直近のタイムアウト時間の半分以上読み取られた候補が1つに決まれば、一時的な誤認識ではないとみなして確定する。
             if (this.FindDominantTextObservation(timestamp) is { } dominant)
             {
                 this.ConfirmText(dominant.Original, dominant.Normalized);
                 return;
             }
 
-            // 数字だけが変わり続ける場合は実際に変化している数値とみなし、最新の観測へ追従する。
-            // 数字以外の文字が揺れる場合は誤認識とみなし、優勢な候補が現れるまで確定済みの文字列を保持する。
-            if (this.HasOnlyDigitChanges())
+            // 候補が1つに決まらない間、確定済みの文字列の読み間違いが含まれる場合は確定済みの文字列を保持する。
+            // 読み間違いを含まない場合は別の文字列へ変わり続けているとみなし、最新の観測へ追従する。
+            if (!this.textHistory.Any(observation => IsMisreading(observation.Normalized, this.normalizedConfirmedText)))
             {
                 this.ConfirmText(current, normalizedCurrent);
             }
         }
 
-        private bool HasOnlyDigitChanges()
+        private static bool IsMisreading(string text, string original)
         {
-            string confirmed = RemoveDigits(this.normalizedConfirmedText);
-            return this.textHistory.All(observation => RemoveDigits(observation.Normalized) == confirmed);
+            // 違いがOCRで見間違えやすい文字の入れ替わりだけなら、元の文字列の読み間違いとみなす。
+            if (text.Length != original.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != original[i]
+                    && (!confusableCharacterGroups.TryGetValue(text[i], out int group)
+                        || !confusableCharacterGroups.TryGetValue(original[i], out int originalGroup)
+                        || group != originalGroup))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
-
-        private static string RemoveDigits(string text)
-            => NormalizeText(string.Concat(text.Where(character => !char.IsDigit(character))));
 
         private void RecordTextObservation(TextObservation observation, TimeSpan timestamp)
         {
@@ -2145,14 +2166,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 }
             }
 
+            TextObservation? dominant = null;
             foreach (var (normalized, weight) in weights)
             {
-                if (weight * 2 > profile.TextChangeTimeout)
+                if (weight * 2 >= profile.TextChangeTimeout)
                 {
-                    return this.textHistory.Last(observation => observation.Normalized == normalized);
+                    // ちょうど半分ずつの2候補は、どちらも優勢ではないとみなす。
+                    if (dominant is not null)
+                    {
+                        return null;
+                    }
+                    dominant = this.textHistory.Last(observation => observation.Normalized == normalized);
                 }
             }
-            return null;
+            return dominant;
         }
 
         private void ConfirmText(string original, string normalized)
