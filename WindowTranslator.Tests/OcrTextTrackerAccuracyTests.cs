@@ -541,6 +541,36 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         Assert.Equal("Stable", recovered.SourceText);
     }
 
+    [Fact]
+    public void TextTimeoutWeighsObservedTimeAndFollowsTheLatestRecognitionWithoutWaitingForOcr()
+    {
+        // 既定設定では文字列の確定時間が300ms、タイムアウトが1200ms。
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Stable", 100, 100, 100, 20, 16, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        // 250msごとに誤認識が入れ替わり、Stab|e のOCR結果だけ10msごとに再処理される。
+        string[] transientErrors = ["Stab1e", "Stab|e", "StabIe"];
+        TextRect[] observations = [];
+        for (int milliseconds = 250; milliseconds <= 2650; milliseconds += 10)
+        {
+            if (milliseconds % 250 == 0)
+            {
+                observations = [stable with { SourceText = transientErrors[(milliseconds / 250 - 1) % transientErrors.Length] }];
+            }
+            else if (milliseconds % 50 != 0 && observations[0].SourceText != "Stab|e")
+            {
+                continue;
+            }
+
+            TextRect result = Assert.Single(tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(milliseconds)));
+            // 再処理の回数では過半でも、観測時間が過半の候補がなければタイムアウトで確定しない。
+            // 優勢な候補がないまま更にタイムアウト時間が経過したら、次のOCRを待たずに最新の認識へ追従する。
+            Assert.Equal(milliseconds < 2650 ? "Stable" : "Stab1e", result.SourceText);
+        }
+    }
+
     [Theory]
     [InlineData(5)]
     [InlineData(6)]

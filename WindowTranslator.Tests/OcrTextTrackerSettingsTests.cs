@@ -119,10 +119,11 @@ public class OcrTextTrackerSettingsTests
     }
 
     [Theory]
-    [InlineData(4, 5)]
-    [InlineData(5, 6)]
-    public void ScatteredTextVotesNeedEnoughRecentWeight(int level, int pendingFrames)
+    [InlineData(4, 3)]
+    [InlineData(5, 5)]
+    public void ScatteredTextNeedsMostOfTheRecentTimeout(int level, int pendingFrames)
     {
+        // 直近のタイムアウト時間の過半をPanelAが占めた時点で、現在の認識がPanelCでもPanelAを確定する。
         OcrTextTracker tracker = Create(recognition: level);
         Update(tracker, 0, initial);
         string[] observations = ["PanelA", "PanelB", "PanelA", "PanelC", "PanelA", "PanelA", "PanelA"];
