@@ -3,8 +3,15 @@ description: >-
   Windowsのアプリケーションのウィンドウを翻訳するためのツール
 
 # Build settings
-remote_theme: pages-themes/cayman@v0.2.0
+theme: jekyll-theme-cayman
 plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
+  - jekyll-feed
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-relative-links
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
-markdown: GFM
+markdown: kramdown
+kramdown:
+  input: GFM
