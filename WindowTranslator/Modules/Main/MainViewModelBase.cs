@@ -279,10 +279,15 @@ public abstract partial class MainViewModelBase : IDisposable
         this.trackingRequests.OnNext((texts, context));
     }
 
+    internal static IEnumerable<TextRect> SelectOcrTexts(
+        IEnumerable<TextRect> observations, System.Drawing.Size imageSize, IOcrTextTracker tracker, bool isOneShotMode)
+        => isOneShotMode ? observations : tracker.Update(observations, imageSize);
+
     private async ValueTask<IEnumerable<TextRect>> ProcessTrackingAsync((IEnumerable<TextRect> Texts, FilterContext Context) request, SoftwareBitmap bitmap, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var texts = this.ocrTextTracker.Update(request.Texts, request.Context.ImageSize).Select(t => t with { FontSize = t.FontSize * this.fontScale });
+        var texts = SelectOcrTexts(request.Texts, request.Context.ImageSize, this.ocrTextTracker, this.isOneShotMode)
+            .Select(t => t with { FontSize = t.FontSize * this.fontScale });
         texts = (await this.color.ConvertColorAsync(bitmap, texts)).ToArray();
         texts = texts.Select(t => t switch
         {
