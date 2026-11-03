@@ -542,7 +542,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void TextTimeoutWeighsObservedTimeAndFollowsTheLatestRecognitionWithoutWaitingForOcr()
+    public void TextTimeoutDoesNotConfirmRecurringTransientErrorsAfterMultipleTimeouts()
     {
         // 既定設定では文字列の確定時間が300ms、タイムアウトが1200ms。
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
@@ -553,7 +553,7 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         // 250msごとに誤認識が入れ替わり、Stab|e のOCR結果だけ10msごとに再処理される。
         string[] transientErrors = ["Stab1e", "Stab|e", "StabIe"];
         TextRect[] observations = [];
-        for (int milliseconds = 250; milliseconds <= 2650; milliseconds += 10)
+        for (int milliseconds = 250; milliseconds <= 12250; milliseconds += 10)
         {
             if (milliseconds % 250 == 0)
             {
@@ -565,9 +565,29 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
             }
 
             TextRect result = Assert.Single(tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(milliseconds)));
-            // 再処理の回数では過半でも、観測時間が過半の候補がなければタイムアウトで確定しない。
-            // 優勢な候補がないまま更にタイムアウト時間が経過したら、次のOCRを待たずに最新の認識へ追従する。
-            Assert.Equal(milliseconds < 2650 ? "Stable" : "Stab1e", result.SourceText);
+            // 再処理の回数では過半でも、観測時間が過半の候補がなく、数字以外の文字が揺れる間は確定しない。
+            Assert.Equal("Stable", result.SourceText);
+        }
+    }
+
+    [Fact]
+    public void TextTimeoutFollowsContinuousDigitChangesAtTheExistingTimeout()
+    {
+        // 数字だけが確定時間より速く変わり続ける場合は、従来どおりタイムアウト時間で最新の認識へ追従する。
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Score 0", 100, 100, 100, 20, 16, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect[] observations = [];
+        for (int milliseconds = 250; milliseconds <= 1450; milliseconds += 50)
+        {
+            if (milliseconds % 250 == 0)
+            {
+                observations = [initial with { SourceText = $"Score {milliseconds / 250}" }];
+            }
+            TextRect result = Assert.Single(tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(milliseconds)));
+            Assert.Equal(milliseconds < 1450 ? initial.SourceText : "Score 5", result.SourceText);
         }
     }
 

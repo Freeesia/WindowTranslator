@@ -2093,12 +2093,22 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 return;
             }
 
-            // 優勢な候補がないまま更にタイムアウト時間が経過したら、変わり続ける文字列として最新の観測へ追従する。
-            if (unsettled >= profile.TextChangeTimeout * 2)
+            // 数字だけが変わり続ける場合は実際に変化している数値とみなし、最新の観測へ追従する。
+            // 数字以外の文字が揺れる場合は誤認識とみなし、優勢な候補が現れるまで確定済みの文字列を保持する。
+            if (this.HasOnlyDigitChanges())
             {
                 this.ConfirmText(current, normalizedCurrent);
             }
         }
+
+        private bool HasOnlyDigitChanges()
+        {
+            string confirmed = RemoveDigits(this.normalizedConfirmedText);
+            return this.textHistory.All(observation => RemoveDigits(observation.Normalized) == confirmed);
+        }
+
+        private static string RemoveDigits(string text)
+            => NormalizeText(string.Concat(text.Where(character => !char.IsDigit(character))));
 
         private void RecordTextObservation(TextObservation observation, TimeSpan timestamp)
         {
