@@ -536,7 +536,7 @@ Monitore werden nicht unterstützt.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Erkennungsstabilität</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduziert vorübergehende Änderungen am Text sowie das Aufteilen oder Zusammenführen von Bereichen. 1: schnelle Reaktion, 5: hohe Stabilität (Standard: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Anzeige bei vorübergehendem Verschwinden</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Legt fest, wie lange ein Bereich nach ausbleibender Erkennung sichtbar bleibt. 0: beim ersten Fehlen entfernen, Maximum: 7 (etwa 2,1 Sekunden), Standard: 3 (etwa 0,9 Sekunden). Unabhängig vom Aufnahmeintervall.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Legt fest, wie lange ein Bereich angezeigt bleibt, nachdem er nicht mehr erkannt wird. Die Haltezeit ist das Aufnahmeintervall plus Einstellungswert × 0,3 Sekunden. 0: beim ersten Fehlen entfernen, Standard: 3 (Intervall + 0,9 Sekunden), Maximum: 7 (Intervall + 2,1 Sekunden). Höhere Werte verringern Flackern durch vorübergehend ausbleibende Erkennung, niedrigere Werte entfernen die Anzeige verschwundenen Texts früher. Dauert die OCR-Verarbeitung länger als diese Haltezeit, verschwindet die Anzeige schon bei einem einzigen Fehlen, bis der Bereich wieder erkannt wird.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Alle</value>
   </data>

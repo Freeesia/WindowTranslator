@@ -108,7 +108,7 @@ public class TargetSettings
     public int OcrRecognitionStability { get; set => field = Math.Clamp(value, 1, 5); } = 3;
 
     /// <summary>
-    /// 認識できなくなった領域の表示保持の強さ（0: 即時除去、7: 保持重視）
+    /// 認識できなくなった領域の表示保持時間（0: 最初の欠落で除去、1以上: キャプチャ間隔＋設定値×0.3秒、最大: 7）
     /// </summary>
     public int OcrMissingFrameRetention { get; set => field = Math.Clamp(value, 0, 7); } = 3;
 
