@@ -121,19 +121,18 @@ public abstract partial class MainViewModelBase : IDisposable
             .SubscribeAwaitThrottleFirstLast(
                 (bitmap, ct) => bitmap is null ? ValueTask.CompletedTask : RecognizeAsync(bitmap, ct),
                 static bitmap => bitmap?.Dispose(), configureAwait: true));
-        var captures = !this.isOneShotMode && this.captureInterval > TimeSpan.Zero
-            ? this.captureRequests.ThrottleLast(this.captureInterval)
-            : this.captureRequests;
-        this.captureInput = captures.Subscribe(bitmap =>
-        {
-            _ = this.dispatcher.InvokeAsync(() =>
+        this.captureInput = !this.isOneShotMode && this.captureInterval > TimeSpan.Zero
+            ? this.captureRequests.ThrottleLast(this.captureInterval).Subscribe(bitmap =>
             {
-                if (ReferenceEquals(Interlocked.CompareExchange(ref this.pendingCapture, null, bitmap), bitmap))
+                _ = this.dispatcher.InvokeAsync(() =>
                 {
-                    this.recognitionRequests.OnNext(bitmap);
-                }
-            });
-        });
+                    if (ReferenceEquals(Interlocked.CompareExchange(ref this.pendingCapture, null, bitmap), bitmap))
+                    {
+                        this.recognitionRequests.OnNext(bitmap);
+                    }
+                });
+            })
+            : Disposable.Empty;
         this.trackingTimer = new DispatcherTimer(DispatcherPriority.Normal, this.dispatcher)
         {
             Interval = TimeSpan.FromMilliseconds(100),
@@ -183,9 +182,9 @@ public abstract partial class MainViewModelBase : IDisposable
                     // 重い追跡処理は UI スレッドを離れて実行する。
                     await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
                     ct.ThrowIfCancellationRequested();
-                    if (hidden.Task.IsCompleted || !this.OverlayVisible) return;
+                    if (hidden.Task.IsCompleted) return;
                     if (reset) this.ocrTextTracker.Reset();
-                    if (hidden.Task.IsCompleted || !this.OverlayVisible) return;
+                    if (hidden.Task.IsCompleted) return;
                     var texts = await ProcessTrackingAsync(request, bitmap, hidden.Task, ct);
                     if (texts is null)
                     {
@@ -193,13 +192,13 @@ public abstract partial class MainViewModelBase : IDisposable
                     }
                     await this.dispatcher.InvokeAsync(() =>
                     {
-                        if (hidden.Task.IsCompleted || this.disposedValue || !this.OverlayVisible) return;
+                        if (hidden.Task.IsCompleted || this.disposedValue) return;
                         if (this.isFirstCapture)
                         {
                             this.isFirstCapture = false;
                             UpdateOcrTexts(texts, hidden.Task);
                         }
-                        if (hidden.Task.IsCompleted || !this.OverlayVisible) return;
+                        if (hidden.Task.IsCompleted) return;
                         this.translationRequests.OnNext((texts, request.Context with { SoftwareBitmap = bitmap.GetReadOnlyView(), }));
                     });
                 }, AwaitOperation.Drop, configureAwait: false, cancelOnCompleted: true));
@@ -285,7 +284,7 @@ public abstract partial class MainViewModelBase : IDisposable
     {
         var accepted = await this.dispatcher.InvokeAsync(() =>
         {
-            if (this.disposedValue || !this.OverlayVisible || observer.IsDisposed) return false;
+            if (this.disposedValue || observer.IsDisposed) return false;
             if (this.isOneShotMode) this.capture.StopCapture();
             return true;
         });
@@ -298,10 +297,10 @@ public abstract partial class MainViewModelBase : IDisposable
         {
             await this.dispatcher.InvokeAsync(() =>
             {
-                if (this.disposedValue || !this.OverlayVisible || observer.IsDisposed) return;
+                if (this.disposedValue || observer.IsDisposed) return;
                 this.Width = bitmap.PixelWidth;
                 this.Height = bitmap.PixelHeight;
-                if (this.disposedValue || !this.OverlayVisible || observer.IsDisposed) return;
+                if (this.disposedValue || observer.IsDisposed) return;
                 observer.OnNext(bitmap);
                 handedOff = true;
             });
@@ -317,9 +316,10 @@ public abstract partial class MainViewModelBase : IDisposable
         using var bitmap = new DisposeAction(capturedBitmap.Dispose);
         var hidden = new TaskCompletionSource();
         using var visibility = ObserveHiding(hidden);
+        if (!this.OverlayVisible) return;
         await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
         cancellationToken.ThrowIfCancellationRequested();
-        if (this.disposedValue || hidden.Task.IsCompleted || !this.OverlayVisible)
+        if (this.disposedValue || hidden.Task.IsCompleted)
         {
             return;
         }
@@ -390,7 +390,7 @@ public abstract partial class MainViewModelBase : IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         await this.dispatcher.InvokeAsync(() =>
         {
-            if (this.disposedValue || hidden.Task.IsCompleted || !this.OverlayVisible) return;
+            if (this.disposedValue || hidden.Task.IsCompleted) return;
             var context = new FilterContext
             {
                 SoftwareBitmap = capturedBitmap.GetReadOnlyView(),
@@ -403,7 +403,7 @@ public abstract partial class MainViewModelBase : IDisposable
     private async Task<bool> StopRecognitionAsync(Task hidden)
         => await this.dispatcher.InvokeAsync(() =>
         {
-            if (this.disposedValue || hidden.IsCompleted || !this.OverlayVisible) return false;
+            if (this.disposedValue || hidden.IsCompleted) return false;
             this.captureEvents.Dispose();
             ClearPendingCapture();
             this.captureInput.Dispose();
@@ -425,12 +425,12 @@ public abstract partial class MainViewModelBase : IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         var texts = SelectOcrTexts(request.Texts, request.Context.ImageSize, this.ocrTextTracker, this.isOneShotMode)
             .Select(t => t with { FontSize = t.FontSize * this.fontScale });
-        if (hidden.IsCompleted || !this.OverlayVisible)
+        if (hidden.IsCompleted)
         {
             return null;
         }
         texts = (await this.color.ConvertColorAsync(bitmap, texts)).ToArray();
-        if (hidden.IsCompleted || !this.OverlayVisible)
+        if (hidden.IsCompleted)
         {
             return null;
         }
@@ -448,9 +448,10 @@ public abstract partial class MainViewModelBase : IDisposable
         using var bitmap = request.Context.SoftwareBitmap;
         var hidden = new TaskCompletionSource();
         using var visibility = ObserveHiding(hidden);
+        if (!this.OverlayVisible) return;
         await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
         cancellationToken.ThrowIfCancellationRequested();
-        if (this.disposedValue || hidden.Task.IsCompleted || !this.OverlayVisible)
+        if (this.disposedValue || hidden.Task.IsCompleted)
         {
             return;
         }
@@ -465,7 +466,7 @@ public abstract partial class MainViewModelBase : IDisposable
             using var t = this.logger.LogDebugTime("翻訳前処理");
             texts = await tmp.ToArrayAsync(cancellationToken);
         }
-        if (hidden.Task.IsCompleted || !this.OverlayVisible)
+        if (hidden.Task.IsCompleted)
         {
             return;
         }
@@ -477,7 +478,7 @@ public abstract partial class MainViewModelBase : IDisposable
             if (requests.Length > 0)
             {
                 using var t = this.logger.LogDebugTime("翻訳");
-                if (hidden.Task.IsCompleted || !this.OverlayVisible) return;
+                if (hidden.Task.IsCompleted) return;
                 var translated = await this.translator.TranslateAsync(requests).ConfigureAwait(false);
                 this.cache.AddRange(requests.Select(t => t.SourceText).Zip(translated));
                 var translatedIndex = 0;
@@ -499,7 +500,7 @@ public abstract partial class MainViewModelBase : IDisposable
             this.logger.LogError(e, "翻訳中にエラーが発生");
             var stopped = await this.dispatcher.InvokeAsync(() =>
             {
-                if (hidden.Task.IsCompleted || this.disposedValue || !this.OverlayVisible) return false;
+                if (hidden.Task.IsCompleted || this.disposedValue) return false;
                 this.captureEvents.Dispose();
                 ClearPendingCapture();
                 this.captureInput.Dispose();
@@ -526,7 +527,7 @@ public abstract partial class MainViewModelBase : IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         await this.dispatcher.InvokeAsync(() =>
         {
-            if (!hidden.Task.IsCompleted && !this.disposedValue && this.OverlayVisible)
+            if (!hidden.Task.IsCompleted && !this.disposedValue)
             {
                 UpdateOcrTexts(texts, hidden.Task);
             }

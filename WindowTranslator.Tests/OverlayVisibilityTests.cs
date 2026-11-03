@@ -91,6 +91,7 @@ public sealed class OverlayVisibilityTests
                         await VerifyReentrantHideAsync();
                         await VerifyNestedVisibilityAsync();
                         await VerifyPendingAsync();
+                        await VerifyOneShotAsync();
                         await VerifyDelayedCaptureAsync();
                         await VerifyDisposeAsync();
                         afterShutdown = new Fixture(captureInterval: 0.5);
@@ -332,6 +333,15 @@ public sealed class OverlayVisibilityTests
         Assert.False(fixture.Ocr.Gate.Started.Task.IsCompleted);
     }
 
+    private static async Task VerifyOneShotAsync()
+    {
+        await using var fixture = new Fixture(captureInterval: 10, isOneShotMode: true);
+        fixture.SubmitCapture(Bitmap(321));
+        await fixture.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+        Assert.Equal(0, fixture.Tracker.UpdateCount);
+    }
+
     private static async Task VerifyReentrantShowAsync()
     {
         await using var fixture = new Fixture(Stage.Ocr);
@@ -444,7 +454,7 @@ public sealed class OverlayVisibilityTests
         private readonly OcrTraceRecorder recorder = new(NullLogger<OcrTraceRecorder>.Instance);
         private readonly Action<SoftwareBitmap> submitCapture;
 
-        public Fixture(Stage? delayed = null, double captureInterval = 0, bool delayReset = false, bool delayFilter = false, bool multipleTexts = false, bool withoutContext = false, bool failFirst = false, bool delayUpdate = false)
+        public Fixture(Stage? delayed = null, double captureInterval = 0, bool delayReset = false, bool delayFilter = false, bool multipleTexts = false, bool withoutContext = false, bool failFirst = false, bool delayUpdate = false, bool isOneShotMode = false)
         {
             this.Ocr = new(delayed == Stage.Ocr, multipleTexts, failFirst && delayed == Stage.Ocr);
             this.Color = new(delayed == Stage.Color);
@@ -456,7 +466,7 @@ public sealed class OverlayVisibilityTests
             {
                 if (withoutContext) SynchronizationContext.SetSynchronizationContext(null);
                 this.Model = new OverlayMainViewModel(
-                    null!, new Snapshot<TargetSettings>(new() { CaptureInterval = captureInterval }), new ProcessInfo(),
+                    null!, new Snapshot<TargetSettings>(new() { CaptureInterval = captureInterval, IsOneShotMode = isOneShotMode }), new ProcessInfo(),
                     this.Capture, this.Ocr, new Snapshot<BasicOcrParam>(new()), this.Tracker, this.recorder,
                     this.Translator, new Cache(), this.Color, delayFilter ? [this.Filter] : [], NullLogger<OverlayMainViewModel>.Instance);
             }
