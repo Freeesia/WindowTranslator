@@ -96,6 +96,96 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void ReprocessingTheSameObservationDoesNotConfirmTextOrGeometry()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Stable", 100, 100, 100, 30, 24, false);
+        TextRect[] transientError = [initial with { SourceText = "Stab1e", X = 120 }];
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect firstProcessing = Assert.Single(tracker.Update(
+            transientError, imageSize, TimeSpan.FromMilliseconds(500)));
+        TextRect secondProcessing = Assert.Single(tracker.Update(
+            transientError, imageSize, TimeSpan.FromMilliseconds(1000)));
+        Assert.Equal(("Stable", 100d), (firstProcessing.SourceText, secondProcessing.X));
+        TextRect repeated = Assert.Single(tracker.Update(
+            transientError, imageSize, TimeSpan.FromSeconds(3)));
+
+        Assert.Equal(("Stable", 100), (repeated.SourceText, repeated.X));
+    }
+
+    [Fact]
+    public void ReprocessingTheSameMicroGeometryObservationAddsNoNoiseSamples()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect[] microGeometry = [initial with { X = 102 }];
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        tracker.Update(microGeometry, imageSize, TimeSpan.FromMilliseconds(500));
+        TextRect repeated = Assert.Single(tracker.Update(
+            microGeometry, imageSize, TimeSpan.FromSeconds(3)));
+
+        Assert.Equal(100, repeated.X);
+    }
+
+    [Fact]
+    public void ReprocessingTheSameSplitObservationDoesNotConfirmItsText()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect whole = new("Open Options And Configure", 100, 100, 300, 30, 24, false);
+        TextRect[] split =
+        [
+            new("Open Settings", 100, 100, 150, 30, 24, false),
+            new("And Configure", 250, 100, 150, 30, 24, false),
+        ];
+        tracker.Update([whole], imageSize, TimeSpan.Zero);
+
+        tracker.Update(split, imageSize, TimeSpan.FromMilliseconds(500));
+        TextRect repeated = Assert.Single(tracker.Update(
+            split, imageSize, TimeSpan.FromSeconds(3)));
+
+        Assert.Equal(whole.SourceText, repeated.SourceText);
+    }
+
+    [Fact]
+    public void ReprocessingTheSameMergeObservationDoesNotConfirmTheMerge()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("New", 50, 400, 70, 32, 25, false);
+        TextRect second = new("Game", 125, 400, 90, 32, 25, false);
+        TextRect[] merged = [new("New Game", 50, 400, 165, 32, 25, false)];
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+
+        Assert.Equal(2, tracker.Update(merged, imageSize, TimeSpan.FromMilliseconds(500)).Count);
+        Assert.Equal(2, tracker.Update(merged, imageSize, TimeSpan.FromSeconds(3)).Count);
+    }
+
+    [Fact]
+    public void ReprocessingTheSameRestoreObservationDoesNotConfirmTheRestore()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect first = new("New", 50, 400, 70, 32, 25, false);
+        TextRect second = new("Game", 125, 400, 90, 32, 25, false);
+        TextRect[] firstMerge = [new("New Game", 50, 400, 165, 32, 25, false)];
+        TextRect[] secondMerge = [new("New Game", 50, 400, 165, 32, 25, false)];
+        tracker.Update([first, second], imageSize, TimeSpan.Zero);
+        tracker.Update(firstMerge, imageSize, TimeSpan.FromMilliseconds(500));
+        tracker.Update(secondMerge, imageSize, TimeSpan.FromMilliseconds(1000));
+        TextRect[] fragments = [first, second];
+
+        tracker.Update(fragments, imageSize, TimeSpan.FromMilliseconds(1500));
+        TextRect[] repeated = tracker.Update(fragments, imageSize, TimeSpan.FromSeconds(3)).ToArray();
+
+        Assert.Equal(["New Game"], repeated.Select(rect => rect.SourceText));
+    }
+
+    [Fact]
     public void TextAndWidthChangeDoesNotCreateOverlappingTracks()
     {
         OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);

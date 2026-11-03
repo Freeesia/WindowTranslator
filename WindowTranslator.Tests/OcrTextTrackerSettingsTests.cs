@@ -302,5 +302,5 @@ public class OcrTextTrackerSettingsTests
         });
 
     private static IReadOnlyList<TextRect> Update(OcrTextTracker tracker, int frame, params TextRect[] observations)
-        => tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(frame * 500));
+        => tracker.Update(observations.ToArray(), imageSize, TimeSpan.FromMilliseconds(frame * 500));
 }
