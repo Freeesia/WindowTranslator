@@ -2199,19 +2199,16 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 return;
             }
 
-            if (RepresentativeGeometry(
+            TextRect representative = RepresentativeGeometry(
                 this.noiseGeometrySamples,
                 this.Stabilized,
                 timestamp - profile.MicroGeometryConfirmationTime,
-                timestamp) is not TextRect representative)
-            {
-                return;
-            }
+                timestamp);
             this.ApplyGeometry(representative);
             if (!HasSameGeometry(representative, current))
             {
-                // 代表値と異なる観測が続く場合は、次の確認時間まで表示値を保つ。
-                this.noiseGeometrySince = timestamp;
+                // 最新観測が続いていた時間を引き継いで追従を続ける。
+                this.noiseGeometrySince = observationTimestamp;
                 this.noiseGeometrySamples.Add(new(observationTimestamp, current));
             }
         }
@@ -2225,7 +2222,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 && first.MultiLine == second.MultiLine
                 && AngleDifference(first.Angle, second.Angle) == 0;
 
-        private static TextRect? RepresentativeGeometry(
+        private static TextRect RepresentativeGeometry(
             List<GeometrySample> samples,
             TextRect displayed,
             TimeSpan windowStart,
@@ -2242,11 +2239,6 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     weighted.Add(new(samples[i].Geometry, (end - start).TotalMilliseconds));
                 }
             }
-            if (weighted.Count == 0)
-            {
-                return null;
-            }
-
             return displayed with
             {
                 X = WeightedMedian(weighted, displayed.X, static sample => sample.X, LinearDistance),

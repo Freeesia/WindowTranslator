@@ -202,6 +202,27 @@ public class OcrTextTrackerSettingsTests
         }
     }
 
+    [Fact]
+    public void LatestMicroGeometryKeepsItsElapsedTimeWhenRepresentativeMoves()
+    {
+        OcrTextTracker tracker = Create(geometry: 2);
+        TextRect[] initialObservation = [initial];
+        TextRect[] firstChange = [initial with { X = 102 }];
+        TextRect[] latestChange = [initial with { X = 104 }];
+
+        Assert.Equal(initial, Assert.Single(tracker.Update(initialObservation, imageSize, TimeSpan.Zero)));
+        Assert.Equal(initial, Assert.Single(tracker.Update(firstChange, imageSize, TimeSpan.FromMilliseconds(100))));
+        Assert.Equal(initial, Assert.Single(tracker.Update(latestChange, imageSize, TimeSpan.FromMilliseconds(350))));
+
+        TextRect representative = Assert.Single(tracker.Update(
+            latestChange, imageSize, TimeSpan.FromMilliseconds(400)));
+        Assert.Equal(102, representative.X);
+
+        TextRect converged = Assert.Single(tracker.Update(
+            latestChange, imageSize, TimeSpan.FromMilliseconds(650)));
+        Assert.Equal(104, converged.X);
+    }
+
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
