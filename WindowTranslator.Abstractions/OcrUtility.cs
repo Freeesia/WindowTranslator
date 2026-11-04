@@ -22,6 +22,31 @@ public static partial class OcrUtility
         System.Drawing.Size imageSize,
         Modules.BasicOcrParam options,
         string language)
+        => MergeTextRectsCore(source, imageSize, options, language, null);
+
+    /// <summary>
+    /// 単語の高さを文字サイズの補助情報として、傾きを考慮して行・段落へ結合する。
+    /// </summary>
+    /// <param name="source">結合前の単語または行の矩形</param>
+    /// <param name="imageSize">矩形と同じ倍率の全体画像サイズ</param>
+    /// <param name="options">共通の認識設定</param>
+    /// <param name="language">原文言語</param>
+    /// <param name="textHeights">各行の向きへ投影した単語高の中央値</param>
+    /// <returns>読み順に連結した段落の矩形</returns>
+    public static IReadOnlyList<TextRect> MergeTextRects(
+        IEnumerable<TextRect> source,
+        System.Drawing.Size imageSize,
+        Modules.BasicOcrParam options,
+        string language,
+        IReadOnlyDictionary<TextRect, double> textHeights)
+        => MergeTextRectsCore(source, imageSize, options, language, textHeights);
+
+    private static List<TextRect> MergeTextRectsCore(
+        IEnumerable<TextRect> source,
+        System.Drawing.Size imageSize,
+        Modules.BasicOcrParam options,
+        string language,
+        IReadOnlyDictionary<TextRect, double>? textHeights)
     {
         var directions = new List<List<TextRect>>();
         foreach (var rect in source.Where(r => !string.IsNullOrWhiteSpace(r.SourceText) && r.Width > 0 && r.Height > 0))
@@ -36,7 +61,9 @@ public static partial class OcrUtility
         var xThreshold = options.XPosThrethold * imageSize.Width;
         var yThreshold = options.YPosThrethold * imageSize.Height;
         var separator = LanguageUtility.IsSpaceLang(language) ? " " : string.Empty;
-        var results = new List<TextRect>();
+        var paragraphs = new List<List<TextRect>>();
+        var allLines = new List<TextRect>();
+        var measuredHeights = new Dictionary<TextRect, double>(ReferenceEqualityComparer.Instance);
         foreach (var direction in directions)
         {
             // 短い行だけ角度が揺れることがあるため、列の代表角度には中央値を使う。
@@ -94,7 +121,14 @@ public static partial class OcrUtility
                     }
                 }
                 lines.Add(line);
+                if (textHeights is not null)
+                {
+                    var heights = members.Where(textHeights.ContainsKey).Select(r => textHeights[r]).ToArray();
+                    if (heights.Length > 0)
+                        measuredHeights[line] = Median(heights);
+                }
             }
+            allLines.AddRange(lines);
 
             // 列ごとに行を並べ、隣接行の距離だけから通常の行送りを推定する。
             var columns = new List<List<TextRect>>();
@@ -145,16 +179,16 @@ public static partial class OcrUtility
                         var similarSize = Math.Abs(fontSize - line.FontSize) / Math.Min(fontSize, line.FontSize) <= options.FontSizeThrethold;
                         if (!aligned || !similarSize || AvoidList(last, line) || !close)
                         {
-                            results.Add(MergeTextMembers(paragraph, angle, separator, paragraph.Count > 1));
-                            paragraph.Clear();
+                            paragraphs.Add(paragraph);
+                            paragraph = [];
                         }
                     }
                     paragraph.Add(line);
                 }
-                results.Add(MergeTextMembers(paragraph, angle, separator, paragraph.Count > 1));
+                paragraphs.Add(paragraph);
             }
         }
-        return results;
+        return RefineParagraphs(allLines, paragraphs, measuredHeights, options, language, separator, xThreshold);
     }
 
     private static RectInfo ProjectTextBounds(TextRect rect, double cos, double sin)

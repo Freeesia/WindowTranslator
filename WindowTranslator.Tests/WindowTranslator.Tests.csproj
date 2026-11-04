@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <EmbeddedResource Include="TestData\OcrParagraphs.json" />
   </ItemGroup>
 
   <ItemGroup>
