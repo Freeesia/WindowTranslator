@@ -152,7 +152,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
             // 翻訳後言語のテキストは対象外
             .Where(r => !IsTargetLangText(r.SourceText))
             // 若干太らせる
-            .Select(r => r with { X = r.X - wFat, Width = r.Width + (wFat * 2), Y = r.Y - (r.Height * 0.04), Height = r.Height * 1.08 })
+            .Select(r => Utility.AddMargin(r, wFat))
             .ToArray();
     }
 
