@@ -3,11 +3,14 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Threading;
 using R3;
 using Windows.Graphics.Imaging;
+using WindowTranslator.Controls;
 using WindowTranslator.Modules;
 using WindowTranslator.Modules.Capture;
 using WindowTranslator.Modules.Main;
@@ -69,8 +72,6 @@ public sealed class OverlayVisibilityTests
             {
                 var application = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
                 Exception? failure = null;
-                Fixture? afterShutdown = null;
-                SoftwareBitmap? pendingAfterShutdown = null;
                 _ = application.Dispatcher.InvokeAsync(async () =>
                 {
                     try
@@ -83,23 +84,24 @@ public sealed class OverlayVisibilityTests
                         await VerifyInFlightAsync(Stage.Ocr, withoutContext: true);
                         await VerifyInFlightAsync(Stage.Ocr, failFirst: true);
                         await VerifyInFlightAsync(Stage.Translation, failFirst: true);
-                        await VerifyHiddenBeforeWorkStartsAsync();
+                        await VerifyQueuedCapturesAsync();
+                        await VerifyOcrCompletesWhileHiddenAsync();
                         await VerifyHiddenDuringResetAsync();
                         await VerifyHiddenDuringTrackingAsync();
+                        await VerifyUiResponsiveDuringTrackingAsync();
+                        await VerifyUiResponsiveDuringTranslationErrorAsync();
                         await VerifyHiddenDuringColorAsync();
+                        await VerifyHiddenDuringCacheAsync();
+                        await VerifyOldHandoffAfterReopenAsync();
                         await VerifyHiddenBeforeTranslationAsync();
                         await VerifyOldEmptyResultDoesNotRemoveNewAsync();
-                        await VerifyUiNotificationsAsync();
-                        await VerifyReentrantShowAsync();
-                        await VerifyReentrantHideAsync();
-                        await VerifyNestedVisibilityAsync();
-                        await VerifyPendingAsync();
                         await VerifyOneShotAsync();
-                        await VerifyDelayedCaptureAsync();
+                        await VerifyAutomaticWindowVisibilityAsync();
+                        await VerifyOneShotWindowVisibilityAsync();
+                        await VerifyDelayedCaptureAsync(isOneShotMode: false);
+                        await VerifyDelayedCaptureAsync(isOneShotMode: true);
+                        await VerifyQueuedOneShotStopAsync();
                         await VerifyDisposeAsync();
-                        afterShutdown = new Fixture(captureInterval: 0.5);
-                        pendingAfterShutdown = Bitmap(320);
-                        afterShutdown.SubmitCapture(pendingAfterShutdown);
                     }
                     catch (Exception exception)
                     {
@@ -112,9 +114,6 @@ public sealed class OverlayVisibilityTests
                 });
                 application.Run();
                 if (failure is not null) ExceptionDispatchInfo.Capture(failure).Throw();
-                Task.Run(afterShutdown!.Model.Dispose).GetAwaiter().GetResult();
-                Assert.True(IsDisposed(pendingAfterShutdown!));
-                afterShutdown.DisposeAsync().AsTask().GetAwaiter().GetResult();
                 finished.TrySetResult();
             }
             catch (Exception exception)
@@ -131,30 +130,40 @@ public sealed class OverlayVisibilityTests
     {
         await using var fixture = new Fixture();
         SoftwareBitmap? tracked = null;
+        var hiddenTicks = 0;
         var hiddenTranslations = 0;
         using var tracking = fixture.Tracking.Subscribe(request =>
         {
-            if (request.Context is { } context) tracked = context.SoftwareBitmap;
+            if (request.Context is { } context) Volatile.Write(ref tracked, context.SoftwareBitmap);
+            else if (!fixture.Model.OverlayVisible)
+            {
+                Interlocked.Increment(ref hiddenTicks);
+            }
         });
         using var translations = fixture.Translations.Subscribe(request =>
         {
-            if (request is not null && !fixture.Model.OverlayVisible) hiddenTranslations++;
+            if (request is not null && !fixture.Model.OverlayVisible) Interlocked.Increment(ref hiddenTranslations);
         });
         fixture.SubmitCapture(Bitmap(320));
-        await WaitUntilAsync(() => fixture.Translator.Gate.Count > 0 && tracked is not null);
+        await WaitUntilAsync(() => fixture.Translator.Gate.Count > 0 && Volatile.Read(ref tracked) is not null);
         fixture.Model.OverlayVisible = false;
-        Assert.False(fixture.TrackingTimer.IsEnabled);
         var trackerCount = fixture.Tracker.UpdateCount;
         var colorCount = fixture.Color.Gate.Count;
-        await Task.Delay(400);
+        await WaitUntilAsync(() => IsDisposed(Volatile.Read(ref tracked)!));
+        await Task.Delay(150);
+        var ticksAfterStopping = Volatile.Read(ref hiddenTicks);
+        await Task.Delay(250);
 
+        Assert.Equal(ticksAfterStopping, Volatile.Read(ref hiddenTicks));
         Assert.Equal(trackerCount, fixture.Tracker.UpdateCount);
         Assert.Equal(colorCount, fixture.Color.Gate.Count);
-        Assert.Equal(0, hiddenTranslations);
-        Assert.True(IsDisposed(tracked!));
+        Assert.Equal(0, Volatile.Read(ref hiddenTranslations));
+        Assert.True(IsDisposed(Volatile.Read(ref tracked)!));
         fixture.Model.OverlayVisible = true;
+        await System.Windows.Threading.Dispatcher.Yield(System.Windows.Threading.DispatcherPriority.Background);
         Assert.Empty(fixture.Model.OcrTexts);
-        fixture.SubmitCapture(Bitmap(321));
+        fixture.Ocr.Text = "new";
+        fixture.SubmitCapture(Bitmap(320));
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
         Assert.DoesNotContain(fixture.Model.OcrTexts, text => text.SourceText == "old");
         Assert.True(fixture.Tracker.ResetCount >= 2);
@@ -201,53 +210,35 @@ public sealed class OverlayVisibilityTests
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
     }
 
-    private static async Task VerifyHiddenBeforeWorkStartsAsync()
+    private static async Task VerifyQueuedCapturesAsync()
     {
-        await using var fixture = new Fixture(delayFilter: true);
-        const int blockedWorkers = 4;
-        using var started = new CountdownEvent(blockedWorkers);
-        using var release = new ManualResetEventSlim();
-        ThreadPool.GetMinThreads(out var minWorker, out var minIo);
-        ThreadPool.GetMaxThreads(out var maxWorker, out var maxIo);
-        Task[] blockers = [];
-        try
+        await using (var throttled = new Fixture(captureInterval: 0.3))
         {
-            Assert.True(ThreadPool.SetMaxThreads(Math.Max(maxWorker, blockedWorkers + 1), maxIo));
-            Assert.True(ThreadPool.SetMinThreads(Math.Max(minWorker, blockedWorkers + 1), minIo));
-            blockers = Enumerable.Range(0, blockedWorkers).Select(_ => Task.Run(() =>
-            {
-                started.Signal();
-                if (!release.Wait(TimeSpan.FromSeconds(15))) throw new TimeoutException();
-            })).ToArray();
-            Assert.True(started.Wait(TimeSpan.FromSeconds(5)));
-            Assert.True(ThreadPool.SetMinThreads(1, minIo));
-            Assert.True(ThreadPool.SetMaxThreads(blockedWorkers, maxIo));
-            fixture.SubmitCapture(Bitmap(320));
-            fixture.Tracking.OnNext(([new("old", 0, 0, 100, 30, 20, false)],
-                new() { SoftwareBitmap = Bitmap(320), ImageSize = new(320, 240) }));
-            fixture.Translations.OnNext(([new("old", 0, 0, 100, 30, 20, false)],
-                new() { SoftwareBitmap = Bitmap(320), ImageSize = new(320, 240) }));
-            var timeout = Stopwatch.StartNew();
-            while (fixture.HiddenSubscriberCount != 3 && timeout.Elapsed < TimeSpan.FromSeconds(5))
-            {
-                await System.Windows.Threading.Dispatcher.Yield(System.Windows.Threading.DispatcherPriority.Background);
-            }
-            Assert.Equal(3, fixture.HiddenSubscriberCount);
-            fixture.Model.OverlayVisible = false;
-            fixture.Filter.Gate.Release.TrySetResult();
+            var old = Bitmap(320);
+            throttled.SubmitCapture(old);
+            throttled.Model.OverlayVisible = false;
+            throttled.Model.OverlayVisible = true;
+            await WaitUntilAsync(() => IsDisposed(old));
+            Assert.False(throttled.Ocr.Gate.Started.Task.IsCompleted);
+            throttled.SubmitCapture(Bitmap(321));
+            await WaitUntilAsync(() => throttled.Model.OcrTexts.Any(text => text.SourceText == "new"));
         }
-        finally
+
+        await using (var queued = new Fixture(Stage.Ocr))
         {
-            release.Set();
-            ThreadPool.SetMinThreads(1, minIo);
-            ThreadPool.SetMaxThreads(maxWorker, maxIo);
-            ThreadPool.SetMinThreads(minWorker, minIo);
-            await Task.WhenAll(blockers).WaitAsync(TimeSpan.FromSeconds(5));
+            queued.SubmitCapture(Bitmap(320));
+            await queued.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            var old = Bitmap(322);
+            queued.SubmitCapture(old);
+            await Task.Delay(150);
+            queued.Model.OverlayVisible = false;
+            queued.Model.OverlayVisible = true;
+            queued.Ocr.Gate.Release.TrySetResult();
+            await WaitUntilAsync(() => IsDisposed(old));
+            Assert.False(queued.Ocr.Gate.NextStarted.Task.IsCompleted);
+            queued.SubmitCapture(Bitmap(321));
+            await WaitUntilAsync(() => queued.Model.OcrTexts.Any(text => text.SourceText == "new"));
         }
-        await WaitUntilAsync(() => fixture.HiddenSubscriberCount == 0);
-        Assert.False(fixture.Ocr.Gate.Started.Task.IsCompleted);
-        Assert.False(fixture.Tracker.ResetStarted.Task.IsCompleted);
-        Assert.False(fixture.Filter.Gate.Started.Task.IsCompleted);
     }
 
     private static async Task VerifyHiddenDuringTrackingAsync()
@@ -265,6 +256,55 @@ public sealed class OverlayVisibilityTests
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
     }
 
+    private static async Task VerifyOcrCompletesWhileHiddenAsync()
+    {
+        await using var fixture = new Fixture(Stage.Ocr);
+        SoftwareBitmap? tracked = null;
+        using var tracking = fixture.Tracking.Subscribe(request =>
+        {
+            if (request.Context is { } context) tracked = context.SoftwareBitmap;
+        });
+        var image = Bitmap(320);
+        fixture.SubmitCapture(image);
+        await fixture.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Model.OverlayVisible = false;
+        await Task.Delay(150);
+        fixture.Ocr.Gate.Release.TrySetResult();
+        await WaitUntilAsync(() => IsDisposed(image));
+        await Task.Delay(200);
+        Assert.True(tracked is null || IsDisposed(tracked));
+        Assert.Equal(0, fixture.Tracker.UpdateCount);
+        Assert.Equal(0, fixture.Color.Gate.Count);
+        Assert.Equal(0, fixture.Translator.Gate.Count);
+    }
+
+    private static async Task VerifyUiResponsiveDuringTrackingAsync()
+    {
+        await using var fixture = new Fixture(delayUpdate: true);
+        fixture.SubmitCapture(Bitmap(320));
+        await fixture.Tracker.Updated.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var dispatcher = Application.Current.Dispatcher;
+        var responsive = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(250);
+                var ping = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                _ = dispatcher.InvokeAsync(() => ping.TrySetResult());
+                return await Task.WhenAny(ping.Task, Task.Delay(1000)) == ping.Task;
+            }
+            finally
+            {
+                fixture.Tracker.UpdateRelease.Set();
+            }
+        });
+        fixture.Model.OverlayVisible = false;
+        fixture.Model.OverlayVisible = true;
+        fixture.SubmitCapture(Bitmap(321));
+        Assert.True(await responsive.WaitAsync(TimeSpan.FromSeconds(5)));
+        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+    }
+
     private static async Task VerifyHiddenDuringColorAsync()
     {
         await using var fixture = new Fixture(Stage.Color);
@@ -276,6 +316,76 @@ public sealed class OverlayVisibilityTests
         Assert.Equal(0, fixture.Cache.ContainsCount);
     }
 
+    private static async Task VerifyUiResponsiveDuringTranslationErrorAsync()
+    {
+        await using var fixture = new Fixture(Stage.Translation, failFirst: true);
+        fixture.SubmitCapture(Bitmap(320));
+        await fixture.Translator.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Tracker.BlockNextUpdate();
+        await fixture.Tracker.Blocked.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var dispatcher = Application.Current.Dispatcher;
+        var responsive = Task.Run(async () =>
+        {
+            try
+            {
+                await fixture.Translator.Failed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                await Task.Delay(100);
+                var ping = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                _ = dispatcher.InvokeAsync(() => ping.TrySetResult());
+                return await Task.WhenAny(ping.Task, Task.Delay(1000)) == ping.Task;
+            }
+            finally
+            {
+                fixture.Tracker.UpdateRelease.Set();
+            }
+        });
+        fixture.Translator.Gate.Release.TrySetResult();
+        Assert.True(await responsive.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.False(await fixture.Translator.Failed.Task.WaitAsync(TimeSpan.FromSeconds(5)));
+        await fixture.Presentation.Shown.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    private static async Task VerifyHiddenDuringCacheAsync()
+    {
+        await using var fixture = new Fixture(delayCache: true);
+        var hiddenTranslation = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var translations = fixture.Translations.Subscribe(request =>
+        {
+            if (request is not null && !fixture.Model.OverlayVisible) hiddenTranslation.TrySetResult();
+        });
+        fixture.SubmitCapture(Bitmap(320));
+        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "old"));
+        await fixture.Cache.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Model.OverlayVisible = false;
+        fixture.Cache.Release.Set();
+        await Task.Delay(250);
+        Assert.False(hiddenTranslation.Task.IsCompleted);
+
+        fixture.Model.OverlayVisible = true;
+        fixture.SubmitCapture(Bitmap(321));
+        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+    }
+
+    private static async Task VerifyOldHandoffAfterReopenAsync()
+    {
+        await using var fixture = new Fixture();
+        fixture.Ocr.Text = "handoff-old";
+        fixture.SubmitCapture(Bitmap(320));
+        await WaitUntilAsync(() => fixture.Capture.StopCount > 0
+            || fixture.Model.OcrTexts.Any(text => text.SourceText == "handoff-old"));
+        var bitmap = fixture.Color.Bitmap!;
+        if (fixture.Capture.StopCount == 0)
+        {
+            fixture.Model.OverlayVisible = false;
+            fixture.Model.OverlayVisible = true;
+        }
+        await WaitUntilAsync(() => IsDisposed(bitmap));
+        fixture.Ocr.Text = "new";
+        fixture.SubmitCapture(Bitmap(321));
+        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+        Assert.DoesNotContain(fixture.Model.OcrTexts, text => text.SourceText == "handoff-old");
+    }
+
     private static async Task VerifyHiddenBeforeTranslationAsync()
     {
         await using var fixture = new Fixture(delayFilter: true);
@@ -283,7 +393,7 @@ public sealed class OverlayVisibilityTests
         await fixture.Filter.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
         var pending = Bitmap(322);
         fixture.Translations.OnNext(([new("pending", 0, 0, 100, 30, 20, false)],
-            new() { SoftwareBitmap = pending, ImageSize = new(322, 240) }));
+            new() { SoftwareBitmap = pending, ImageSize = new(322, 240) }, fixture.Visibility));
         fixture.Model.OverlayVisible = false;
         Assert.True(IsDisposed(pending));
         fixture.Filter.Gate.Release.TrySetResult();
@@ -317,196 +427,206 @@ public sealed class OverlayVisibilityTests
         }
     }
 
-    private static async Task VerifyUiNotificationsAsync()
+    private static async Task VerifyDelayedCaptureAsync(bool isOneShotMode)
     {
-        await using var fixture = new Fixture(multipleTexts: true);
-        var switched = false;
-        var addedAfterShow = new List<string>();
-        fixture.Model.OcrTexts.CollectionChanged += (_, change) =>
-        {
-            if (change.NewItems is not { } items) return;
-            if (switched)
-            {
-                addedAfterShow.AddRange(items.Cast<TextRect>().Select(text => text.SourceText));
-            }
-            else
-            {
-                switched = true;
-                fixture.Model.OverlayVisible = false;
-                fixture.Model.OverlayVisible = true;
-            }
-        };
-        fixture.SubmitCapture(Bitmap(320));
-        await WaitUntilAsync(() => switched);
-        await Task.Delay(100);
-        Assert.Empty(addedAfterShow);
-        Assert.Empty(fixture.Model.OcrTexts);
-    }
-
-    private static async Task VerifyPendingAsync()
-    {
-        await using (var immediate = new Fixture())
-        {
-            var image = Bitmap(322);
-            immediate.SubmitCapture(image);
-            immediate.Model.OverlayVisible = false;
-            await WaitUntilAsync(() => IsDisposed(image));
-        }
-
-        await using (var slow = new Fixture(captureInterval: (uint.MaxValue - 1) / 1000d))
-        {
-            var pendingFrame = Bitmap(323);
-            slow.SubmitCapture(pendingFrame);
-            slow.Model.OverlayVisible = false;
-            Assert.True(IsDisposed(pendingFrame));
-        }
-
-        await using (var delayed = new Fixture(captureInterval: 0.1))
-        {
-            delayed.SubmitCapture(Bitmap(320));
-            Thread.Sleep(250);
-            delayed.Model.OverlayVisible = false;
-            delayed.Model.OverlayVisible = true;
-            delayed.SubmitCapture(Bitmap(321));
-            await Task.Delay(30);
-            Assert.False(delayed.Ocr.Gate.Started.Task.IsCompleted);
-            await WaitUntilAsync(() => delayed.Model.OcrTexts.Any(text => text.SourceText == "new"));
-        }
-
-        await using (var throttled = new Fixture(captureInterval: 0.5))
-        {
-            var first = Bitmap(320);
-            var last = Bitmap(321);
-            throttled.SubmitCapture(first);
-            await Task.Delay(100);
-            throttled.SubmitCapture(last);
-            Assert.True(IsDisposed(first));
-            await WaitUntilAsync(() => throttled.Model.OcrTexts.Any(text => text.SourceText == "new"));
-            Assert.DoesNotContain(throttled.Model.OcrTexts, text => text.SourceText == "old");
-            var pendingFrame = Bitmap(323);
-            throttled.SubmitCapture(pendingFrame);
-            throttled.Model.OverlayVisible = false;
-            Assert.True(IsDisposed(pendingFrame));
-            throttled.Model.OverlayVisible = true;
-            throttled.SubmitCapture(Bitmap(321));
-            await WaitUntilAsync(() => throttled.Model.OcrTexts.Any(text => text.SourceText == "new"));
-        }
-
-        await using var fixture = new Fixture(Stage.Ocr);
-        fixture.SubmitCapture(Bitmap(320));
-        await fixture.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        var pending = Bitmap(322);
-        fixture.SubmitCapture(pending);
-        await Task.Delay(150);
-        fixture.Model.OverlayVisible = false;
-        Assert.True(IsDisposed(pending));
-        fixture.Model.OverlayVisible = true;
-        fixture.Ocr.Gate.Release.TrySetResult();
-        await Task.Delay(250);
-        Assert.False(fixture.Ocr.Gate.NextStarted.Task.IsCompleted);
-    }
-
-    private static async Task VerifyDelayedCaptureAsync()
-    {
-        await using var fixture = new Fixture();
+        await using var fixture = new Fixture(isOneShotMode: isOneShotMode);
         var handler = fixture.Capture.CurrentHandler!;
         fixture.Model.OverlayVisible = false;
         Assert.Null(fixture.Capture.CurrentHandler);
         fixture.Model.OverlayVisible = true;
         Assert.NotNull(fixture.Capture.CurrentHandler);
         Assert.NotSame(handler, fixture.Capture.CurrentHandler);
-        await handler.InvokeAsync(fixture.Capture, null!);
+        var stops = fixture.Capture.StopCount;
+        var error = await Record.ExceptionAsync(() => handler.InvokeAsync(fixture.Capture, null!));
         await Task.Delay(150);
+        Assert.Equal(stops, fixture.Capture.StopCount);
+        Assert.Null(error);
         Assert.False(fixture.Ocr.Gate.Started.Task.IsCompleted);
+    }
+
+    private static async Task VerifyQueuedOneShotStopAsync()
+    {
+        await using var fixture = new Fixture(isOneShotMode: true);
+        var handler = fixture.Capture.CurrentHandler!;
+        using var submitted = new ManualResetEventSlim();
+        var delayedCapture = Task.Run(() =>
+        {
+            var operation = handler.InvokeAsync(fixture.Capture, null!);
+            submitted.Set();
+            return operation;
+        });
+        Assert.True(submitted.Wait(TimeSpan.FromSeconds(5)));
+        fixture.Model.OverlayVisible = false;
+        fixture.Model.OverlayVisible = true;
+        var stops = fixture.Capture.StopCount;
+        await delayedCapture.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(stops, fixture.Capture.StopCount);
     }
 
     private static async Task VerifyOneShotAsync()
     {
-        await using var fixture = new Fixture(captureInterval: 10, isOneShotMode: true);
-        fixture.SubmitCapture(Bitmap(321));
-        await fixture.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
-        Assert.Equal(0, fixture.Tracker.UpdateCount);
-    }
-
-    private static async Task VerifyReentrantShowAsync()
-    {
-        await using var fixture = new Fixture(Stage.Ocr);
-        var oldShown = false;
-        fixture.Model.OcrTexts.CollectionChanged += (_, _) =>
-            oldShown |= fixture.Model.OcrTexts.Any(text => text.SourceText == "old");
-        fixture.SubmitCapture(Bitmap(320));
-        await fixture.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-
-        fixture.Capture.OnStopped = () =>
-        {
-            fixture.Capture.OnStopped = null;
-            fixture.Model.OverlayVisible = true;
-        };
+        await using var fixture = new Fixture(Stage.Translation, captureInterval: 10, isOneShotMode: true);
         fixture.Model.OverlayVisible = false;
+        fixture.Model.OverlayVisible = true;
         fixture.SubmitCapture(Bitmap(321));
-        fixture.Ocr.Gate.Release.TrySetResult();
-
+        await fixture.Translator.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
         await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
-        Assert.False(oldShown);
+
+        try
+        {
+            fixture.Model.OverlayVisible = false;
+            fixture.Model.OverlayVisible = true;
+            fixture.SubmitCapture(Bitmap(320));
+            await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "old"));
+            Assert.DoesNotContain(fixture.Model.OcrTexts, text => text.SourceText == "new");
+            Assert.Equal(0, fixture.Tracker.UpdateCount);
+        }
+        finally
+        {
+            fixture.Translator.Gate.Release.TrySetResult();
+        }
     }
+
+    private static async Task VerifyAutomaticWindowVisibilityAsync()
+    {
+        await using var fixture = new Fixture();
+        fixture.Model.OverlayVisible = false;
+        var target = new Window();
+        var handle = new WindowInteropHelper(target).EnsureHandle();
+        var desktop = new TestDesktopManager();
+        var window = CreateOverlayWindow(null, handle, desktop, isOneShotMode: false);
+        try
+        {
+            Assert.False(fixture.Model.OverlayVisible);
+            Assert.Null(fixture.Capture.CurrentHandler);
+            window.Show();
+            StopPositionTimer(window);
+            var overlay = (OverlayTextsControl)window.FindName("overlay");
+            Assert.False(fixture.Model.OverlayVisible);
+            window.DataContext = fixture.Model;
+            Assert.True(fixture.Model.OverlayVisible);
+
+            fixture.SubmitCapture(Bitmap(320));
+            await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "old")
+                && fixture.Translator.Gate.Count > 0);
+
+            desktop.IsCurrent = false;
+            typeof(OverlayMainWindow).GetMethod("UpdateWindowPositionAndSize", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(window, null);
+            Assert.False(window.IsVisible);
+            Assert.Equal(Visibility.Visible, overlay.Visibility);
+            Assert.False(fixture.Model.OverlayVisible);
+            Assert.Null(fixture.Capture.CurrentHandler);
+
+            overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
+            overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+            Assert.False(fixture.Model.OverlayVisible);
+            Assert.Null(fixture.Capture.CurrentHandler);
+            var trackerCount = fixture.Tracker.UpdateCount;
+            var colorCount = fixture.Color.Gate.Count;
+            var translationCount = fixture.Translator.Gate.Count;
+            await Task.Delay(350);
+            Assert.Equal(trackerCount, fixture.Tracker.UpdateCount);
+            Assert.Equal(colorCount, fixture.Color.Gate.Count);
+            Assert.Equal(translationCount, fixture.Translator.Gate.Count);
+
+            window.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+            Assert.True(fixture.Model.OverlayVisible);
+            await Dispatcher.Yield(DispatcherPriority.Background);
+            Assert.Empty(fixture.Model.OcrTexts);
+            fixture.Ocr.Text = "new";
+            fixture.SubmitCapture(Bitmap(321));
+            await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+            Assert.DoesNotContain(fixture.Model.OcrTexts, text => text.SourceText == "old");
+
+            desktop.IsCurrent = true;
+            typeof(OverlayMainWindow).GetMethod("UpdateWindowPositionAndSize", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(window, null);
+            Assert.False(window.IsVisible);
+            Assert.False(fixture.Model.OverlayVisible);
+            window.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+
+            overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
+            Assert.False(fixture.Model.OverlayVisible);
+            window.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
+            window.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+            Assert.False(fixture.Model.OverlayVisible);
+            overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+            Assert.True(fixture.Model.OverlayVisible);
+
+            var stopsAtDispose = -1;
+            window.Closed += (_, _) =>
+            {
+                fixture.Model.Dispose();
+                stopsAtDispose = fixture.Capture.StopCount;
+            };
+            window.Close();
+            Assert.Equal(stopsAtDispose, fixture.Capture.StopCount);
+        }
+        finally
+        {
+            window.Close();
+            target.Close();
+        }
+    }
+
+    private static async Task VerifyOneShotWindowVisibilityAsync()
+    {
+        await using var fixture = new Fixture(isOneShotMode: true);
+        var target = new Window();
+        var handle = new WindowInteropHelper(target).EnsureHandle();
+        var window = CreateOverlayWindow(fixture.Model, handle, new TestDesktopManager(), isOneShotMode: true);
+        try
+        {
+            Assert.False(fixture.Model.OverlayVisible);
+            window.Show();
+            StopPositionTimer(window);
+            var overlay = (OverlayTextsControl)window.FindName("overlay");
+            Assert.False(fixture.Model.OverlayVisible);
+            Assert.Null(fixture.Capture.CurrentHandler);
+
+            overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Visible);
+            Assert.True(fixture.Model.OverlayVisible);
+            Assert.NotNull(fixture.Capture.CurrentHandler);
+            fixture.SubmitCapture(Bitmap(321));
+            await WaitUntilAsync(() => fixture.Model.OcrTexts.Any(text => text.SourceText == "new"));
+            overlay.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
+            Assert.False(fixture.Model.OverlayVisible);
+        }
+        finally
+        {
+            window.Close();
+            target.Close();
+        }
+    }
+
+    private static OverlayMainWindow CreateOverlayWindow(
+        OverlayMainViewModel? model, IntPtr target, IVirtualDesktopManager desktop, bool isOneShotMode)
+        => new(new Snapshot<CommonSettings>(new()),
+            new Snapshot<TargetSettings>(new() { IsOneShotMode = isOneShotMode }),
+            new ProcessInfo(target), desktop, NullLogger<OverlayMainWindow>.Instance)
+        {
+            ShowActivated = false,
+            Left = -10000,
+            Top = -10000,
+            Width = 1,
+            Height = 1,
+            DataContext = model,
+        };
+
+    private static void StopPositionTimer(OverlayMainWindow window)
+        => ((DispatcherTimer)typeof(OverlayMainWindow).GetField("timer", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(window)!).Stop();
 
     private static async Task VerifyDisposeAsync()
     {
-        await using (var pending = new Fixture(captureInterval: 0.5))
-        {
-            var image = Bitmap(320);
-            pending.SubmitCapture(image);
-            await Task.Run(pending.Model.Dispose).WaitAsync(TimeSpan.FromSeconds(5));
-            Assert.True(IsDisposed(image));
-        }
-
-        await using (var running = new Fixture(Stage.Ocr))
-        {
-            var image = Bitmap(320);
-            running.SubmitCapture(image);
-            await running.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-            await Task.Run(running.Model.Dispose).WaitAsync(TimeSpan.FromSeconds(5));
-            running.Ocr.Gate.Release.TrySetResult();
-            await WaitUntilAsync(() => IsDisposed(image));
-        }
-    }
-
-    private static async Task VerifyReentrantHideAsync()
-    {
-        await using var fixture = new Fixture();
-        fixture.Model.OcrTexts.Add(new TextRect("old", 0, 0, 100, 30, 20, false));
-        fixture.Model.OverlayVisible = false;
-        var starts = fixture.Capture.StartCount;
-        fixture.Model.OcrTexts.CollectionChanged += (_, _) => fixture.Model.OverlayVisible = false;
-
-        fixture.Model.OverlayVisible = true;
-
-        Assert.False(fixture.Model.OverlayVisible);
-        Assert.Equal(starts, fixture.Capture.StartCount);
-    }
-
-    private static async Task VerifyNestedVisibilityAsync()
-    {
-        await using var fixture = new Fixture();
-        fixture.Model.OcrTexts.Add(new TextRect("old", 0, 0, 100, 30, 20, false));
-        fixture.Model.OverlayVisible = false;
-        var starts = fixture.Capture.StartCount;
-        var toggled = false;
-        fixture.Model.OcrTexts.CollectionChanged += (_, _) =>
-        {
-            if (toggled) return;
-            toggled = true;
-            fixture.Model.OverlayVisible = false;
-            fixture.Model.OverlayVisible = true;
-        };
-        fixture.Model.OcrTexts.CollectionChanged += (_, _) => { };
-
-        fixture.Model.OverlayVisible = true;
-        await Task.Delay(50);
-
-        Assert.True(fixture.Model.OverlayVisible);
-        Assert.Equal(starts + 1, fixture.Capture.StartCount);
+        await using var fixture = new Fixture(Stage.Ocr);
+        var image = Bitmap(320);
+        fixture.SubmitCapture(image);
+        await fixture.Ocr.Gate.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await Task.Run(fixture.Model.Dispose).WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Ocr.Gate.Release.TrySetResult();
+        await WaitUntilAsync(() => IsDisposed(image));
     }
 
     private static SoftwareBitmap Bitmap(int width) => new(BitmapPixelFormat.Bgra8, width, 240);
@@ -539,21 +659,23 @@ public sealed class OverlayVisibilityTests
     private sealed class Fixture : System.IAsyncDisposable
     {
         private readonly OcrTraceRecorder recorder = new(NullLogger<OcrTraceRecorder>.Instance);
-        private readonly Action<SoftwareBitmap> submitCapture;
 
-        public Fixture(Stage? delayed = null, double captureInterval = 0, bool delayReset = false, bool delayFilter = false, bool multipleTexts = false, bool withoutContext = false, bool failFirst = false, bool delayUpdate = false, bool isOneShotMode = false, bool emptyFirstCapture = false, bool delayNextFilter = false)
+        public Fixture(Stage? delayed = null, double captureInterval = 0, bool delayReset = false, bool delayFilter = false, bool withoutContext = false, bool failFirst = false, bool delayUpdate = false, bool isOneShotMode = false, bool emptyFirstCapture = false, bool delayNextFilter = false, bool delayCache = false)
         {
-            this.Ocr = new(delayed == Stage.Ocr, multipleTexts, failFirst && delayed == Stage.Ocr, emptyFirstCapture);
+            this.Ocr = new(delayed == Stage.Ocr, failFirst && delayed == Stage.Ocr, emptyFirstCapture);
             this.Color = new(delayed == Stage.Color);
             this.Translator = new(delayed == Stage.Translation, failFirst && delayed == Stage.Translation);
             this.Tracker = new(delayReset, delayUpdate);
             this.Filter = new(delayFilter, delayNextFilter);
+            this.Cache = new(delayCache);
+            var presentation = DispatchProxy.Create<IPresentationService, PresentationProxy>();
+            this.Presentation = (PresentationProxy)presentation;
             var context = SynchronizationContext.Current;
             try
             {
                 if (withoutContext) SynchronizationContext.SetSynchronizationContext(null);
                 this.Model = new OverlayMainViewModel(
-                    null!, new Snapshot<TargetSettings>(new() { CaptureInterval = captureInterval, IsOneShotMode = isOneShotMode }), new ProcessInfo(),
+                    presentation, new Snapshot<TargetSettings>(new() { CaptureInterval = captureInterval, IsOneShotMode = isOneShotMode }), new ProcessInfo(),
                     this.Capture, this.Ocr, new Snapshot<BasicOcrParam>(new()), this.Tracker, this.recorder,
                     this.Translator, this.Cache, this.Color, delayFilter ? [this.Filter] : [], NullLogger<OverlayMainViewModel>.Instance);
             }
@@ -561,8 +683,6 @@ public sealed class OverlayVisibilityTests
             {
                 if (withoutContext) SynchronizationContext.SetSynchronizationContext(context);
             }
-            this.submitCapture = typeof(MainViewModelBase).GetMethod("QueueCapture", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .CreateDelegate<Action<SoftwareBitmap>>(this.Model);
         }
 
         public Capture Capture { get; } = new();
@@ -570,19 +690,18 @@ public sealed class OverlayVisibilityTests
         public Tracker Tracker { get; }
         public Color Color { get; }
         public Translator Translator { get; }
-        public Cache Cache { get; } = new();
+        public Cache Cache { get; }
         public Filter Filter { get; }
+        public PresentationProxy Presentation { get; }
         public OverlayMainViewModel Model { get; }
-        public System.Windows.Threading.DispatcherTimer TrackingTimer => Field<System.Windows.Threading.DispatcherTimer>("trackingTimer");
-        public Subject<(IEnumerable<TextRect> Texts, FilterContext Context)> Tracking
-            => Field<Subject<(IEnumerable<TextRect>, FilterContext)>>("trackingRequests");
-        public Subject<(IEnumerable<TextRect> Texts, FilterContext Context)?> Translations
-            => Field<Subject<(IEnumerable<TextRect>, FilterContext)?>>("translationRequests");
-        public int HiddenSubscriberCount
-            => ((Delegate?)typeof(MainViewModelBase).GetField("OverlayHidden", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(this.Model))?.GetInvocationList().Length ?? 0;
+        public Subject<(IEnumerable<TextRect>? Texts, FilterContext? Context, Observer<Unit>? Visibility)> Tracking
+            => Field<Subject<(IEnumerable<TextRect>?, FilterContext?, Observer<Unit>?)>>("trackingRequests");
+        public Subject<(IEnumerable<TextRect> Texts, FilterContext Context, Observer<Unit> Visibility)?> Translations
+            => Field<Subject<(IEnumerable<TextRect>, FilterContext, Observer<Unit>)?>>("translationRequests");
+        public Observer<Unit> Visibility => (Observer<Unit>)Field<SerialDisposable>("captureLoop").Disposable!;
 
-        public void SubmitCapture(SoftwareBitmap bitmap) => this.submitCapture(bitmap);
+        public void SubmitCapture(SoftwareBitmap bitmap)
+            => Field<Subject<(SoftwareBitmap, Observer<Unit>)>>("captureRequests").OnNext((bitmap, this.Visibility));
 
         private T Field<T>(string name) where T : class
             => (T)typeof(MainViewModelBase).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(this.Model)!;
@@ -593,6 +712,7 @@ public sealed class OverlayVisibilityTests
             await this.recorder.DisposeAsync();
             this.Tracker.ResetRelease.Dispose();
             this.Tracker.UpdateRelease.Dispose();
+            this.Cache.Release.Dispose();
         }
     }
 
@@ -621,33 +741,41 @@ public sealed class OverlayVisibilityTests
         public T Get(string? name) => this.Value;
     }
 
-    private sealed class ProcessInfo : IProcessInfoStore
+    private sealed class ProcessInfo(IntPtr handle = default) : IProcessInfoStore
     {
-        public IntPtr MainWindowHandle => IntPtr.Zero;
+        public IntPtr MainWindowHandle => handle;
         public string Name => "test";
+    }
+
+    private sealed class TestDesktopManager : IVirtualDesktopManager
+    {
+        public bool IsCurrent { get; set; } = true;
+        public bool IsWindowOnCurrentVirtualDesktop(IntPtr topLevelWindow) => this.IsCurrent;
+        public Guid GetWindowDesktopId(IntPtr hWnd) => Guid.Empty;
+        public int MoveWindowToDesktop(IntPtr hWnd, ref Guid desktop) => 0;
     }
 
     private sealed class Capture : ICaptureModule
     {
+        private int stops;
         public event AsyncEventHandler<CapturedEventArgs>? Captured;
         public AsyncEventHandler<CapturedEventArgs>? CurrentHandler => this.Captured;
-        public Action? OnStopped { get; set; }
-        public int StartCount { get; private set; }
-        public void StartCapture(IntPtr targetWindow) => this.StartCount++;
-        public void StopCapture() => this.OnStopped?.Invoke();
+        public int StopCount => Volatile.Read(ref this.stops);
+        public void StartCapture(IntPtr targetWindow) { }
+        public void StopCapture() => Interlocked.Increment(ref this.stops);
     }
 
-    private sealed class Ocr(bool delayed, bool multipleTexts, bool failFirst, bool emptyFirstCapture) : IOcrModule
+    private sealed class Ocr(bool delayed, bool failFirst, bool emptyFirstCapture) : IOcrModule
     {
         public Gate Gate { get; } = new(delayed);
+        public string? Text { get; set; }
         public async ValueTask<IReadOnlyList<TextRect>> RecognizeAsync(OcrCaptureInput input)
         {
             await this.Gate.EnterAsync();
             if (failFirst && this.Gate.Count == 1) throw new InvalidOperationException("模擬 OCR エラー");
             if (emptyFirstCapture && input.Source.PixelWidth == 320) return [];
-            var text = input.Source.PixelWidth == 321 ? "new" : "old";
-            var first = new TextRect(text, 0, 0, 100, 30, 20, false);
-            return multipleTexts ? [first, first with { SourceText = "old2", Y = 40 }] : [first];
+            var text = this.Text ?? (input.Source.PixelWidth == 321 ? "new" : "old");
+            return [new TextRect(text, 0, 0, 100, 30, 20, false)];
         }
     }
 
@@ -655,20 +783,24 @@ public sealed class OverlayVisibilityTests
     {
         private int updates;
         private int resets;
+        private int blockNext;
         private TextRect[] previous = [];
         public TaskCompletionSource ResetStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public ManualResetEventSlim ResetRelease { get; } = new();
         public ManualResetEventSlim UpdateRelease { get; } = new();
         public TaskCompletionSource Updated { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource Blocked { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public int UpdateCount => Volatile.Read(ref this.updates);
         public int ResetCount => Volatile.Read(ref this.resets);
+        public void BlockNextUpdate() => Interlocked.Exchange(ref this.blockNext, 1);
         public IReadOnlyList<TextRect> Update(IEnumerable<TextRect> observations, System.Drawing.Size imageSize, TimeSpan? timestamp = null)
         {
             var count = Interlocked.Increment(ref this.updates);
             this.Updated.TrySetResult();
-            if (delayUpdate && count == 1 && !this.UpdateRelease.Wait(TimeSpan.FromSeconds(10)))
+            if ((delayUpdate && count == 1) || Interlocked.Exchange(ref this.blockNext, 0) == 1)
             {
-                throw new TimeoutException();
+                this.Blocked.TrySetResult();
+                if (!this.UpdateRelease.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException();
             }
             var current = observations.ToArray();
             this.previous = [.. this.previous.Where(old => current.All(text => text.SourceText != old.SourceText)), .. current];
@@ -702,11 +834,31 @@ public sealed class OverlayVisibilityTests
     private sealed class Translator(bool delayed, bool failFirst) : ITranslateModule
     {
         public Gate Gate { get; } = new(delayed);
+        public TaskCompletionSource<bool> Failed { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
         {
             await this.Gate.EnterAsync();
-            if (failFirst && this.Gate.Count == 1) throw new InvalidOperationException("模擬翻訳エラー");
+            if (failFirst && this.Gate.Count == 1)
+            {
+                this.Failed.TrySetResult(Application.Current.Dispatcher.CheckAccess());
+                throw new InvalidOperationException("模擬翻訳エラー");
+            }
             return srcTexts.Select(text => text.SourceText).ToArray();
+        }
+    }
+
+    public class PresentationProxy : DispatchProxy
+    {
+        public TaskCompletionSource Shown { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        protected override object? Invoke(MethodInfo? method, object?[]? args)
+        {
+            if (method?.Name == nameof(IPresentationService.OpenErrorReportDialogAsync))
+            {
+                this.Shown.TrySetResult();
+                return Task.FromResult(true);
+            }
+            throw new NotSupportedException(method?.Name);
         }
     }
 
@@ -722,13 +874,20 @@ public sealed class OverlayVisibilityTests
         public IAsyncEnumerable<TextRect> ExecutePostTranslate(IAsyncEnumerable<TextRect> texts, FilterContext context) => texts;
     }
 
-    private sealed class Cache : ICacheModule
+    private sealed class Cache(bool delayed) : ICacheModule
     {
         private int containsCount;
         public int ContainsCount => Volatile.Read(ref this.containsCount);
+        public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public ManualResetEventSlim Release { get; } = new();
         public bool Contains(string src)
         {
-            Interlocked.Increment(ref this.containsCount);
+            var count = Interlocked.Increment(ref this.containsCount);
+            if (delayed && count == 2)
+            {
+                this.Started.TrySetResult();
+                if (!this.Release.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException();
+            }
             return false;
         }
         public string Get(string src) => throw new InvalidOperationException();

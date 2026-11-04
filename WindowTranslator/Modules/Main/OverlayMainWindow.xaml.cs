@@ -141,6 +141,14 @@ public partial class OverlayMainWindow : Window
             }
         }, w, m);
 
+    private void OverlayVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (this.DataContext is OverlayMainViewModel model)
+        {
+            model.OverlayVisible = this.overlay.IsVisible;
+        }
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
