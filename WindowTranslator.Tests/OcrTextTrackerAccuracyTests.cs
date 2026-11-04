@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
 using Quickenshtein;
 using WindowTranslator.Modules.Ocr;
@@ -655,6 +657,85 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
                 observations, imageSize, TimeSpan.FromMilliseconds(milliseconds))).SourceText);
         }
     }
+
+    [Theory]
+    [InlineData("PanelCycleWithoutHalfCandidate.json", 186307886L, "PanelB", 5912798L, 3939867L, 2147335L)]
+    [InlineData("PanelCycleWithHalfCandidate.json", 296314599L, "PanelA", 6084398L, 3861453L, 2054149L)]
+    public void TextTimeoutReplaysRecordedPanelCycleUsingObservedDurations(
+        string fileName, long confirmationTicks, string confirmedText, long panelATicks, long panelBTicks, long panelCTicks)
+    {
+        // OneOcr・安定性3の実アプリで採取した2試行。対象画面の切り替えは200ms間隔でも、OCRの観測間隔は一定ではない。
+        // nullは同じOCR結果の再処理を表し、入力配列の参照を再利用して観測時刻を保持する。
+        RecordedTextTrace? trace = JsonSerializer.Deserialize<RecordedTextTrace>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestData", fileName)));
+        Assert.NotNull(trace);
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance, new() { OcrRecognitionStability = 3 });
+        Size imageSize = new(trace.ImageWidth, trace.ImageHeight);
+        List<(long Ticks, string Text)> observations = [];
+        TextRect[] current = [];
+        string? previousText = null;
+        long candidateSince = 0;
+        long? changeSince = null;
+        const long timeoutTicks = 1200 * TimeSpan.TicksPerMillisecond;
+
+        Assert.Contains(trace.Frames, frame => frame.TimestampTicks == confirmationTicks);
+        foreach (RecordedTextFrame frame in trace.Frames)
+        {
+            if (frame.Observations is { } recorded)
+            {
+                current = recorded.Select(rect => new TextRect(
+                    rect.SourceText, rect.X, rect.Y, rect.Width, rect.Height, rect.FontSize, rect.MultiLine)
+                {
+                    Angle = rect.Angle,
+                }).ToArray();
+                observations.Add((frame.TimestampTicks, Assert.Single(current).SourceText));
+            }
+            string currentText = Assert.Single(current).SourceText;
+            if (currentText != previousText)
+            {
+                candidateSince = frame.TimestampTicks;
+                previousText = currentText;
+            }
+            if (currentText != "Stable")
+            {
+                changeSince ??= frame.TimestampTicks;
+            }
+
+            TextRect result = Assert.Single(tracker.Update(current, imageSize, TimeSpan.FromTicks(frame.TimestampTicks)));
+            Assert.Equal(frame.TimestampTicks < confirmationTicks ? "Stable" : confirmedText, result.SourceText);
+
+            if (frame.TimestampTicks == confirmationTicks)
+            {
+                // どちらも次のOCR到着前にタイムアウトで確定した。300ms連続した候補の確定とは区別する。
+                Assert.Null(frame.Observations);
+                Assert.Equal("PanelB", currentText);
+                Assert.NotNull(changeSince);
+                Assert.True(frame.TimestampTicks - changeSince.Value >= timeoutTicks);
+                Assert.True(frame.TimestampTicks - candidateSince < 300 * TimeSpan.TicksPerMillisecond);
+
+                Dictionary<string, long> weights = [];
+                for (int index = 0; index < observations.Count; index++)
+                {
+                    var observation = observations[index];
+                    long start = Math.Max(observation.Ticks, confirmationTicks - timeoutTicks);
+                    long end = index + 1 < observations.Count ? observations[index + 1].Ticks : confirmationTicks;
+                    if (end > start)
+                    {
+                        weights[observation.Text] = weights.GetValueOrDefault(observation.Text) + end - start;
+                    }
+                }
+                Assert.Equal(panelATicks, weights["PanelA"]);
+                Assert.Equal(panelBTicks, weights["PanelB"]);
+                Assert.Equal(panelCTicks, weights["PanelC"]);
+                Assert.Equal(timeoutTicks, weights.Values.Sum());
+                string[] dominant = weights.Where(pair => pair.Value * 2 >= timeoutTicks).Select(pair => pair.Key).ToArray();
+                Assert.Equal(confirmedText == "PanelA" ? ["PanelA"] : Array.Empty<string>(), dominant);
+            }
+        }
+    }
+
+    private sealed record RecordedTextTrace(int ImageWidth, int ImageHeight, RecordedTextFrame[] Frames);
+    private sealed record RecordedTextFrame(long TimestampTicks, OcrTraceRect[]? Observations);
 
     [Theory]
     [InlineData(5)]
