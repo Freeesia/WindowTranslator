@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
 using Quickenshtein;
 using WindowTranslator.Modules.Ocr;
@@ -540,6 +542,200 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
             [stable], imageSize, TimeSpan.FromMilliseconds(2500)));
         Assert.Equal("Stable", recovered.SourceText);
     }
+
+    [Fact]
+    public void TextTimeoutDoesNotConfirmRecurringTransientErrorsAfterMultipleTimeouts()
+    {
+        // 既定設定では文字列の確定時間が300ms、タイムアウトが1200ms。
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Stable", 100, 100, 100, 20, 16, false);
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        // 250msごとに誤認識が入れ替わり、Stab|e のOCR結果だけ10msごとに再処理される。
+        string[] transientErrors = ["Stab1e", "Stab|e", "StabIe"];
+        TextRect[] observations = [];
+        for (int milliseconds = 250; milliseconds <= 12250; milliseconds += 10)
+        {
+            if (milliseconds % 250 == 0)
+            {
+                observations = [stable with { SourceText = transientErrors[(milliseconds / 250 - 1) % transientErrors.Length] }];
+            }
+            else if (milliseconds % 50 != 0 && observations[0].SourceText != "Stab|e")
+            {
+                continue;
+            }
+
+            TextRect result = Assert.Single(tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(milliseconds)));
+            // 再処理の回数では過半でも、観測時間で半分以上の候補がなく、元の文字列の読み間違いが続く間は確定しない。
+            Assert.Equal("Stable", result.SourceText);
+        }
+    }
+
+    [Fact]
+    public void TextTimeoutFollowsContinuousDigitChangesAtTheExistingTimeout()
+    {
+        // 数字が確定時間より速く変わり続ける場合は別の文字列とみなし、従来どおりタイムアウト時間で最新の認識へ追従する。
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Score 0", 100, 100, 100, 20, 16, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        TextRect[] observations = [];
+        for (int milliseconds = 250; milliseconds <= 1450; milliseconds += 50)
+        {
+            if (milliseconds % 250 == 0)
+            {
+                observations = [initial with { SourceText = $"Score {milliseconds / 250}" }];
+            }
+            TextRect result = Assert.Single(tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(milliseconds)));
+            Assert.Equal(milliseconds < 1450 ? initial.SourceText : "Score 5", result.SourceText);
+        }
+    }
+
+    [Theory]
+    [InlineData(-1, false, "PanelB")]
+    [InlineData(1, false, "PanelA")]
+    [InlineData(0, true, "PanelA")]
+    [InlineData(1, true, "PanelA")]
+    public void TextTimeoutUsesTextReadForAtLeastHalfOfTheObservedTime(
+        int extraMilliseconds, bool includeThirdCandidate, string expected)
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new("Stable", 100, 100, 100, 20, 16, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        // 100～1300msのうちPanelAは600ms±1ms。残りはPanelB単独、またはPanelBとPanelC。
+        string[] texts = ["PanelA", "PanelB", "PanelA", includeThirdCandidate ? "PanelC" : "PanelB", "PanelA", "PanelB"];
+        TextRect[] observations = [];
+        for (int index = 0; index < texts.Length; index++)
+        {
+            observations = [initial with { SourceText = texts[index] }];
+            int milliseconds = 100 + (index * 200) + (index == texts.Length - 1 ? extraMilliseconds : 0);
+            Assert.Equal(initial.SourceText, Assert.Single(tracker.Update(
+                observations, imageSize, TimeSpan.FromMilliseconds(milliseconds))).SourceText);
+        }
+
+        Assert.Equal(initial.SourceText, Assert.Single(tracker.Update(
+            observations, imageSize, TimeSpan.FromMilliseconds(1299))).SourceText);
+        Assert.Equal(expected, Assert.Single(tracker.Update(
+            observations, imageSize, TimeSpan.FromMilliseconds(1300))).SourceText);
+    }
+
+    [Theory]
+    [InlineData("Stable", "Stab1e,StabIe", true)]
+    [InlineData("Stable", "Stab1e,StabIe,Stab|e", true)]
+    [InlineData("カロリー", "力ロリー,カ口リー", true)]
+    [InlineData("Stable", "Stab1e,PanelA", true)]
+    [InlineData("Stable", "PanelA,PanelB", false)]
+    [InlineData("Stable", "PanelA,PanelB,PanelC", false)]
+    public void TextTimeoutWithoutASingleHalfCandidateKeepsOnlyMisreadingsOfTheConfirmedText(
+        string confirmed, string readings, bool keepsConfirmedText)
+    {
+        // 200msごとに読み取り結果が入れ替わり、間の100msで同じOCR結果を再処理する。
+        // 2候補ではちょうど600msずつ、3候補では400msずつとなり、半分以上の候補が1つに決まらない。
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect initial = new(confirmed, 100, 100, 100, 20, 16, false);
+        tracker.Update([initial], imageSize, TimeSpan.Zero);
+
+        string[] texts = readings.Split(',');
+        TextRect[] observations = [];
+        string expected = confirmed;
+        for (int milliseconds = 100; milliseconds <= 3000; milliseconds += 100)
+        {
+            if (milliseconds % 200 == 100)
+            {
+                observations = [initial with { SourceText = texts[(milliseconds / 200) % texts.Length] }];
+            }
+            if (milliseconds == 1300 && !keepsConfirmedText)
+            {
+                expected = observations[0].SourceText;
+            }
+            Assert.Equal(expected, Assert.Single(tracker.Update(
+                observations, imageSize, TimeSpan.FromMilliseconds(milliseconds))).SourceText);
+        }
+    }
+
+    [Theory]
+    [InlineData("PanelCycleWithoutHalfCandidate.json", 186307886L, "PanelB", 5912798L, 3939867L, 2147335L)]
+    [InlineData("PanelCycleWithHalfCandidate.json", 296314599L, "PanelA", 6084398L, 3861453L, 2054149L)]
+    public void TextTimeoutReplaysRecordedPanelCycleUsingObservedDurations(
+        string fileName, long confirmationTicks, string confirmedText, long panelATicks, long panelBTicks, long panelCTicks)
+    {
+        // OneOcr・安定性3の実アプリで採取した2試行。対象画面の切り替えは200ms間隔でも、OCRの観測間隔は一定ではない。
+        // nullは同じOCR結果の再処理を表し、入力配列の参照を再利用して観測時刻を保持する。
+        RecordedTextTrace? trace = JsonSerializer.Deserialize<RecordedTextTrace>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestData", fileName)));
+        Assert.NotNull(trace);
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance, new() { OcrRecognitionStability = 3 });
+        Size imageSize = new(trace.ImageWidth, trace.ImageHeight);
+        List<(long Ticks, string Text)> observations = [];
+        TextRect[] current = [];
+        string? previousText = null;
+        long candidateSince = 0;
+        long? changeSince = null;
+        const long timeoutTicks = 1200 * TimeSpan.TicksPerMillisecond;
+
+        Assert.Contains(trace.Frames, frame => frame.TimestampTicks == confirmationTicks);
+        foreach (RecordedTextFrame frame in trace.Frames)
+        {
+            if (frame.Observations is { } recorded)
+            {
+                current = recorded.Select(rect => new TextRect(
+                    rect.SourceText, rect.X, rect.Y, rect.Width, rect.Height, rect.FontSize, rect.MultiLine)
+                {
+                    Angle = rect.Angle,
+                }).ToArray();
+                observations.Add((frame.TimestampTicks, Assert.Single(current).SourceText));
+            }
+            string currentText = Assert.Single(current).SourceText;
+            if (currentText != previousText)
+            {
+                candidateSince = frame.TimestampTicks;
+                previousText = currentText;
+            }
+            if (currentText != "Stable")
+            {
+                changeSince ??= frame.TimestampTicks;
+            }
+
+            TextRect result = Assert.Single(tracker.Update(current, imageSize, TimeSpan.FromTicks(frame.TimestampTicks)));
+            Assert.Equal(frame.TimestampTicks < confirmationTicks ? "Stable" : confirmedText, result.SourceText);
+
+            if (frame.TimestampTicks == confirmationTicks)
+            {
+                // どちらも次のOCR到着前にタイムアウトで確定した。300ms連続した候補の確定とは区別する。
+                Assert.Null(frame.Observations);
+                Assert.Equal("PanelB", currentText);
+                Assert.NotNull(changeSince);
+                Assert.True(frame.TimestampTicks - changeSince.Value >= timeoutTicks);
+                Assert.True(frame.TimestampTicks - candidateSince < 300 * TimeSpan.TicksPerMillisecond);
+
+                Dictionary<string, long> weights = [];
+                for (int index = 0; index < observations.Count; index++)
+                {
+                    var observation = observations[index];
+                    long start = Math.Max(observation.Ticks, confirmationTicks - timeoutTicks);
+                    long end = index + 1 < observations.Count ? observations[index + 1].Ticks : confirmationTicks;
+                    if (end > start)
+                    {
+                        weights[observation.Text] = weights.GetValueOrDefault(observation.Text) + end - start;
+                    }
+                }
+                Assert.Equal(panelATicks, weights["PanelA"]);
+                Assert.Equal(panelBTicks, weights["PanelB"]);
+                Assert.Equal(panelCTicks, weights["PanelC"]);
+                Assert.Equal(timeoutTicks, weights.Values.Sum());
+                string[] dominant = weights.Where(pair => pair.Value * 2 >= timeoutTicks).Select(pair => pair.Key).ToArray();
+                Assert.Equal(confirmedText == "PanelA" ? ["PanelA"] : Array.Empty<string>(), dominant);
+            }
+        }
+    }
+
+    private sealed record RecordedTextTrace(int ImageWidth, int ImageHeight, RecordedTextFrame[] Frames);
+    private sealed record RecordedTextFrame(long TimestampTicks, OcrTraceRect[]? Observations);
 
     [Theory]
     [InlineData(5)]

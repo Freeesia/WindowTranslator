@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <None Update="TestData\PanelCycle*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

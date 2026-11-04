@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
@@ -1929,6 +1930,15 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         long? coveringTrackId,
         TrackingProfile profile)
     {
+        // OCRで見間違えやすい文字の組。同じ組の文字への入れ替わりは元の文字列の読み間違いとみなす。
+        private static readonly FrozenDictionary<char, int> confusableCharacterGroups = new[]
+        {
+            "1lI|!i", "0Oo", "5Ss", "8B", "2Zz", "Cc", "Vv", "Ww", "Xx",
+            "ロ口", "カ力", "エ工", "ニ二", "ハ八", "タ夕", "ト卜", "ー一", "へヘ", "べベ", "ぺペ",
+        }
+            .SelectMany((characters, group) => characters.Select(character => (character, group)))
+            .ToFrozenDictionary(pair => pair.character, pair => pair.group);
+
         private TextRect? normalGeometryCandidate;
         private TimeSpan normalGeometryCandidateSince;
         private TimeSpan noiseGeometrySince;
@@ -1936,6 +1946,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         private string? textCandidate;
         private TimeSpan textCandidateSince;
         private TimeSpan textChangeSince;
+        private readonly List<TextObservation> textHistory = [];
         private string normalizedConfirmedText = NormalizeText(observation.SourceText);
         private DormantGeometry? dormantGeometry;
         private TextRect? outputGeometryOverride;
@@ -1987,7 +1998,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 this.LastObservationTime = observationTimestamp;
             }
             this.LatestObservation = current;
-            this.UpdateText(current.SourceText, timestamp);
+            this.UpdateText(current.SourceText, timestamp, observationTimestamp);
             this.UpdateGeometry(current, timestamp);
             this.Stabilized = current with
             {
@@ -2053,12 +2064,12 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.ResetMotion(timestamp);
         }
 
-        private void UpdateText(string current, TimeSpan timestamp)
+        private void UpdateText(string current, TimeSpan timestamp, TimeSpan observationTimestamp)
         {
             string normalizedCurrent = NormalizeText(current);
             if (normalizedCurrent == this.normalizedConfirmedText)
             {
-                this.textCandidate = null;
+                this.ClearTextCandidates();
                 return;
             }
 
@@ -2071,15 +2082,117 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 this.textCandidate = normalizedCurrent;
                 this.textCandidateSince = timestamp;
             }
+            this.RecordTextObservation(new(normalizedCurrent, current, observationTimestamp), timestamp);
 
-            // 候補が変わり続ける場合も、古い文字列を保持し続けない。
-            if (timestamp - this.textCandidateSince >= profile.TextConfirmationTime
-                || timestamp - this.textChangeSince >= profile.TextChangeTimeout)
+            if (timestamp - this.textCandidateSince >= profile.TextConfirmationTime)
             {
-                this.ConfirmedText = current;
-                this.normalizedConfirmedText = normalizedCurrent;
-                this.textCandidate = null;
+                this.ConfirmText(current, normalizedCurrent);
+                return;
             }
+
+            TimeSpan unsettled = timestamp - this.textChangeSince;
+            if (unsettled < profile.TextChangeTimeout)
+            {
+                return;
+            }
+
+            // 直近のタイムアウト時間の半分以上読み取られた候補が1つに決まれば、一時的な誤認識ではないとみなして確定する。
+            if (this.FindDominantTextObservation(timestamp) is { } dominant)
+            {
+                this.ConfirmText(dominant.Original, dominant.Normalized);
+                return;
+            }
+
+            // 候補が1つに決まらない間、確定済みの文字列の読み間違いが含まれる場合は確定済みの文字列を保持する。
+            // 読み間違いを含まない場合は別の文字列へ変わり続けているとみなし、最新の観測へ追従する。
+            if (!this.textHistory.Any(observation => IsMisreading(observation.Normalized, this.normalizedConfirmedText)))
+            {
+                this.ConfirmText(current, normalizedCurrent);
+            }
+        }
+
+        private static bool IsMisreading(string text, string original)
+        {
+            // 違いがOCRで見間違えやすい文字の入れ替わりだけなら、元の文字列の読み間違いとみなす。
+            if (text.Length != original.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != original[i]
+                    && (!confusableCharacterGroups.TryGetValue(text[i], out int group)
+                        || !confusableCharacterGroups.TryGetValue(original[i], out int originalGroup)
+                        || group != originalGroup))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void RecordTextObservation(TextObservation observation, TimeSpan timestamp)
+        {
+            // 同じOCR観測の再処理は新しい観測として数えず、保持時間だけを経過時間で伸ばす。
+            if (this.textHistory.Count > 0 && this.textHistory[^1].ObservedAt == observation.ObservedAt)
+            {
+                this.textHistory[^1] = observation;
+            }
+            else
+            {
+                this.textHistory.Add(observation);
+            }
+
+            TimeSpan windowStart = timestamp - profile.TextChangeTimeout;
+            while (this.textHistory.Count > 1 && this.textHistory[1].ObservedAt <= windowStart)
+            {
+                this.textHistory.RemoveAt(0);
+            }
+        }
+
+        private TextObservation? FindDominantTextObservation(TimeSpan timestamp)
+        {
+            // 各観測は次の観測まで表示されていたとみなし、OCR回数ではなく観測されていた時間で重み付けする。
+            TimeSpan windowStart = timestamp - profile.TextChangeTimeout;
+            Dictionary<string, TimeSpan> weights = [];
+            for (int i = 0; i < this.textHistory.Count; i++)
+            {
+                TextObservation observation = this.textHistory[i];
+                TimeSpan start = observation.ObservedAt > windowStart ? observation.ObservedAt : windowStart;
+                TimeSpan end = i + 1 < this.textHistory.Count ? this.textHistory[i + 1].ObservedAt : timestamp;
+                if (end > start)
+                {
+                    weights[observation.Normalized] = weights.GetValueOrDefault(observation.Normalized) + (end - start);
+                }
+            }
+
+            TextObservation? dominant = null;
+            foreach (var (normalized, weight) in weights)
+            {
+                if (weight * 2 >= profile.TextChangeTimeout)
+                {
+                    // ちょうど半分ずつの2候補は、どちらも優勢ではないとみなす。
+                    if (dominant is not null)
+                    {
+                        return null;
+                    }
+                    dominant = this.textHistory.Last(observation => observation.Normalized == normalized);
+                }
+            }
+            return dominant;
+        }
+
+        private void ConfirmText(string original, string normalized)
+        {
+            this.ConfirmedText = original;
+            this.normalizedConfirmedText = normalized;
+            this.ClearTextCandidates();
+        }
+
+        private void ClearTextCandidates()
+        {
+            this.textCandidate = null;
+            this.textHistory.Clear();
         }
 
         private void UpdateMotion(TextRect current, TimeSpan timestamp)
@@ -2248,6 +2361,8 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
         public void ClearOutputGeometryOverride()
             => this.outputGeometryOverride = null;
+
+        private readonly record struct TextObservation(string Normalized, string Original, TimeSpan ObservedAt);
 
         private sealed record DormantGeometry(
             double AlongOffsetRatio,
