@@ -536,7 +536,7 @@ Ang monitor ay hindi suportado.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Katatagan ng pagkilala</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Binabawasan ang pansamantalang pagbabago sa teksto at paghahati o pagsasama ng mga rehiyon. 1: mabilis na pagtugon, 5: mas matatag (default: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Pagpapanatili kapag pansamantalang nawala</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Kinokontrol kung gaano katagal mananatiling nakikita ang rehiyon matapos itong hindi makilala. 0: alisin sa unang pagkabigo, pinakamataas: 7 (humigit-kumulang 2.1 segundo), default: 3 (humigit-kumulang 0.9 segundo). Hindi nakadepende sa pagitan ng pagkuha.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Kinokontrol kung gaano katagal mananatiling nakikita ang rehiyon matapos itong hindi na makilala. Ang tagal ng pagpapanatili ay ang pagitan ng pagkuha dagdag ang halaga ng setting × 0.3 segundo. 0: alisin sa unang pagkabigo, default: 3 (pagitan + 0.9 segundo), pinakamataas: 7 (pagitan + 2.1 segundo). Binabawasan ng mas mahabang halaga ang pagkutitap dahil sa pansamantalang hindi pagkakilala; mas maagang inaalis ng mas maikling halaga ang pagpapakita ng tekstong nawala na. Kung mas matagal ang pagproseso ng OCR kaysa sa tagal ng pagpapanatiling ito, kahit isang beses na hindi pagkakilala ay magtatago sa pagpapakita hanggang makilala itong muli.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Lahat</value>
   </data>

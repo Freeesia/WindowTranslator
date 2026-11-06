@@ -215,6 +215,51 @@ public class OcrTextTrackerSettingsTests
     }
 
     [Theory]
+    [InlineData(3, 3, 3900)]
+    [InlineData(1.5, 7, 3600)]
+    [InlineData(0, 3, 900)]
+    public void RetentionAddsCaptureIntervalAfterFirstMiss(double interval, int retention, int retentionMs)
+    {
+        OcrTextTracker tracker = CreateWithInterval(interval, retention);
+        Update(tracker, TimeSpan.Zero, initial);
+        TimeSpan missedAt = TimeSpan.FromMilliseconds(500);
+        TimeSpan deadline = missedAt + TimeSpan.FromMilliseconds(retentionMs);
+        TextRect[] missed = [];
+        // 同じOCR結果の再処理では、最初の欠落からの保持期限を延長しない。
+        for (TimeSpan time = missedAt; time < deadline; time += TimeSpan.FromMilliseconds(100))
+        {
+            Assert.Single(Update(tracker, time, missed));
+        }
+        Assert.Empty(Update(tracker, deadline, missed));
+    }
+
+    [Fact]
+    public void RecognitionBeforeIntervalRetentionExpiresKeepsDisplay()
+    {
+        OcrTextTracker tracker = CreateWithInterval(3, 3);
+        Update(tracker, TimeSpan.Zero, initial);
+        TextRect[] missed = [];
+        for (TimeSpan time = TimeSpan.FromSeconds(3); time < TimeSpan.FromSeconds(6); time += TimeSpan.FromMilliseconds(100))
+        {
+            Assert.Single(Update(tracker, time, missed));
+        }
+        Assert.Equal(initial, Assert.Single(Update(tracker, TimeSpan.FromSeconds(6), initial)));
+
+        // 再認識後の欠落は、新しい欠落時点から保持期限を数える。
+        Assert.Single(Update(tracker, TimeSpan.FromSeconds(9)));
+        Assert.Single(Update(tracker, TimeSpan.FromMilliseconds(12800)));
+        Assert.Empty(Update(tracker, TimeSpan.FromMilliseconds(12900)));
+    }
+
+    [Fact]
+    public void ZeroRetentionRemovesAtFirstMissRegardlessOfCaptureInterval()
+    {
+        OcrTextTracker tracker = CreateWithInterval(3, 0);
+        Update(tracker, TimeSpan.Zero, initial);
+        Assert.Empty(Update(tracker, TimeSpan.FromSeconds(3)));
+    }
+
+    [Theory]
     [InlineData(1)]
     [InlineData(3)]
     [InlineData(7)]
@@ -301,6 +346,16 @@ public class OcrTextTrackerSettingsTests
             OcrMissingFrameRetention = retention,
         });
 
+    private static OcrTextTracker CreateWithInterval(double interval, int retention)
+        => new(NullLogger<OcrTextTracker>.Instance, new()
+        {
+            CaptureInterval = interval,
+            OcrMissingFrameRetention = retention,
+        });
+
     private static IReadOnlyList<TextRect> Update(OcrTextTracker tracker, int frame, params TextRect[] observations)
         => tracker.Update(observations, imageSize, TimeSpan.FromMilliseconds(frame * 500));
+
+    private static IReadOnlyList<TextRect> Update(OcrTextTracker tracker, TimeSpan timestamp, params TextRect[] observations)
+        => tracker.Update(observations, imageSize, timestamp);
 }

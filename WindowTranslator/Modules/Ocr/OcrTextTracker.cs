@@ -1918,7 +1918,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 TimeSpan.FromMilliseconds(structureMs),
                 TimeSpan.FromMilliseconds(textMs),
                 TimeSpan.FromMilliseconds(textTimeoutMs),
-                TimeSpan.FromMilliseconds(300 * settings.OcrMissingFrameRetention));
+                // 次のOCR結果を待つため、キャプチャ間隔を加えた実時間で保持する。
+                settings.OcrMissingFrameRetention == 0
+                    ? TimeSpan.Zero
+                    : TimeSpan.FromSeconds(settings.CaptureInterval) + TimeSpan.FromMilliseconds(300 * settings.OcrMissingFrameRetention));
         }
     }
 

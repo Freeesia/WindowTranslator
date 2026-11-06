@@ -536,7 +536,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>辨識結果穩定性</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>減少文字及區域分割、合併的暫時變化。1：優先反應，5：優先穩定（預設：3）。</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>暫時消失保留</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>設定辨識缺失後區域維持顯示的程度。0：首次缺失即移除，最大：7（約2.1秒），預設：3（約0.9秒）。不受擷取間隔影響。</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>指定無法再辨識的區域維持顯示的時間。維持時間為擷取間隔加上設定值×0.3秒。0：首次缺失即移除，預設：3（間隔＋0.9秒），最大：7（間隔＋2.1秒）。值越大，越能抑制因暫時辨識遺漏造成的閃爍；值越小，已消失文字的顯示越早移除。若OCR處理時間超過此維持時間，僅一次未辨識也會使顯示消失，直到再次被辨識。</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>全部</value>
   </data>
