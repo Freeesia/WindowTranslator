@@ -45,6 +45,7 @@
     <Project Path="Plugins/WindowTranslator.Plugin.PLaMoPlugin/WindowTranslator.Plugin.PLaMoPlugin.csproj">
       <Build Solution="*|ARM64" Project="false" />
     </Project>
+    <Project Path="Plugins/WindowTranslator.Plugin.Sarashina3Plugin/WindowTranslator.Plugin.Sarashina3Plugin.csproj" />
     <Project Path="Plugins/WindowTranslator.Plugin.TesseractOCRPlugin/WindowTranslator.Plugin.TesseractOCRPlugin.csproj" />
   </Folder>
   <Project Path="Sandbox/Sandbox.csproj">
