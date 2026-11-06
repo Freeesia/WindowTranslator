@@ -1932,7 +1932,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
         private TextRect? normalGeometryCandidate;
         private TimeSpan normalGeometryCandidateSince;
         private TimeSpan noiseGeometrySince;
-        private readonly List<TextRect> noiseGeometrySamples = [];
+        private readonly List<GeometrySample> noiseGeometrySamples = [];
         private string? textCandidate;
         private TimeSpan textCandidateSince;
         private TimeSpan textChangeSince;
@@ -1988,7 +1988,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
             this.LatestObservation = current;
             this.UpdateText(current.SourceText, timestamp);
-            this.UpdateGeometry(current, timestamp);
+            this.UpdateGeometry(current, timestamp, observationTimestamp);
             this.Stabilized = current with
             {
                 SourceText = this.ConfirmedText,
@@ -2120,7 +2120,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             this.LastObservationTime = timestamp;
         }
 
-        private void UpdateGeometry(TextRect current, TimeSpan timestamp)
+        private void UpdateGeometry(TextRect current, TimeSpan timestamp, TimeSpan observationTimestamp)
         {
             double movement = CenterDistance(this.Stabilized, current);
             if (movement > Math.Max(this.Stabilized.Width, this.Stabilized.Height) * 0.75)
@@ -2137,18 +2137,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                     return;
                 }
                 this.normalGeometryCandidate = null;
-                if (this.noiseGeometrySamples.Count == 0)
-                {
-                    this.noiseGeometrySince = timestamp;
-                    this.noiseGeometrySamples.Add(this.Stabilized);
-                }
-
-                this.noiseGeometrySamples.Add(current);
-                // 現在の表示値を含めた中央値で微小な揺れを抑える。
-                if (timestamp - this.noiseGeometrySince >= profile.MicroGeometryConfirmationTime)
-                {
-                    this.ApplyGeometry(RepresentativeGeometry(this.noiseGeometrySamples));
-                }
+                this.UpdateMicroGeometry(current, timestamp, observationTimestamp);
                 return;
             }
 
@@ -2182,38 +2171,129 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 && AngleDifference(stable.Angle, current.Angle) <= 2;
         }
 
-        private static TextRect RepresentativeGeometry(List<TextRect> samples)
-            => samples[0] with
-            {
-                X = Median(samples.Select(sample => sample.X)),
-                Y = Median(samples.Select(sample => sample.Y)),
-                Width = Median(samples.Select(sample => sample.Width)),
-                Height = Median(samples.Select(sample => sample.Height)),
-                FontSize = Median(samples.Select(sample => sample.FontSize)),
-                Angle = MedianAngle(samples),
-                MultiLine = samples.Count(sample => sample.MultiLine) > samples.Count / 2,
-            };
-
-        private static double Median(IEnumerable<double> values)
+        private void UpdateMicroGeometry(TextRect current, TimeSpan timestamp, TimeSpan observationTimestamp)
         {
-            double[] ordered = values.Order().ToArray();
-            return ordered[ordered.Length / 2];
+            // 表示値と同じ観測が届けば、ずれは継続していない。
+            if (HasSameGeometry(this.Stabilized, current))
+            {
+                this.noiseGeometrySamples.Clear();
+                return;
+            }
+
+            if (this.noiseGeometrySamples.Count == 0)
+            {
+                this.noiseGeometrySince = observationTimestamp;
+            }
+            // 同じOCR観測の再処理は新しい観測として数えず、経過時間の評価だけを進める。
+            if (this.noiseGeometrySamples.Count > 0 && this.noiseGeometrySamples[^1].Time == observationTimestamp)
+            {
+                this.noiseGeometrySamples[^1] = new(observationTimestamp, current);
+            }
+            else
+            {
+                this.noiseGeometrySamples.Add(new(observationTimestamp, current));
+            }
+
+            if (timestamp - this.noiseGeometrySince < profile.MicroGeometryConfirmationTime)
+            {
+                return;
+            }
+
+            TextRect representative = RepresentativeGeometry(
+                this.noiseGeometrySamples,
+                this.Stabilized,
+                timestamp - profile.MicroGeometryConfirmationTime,
+                timestamp);
+            this.ApplyGeometry(representative);
+            if (!HasSameGeometry(representative, current))
+            {
+                // 最新観測が続いていた時間を引き継いで追従を続ける。
+                this.noiseGeometrySince = observationTimestamp;
+                this.noiseGeometrySamples.Add(new(observationTimestamp, current));
+            }
         }
 
-        private static double MedianAngle(List<TextRect> samples)
-            => samples
-                .Select((sample, index) => new
+        private static bool HasSameGeometry(TextRect first, TextRect second)
+            => first.X == second.X
+                && first.Y == second.Y
+                && first.Width == second.Width
+                && first.Height == second.Height
+                && first.FontSize == second.FontSize
+                && first.MultiLine == second.MultiLine
+                && AngleDifference(first.Angle, second.Angle) == 0;
+
+        private static TextRect RepresentativeGeometry(
+            List<GeometrySample> samples,
+            TextRect displayed,
+            TimeSpan windowStart,
+            TimeSpan now)
+        {
+            // 各観測を次の観測までの継続時間で重み付けし、観測回数に依存させない。
+            List<WeightedGeometry> weighted = new(samples.Count);
+            for (int i = 0; i < samples.Count; i++)
+            {
+                TimeSpan start = samples[i].Time > windowStart ? samples[i].Time : windowStart;
+                TimeSpan end = i + 1 < samples.Count ? samples[i + 1].Time : now;
+                if (end > start)
                 {
-                    sample.Angle,
-                    Index = index,
-                    Distance = samples.Sum(other => AngleDifference(sample.Angle, other.Angle)),
-                    StableDistance = AngleDifference(samples[0].Angle, sample.Angle),
-                })
-                .OrderBy(candidate => candidate.Distance)
-                .ThenBy(candidate => candidate.StableDistance)
-                .ThenBy(candidate => candidate.Index)
-                .First()
-                .Angle;
+                    weighted.Add(new(samples[i].Geometry, (end - start).TotalMilliseconds));
+                }
+            }
+            return displayed with
+            {
+                X = WeightedMedian(weighted, displayed.X, static sample => sample.X, LinearDistance),
+                Y = WeightedMedian(weighted, displayed.Y, static sample => sample.Y, LinearDistance),
+                Width = WeightedMedian(weighted, displayed.Width, static sample => sample.Width, LinearDistance),
+                Height = WeightedMedian(weighted, displayed.Height, static sample => sample.Height, LinearDistance),
+                FontSize = WeightedMedian(weighted, displayed.FontSize, static sample => sample.FontSize, LinearDistance),
+                Angle = WeightedMedian(weighted, displayed.Angle, static sample => sample.Angle, AngleDifference),
+                MultiLine = WeightedMedian(
+                    weighted,
+                    displayed.MultiLine ? 1 : 0,
+                    static sample => sample.MultiLine ? 1 : 0,
+                    LinearDistance) > 0.5,
+            };
+        }
+
+        /// <summary>
+        /// 継続時間で重み付けした距離の合計が最小になる値を選ぶ。
+        /// 同等の候補では表示値に近い値を選び、拮抗する揺れで表示値を動かさない。
+        /// </summary>
+        private static double WeightedMedian(
+            List<WeightedGeometry> samples,
+            double displayed,
+            Func<TextRect, double> selector,
+            Func<double, double, double> distance)
+        {
+            double best = displayed;
+            double bestCost = Cost(displayed);
+            foreach (WeightedGeometry sample in samples)
+            {
+                double candidate = selector(sample.Geometry);
+                double cost = Cost(candidate);
+                double tolerance = Math.Max(1, bestCost) * 0.000000001;
+                if (cost < bestCost - tolerance
+                    || (cost <= bestCost + tolerance && distance(candidate, displayed) < distance(best, displayed)))
+                {
+                    best = candidate;
+                    bestCost = cost;
+                }
+            }
+            return best;
+
+            double Cost(double value)
+            {
+                double total = 0;
+                foreach (WeightedGeometry sample in samples)
+                {
+                    total += sample.Weight * distance(value, selector(sample.Geometry));
+                }
+                return total;
+            }
+        }
+
+        private static double LinearDistance(double first, double second)
+            => Math.Abs(first - second);
 
         private static bool GeometryCandidateMatches(TextRect candidate, TextRect current)
             => CenterDistance(candidate, current) <= Math.Max(3, Math.Max(candidate.Width, candidate.Height) * 0.15)
@@ -2248,6 +2328,10 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
 
         public void ClearOutputGeometryOverride()
             => this.outputGeometryOverride = null;
+
+        private readonly record struct GeometrySample(TimeSpan Time, TextRect Geometry);
+
+        private readonly record struct WeightedGeometry(TextRect Geometry, double Weight);
 
         private sealed record DormantGeometry(
             double AlongOffsetRatio,
