@@ -2241,30 +2241,48 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
             }
             return displayed with
             {
-                X = WeightedMedian(weighted, displayed.X, static sample => sample.X, LinearDistance),
-                Y = WeightedMedian(weighted, displayed.Y, static sample => sample.Y, LinearDistance),
-                Width = WeightedMedian(weighted, displayed.Width, static sample => sample.Width, LinearDistance),
-                Height = WeightedMedian(weighted, displayed.Height, static sample => sample.Height, LinearDistance),
-                FontSize = WeightedMedian(weighted, displayed.FontSize, static sample => sample.FontSize, LinearDistance),
-                Angle = WeightedMedian(weighted, displayed.Angle, static sample => sample.Angle, AngleDifference),
+                X = WeightedMedian(weighted, displayed.X, static sample => sample.X, LinearDifference),
+                Y = WeightedMedian(weighted, displayed.Y, static sample => sample.Y, LinearDifference),
+                Width = WeightedMedian(weighted, displayed.Width, static sample => sample.Width, LinearDifference),
+                Height = WeightedMedian(weighted, displayed.Height, static sample => sample.Height, LinearDifference),
+                FontSize = WeightedMedian(weighted, displayed.FontSize, static sample => sample.FontSize, LinearDifference),
+                Angle = WeightedMedian(weighted, displayed.Angle, static sample => sample.Angle, SignedAngleDifference),
                 MultiLine = WeightedMedian(
                     weighted,
                     displayed.MultiLine ? 1 : 0,
                     static sample => sample.MultiLine ? 1 : 0,
-                    LinearDistance) > 0.5,
+                    LinearDifference) > 0.5,
             };
         }
 
         /// <summary>
         /// 継続時間で重み付けした距離の合計が最小になる値を選ぶ。
-        /// 同等の候補では表示値に近い値を選び、拮抗する揺れで表示値を動かさない。
+        /// 確認時間のあいだ表示値から同じ向きにずれ続けた場合だけ動かし、
+        /// 表示値と同じ観測や反対向きの観測が混じる揺れ、同等の候補が拮抗する揺れでは表示値を動かさない。
         /// </summary>
         private static double WeightedMedian(
             List<WeightedGeometry> samples,
             double displayed,
             Func<TextRect, double> selector,
-            Func<double, double, double> distance)
+            Func<double, double, double> difference)
         {
+            bool above = false;
+            bool below = false;
+            foreach (WeightedGeometry sample in samples)
+            {
+                double side = difference(selector(sample.Geometry), displayed);
+                if (side == 0)
+                {
+                    return displayed;
+                }
+                above |= side > 0;
+                below |= side < 0;
+            }
+            if (above == below)
+            {
+                return displayed;
+            }
+
             double best = displayed;
             double bestCost = Cost(displayed);
             foreach (WeightedGeometry sample in samples)
@@ -2273,7 +2291,7 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 double cost = Cost(candidate);
                 double tolerance = Math.Max(1, bestCost) * 0.000000001;
                 if (cost < bestCost - tolerance
-                    || (cost <= bestCost + tolerance && distance(candidate, displayed) < distance(best, displayed)))
+                    || (cost <= bestCost + tolerance && Distance(candidate, displayed) < Distance(best, displayed)))
                 {
                     best = candidate;
                     bestCost = cost;
@@ -2286,14 +2304,20 @@ public sealed class OcrTextTracker(ILogger<OcrTextTracker> logger, TargetSetting
                 double total = 0;
                 foreach (WeightedGeometry sample in samples)
                 {
-                    total += sample.Weight * distance(value, selector(sample.Geometry));
+                    total += sample.Weight * Distance(value, selector(sample.Geometry));
                 }
                 return total;
             }
+
+            double Distance(double first, double second)
+                => Math.Abs(difference(first, second));
         }
 
-        private static double LinearDistance(double first, double second)
-            => Math.Abs(first - second);
+        private static double LinearDifference(double first, double second)
+            => first - second;
+
+        private static double SignedAngleDifference(double first, double second)
+            => ((((first - second) % 360) + 540) % 360) - 180;
 
         private static bool GeometryCandidateMatches(TextRect candidate, TextRect current)
             => CenterDistance(candidate, current) <= Math.Max(3, Math.Max(candidate.Width, candidate.Height) * 0.15)
