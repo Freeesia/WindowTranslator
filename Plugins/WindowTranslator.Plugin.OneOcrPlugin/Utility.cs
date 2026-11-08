@@ -225,6 +225,31 @@ static class Utility
     }
 
     /// <summary>
+    /// 原文を覆うため、認識結果の矩形に余白を付ける
+    /// </summary>
+    /// <param name="rect">結合後の矩形</param>
+    /// <param name="horizontalMargin">左右それぞれに付ける余白</param>
+    /// <returns>余白を付けた矩形</returns>
+    /// <remarks>
+    /// 縦の余白は1行の高さを基準にする。段落の高さを基準にすると、行数が増えるほど余白が過大になる。
+    /// 行の高さはフォントサイズ（認識時に行の高さの0.9倍としている）から逆算する。
+    /// </remarks>
+    public static TextRect AddMargin(TextRect rect, double horizontalMargin)
+    {
+        const double lineHeightRatio = 0.9;
+        const double verticalMarginRatio = 0.04;
+        var lineHeight = rect.FontSize > 0 ? Math.Min(rect.FontSize / lineHeightRatio, rect.Height) : rect.Height;
+        var verticalMargin = lineHeight * verticalMarginRatio;
+        return rect with
+        {
+            X = rect.X - horizontalMargin,
+            Width = rect.Width + (horizontalMargin * 2),
+            Y = rect.Y - verticalMargin,
+            Height = rect.Height + (verticalMargin * 2),
+        };
+    }
+
+    /// <summary>
     /// 点を指定した角度だけ回転する
     /// </summary>
     private static (double x, double y) RotatePoint((double x, double y) point, double angle, double centerX, double centerY)
