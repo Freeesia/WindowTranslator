@@ -7,7 +7,7 @@
     <PackageVersion Include="BergamotTranslatorSharp" Version="0.7.0" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.6.1" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="DeepL.net" Version="1.15.0" />
     <PackageVersion Include="Duende.IdentityModel" Version="8.1.0" />
