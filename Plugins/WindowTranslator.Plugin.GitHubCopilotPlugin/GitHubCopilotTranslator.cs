@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using CsvHelper;
-using CsvHelper.Configuration;
 using GitHub.Copilot;
 using GitHub.Copilot.Rpc;
 using Microsoft.Extensions.Options;
@@ -65,16 +64,13 @@ public class GitHubCopilotTranslator : ITranslateModule, IAsyncDisposable
 
         if (File.Exists(options.Value.GlossaryPath))
         {
-            using var reader = new StreamReader(options.Value.GlossaryPath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
-            foreach (var (src, dst) in csv.GetRecords<Glossary>())
+            using var csv = CsvReader.FromFile(options.Value.GlossaryPath, new() { HasHeader = false, Separator = ',', MissingField = CsvMissingFieldHandling.Throw });
+            while (csv.Read())
             {
-                this.glossary[src] = dst;
+                this.glossary[csv.GetString(0)] = csv.GetString(1);
             }
         }
     }
-
-    private record Glossary(string Source, string Target);
 
     private record Response(string[] Translated);
 

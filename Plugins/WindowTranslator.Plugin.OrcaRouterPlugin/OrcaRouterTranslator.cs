@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Chat;
@@ -70,11 +69,10 @@ public sealed class OrcaRouterTranslator : ITranslateModule
             """;
         if (File.Exists(options.GlossaryPath))
         {
-            using var reader = new StreamReader(options.GlossaryPath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
-            foreach (var entry in csv.GetRecords<Glossary>())
+            using var csv = CsvReader.FromFile(options.GlossaryPath, new() { HasHeader = false, Separator = ',', MissingField = CsvMissingFieldHandling.Throw });
+            while (csv.Read())
             {
-                this.glossary[entry.Source] = entry.Target;
+                this.glossary[csv.GetString(0)] = csv.GetString(1);
             }
         }
     }
@@ -192,7 +190,6 @@ public sealed class OrcaRouterTranslator : ITranslateModule
 
     public void RegisterContext(string context) => this.context = context;
 
-    private sealed record Glossary(string Source, string Target);
     private sealed record Response(string[] Translated);
 }
 

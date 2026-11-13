@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CsvHelper;
-using CsvHelper.Configuration;
 using DeepL;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -47,17 +46,14 @@ public class DeepLTranslator : ITranslateModule
 
         if (File.Exists(deeplOptions.Value.GlossaryPath))
         {
-            using var reader = new StreamReader(deeplOptions.Value.GlossaryPath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
-            foreach (var (src, dst) in csv.GetRecords<Glossary>())
+            using var csv = CsvReader.FromFile(deeplOptions.Value.GlossaryPath, new() { HasHeader = false, Separator = ',', MissingField = CsvMissingFieldHandling.Throw });
+            while (csv.Read())
             {
-                this.glossary[src] = dst;
+                this.glossary[csv.GetString(0)] = csv.GetString(1);
             }
             this.glossaryId = new(RegisterGlossaryAsync);
         }
     }
-
-    private record Glossary(string Source, string Target);
 
     public async ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {

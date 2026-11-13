@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Chat;
@@ -101,16 +100,13 @@ public class LLMTranslator : ITranslateModule
 
         if (File.Exists(llmOptions.Value.GlossaryPath))
         {
-            using var reader = new StreamReader(llmOptions.Value.GlossaryPath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
-            foreach (var (src, dst) in csv.GetRecords<Glossary>())
+            using var csv = CsvReader.FromFile(llmOptions.Value.GlossaryPath, new() { HasHeader = false, Separator = ',', MissingField = CsvMissingFieldHandling.Throw });
+            while (csv.Read())
             {
-                this.glossary[src] = dst;
+                this.glossary[csv.GetString(0)] = csv.GetString(1);
             }
         }
     }
-
-    private record Glossary(string Source, string Target);
 
     public ValueTask<string[]> TranslateAsync(TextInfo[] srcTexts)
     {
