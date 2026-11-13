@@ -15,11 +15,13 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <EmbeddedResource Include="TestData\OcrParagraphs.json" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WindowTranslator\WindowTranslator.csproj" />
     <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.PLaMoPlugin\WindowTranslator.Plugin.PLaMoPlugin.csproj" Aliases="PLaMo" />
     <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OrcaRouterPlugin\WindowTranslator.Plugin.OrcaRouterPlugin.csproj" Aliases="OrcaRouter" />
+    <ProjectReference Include="..\Plugins\WindowTranslator.Plugin.OneOcrPlugin\WindowTranslator.Plugin.OneOcrPlugin.csproj" Aliases="OneOcr" />
   </ItemGroup>
 </Project>

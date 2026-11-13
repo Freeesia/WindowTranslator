@@ -135,10 +135,11 @@ public sealed class OneOcr : IOcrModule, IDisposable
     {
 
         // テキスト認識処理をバックグラウンドで実行
-        var textRects = await Task.Run(() => Recognize(workingBitmap)).ConfigureAwait(false);
+        var textHeights = new Dictionary<TextRect, double>(ReferenceEqualityComparer.Instance);
+        var textRects = await Task.Run(() => Recognize(workingBitmap, textHeights)).ConfigureAwait(false);
 
         // 認識したテキスト矩形の補正と結合処理を実行
-        textRects = OcrUtility.MergeTextRects(textRects, sourceSize, this.ocrOptions, this.source);
+        textRects = OcrUtility.MergeTextRects(textRects, sourceSize, this.ocrOptions, this.source, textHeights);
 
         var wFat = sourceSize.Width * 0.004;
 
@@ -151,7 +152,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
             // 翻訳後言語のテキストは対象外
             .Where(r => !IsTargetLangText(r.SourceText))
             // 若干太らせる
-            .Select(r => r with { X = r.X - wFat, Width = r.Width + (wFat * 2), Y = r.Y - (r.Height * 0.04), Height = r.Height * 1.08 })
+            .Select(r => Utility.AddMargin(r, wFat))
             .ToArray();
     }
 
@@ -160,7 +161,7 @@ public sealed class OneOcr : IOcrModule, IDisposable
             // fastTextがサポートされていない場合は無条件で対象外
             ?? false;
 
-    private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap)
+    private unsafe IEnumerable<TextRect> Recognize(SoftwareBitmap bitmap, Dictionary<TextRect, double> textHeights)
     {
         var sw = Stopwatch.StartNew();
         // BitmapをImgに変換
@@ -234,11 +235,39 @@ public sealed class OneOcr : IOcrModule, IDisposable
             this.logger.LogDebug($"Text: '{lineContent}', Angle: {angle:F2}°, Size: {width:F1}x{height:F1}, Position: ({x:F1}, {y:F1})");
 
             // TextRectを作成して追加（角度情報を含む、座標は左上位置）
-            textRects.Add(new(lineContent, x, y, width, height, height * 0.9, false) { Angle = angle });
+            var textRect = new TextRect(lineContent, x, y, width, height, height * 0.9, false) { Angle = angle };
+            textRects.Add(textRect);
+            var textHeight = GetTextHeight(line, angle);
+            if (textHeight > 0)
+                textHeights.Add(textRect, textHeight);
         }
 
         this.logger.LogDebug($"Recognize: {sw.Elapsed}");
         return textRects;
+    }
+
+    private static double GetTextHeight(long line, double angle)
+    {
+        // 単語高は結合判定の補助情報。取得できない行は行矩形の文字サイズで判定する。
+        if (GetOcrLineWordCount(line, out var count) != 0)
+            return 0;
+        var radians = angle * Math.PI / 180;
+        var sin = Math.Sin(radians);
+        var cos = Math.Cos(radians);
+        var heights = new List<double>();
+        for (long i = 0; i < count; i++)
+        {
+            if (GetOcrWord(line, i, out var word) != 0 || GetOcrWordBoundingBox(word, out var ptr) != 0)
+                continue;
+            var box = Marshal.PtrToStructure<BoundingBox>(ptr);
+            var ys = new[] { -box.x1 * sin + box.y1 * cos, -box.x2 * sin + box.y2 * cos,
+                -box.x3 * sin + box.y3 * cos, -box.x4 * sin + box.y4 * cos };
+            var height = ys.Max() - ys.Min();
+            if (height > 0)
+                heights.Add(height);
+        }
+        heights.Sort();
+        return heights.Count > 0 ? (heights[(heights.Count - 1) / 2] + heights[heights.Count / 2]) / 2 : 0;
     }
 }
 
