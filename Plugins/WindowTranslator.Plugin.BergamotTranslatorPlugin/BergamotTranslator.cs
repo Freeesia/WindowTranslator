@@ -4,7 +4,6 @@ using System.IO.Compression;
 using System.Text.Json;
 using BergamotTranslatorSharp;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -46,16 +45,13 @@ public sealed class BergamotTranslator : ITranslateModule, IDisposable
 
         if (File.Exists(options.Value.GlossaryPath))
         {
-            using var reader = new StreamReader(options.Value.GlossaryPath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false });
-            foreach (var (source, target) in csv.GetRecords<Glossary>())
+            using var csv = CsvReader.FromFile(options.Value.GlossaryPath, new() { HasHeader = false, Separator = ',', MissingField = CsvMissingFieldHandling.Throw });
+            while (csv.Read())
             {
-                this.glossary[source] = target;
+                this.glossary[csv.GetString(0)] = csv.GetString(1);
             }
         }
     }
-
-    private record Glossary(string Source, string Target);
 
     public void Dispose()
         => this.service?.Dispose();
