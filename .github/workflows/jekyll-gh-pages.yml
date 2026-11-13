@@ -1,10 +1,18 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+name: Deploy Jekyll site to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # ドキュメント本体・依存ライブラリ（Gemfile / Gemfile.lock）・このワークフローが更新されたときに実行する
   push:
     branches: ["master"]
+    paths:
+      - "docs/**"
+      - ".github/workflows/jekyll-gh-pages.yml"
+
+  # PR ではビルドのみ検証する（デプロイしない）
+  pull_request:
+    paths:
+      - "docs/**"
+      - ".github/workflows/jekyll-gh-pages.yml"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -17,9 +25,10 @@ permissions:
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# PR の検証ビルドは PR ごとに分け、新しい push で古い実行を取り消す。
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.ref) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Build job
@@ -29,17 +38,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Setup Pages
+        id: pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v6
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          source: ./docs/
-          destination: ./_site
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: docs
+      - name: Build with Jekyll
+        working-directory: docs
+        run: bundle exec jekyll build --source . --destination ../_site --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
 
   # Deployment job
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
