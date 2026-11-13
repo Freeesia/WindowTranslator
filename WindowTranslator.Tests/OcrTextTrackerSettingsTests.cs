@@ -109,12 +109,14 @@ public class OcrTextTrackerSettingsTests
     public void UnsettledTextEventuallyUsesTheLatestRecognition(int level, int historySize)
     {
         OcrTextTracker tracker = Create(recognition: level);
-        Update(tracker, 0, initial);
+        // 文字送りを起こさず、認識候補の履歴による確定を検証する。
+        TextRect initialText = initial with { SourceText = "Panel0" };
+        Update(tracker, 0, initialText);
         for (int frame = 1; frame <= historySize; frame++)
         {
-            TextRect changed = initial with { SourceText = $"Panel{frame}" };
+            TextRect changed = initialText with { SourceText = $"Panel{frame}" };
             TextRect result = Assert.Single(Update(tracker, frame, changed));
-            Assert.Equal(level == 1 || frame == historySize ? changed.SourceText : initial.SourceText, result.SourceText);
+            Assert.Equal(level == 1 || frame == historySize ? changed.SourceText : initialText.SourceText, result.SourceText);
         }
     }
 
@@ -124,12 +126,14 @@ public class OcrTextTrackerSettingsTests
     public void ScatteredTextVotesNeedEnoughRecentWeight(int level, int pendingFrames)
     {
         OcrTextTracker tracker = Create(recognition: level);
-        Update(tracker, 0, initial);
+        // 文字送りを起こさず、認識候補の票数と重みによる確定を検証する。
+        TextRect initialText = initial with { SourceText = "Panel0" };
+        Update(tracker, 0, initialText);
         string[] observations = ["PanelA", "PanelB", "PanelA", "PanelC", "PanelA", "PanelA", "PanelA"];
         for (int frame = 1; frame <= pendingFrames + 1; frame++)
         {
-            TextRect result = Assert.Single(Update(tracker, frame, initial with { SourceText = observations[frame - 1] }));
-            Assert.Equal(frame <= pendingFrames ? initial.SourceText : "PanelA", result.SourceText);
+            TextRect result = Assert.Single(Update(tracker, frame, initialText with { SourceText = observations[frame - 1] }));
+            Assert.Equal(frame <= pendingFrames ? initialText.SourceText : "PanelA", result.SourceText);
         }
     }
 
