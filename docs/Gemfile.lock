@@ -68,7 +68,7 @@ GEM
       jekyll (>= 3.7, < 5.0)
     jekyll-optional-front-matter (0.3.5)
       jekyll (>= 3.0, < 5.0)
-    jekyll-readme-index (0.5.1)
+    jekyll-readme-index (0.6.0)
       jekyll (>= 3.0, < 5.0)
     jekyll-relative-links (0.9.1)
       jekyll (>= 3.3, < 5.0)
