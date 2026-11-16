@@ -9,7 +9,7 @@
     <PackageVersion Include="ConsoleAppFramework" Version="5.8.1" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="CsvHelper" Version="34.0.0" />
-    <PackageVersion Include="DeepL.net" Version="1.15.0" />
+    <PackageVersion Include="DeepL.net" Version="1.23.0" />
     <PackageVersion Include="Duende.IdentityModel" Version="8.1.0" />
     <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
     <PackageVersion Include="GitHub.Copilot.SDK" Version="1.0.7" />
