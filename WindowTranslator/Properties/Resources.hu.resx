@@ -417,7 +417,7 @@ A monitorok nem támogatottak.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Felismerés stabilitása</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Csökkenti a szöveg, valamint a területek felosztásának és egyesítésének átmeneti változásait. 1: gyors reakció, 5: nagy stabilitás (alapérték: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Megjelenítés megtartása átmeneti eltűnéskor</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Meghatározza, mennyi ideig marad látható a terület a felismerés elvesztése után. 0: eltávolítás az első kimaradáskor, maximum: 7 (kb. 2,1 másodperc), alapérték: 3 (kb. 0,9 másodperc). Független a rögzítési időköztől.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Meghatározza, mennyi ideig marad látható egy terület, miután már nem ismerhető fel. A megtartási idő a rögzítési időköz és a beállított érték × 0,3 másodperc összege. 0: eltávolítás az első kimaradáskor, alapérték: 3 (időköz + 0,9 másodperc), maximum: 7 (időköz + 2,1 másodperc). A nagyobb érték csökkenti az átmeneti felismerési kimaradások okozta villódzást, a kisebb érték hamarabb eltávolítja az eltűnt szöveg megjelenítését. Ha az OCR-feldolgozás tovább tart ennél a megtartási időnél, egyetlen kimaradás is elrejti a megjelenítést, amíg a területet újra fel nem ismeri.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Összes</value>
   </data>

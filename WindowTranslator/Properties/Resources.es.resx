@@ -527,7 +527,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Estabilidad del reconocimiento</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Reduce los cambios temporales del texto y la división o unión de regiones. 1: respuesta rápida, 5: mayor estabilidad (predeterminado: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Retención ante desapariciones temporales</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Controla cuánto tiempo permanece visible una región tras perder el reconocimiento. 0: eliminar en el primer fallo, máximo: 7 (unos 2,1 segundos), predeterminado: 3 (unos 0,9 segundos). Independiente del intervalo de captura.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Especifica cuánto tiempo sigue mostrándose una región cuando ya no se reconoce. El tiempo de retención es el intervalo de captura más el valor del ajuste × 0,3 segundos. 0: eliminar en el primer fallo, predeterminado: 3 (intervalo + 0,9 segundos), máximo: 7 (intervalo + 2,1 segundos). Los valores altos reducen el parpadeo causado por fallos temporales de reconocimiento; los bajos quitan antes la visualización del texto que ha desaparecido. Si el procesamiento OCR tarda más que este tiempo de retención, un solo fallo de reconocimiento oculta la región hasta que se vuelva a reconocer.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Todos</value>
   </data>

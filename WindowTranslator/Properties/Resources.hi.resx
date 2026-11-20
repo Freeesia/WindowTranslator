@@ -529,7 +529,7 @@
   <data name="OcrRecognitionStability" xml:space="preserve"><value>पहचान की स्थिरता</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>पाठ और क्षेत्रों के विभाजन या विलय में अस्थायी बदलाव कम करता है। 1: तेज़ प्रतिक्रिया, 5: अधिक स्थिरता (डिफ़ॉल्ट: 3)।</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>अस्थायी रूप से गायब होने पर बनाए रखना</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>पहचान खोने के बाद क्षेत्र कितनी देर तक दिखाई देगा, यह तय करता है। 0: पहली विफलता पर हटाएँ, अधिकतम: 7 (लगभग 2.1 सेकंड), डिफ़ॉल्ट: 3 (लगभग 0.9 सेकंड)। कैप्चर अंतराल से स्वतंत्र।</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>यह तय करता है कि जिस क्षेत्र की पहचान अब नहीं हो पा रही है, वह कितनी देर तक दिखता रहेगा। प्रदर्शन बनाए रखने का समय कैप्चर अंतराल में सेटिंग मान × 0.3 सेकंड जोड़कर बनता है। 0: पहली विफलता पर हटाएँ, डिफ़ॉल्ट: 3 (अंतराल + 0.9 सेकंड), अधिकतम: 7 (अंतराल + 2.1 सेकंड)। अधिक मान अस्थायी पहचान चूक से होने वाली झिलमिलाहट कम करता है; कम मान गायब हुए टेक्स्ट का प्रदर्शन जल्दी हटाता है। यदि OCR प्रसंस्करण में इस समय से अधिक समय लगता है, तो केवल एक बार पहचान न होने पर भी दोबारा पहचाने जाने तक प्रदर्शन गायब हो जाता है।</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>सभी</value>
   </data>

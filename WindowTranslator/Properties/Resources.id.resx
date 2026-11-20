@@ -535,7 +535,7 @@ Monitor tidak didukung.</value>
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Stabilitas pengenalan</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Mengurangi perubahan sementara pada teks serta pemisahan atau penggabungan area. 1: respons cepat, 5: lebih stabil (default: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Pertahankan saat hilang sementara</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Menentukan berapa lama wilayah tetap ditampilkan setelah tidak dikenali. 0: hapus saat kegagalan pertama, maksimum: 7 (sekitar 2,1 detik), default: 3 (sekitar 0,9 detik). Tidak bergantung pada interval tangkapan.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Menentukan berapa lama wilayah tetap ditampilkan setelah tidak dapat dikenali lagi. Waktu penahanan adalah interval tangkapan ditambah nilai pengaturan × 0,3 detik. 0: hapus saat kegagalan pertama, default: 3 (interval + 0,9 detik), maksimum: 7 (interval + 2,1 detik). Nilai yang lebih besar mengurangi kedipan akibat kegagalan pengenalan sementara; nilai yang lebih kecil menghapus tampilan teks yang sudah hilang lebih cepat. Jika pemrosesan OCR memakan waktu lebih lama dari waktu penahanan ini, satu kali gagal dikenali saja akan menyembunyikan tampilan sampai wilayah dikenali kembali.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Semua</value>
   </data>
