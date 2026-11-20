@@ -639,6 +639,58 @@ public class OcrTextTrackerAccuracyTests(ITestOutputHelper output)
         }
     }
 
+    [Fact]
+    public void ReprocessingTheSameObservationDoesNotOutweighElapsedTime()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 100, 100, 100, 30, 24, false);
+        TextRect jittered = stable with { X = 102, FontSize = 25 };
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        // ずれた観測だけを短い間隔で何度も再処理しても、継続時間は安定値と同じ。
+        for (int frame = 1; frame <= 12; frame++)
+        {
+            TextRect[] observations = [frame % 2 == 1 ? jittered : stable];
+            int reprocessCount = frame % 2 == 1 ? 50 : 1;
+            for (int i = 0; i < reprocessCount; i++)
+            {
+                TextRect result = Assert.Single(tracker.Update(
+                    observations,
+                    imageSize,
+                    TimeSpan.FromMilliseconds((frame * 500) + (i * 10))));
+
+                Assert.Equal((100, 24), (result.X, result.FontSize));
+            }
+        }
+    }
+
+    [Fact]
+    public void MicroGeometryNoiseOnBothSidesOfTheDisplayedValueDoesNotMoveIt()
+    {
+        OcrTextTracker tracker = new(NullLogger<OcrTextTracker>.Instance);
+        Size imageSize = new(1000, 600);
+        TextRect stable = new("Panel", 101, 100, 100, 30, 24, false);
+        TextRect smaller = stable with { X = 100, FontSize = 23 };
+        TextRect larger = stable with { X = 102, FontSize = 25 };
+        tracker.Update([stable], imageSize, TimeSpan.Zero);
+
+        // 表示値には戻らず、その両側を行き来する観測を100ms間隔で再処理する。
+        for (int frame = 1; frame <= 24; frame++)
+        {
+            TextRect[] observations = [frame % 2 == 1 ? smaller : larger];
+            for (int elapsed = 0; elapsed < 500; elapsed += 100)
+            {
+                TextRect result = Assert.Single(tracker.Update(
+                    observations,
+                    imageSize,
+                    TimeSpan.FromMilliseconds((frame * 500) + elapsed)));
+
+                Assert.Equal((101, 24), (result.X, result.FontSize));
+            }
+        }
+    }
+
     [Theory]
     [InlineData(40, 10)]
     [InlineData(10, 40)]
