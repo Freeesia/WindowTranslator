@@ -15,6 +15,7 @@
     d:Width="800"
     AllowsTransparency="True"
     Background="Transparent"
+    DataContextChanged="OverlayVisibilityChanged"
     Loaded="Window_Loaded"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
@@ -31,13 +32,13 @@
             x:Name="overlay"
             FontFamily="{Binding Font, Mode=OneWay}"
             IsSwapVisibility="{Binding IsSwapVisibility, ElementName=host, Mode=OneWay}"
+            IsVisibleChanged="OverlayVisibilityChanged"
             MousePointerHitTestPadding="{Binding MousePointerHitTestPadding, Mode=OneWay}"
             MousePos="{Binding MousePos, ElementName=host, Mode=OneWay}"
             RectHeight="{Binding Height}"
             RectWidth="{Binding Width}"
             Scale="{Binding Scale, ElementName=host, Mode=OneWay}"
-            Texts="{Binding OcrTexts}"
-            Visibility="{Binding OverlayVisible, Mode=OneWayToSource, Converter={StaticResource v2bConv}}" />
+            Texts="{Binding OcrTexts}" />
         <ui:ProgressRing
             Canvas.Right="0"
             Canvas.Bottom="0"
