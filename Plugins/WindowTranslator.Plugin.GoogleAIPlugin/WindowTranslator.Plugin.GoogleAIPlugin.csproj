@@ -12,6 +12,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" ExcludeAssets="runtime" />
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="Google_GenerativeAI" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" VersionOverride="11.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
