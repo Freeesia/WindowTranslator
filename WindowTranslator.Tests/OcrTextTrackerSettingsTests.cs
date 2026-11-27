@@ -175,6 +175,55 @@ public class OcrTextTrackerSettingsTests
     }
 
     [Theory]
+    [InlineData(1, 0)]
+    [InlineData(2, 300)]
+    [InlineData(3, 900)]
+    [InlineData(4, 1500)]
+    [InlineData(5, 2100)]
+    public void SustainedMicroGeometryChangeFollowsAfterTheLevelTimeWithoutAnotherObservation(int level, int confirmationMs)
+    {
+        // OCRは3秒間隔で届き、その間は同じOCR結果を100ms間隔で再処理する。
+        foreach (TextRect changed in new[] { initial with { X = 102, FontSize = 25 }, initial with { X = 98, FontSize = 23 } })
+        {
+            OcrTextTracker tracker = Create(geometry: level);
+            TextRect[] first = [initial];
+            for (int ms = 0; ms < 3000; ms += 100)
+            {
+                Assert.Equal(initial, Assert.Single(tracker.Update(first, imageSize, TimeSpan.FromMilliseconds(ms))));
+            }
+
+            TextRect[] second = [changed];
+            for (int elapsed = 0; elapsed < 3000; elapsed += 100)
+            {
+                TextRect result = Assert.Single(tracker.Update(
+                    second, imageSize, TimeSpan.FromMilliseconds(3000 + elapsed)));
+                Assert.Equal(elapsed < confirmationMs ? initial : changed, result);
+            }
+        }
+    }
+
+    [Fact]
+    public void LatestMicroGeometryKeepsItsElapsedTimeWhenRepresentativeMoves()
+    {
+        OcrTextTracker tracker = Create(geometry: 2);
+        TextRect[] initialObservation = [initial];
+        TextRect[] firstChange = [initial with { X = 102 }];
+        TextRect[] latestChange = [initial with { X = 104 }];
+
+        Assert.Equal(initial, Assert.Single(tracker.Update(initialObservation, imageSize, TimeSpan.Zero)));
+        Assert.Equal(initial, Assert.Single(tracker.Update(firstChange, imageSize, TimeSpan.FromMilliseconds(100))));
+        Assert.Equal(initial, Assert.Single(tracker.Update(latestChange, imageSize, TimeSpan.FromMilliseconds(350))));
+
+        TextRect representative = Assert.Single(tracker.Update(
+            latestChange, imageSize, TimeSpan.FromMilliseconds(400)));
+        Assert.Equal(102, representative.X);
+
+        TextRect converged = Assert.Single(tracker.Update(
+            latestChange, imageSize, TimeSpan.FromMilliseconds(650)));
+        Assert.Equal(104, converged.X);
+    }
+
+    [Theory]
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
