@@ -536,7 +536,7 @@ Monitör desteklenmiyor.
   <data name="OcrRecognitionStability" xml:space="preserve"><value>Tanıma kararlılığı</value></data>
   <data name="OcrRecognitionStability_Desc" xml:space="preserve"><value>Metindeki ve bölgelerin bölünmesi veya birleşmesindeki geçici değişiklikleri azaltır. 1: hızlı tepki, 5: yüksek kararlılık (varsayılan: 3).</value></data>
   <data name="OcrMissingFrameRetention" xml:space="preserve"><value>Geçici kaybolmada görüntüyü koruma</value></data>
-  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Tanıma kaybolduktan sonra bölgenin ne kadar süre gösterileceğini belirler. 0: ilk kayıpta kaldır, en fazla: 7 (yaklaşık 2,1 saniye), varsayılan: 3 (yaklaşık 0,9 saniye). Yakalama aralığından bağımsızdır.</value></data>
+  <data name="OcrMissingFrameRetention_Desc" xml:space="preserve"><value>Artık tanınamayan bir bölgenin ne kadar süre gösterilmeye devam edeceğini belirler. Tutma süresi, yakalama aralığına ayar değeri × 0,3 saniye eklenerek bulunur. 0: ilk kayıpta kaldır, varsayılan: 3 (aralık + 0,9 saniye), en fazla: 7 (aralık + 2,1 saniye). Uzun değerler geçici tanıma kayıplarından kaynaklanan titremeyi azaltır; kısa değerler kaybolan metnin gösterimini daha erken kaldırır. OCR işlemi bu tutma süresinden uzun sürerse, tek bir tanıma kaybı bile bölge yeniden tanınana kadar gösterimin kaybolmasına neden olur.</value></data>
   <data name="PluginCategoryAll" xml:space="preserve">
     <value>Tümü</value>
   </data>
